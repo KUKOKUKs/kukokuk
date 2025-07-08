@@ -21,7 +21,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const me = '${{ github.event.pull_request.user.login }}';
-            const candidate = ['ksm001027', 'dayeong0120', 'gyuraean', 'shimjeongho', 'lljungho'];
+            const candidate = ['ksm001027', 'dayeong0120', 'shimjeongho', 'lljungho'];
             const candidateWithoutMe = candidate.filter(id => id !== me);
             const randomReviewer = candidateWithoutMe[Math.floor(Math.random() * candidateWithoutMe.length)];
             const comment = `@${randomReviewer} 님 랜덤 리뷰어로 당첨되셨습니다! 리뷰를 부탁드립니다.🙏`;
