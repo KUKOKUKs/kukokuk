@@ -1,7 +1,7 @@
 name: "Random reviewer"
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
     branches:
@@ -23,6 +23,12 @@ jobs:
             const me = '${{ github.event.pull_request.user.login }}';
             const candidate = ['ksm001027', 'dayeong0120', 'shimjeongho', 'lljungho'];
             const candidateWithoutMe = candidate.filter(id => id !== me);
+
+            if (candidateWithoutMe.length === 0) {
+              core.setFailed("리뷰어 후보가 없습니다. PR 작성자를 제외한 후보자가 1명 이상 있어야 합니다.");
+              return;
+            }
+
             const randomReviewer = candidateWithoutMe[Math.floor(Math.random() * candidateWithoutMe.length)];
             const comment = `@${randomReviewer} 님 랜덤 리뷰어로 당첨되셨습니다! 리뷰를 부탁드립니다.🙏`;
             core.setOutput('comment', comment);
