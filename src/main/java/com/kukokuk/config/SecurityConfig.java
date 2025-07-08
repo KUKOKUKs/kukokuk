@@ -34,7 +34,7 @@ import jakarta.servlet.DispatcherType;
  *   사용해서 메소드 기반 젭근제어를 적용할 수 있다.
  * - 주로, 컨트롤러의 요청 핸들러 메소드 혹은 서비스의 업무로직 메소드에
  *   메소드 기반 젭근제어를 적용한다.
- * - 메소드 기반 접근제어는 AOP를 통해서 이루어진다.
+ * - 메소드 기반 접근제어는 AOP 를 통해서 이루어진다.
  */
 @Configuration
 @EnableWebSecurity
@@ -49,15 +49,15 @@ public class SecurityConfig {
 
     /*
      * filterChain(HttpSecurity http) 메소드
-     *  - HttpSecurity객체를 전달받아서 스프링 시큐리티 보안설정을 구성하는
+     *  - HttpSecurity 객체를 전달받아서 스프링 시큐리티 보안설정을 구성하는
      *    메소드다.
      *  - 이 메소드의 보안 설정을 기반으로 SecurityFilterChain 객체가
      *    생성되고, 스프링 컨테이너의 빈으로 등록된다.
      *
      * SecurityFilterChain
-     *  - 스프링 시큐리티에서 보안작업(인증/인가)을 처리하는 SecurityFilter들의
+     *  - 스프링 시큐리티에서 보안작업(인증/인가)을 처리하는 SecurityFilter 들의
      *    집합체인이다.
-     *  - SecurityFilterChain을 구성하는 SecurityFilter들은
+     *  - SecurityFilterChain을 구성하는 SecurityFilter 들은
      *    filterChain(HttpSecurity http) 메소드를 이용해서 커스터마이징된다.
      *
      * HttpSecurity
@@ -73,7 +73,7 @@ public class SecurityConfig {
      *  		* 커스텀 로그인 페이지, 로그인 성공/실패시 핸들러 설정
      *  	- .logout()
      *  		* 로그아웃 처리 설정
-     *  		* 로그아웃 URL, 세션 무효화, 로그아웃 성공 후 이동URL
+     *  		* 로그아웃 URL, 세션 무효화, 로그아웃 성공 후 이동 URL
      *  	- .exceptionHandling()
      *  		* 인증실패, 인가실패 발생시 사용자 정의 핸들러 설정한다.
      *  	- .csrf()
