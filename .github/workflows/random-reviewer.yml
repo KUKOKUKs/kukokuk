@@ -1,7 +1,7 @@
 name: "Random reviewer"
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
     branches:
@@ -21,22 +21,37 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const me = '${{ github.event.pull_request.user.login }}';
-            const candidate = ['ksm001027', 'dayeong0120', 'gyuraean', 'shimjeongho', 'lljungho'];
+            const candidate = ['ksm001027', 'dayeong0120', 'shimjeongho', 'lljungho'];
             const candidateWithoutMe = candidate.filter(id => id !== me);
+
+            if (candidateWithoutMe.length === 0) {
+              core.setFailed("리뷰어 후보가 없습니다. PR 작성자를 제외한 후보자가 1명 이상 있어야 합니다.");
+              return;
+            }
+
             const randomReviewer = candidateWithoutMe[Math.floor(Math.random() * candidateWithoutMe.length)];
-            const comment = `@${randomReviewer} 님 랜덤 리뷰어로 당첨되셨습니다! 리뷰를 부탁드립니다. 🙏`;
+            const comment = `@${randomReviewer} 님 랜덤 리뷰어로 당첨되셨습니다! 리뷰를 부탁드립니다.🙏`;
             core.setOutput('comment', comment);
             core.setOutput('reviewer', randomReviewer);
 
-      - name: comment PR
+      - name: Comment PR
         uses: mshick/add-pr-comment@v1
         with:
           message: |
             ${{ steps.random_reviewer.outputs.comment }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add Pull Request Reviewer
-        uses: madrapps/add-reviewers@v1
+      - name: Add Pull Request Reviewer (via GitHub Script)
+        uses: actions/github-script@v3
         with:
-          reviewers: ${{ steps.random_reviewer.outputs.reviewer }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const reviewer = '${{ steps.random_reviewer.outputs.reviewer }}';
+            const prNumber = context.issue.number;
+
+            await github.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              reviewers: [reviewer],
+            });
