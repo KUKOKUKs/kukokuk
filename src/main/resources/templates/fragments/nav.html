@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
+<html lang="ko">
+    <div th:fragment="nav-fragment" class="container">
+        nav
+
+        <!-- footer -->
+        <div th:replace="~{fragments/footer :: footer-fragment}"></div>
+    </div>
 </html>
