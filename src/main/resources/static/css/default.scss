@@ -1,0 +1,20 @@
+/* accessibility */
+.a11y-hidden {
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+}
+.logo {
+    display: block;
+    width: var(--logoWidth);
+    height: var(--logoHeight);
+    background: url("/images/kukokuk_logo.png") 0 0 no-repeat;
+    position: fixed;
+    top: var(--baseGap);
+    left: var(--baseGap);
+}
