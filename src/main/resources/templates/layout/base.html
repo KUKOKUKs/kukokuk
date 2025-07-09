@@ -19,8 +19,16 @@
             xhr.setRequestHeader(header, token);
         });
     </script>
+
+    <link rel="stylesheet" href="/css/common.scss">
+    <link rel="stylesheet" href="/css/default.scss">
 </head>
 <body>
+<!-- logo -->
+<h1 class="logo">
+    <span class="a11y-hidden">국어국</span>
+</h1>
+
 <!-- nav -->
 <nav th:replace="~{fragments/nav :: nav-fragment}"></nav>
 

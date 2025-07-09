@@ -1,3 +1,22 @@
+root {
+
+    /* element property */
+    --logoWidth: 170px;
+    --logoHeight: 110px;
+    --basePadding: 1.2rem;
+    --bdrs: 7px;
+    --bxsh: 0 1px 5px rgba(0,0,0, .07);
+    --trst: .2s ease-in-out;
+    --baseGap: 1.2rem;
+    --smallGap: 10px;
+    --largeGap: 20px;
+
+    /* color palette */
+    --primaryColr: #004b49;
+    --subColor: #4b2300;
+
+}
+
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
