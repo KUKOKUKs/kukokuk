@@ -27,6 +27,7 @@
 
 .content {
     width: 100%;
+    padding: var(--containerPadding);
     display: flex;
     justify-content: center;
 }
@@ -34,5 +35,25 @@
 .container {
     width: 100%;
     padding: var(--containerPadding);
+}
+
+/* 테두리 곡선 */
+.border_radius {
+    border-radius: var(--bdrs);
+}
+
+/* 그림자 효과 */
+.box_shadow {
+    box-shadow: var(--bxsh);
+}
+
+/* 주조색 배경 */
+.bg_primary {
+    background-color: var(--primaryColor);
+}
+
+/* 주조색 폰트 컬러 */
+.color_primary {
+    color: var(--primaryColor);
 }
 
