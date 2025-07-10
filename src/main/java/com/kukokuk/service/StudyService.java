@@ -3,8 +3,7 @@ package com.kukokuk.service;
 import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
-import com.kukokuk.mapper.DailyStudyuMapper;
-import com.kukokuk.mapper.StudyMapper;
+import com.kukokuk.mapper.DailyStudyMapper;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
 import com.kukokuk.vo.DailyStudy;
@@ -65,22 +64,35 @@ public class StudyService {
       /*
       고려할 사항
         1. 유저의 수준 (STUDY_DIFFICULTY)
-        2. 유저의 일일학습 이력에 존재하지 않는 학습자료만 불러옴
+        2. 유저의 일일학습 이력에서 학습완료 되지 않은 학습자료만 불러옴
         3. 일일학습자료의 조건 : 일일학습의 원본데이터의 학년에 맞는 자료를 자료순서에 불러옴
+        4. 몇개의 행을 가져올지 조회조건 전달
+        예를들어 유저의 수준이 4(중1~중2)면, 학년이 중1~중2인 원본데이터를 참조하는 학습자료중에서,
+        학습수준이 4인 학습자료의 목록을 조회하기 => 원본데이터의 자료순서로 정렬!
+
       */
-      List<DailyStudy> dailyStudies = dailyStudyMapper.getDailyStudiesByUser();
+      Map<String, Object> dailyStudyCondition = new HashMap<>();
+
+      List<DailyStudy> dailyStudies = dailyStudyMapper.getDailyStudiesByUser(
+          user.getUserNo(),
+          user.getStudyDifficulty(),
+          dailyStudyCondition
+      );
       dto.setDailyStudies(dailyStudies);
 
       // 사용자 일일학습 자료가 5개 이하면, 학습자료 새로 생성하기
 
 
-      // 사용자의 이전 학습이력 목록 조회
+      // 사용자의 이전 학습이력 목록 5개 조회
       /*
       고려할 사항
         1. updatedDate로 정렬
-        2. 조회 조건 전달 (개수, 오프셋)
+        2. 조회 조건 전달 (개수)
       */
-      List<DailyStudyLog> dailyStudyLogs = dailyStudyMapper.getDailyStudyLogsByUserNo(user.getUserNo());
+      Map<String, Object> dailyStudyLogCondition = new HashMap<>();
+      dailyStudyLogCondition.put("rows", 5);
+      dailyStudyLogCondition.put("order", "createdDate");
+      List<DailyStudyLog> dailyStudyLogs = dailyStudyMapper.getDailyStudyLogsByUserNo(user.getUserNo(), dailyStudyLogCondition);
       dto.setDailyStudyLogs(dailyStudyLogs);
 
       // 사용자의 일일 도전과제 정보 조회
