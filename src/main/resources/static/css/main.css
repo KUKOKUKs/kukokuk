@@ -1,3 +1,4 @@
+@charset "UTF-8";
 :root {
   /* element property */
   --logoWidth: 130px;
@@ -107,6 +108,7 @@ table {
 
 .content {
   width: 100%;
+  padding: var(--containerPadding);
   display: flex;
   justify-content: center;
 }
@@ -114,6 +116,26 @@ table {
 .container {
   width: 100%;
   padding: var(--containerPadding);
+}
+
+/* 테두리 곡선 */
+.border_radius {
+  border-radius: var(--bdrs);
+}
+
+/* 그림자 효과 */
+.box_shadow {
+  box-shadow: var(--bxsh);
+}
+
+/* 주조색 배경 */
+.bg_primary {
+  background-color: var(--primaryColor);
+}
+
+/* 주조색 폰트 컬러 */
+.color_primary {
+  color: var(--primaryColor);
 }
 
 .nav_container {
@@ -130,6 +152,11 @@ table {
   gap: var(--baseGap);
 }
 
+.nav_list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--smallGap);
+}
 .nav_list .menu {
   font-size: 1.15em;
   font-weight: bold;
@@ -143,6 +170,9 @@ table {
 .nav_list .menu .menu_icon {
   width: var(--baseIcon);
   height: var(--baseIcon);
+}
+.nav_list .menu .menu_icon iconify-icon {
+  font-size: var(--baseIcon);
 }
 .nav_list .menu.active {
   background-color: var(--lightSubColor);
