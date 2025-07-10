@@ -9,12 +9,30 @@
     padding: 0;
     position: absolute;
 }
+
 .logo {
     display: block;
     width: var(--logoWidth);
     height: var(--logoHeight);
     background: url("/images/kukokuk_logo.png") 0 0 no-repeat;
+    background-size: contain;
     position: fixed;
     top: var(--baseGap);
     left: var(--baseGap);
 }
+
+.main {
+    display: flex;
+}
+
+.content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    padding: var(--containerPadding);
+}
+
