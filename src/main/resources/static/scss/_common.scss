@@ -1,20 +1,26 @@
-root {
-
+:root {
     /* element property */
-    --logoWidth: 170px;
-    --logoHeight: 110px;
-    --basePadding: 1.2rem;
+    --logoWidth: 130px;
+    --logoHeight: 85px;
+    --navWidth: 250px;
+    --baseIcon: 34px;
+
+    --containerPadding: 1.5rem;
+
     --bdrs: 7px;
     --bxsh: 0 1px 5px rgba(0,0,0, .07);
     --trst: .2s ease-in-out;
-    --baseGap: 1.2rem;
+
+    --baseGap: 1.5rem;
     --smallGap: 10px;
     --largeGap: 20px;
 
     /* color palette */
-    --primaryColr: #004b49;
+    --primaryColor: #004b49;
     --subColor: #4b2300;
-
+    --lightSubColor: #4b23002b;
+    --blackColor: #2b2b2b;
+    --borderColor: #d9d9d9;
 }
 
 html, body, div, span, applet, object, iframe,
@@ -35,27 +41,40 @@ time, mark, audio, video {
     border: 0;
     font-size: 1em;
     font: inherit;
+    color: inherit;
     vertical-align: baseline;
     box-sizing: border-box;
 }
+
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
     display: block;
 }
+
 body {
+    font-size: 16px;
     line-height: 1;
+    color: var(--blackColor);
 }
+
 ol, ul {
     list-style: none;
 }
+
+a {
+    text-decoration: none;
+}
+
 blockquote, q {
     quotes: none;
 }
+
 blockquote:before, blockquote:after,
 q:before, q:after {
-    content: '';
+    content: "";
     content: none;
 }
+
 table {
     width: 100%;
     table-layout: fixed;

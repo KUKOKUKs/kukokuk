@@ -20,20 +20,19 @@
         });
     </script>
 
-    <link rel="stylesheet" href="/css/common.scss">
-    <link rel="stylesheet" href="/css/default.scss">
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
 <!-- logo -->
-<h1 class="logo">
-    <span class="a11y-hidden">국어국</span>
-</h1>
+<th:block th:replace="~{fragments/logo :: logo-fragment}"></th:block>
 
-<!-- nav -->
-<nav th:replace="~{fragments/nav :: nav-fragment}"></nav>
+<div class="main">
+    <!-- nav -->
+    <nav th:replace="~{fragments/nav :: nav-fragment}"></nav>
 
-<!-- contents -->
-<th:block layout:fragment="content"></th:block>
+    <!-- contents -->
+    <div layout:fragment="content" class="content"></div>
+</div>
 
 <th:block layout:fragment="script"></th:block>
 </body>

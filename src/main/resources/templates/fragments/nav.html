@@ -1,11 +1,54 @@
 <!DOCTYPE html>
 <html lang="ko">
-<div th:fragment="nav-fragment" class="container">
+<div th:fragment="nav-fragment" class="container nav_container">
     <div class="nav_wrap">
+        <ul class="nav_list">
+            <li class="nav_menu">
+                <a href="/" class="menu"
+                    th:classappend="${menu == 'home'} ? 'active'">
+                    <span class="menu_icon"></span>
+                    <span>홈</span>
+                </a>
+            </li>
+            <li class="nav_menu">
+                <a href="" class="menu"
+                    th:classappend="${menu == 'learn'} ? 'active'">
+                    <span class="menu_icon"></span>
+                    <span>학습하기</span>
+                </a>
+            </li>
+            <li class="nav_menu">
+                <a href="" class="menu"
+                    th:classappend="${menu == 'game'} ? 'active'">
+                    <span class="menu_icon"></span>
+                    <span>게임하기</span>
+                </a>
+            </li>
+            <li class="nav_menu">
+                <a href="" class="menu"
+                    th:classappend="${menu == 'mission'} ? 'active'">
+                    <span class="menu_icon"></span>
+                    <span>도전과제</span>
+                </a>
+            </li>
+            <li class="nav_menu">
+                <a href="" class="menu"
+                    th:classappend="${menu == 'rank'} ? 'active'">
+                    <span class="menu_icon"></span>
+                    <span>랭킹</span>
+                </a>
+            </li>
+            <li class="nav_menu">
+                <a href="" class="menu"
+                    th:classappend="${menu == 'profile'} ? 'active'">
+                    <span class="menu_icon"></span>
+                    <span>프로필</span>
+                </a>
+            </li>
+        </ul>
 
+        <!-- footer -->
+        <div th:replace="~{fragments/footer :: footer-fragment}"></div>
     </div>
-
-    <!-- footer -->
-    <div th:replace="~{fragments/footer :: footer-fragment}"></div>
 </div>
 </html>
