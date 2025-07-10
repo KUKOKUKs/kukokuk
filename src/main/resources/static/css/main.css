@@ -3,15 +3,18 @@
   /* element property */
   --logoWidth: 130px;
   --logoHeight: 85px;
+  --mainContentWidth: 550px;
+  --subContentWidth: 360px;
   --navWidth: 250px;
   --baseIcon: 34px;
   --containerPadding: 1.5rem;
+  --basePadding: 16px;
   --bdrs: 7px;
   --bxsh: 0 1px 5px rgba(0,0,0, .07);
   --trst: .2s ease-in-out;
   --baseGap: 1.5rem;
   --smallGap: 10px;
-  --largeGap: 20px;
+  --largeGap: 46px;
   /* color palette */
   --primaryColor: #004b49;
   --subColor: #4b2300;
@@ -111,6 +114,17 @@ table {
   padding: var(--containerPadding);
   display: flex;
   justify-content: center;
+  gap: var(--largeGap);
+}
+
+#main-content {
+  width: 100%;
+  max-width: var(--mainContentWidth);
+}
+
+#sub-content {
+  width: 100%;
+  max-width: var(--subContentWidth);
 }
 
 .container {

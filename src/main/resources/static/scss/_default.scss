@@ -30,6 +30,17 @@
     padding: var(--containerPadding);
     display: flex;
     justify-content: center;
+    gap: var(--largeGap);
+}
+
+#main-content {
+    width: 100%;
+    max-width: var(--mainContentWidth);
+}
+
+#sub-content {
+    width: 100%;
+    max-width: var(--subContentWidth);
 }
 
 .container {
