@@ -1,0 +1,59 @@
+/* accessibility */
+.a11y-hidden {
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+}
+
+.logo {
+    display: block;
+    width: var(--logoWidth);
+    height: var(--logoHeight);
+    background: url("/images/kukokuk_logo.png") 0 0 no-repeat;
+    background-size: contain;
+    position: fixed;
+    top: var(--baseGap);
+    left: var(--baseGap);
+}
+
+.main {
+    display: flex;
+}
+
+.content {
+    width: 100%;
+    padding: var(--containerPadding);
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    padding: var(--containerPadding);
+}
+
+/* 테두리 곡선 */
+.border_radius {
+    border-radius: var(--bdrs);
+}
+
+/* 그림자 효과 */
+.box_shadow {
+    box-shadow: var(--bxsh);
+}
+
+/* 주조색 배경 */
+.bg_primary {
+    background-color: var(--primaryColor);
+}
+
+/* 주조색 폰트 컬러 */
+.color_primary {
+    color: var(--primaryColor);
+}
+
