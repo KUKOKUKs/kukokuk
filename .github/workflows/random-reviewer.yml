@@ -30,7 +30,7 @@ jobs:
             }
 
             const randomReviewer = candidateWithoutMe[Math.floor(Math.random() * candidateWithoutMe.length)];
-            const comment = `@${randomReviewer} 님 랜덤 리뷰어로 당첨되셨습니다! 리뷰를 부탁드립니다. 🙏`;
+            const comment = `@${randomReviewer} 님 랜덤 리뷰어로 당첨되셨습니다!리뷰를 부탁드립니다. 🙏`;
             core.setOutput('comment', comment);
             core.setOutput('reviewer', randomReviewer);
 
