@@ -1,5 +1,6 @@
-package com.kukokuk.mapper;
+package com.kukokuk.repository;
 
+import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.vo.DailyStudy;
 import com.kukokuk.vo.DailyStudyLog;
 import java.util.List;
@@ -27,15 +28,17 @@ public interface DailyStudyMapper {
     /**
      * 특정 사용자에 맞춤화된 일일학습 자료 목록을 조회
      * @param userNo 사용자 번호
-     * @param studyDifficulty 사용자의 학습 수준
-     *                        
+     * @param userInfo 사용자의 수준/진도 정보
+     *                 - "studyDifficulty" : int 사용자 수준 (1~6)
+     *                 - "currentSchool" : String 사용자 진도 학교 (초, 중)
+     *                 - "currentGrade" : int 사용자 학년
      * @param condition 조회 조건
      *                  - "rows" : int 조회 행 개수
      * @return 조회된 사용자의 일일학습 자료 리스트
      *         + 사용자가 학습중인 학습자료면 이력까지 함께 조회
      */
-    public List<DailyStudy> getDailyStudiesByUser(@Param("userNo") int userNo,
-        @Param("studyDifficulty") int studyDifficulty,
+    public List<UserStudyRecommendationDto> getDailyStudiesByUser(@Param("userNo") int userNo,
+        @Param("userInfo") Map<String, Object> userInfo,
         @Param("condition") Map<String, Object> condition);
 
 }

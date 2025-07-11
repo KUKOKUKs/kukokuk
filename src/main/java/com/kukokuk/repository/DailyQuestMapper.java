@@ -1,4 +1,4 @@
-package com.kukokuk.mapper;
+package com.kukokuk.repository;
 
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;

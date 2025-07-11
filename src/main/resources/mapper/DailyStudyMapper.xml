@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kukokuk.mapper.DailyStudyMapper">
+<mapper namespace="com.kukokuk.repository.DailyStudyMapper">
     <!--
        public List<DailyStudyLog> getDailyStudyLogsByUserNo(@Param("userNo") int userNo,
         @Param("condition") Map<String, Object> condition);
@@ -44,7 +44,8 @@
         <if test="condition.order != null">
             <choose>
                 <when test="condition.order == 'updatedDate'">
-                    ORDER BY UPDATED_DATE
+                    ORDER BY
+                        UPDATED_DATE
                 </when>
             </choose>
         </if>
@@ -65,32 +66,104 @@
     public List<DailyStudy> getDailyStudiesByUser(@Param("userNo") int userNo,
         @Param("studyDifficulty") int studyDifficulty,
         @Param("condition") Map<String, Object> condition);
-        학습이력이 없는 학습자료도 가져오기
+
+        조건 파라미터 설명
+          - userInfo.currentSchool: 사용자의 현재 학교
+          - userInfo.currentGrade: 사용자의 현재 학년
+          - userInfo.studyDifficulty: 사용자의 설정 난이도
+          - userNo: 사용자 식별자
+          - condition.rows: 추천 학습 개수
     -->
-    <select id="getDailyStudiesByUser" >
+    <resultMap id="UserStudyRecommendationDtoResultMap" type="UserStudyRecommendationDto">
+        <!-- 단일 필드 매핑 -->
+        <result column="DAILY_STUDY_NO" property="dailyStudyNo"/>
+        <result column="DAILY_STUDY_LOG_NO" property="dailyStudyLogNo"/>
+        <result column="USER_NO" property="userNo"/>
+        <result column="DAILY_STUDY_MATERIAL_NO" property="dailyStudyMaterialNo"/>
+
+        <!-- 중첩 객체: DailyStudy -->
+        <association property="dailyStudy" javaType="DailyStudy">
+            <result column="DAILY_STUDY_NO" property="dailyStudyNo"/>
+            <result column="TITLE" property="title"/>
+            <result column="STUDY_DIFFICULTY" property="studyDifficulty"/>
+            <result column="CARD_COUNT" property="cardCount"/>
+            <result column="CREATED_DATE" property="createdDate"/>
+            <result column="UPDATED_DATE" property="updatedDate"/>
+        </association>
+
+        <!-- 중첩 객체: DailyStudyLog -->
+        <association property="dailyStudyLog" javaType="DailyStudyLog">
+            <result column="DAILY_STUDY_LOG_NO" property="dailyStudyLogNo"/>
+            <result column="STUDIED_CARD_COUNT" property="studiedCardCount"/>
+            <result column="STATUS" property="status"/>
+            <result column="CREATED_DATE" property="createdDate"/>
+            <result column="UPDATED_DATE" property="updatedDate"/>
+            <result column="USER_NO" property="userNo"/>
+        </association>
+
+        <!-- 중첩 객체: DailyStudyMaterial -->
+        <association property="dailyStudyMaterial" javaType="DailyStudyMaterial">
+            <result column="DAILY_STUDY_MATERIAL_NO" property="dailyStudyMaterialNo"/>
+            <result column="SCHOOL" property="school"/>
+            <result column="GRADE" property="grade"/>
+            <result column="SEQUENCE" property="sequence"/>
+        </association>
+    </resultMap>
+
+    <select id="getDailyStudiesByUser" resultType="UserStudyRecommendationDto">
         SELECT
             S.DAILY_STUDY_NO,
             S.TITLE,
             S.STUDY_DIFFICULTY,
             S.CARD_COUNT,
             S.CREATED_DATE,
-            S.DAILY_STUDY_MATERIAL_NO,
+            S.UPDATED_DATE,
+
             L.DAILY_STUDY_LOG_NO,
             L.STUDIED_CARD_COUNT,
             L.STATUS,
             L.CREATED_DATE,
             L.UPDATED_DATE,
             L.USER_NO,
+
+            M.DAILY_STUDY_MATERIAL_NO,
+            M.SCHOOL,
+            M.GRADE,
+            M.SEQUENCE
         FROM
-            KUKOKUK_DAILY_STUDIES S LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_LOGS L
+            KUKOKUK_DAILY_STUDY_MATERIAL M
+            LEFT OUTER JOIN KUKOKUK_DAILY_STUDIES S
+                ON M.DAILY_STUDY_MATERIAL_NO = S.DAILY_STUDY_MATERIAL_NO
+            LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_LOGS L
                 ON S.DAILY_STUDY_NO = L.DAILY_STUDY_NO
-            JOIN KUKOKUK_DAILY_STUDY_MATERIAL M
-                ON S.DAILY_STUDY_MATERIAL_NO = M.DAILY_STUDY_MATERIAL_NO
         WHERE
-            S.STUDY_DIFFICULTY = #{studyDifficulty}
-            AND L.USER_NO = #{userNo}
-            AND L.STATUS != 'COMPLETED'
-            AND M.SCHOOL =
-    </select>
+            /* 사용자의 학교/학년에 맞는 원본데이터 */
+            M.SCHOOL = #{userInfo.currentSchool}
+            AND M.GRADE = #{userInfo.currentGrade}
+            /* 그 원본데이터에 사용자 수준에 맞는 학습자료가 생성되어있거나, 학습자료가 아직 생성되지 않은경우 포함 */
+            AND (S.STUDY_DIFFICULTY = #{userInfo.studyDifficulty} OR S.STUDY_DIFFICULTY IS NULL)
+            /* 그 원본데이터에 연결된 학습이력이 아예 존재하지 않거나,
+                해당 사용자와 연결된 학습이력이 있고 학습완료 상태가 아닐때만 포함 */
+            AND (
+                L.USER_NO IS NULL
+                OR (L.USER_NO = #{userNo} AND L.STATUS != 'COMPLETED')
+            )
+        ORDER BY
+            /* 사용자가 이미 학습 진행중인 학습자료가 우선순위가 높도록 설정 */
+            CASE
+                WHEN L.STATUS = 'IN_PROGRESS' THEN 0
+                ELSE 1
+            END,
+            /* 사용자가 이미 학습 진행중인 학습자료 중에서도 가장 최근에 학습한 학습자료가 먼저
+                학습이력이 아예 NULL일 경우는 UPDATE_DATE 정렬해서 고려되지 않아야 하므로 후순위로 */
+            CASE
+                WHEN L.UPDATED_DATE IS NULL THEN 1
+                ELSE 0
+            END,
+            L.UPDATED_DATE DESC,
+            /* 학습자료 원본데이터의 자료순서대로 */
+            M.SEQUENCE ASC
+        LIMIT 0, #{condition.rows}
+</select>
 
 </mapper>
