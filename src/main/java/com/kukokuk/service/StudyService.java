@@ -28,13 +28,13 @@ public class StudyService {
   private DailyQuestMapper dailyQuestMapper;
 
   /*
-    메인 화면에 필요한 데이터를 반환한다
-    MainStudyViewDto 에 포함되는 데이터
-      - 유저 정보
-      - 유저의 수준에 맞는 일일학습 목록
-      - 사용자의 이전 학습 이력 목록
-      - 학습탭의 일일 도전과제
-      - 사용자_일일 도전과제 관련 정보 (아이템 획득 여부)
+    메인 화면에 필요한 데이터를 담은 MainStudyViewDto 를 반환한다
+    <MainStudyViewDto 에 포함되는 데이터>
+      1. 학습탭의 일일 도전과제 목록
+      2. 유저 정보
+      3. 유저의 수준에 맞는 일일학습 목록
+      4. 사용자의 이전 학습 이력 목록
+      5. 사용자_일일 도전과제 목록 (아이템 획득 여부)
    */
   public MainStudyViewDto getMainStudyView(UserDetails userDetails) {
     MainStudyViewDto dto = new MainStudyViewDto();
@@ -43,8 +43,7 @@ public class StudyService {
     List<DailyQuest> dailyQuests = dailyQuestMapper.getDailyQuestByContentType("STUDY");
     dto.setDailyQuests(dailyQuests);
 
-
-    // 인증된 사용자일때
+    // 인증된 사용자일때 (인증되지 않은 사용자는 미리 설정한 일일학습 자료 제공 예정)
     if(userDetails != null){
 
       /*
@@ -56,10 +55,10 @@ public class StudyService {
       user.setStudyDifficulty(4);
       /*
         ------------------------------
-       */
-
+      */
       // User user = userDetails.getUser();
-      // 2. dto에 사용자 정보 설정
+
+      // 2. 사용자 정보 추가
       dto.setUser(user);
 
       // 3. 유저의 수준에 맞고, 유저가 아직 학습하지 않았거나 학습중인 일일학습 5개 조회
@@ -95,10 +94,27 @@ public class StudyService {
   }
 
   /**
-   * 유저의 수준에 맞고, 유저가 아직 학습하지 않았거나 학습중인 일일학습 5개 조회
-   * @param user
-   * @param recommendStudyCount
-   * @return
+   * 사용자의 수준과 진도에 맞는 추천 학습자료(DailyStudy) 목록을 조회한다.
+   * 최대 recommendStudyCount(기본 5개)까지 추천하며, 필요한 경우 GPT 기반으로 학습자료를 생성한다.
+   * <p>
+   * [전체 처리 단계]
+   * <p>
+   * 1단계: 사용자 진도(CURRENT_SCHOOL, CURRENT_GRADE)에 해당하는 원본 학습자료를 기준으로
+   *        학습자료 + 학습이력과 함께 아우터 조인하여 학습자료 DTO 목록을 조회한다.
+   *        - 조건: 사용자의 수준(STUDY_DIFFICULTY)에 맞는 학습자료
+   *        - 조건: 학습이력이 없거나, 학습중(IN_PROGRESS) 상태인 학습자료
+   *        - 정렬: 학습중이면 UPDATED_DATE 최신순, 그 외에는 자료순서(SEQUENCE) 순
+   * <p>
+   * 2단계: 추천 결과가 5개 미만일 경우 → 다음 학년의 학습자료로 부족한 수만큼 추가 조회한다.
+   *        - 다음 학년이 없을 경우, "진도 종료" 상태로 간주
+   *        - 선택적으로 사용자의 currentSchool/currentGrade를 업데이트할 수 있음
+   * <p>
+   * 3단계: 조회된 DTO 중 GPT 재구성된 학습자료가 없는 경우 → GPT 호출로 학습자료(DailyStudy)를 생성하고 DTO에 설정한다.
+   * <p>
+   * 4단계: 최종 결과 리스트에서 학습자료(DailyStudy)만 추출하여 반환한다.
+   * @param user user 현재 사용자 정보
+   * @param recommendStudyCount recommendStudyCount 반환할 학습자료 수
+   * @return 학습자료 목록 (DailyStudy)
    */
   private List<DailyStudy> getUserDailyStudies(User user, int recommendStudyCount) {
     // 1단계 : 현재 사용자 수준/진도 기준으로 학습원본데이터_학습자료_학습이력DTO 목록 조회
