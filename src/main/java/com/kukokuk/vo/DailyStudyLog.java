@@ -17,6 +17,7 @@ public class DailyStudyLog {
   private Date updatedDate;
   private int userNo;
   private int dailyStudyNo;
+  private int dailyStudyMaterialNo;
 
   private DailyStudy dailyStudy;
 }

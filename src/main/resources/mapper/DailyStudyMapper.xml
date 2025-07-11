@@ -1,6 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DailyStudyMapper">
+    <!--
+       public List<DailyStudyLog> getDailyStudyLogsByUserNo(@Param("userNo") int userNo,
+        @Param("condition") Map<String, Object> condition);
+    -->
+    <resultMap id="DailyStudyLogResultMap" type="DailyStudyLog">
+        <id column="DAILY_STUDY_LOG_NO" property="dailyStudyLogNo"/>
+        <id column="USER_NO" property="userNo"/>
+        <id column="DAILY_STUDY_NO" property="dailyStudyNo"/>
+        <result column="STUDIED_CARD_COUNT" property="studiedCardCount"/>
+        <result column="COMPLETED_DATE" property="completedDate"/>
+        <result column="STATUS" property="status"/>
+        <result column="CREATED_DATE" property="createdDate"/>
+        <result column="UPDATED_DATE" property="updatedDate"/>
+    </resultMap>
 
+    <select id="getDailyStudyLogsByUserNo" resultMap="DailyStudyLogResultMap">
+        SELECT
+            DAILY_STUDY_LOG_NO,
+            USER_NO,
+            DAILY_STUDY_NO,
+            STUDIED_CARD_COUNT,
+            COMPLETED_DATE,
+            STATUS,
+            CREATED_DATE,
+            UPDATED_DATE
+        FROM
+            KUKOKUK_DAILY_STUDY_LOGS
+        WHERE
+            USER_NO = #{userNo}
+        <if test="condition.status != null">
+            <choose>
+                <when test="condition.status == 'inProgress'">
+                    AND STATUS = 'IN_PROGRESS'
+                </when>
+                <when test="condition.status == 'completed'">
+                    AND STATUS = 'COMPLETED'
+                </when>
+            </choose>
+        </if>
+
+        <if test="condition.order != null">
+            <choose>
+                <when test="condition.order == 'updatedDate'">
+                    ORDER BY UPDATED_DATE
+                </when>
+            </choose>
+        </if>
+
+        <if test="condition.rows != null">
+            <choose>
+                <when test="condition.offset != null">
+                    LIMIT #{condition.offset}, #{condition.rows}
+                </when>
+                <otherwise>
+                    LIMIT 0, #{condition.rows}
+                </otherwise>
+            </choose>
+        </if>
+    </select>
+
+    <!--
+    public List<DailyStudy> getDailyStudiesByUser(@Param("userNo") int userNo,
+        @Param("studyDifficulty") int studyDifficulty,
+        @Param("condition") Map<String, Object> condition);
+        학습이력이 없는 학습자료도 가져오기
+    -->
+    <select id="getDailyStudiesByUser" >
+        SELECT
+            S.DAILY_STUDY_NO,
+            S.TITLE,
+            S.STUDY_DIFFICULTY,
+            S.CARD_COUNT,
+            S.CREATED_DATE,
+            S.DAILY_STUDY_MATERIAL_NO,
+            L.DAILY_STUDY_LOG_NO,
+            L.STUDIED_CARD_COUNT,
+            L.STATUS,
+            L.CREATED_DATE,
+            L.UPDATED_DATE,
+            L.USER_NO,
+        FROM
+            KUKOKUK_DAILY_STUDIES S LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_LOGS L
+                ON S.DAILY_STUDY_NO = L.DAILY_STUDY_NO
+            JOIN KUKOKUK_DAILY_STUDY_MATERIAL M
+                ON S.DAILY_STUDY_MATERIAL_NO = M.DAILY_STUDY_MATERIAL_NO
+        WHERE
+            S.STUDY_DIFFICULTY = #{studyDifficulty}
+            AND L.USER_NO = #{userNo}
+            AND L.STATUS != 'COMPLETED'
+            AND M.SCHOOL =
+    </select>
 
 </mapper>

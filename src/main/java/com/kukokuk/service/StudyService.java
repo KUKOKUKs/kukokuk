@@ -69,7 +69,7 @@ public class StudyService {
         4. 몇개의 행을 가져올지 조회조건 전달
         예를들어 유저의 수준이 4(중1~중2)면, 학년이 중1~중2인 원본데이터를 참조하는 학습자료중에서,
         학습수준이 4인 학습자료의 목록을 조회하기 => 원본데이터의 자료순서로 정렬!
-
+        만약 중1, 중2 학습자
       */
       Map<String, Object> dailyStudyCondition = new HashMap<>();
 
@@ -91,7 +91,7 @@ public class StudyService {
       */
       Map<String, Object> dailyStudyLogCondition = new HashMap<>();
       dailyStudyLogCondition.put("rows", 5);
-      dailyStudyLogCondition.put("order", "createdDate");
+      dailyStudyLogCondition.put("order", "updatedDate");
       List<DailyStudyLog> dailyStudyLogs = dailyStudyMapper.getDailyStudyLogsByUserNo(user.getUserNo(), dailyStudyLogCondition);
       dto.setDailyStudyLogs(dailyStudyLogs);
 
