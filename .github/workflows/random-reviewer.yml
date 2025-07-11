@@ -21,7 +21,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const me = '${{ github.event.pull_request.user.login }}';
-            const candidate = ['ksm001027', 'dayeong0120', 'shimjeongho', 'lljungho'];
+            const candidate = ['ksm001027', 'dayeong0120', 'lljungho'];
             const candidateWithoutMe = candidate.filter(id => id !== me);
 
             if (candidateWithoutMe.length === 0) {
