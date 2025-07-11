@@ -12,10 +12,8 @@ public class DictEntry {
   private String word;
   private String definition;
   private String partOfSpeech;
-  private String usageExample;
-  private String synonyms;
   private String originJson;
   private String dictLink;
-  private String createdDate;
+  private String createdDate;   
   private String updatedDate;
 }
