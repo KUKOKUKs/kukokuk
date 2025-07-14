@@ -5,6 +5,12 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{/layout/base}" th:with="menu='home'">
 <div layout:fragment="content" class="content">
-    호미에여
+    <div id="main-content">
+        메인 컨텐츠
+    </div>
+
+    <div id="sub-content">
+        <th:block th:replace="~{fragments/profile :: profile-fragment}"></th:block>
+    </div>
 </div>
 </html>

@@ -1,26 +1,43 @@
 :root {
-    /* element property */
-    --logoWidth: 130px;
-    --logoHeight: 85px;
-    --navWidth: 250px;
-    --baseIcon: 34px;
-
-    --containerPadding: 1.5rem;
-
-    --bdrs: 7px;
-    --bxsh: 0 1px 5px rgba(0,0,0, .07);
-    --trst: .2s ease-in-out;
-
-    --baseGap: 1.5rem;
-    --smallGap: 10px;
-    --largeGap: 20px;
+    /* font */
+    --baseFontSize: 16px;
+    --subFontSize: 0.9em;
+    --titleFontSize: 24px;
+    --smallFontSize: 0.8em;
+    --largeFontSize: 1.25em;
 
     /* color palette */
     --primaryColor: #004b49;
-    --subColor: #4b2300;
-    --lightSubColor: #4b23002b;
+    --subColor: #e0f2f1;
+    --grayColor: #767676;
+    --lightGrayColor: #d9d9d9;
     --blackColor: #2b2b2b;
+    --yellowColor: #ffc43b;
     --borderColor: #d9d9d9;
+
+    /* element property */
+    --logoWidth: 100px;
+    --logoHeight: 65px;
+    --mainContentWidth: 600px;
+    --subContentWidth: 400px;
+    --navWidth: 250px;
+    --baseIcon: 30px;
+    --smallIcon: 14px;
+    --largeIcon: 46px;
+
+    --containerPadding: 1.5rem;
+    --basePadding: 18px;
+    --smallPadding: .55em .75em;
+
+    --baseBorder: 2px solid var(--borderColor);
+    --bdrs: 7px;
+    --bxsh: 3px 3px 7px rgba(0,0,0, .07);
+    --insetBxsh: inset -1px -1px 1px rgba(0,0,0, .25);
+    --trst: .2s ease-in-out;
+
+    --baseGap: 1.25rem;
+    --smallGap: 10px;
+    --largeGap: 46px;
 }
 
 html, body, div, span, applet, object, iframe,
@@ -52,7 +69,7 @@ footer, header, hgroup, menu, nav, section {
 }
 
 body {
-    font-size: 16px;
+    font-size: var(--baseFontSize);
     line-height: 1;
     color: var(--blackColor);
 }
