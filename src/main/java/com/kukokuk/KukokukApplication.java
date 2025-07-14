@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.kukokuk.mapper")
+@MapperScan("com.kukokuk.repository")
 public class KukokukApplication {
 
 	public static void main(String[] args) {

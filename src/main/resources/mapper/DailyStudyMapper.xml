@@ -110,7 +110,7 @@
         </association>
     </resultMap>
 
-    <select id="getDailyStudiesByUser" resultType="UserStudyRecommendationDto">
+    <select id="getDailyStudiesByUser" resultMap="UserStudyRecommendationDtoResultMap">
         SELECT
             S.DAILY_STUDY_NO,
             S.TITLE,
