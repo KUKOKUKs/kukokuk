@@ -1,9 +1,7 @@
-package com.kukokuk.repository;
+package com.kukokuk.mapper;
 
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
-import com.kukokuk.vo.DailyStudy;
-import com.kukokuk.vo.DailyStudyLog;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
