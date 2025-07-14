@@ -1,0 +1,56 @@
+.nav_container {
+    width: var(--navWidth);
+    min-width: var(--navWidth);
+    min-height: 100vh;
+    border-right: 1px solid var(--borderColor);
+}
+
+.nav_wrap {
+    width: var(--navWidth);
+    height: 100%;
+    padding: var(--baseGap);
+    padding-top: calc(var(--logoHeight) + (var(--baseGap) * 2) + var(--baseFontSize));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--baseGap);
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.nav_list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--smallGap);
+
+    .menu {
+        font-weight: bold;
+        padding: 0.5em;
+        display: flex;
+        align-items: center;
+        gap: var(--smallGap);
+        border: 2px solid transparent;
+        border-radius: var(--bdrs);
+        transition: background-color var(--trst);
+
+        .menu_icon {
+            width: var(--baseIcon);
+            height: var(--baseIcon);
+
+            iconify-icon {
+                font-size: var(--baseIcon);
+            }
+        }
+
+        &:hover {
+            background-color: var(--subColor);
+        }
+
+        &.active {
+            background-color: var(--subColor);
+            border-color: var(--primaryColor);
+            color: var(--primaryColor);
+        }
+    }
+}

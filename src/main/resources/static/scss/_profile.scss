@@ -1,0 +1,90 @@
+#profile-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
+}
+
+.profile_info {
+    display: flex;
+    gap: var(--smallGap);
+    align-items: center;
+
+    .thumbnail {
+        width: var(--largeIcon);
+        min-width: var(--largeIcon);
+        height: var(--largeIcon);
+        border: 1px solid var(--borderColor);
+        overflow: hidden;
+        border-radius: 50%;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .name {
+        font-size: var(--largeFontSize);
+        font-weight: bold;
+    }
+}
+
+.level_info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--smallGap);
+
+    .level_top_info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .level_icon_info {
+            display: flex;
+            gap: var(--smallGap);
+            align-items: center;
+
+            .level_icon {
+                width: max-content;
+                padding: 0.5em;
+                background-color: var(--subColor);
+                color: var(--primaryColor);
+                font-weight: bold;
+                border-radius: var(--bdrs);
+            }
+
+            .level_detail {
+                font-size: var(--smallFontSize);
+                color: var(--grayColor);
+            }
+        }
+    }
+
+    .level_bar {
+        width: 100%;
+        height: 10px;
+        border-radius: var(--bdrs);
+        border: 1px solid var(--borderColor);
+
+        .experience_point {
+            height: 100%;
+            background-color: var(--yellowColor);
+            border-radius: var(--bdrs);
+        }
+    }
+}
+
+.learning_level_info {
+    .learning_info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--smallGap);
+        font-size: var(--smallFontSize);
+        padding: var(--smallPadding);
+        border-radius: var(--bdrs);
+        background-color: var(--subColor);
+    }
+}

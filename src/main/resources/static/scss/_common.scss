@@ -1,0 +1,100 @@
+:root {
+    /* font */
+    --baseFontSize: 16px;
+    --subFontSize: 0.9em;
+    --titleFontSize: 24px;
+    --smallFontSize: 0.8em;
+    --largeFontSize: 1.25em;
+
+    /* color palette */
+    --primaryColor: #004b49;
+    --subColor: #e0f2f1;
+    --grayColor: #767676;
+    --lightGrayColor: #d9d9d9;
+    --blackColor: #2b2b2b;
+    --yellowColor: #ffc43b;
+    --borderColor: #d9d9d9;
+
+    /* element property */
+    --logoWidth: 100px;
+    --logoHeight: 65px;
+    --mainContentWidth: 600px;
+    --subContentWidth: 400px;
+    --navWidth: 250px;
+    --baseIcon: 30px;
+    --smallIcon: 14px;
+    --largeIcon: 46px;
+
+    --containerPadding: 1.5rem;
+    --basePadding: 18px;
+    --smallPadding: .55em .75em;
+
+    --baseBorder: 2px solid var(--borderColor);
+    --bdrs: 7px;
+    --bxsh: 3px 3px 7px rgba(0,0,0, .07);
+    --insetBxsh: inset -1px -1px 1px rgba(0,0,0, .25);
+    --trst: .2s ease-in-out;
+
+    --baseGap: 1.25rem;
+    --smallGap: 10px;
+    --largeGap: 46px;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 1em;
+    font: inherit;
+    color: inherit;
+    vertical-align: baseline;
+    box-sizing: border-box;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+body {
+    font-size: var(--baseFontSize);
+    line-height: 1;
+    color: var(--blackColor);
+}
+
+ol, ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: "";
+    content: none;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
