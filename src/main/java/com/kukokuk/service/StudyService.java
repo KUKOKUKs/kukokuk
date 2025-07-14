@@ -2,8 +2,8 @@ package com.kukokuk.service;
 
 import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
-import com.kukokuk.repository.DailyQuestMapper;
-import com.kukokuk.repository.DailyStudyMapper;
+import com.kukokuk.mapper.DailyQuestMapper;
+import com.kukokuk.mapper.DailyStudyMapper;
 import com.kukokuk.util.SchoolGradeUtils;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
