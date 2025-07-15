@@ -1,19 +1,15 @@
 package com.kukokuk.vo;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
-@Getter
-@Setter
-@Alias("DictEntry") // Mapper XML에서 이 이름으로 사용 가능
+@Data
+@Alias("DictEntry")
 public class DictEntry {
   private int entryNo;
   private String word;
   private String definition;
-  private String partOfSpeech;
-  private String originJson;
-  private String dictLink;
-  private String createdDate;   
-  private String updatedDate;
+  private String wordLevel;      // ENUM('고급','중급','초급','없음')
+  private String usageExample;
+  private String origin;         // '고유어' or '한자어'
 }
