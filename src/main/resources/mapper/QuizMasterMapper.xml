@@ -16,11 +16,10 @@
     INSERT INTO KUKOKUK_QUIZ_MASTERS (
       ENTRY_NO, QUESTION, OPTION_1, OPTION_2, OPTION_3, OPTION_4,
       SUCCESS_ANSWER, QUESTION_TYPE
-    )
-    VALUES (
-             #{entryNo}, #{question}, #{option1}, #{option2}, #{option3}, #{option4},
-             #{successAnswer}, #{questionType}
-           )
+    ) VALUES (
+     #{entryNo}, #{question}, #{option1}, #{option2}, #{option3}, #{option4},
+     #{successAnswer}, #{questionType}
+   )
   </insert>
 
 </mapper>

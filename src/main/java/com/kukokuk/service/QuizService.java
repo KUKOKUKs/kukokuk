@@ -24,11 +24,11 @@ public class QuizService {
    */
   public void insertQuizByEntryNo(int entryNo) {
     // 정답 단어 가져오기
-    DictEntry correctEntry = dictEntryMapper.selectEntryByNo(entryNo);
+    DictEntry correctEntry = dictEntryMapper.GetEntryByNo(entryNo);
     String question = correctEntry.getDefinition();
 
     // 오답용 단어 3개 추출
-    List<DictEntry> candidates = dictEntryMapper.selectRandomEntriesExclude(entryNo, 3);
+    List<DictEntry> candidates = dictEntryMapper.GetRandomEntriesExclude(entryNo, 3);
     candidates.add(correctEntry); // 정답 포함
     Collections.shuffle(candidates); // 무작위 섞기
 
