@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.mapper.QuizMasterMapper">
+
+  <!--
+      public int insertQuiz(QuizMaster quiz);
+
+      퀴즈 마스터 테이블에 새로운 퀴즈 1건을 저장한다.
+      - entryNo: 정답 사전 엔트리 번호
+      - question: 문제 텍스트 (뜻 or 단어)
+      - option1~4: 보기 항목
+      - successAnswer: 정답 위치 (1~4)
+      - questionType: 문제 유형 ('뜻' or '단어')
+  -->
+  <insert id="insertQuiz" parameterType="QuizMaster">
+    INSERT INTO KUKOKUK_QUIZ_MASTERS (
+      ENTRY_NO, QUESTION, OPTION_1, OPTION_2, OPTION_3, OPTION_4,
+      SUCCESS_ANSWER, QUESTION_TYPE
+    ) VALUES (
+     #{entryNo}, #{question}, #{option1}, #{option2}, #{option3}, #{option4},
+     #{successAnswer}, #{questionType}
+   )
+  </insert>
+
+</mapper>
