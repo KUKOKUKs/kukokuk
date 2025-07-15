@@ -19,6 +19,7 @@
   --logoHeight: 65px;
   --mainContentWidth: 600px;
   --subContentWidth: 400px;
+  --centerContentWidth: 800px;
   --navWidth: 250px;
   --baseIcon: 30px;
   --smallIcon: 14px;
@@ -52,7 +53,7 @@ time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
-  font-size: 1em;
+  font-size: inherit;
   font: inherit;
   color: inherit;
   vertical-align: baseline;
@@ -66,7 +67,7 @@ footer, header, hgroup, menu, nav, section {
 
 body {
   font-size: var(--baseFontSize);
-  line-height: 1;
+  line-height: 1.4;
   color: var(--blackColor);
 }
 
@@ -127,6 +128,10 @@ table {
   display: flex;
   justify-content: center;
 }
+.content.center {
+  max-width: var(--centerContentWidth); /* 디테일 컨텐츠 사이즈 */
+  margin: auto;
+}
 
 #main-content {
   width: 100%;
@@ -168,7 +173,9 @@ table {
 }
 
 .btn {
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   padding: var(--smallPadding);
   border-radius: var(--bdrs);
@@ -337,6 +344,13 @@ table {
   display: flex;
   flex-direction: column;
   gap: var(--baseGap);
+}
+
+.welcome_info {
+  font-weight: bold;
+  padding: var(--basePadding);
+  border-radius: var(--bdrs);
+  background-color: var(--subColor);
 }
 
 .profile_info {
