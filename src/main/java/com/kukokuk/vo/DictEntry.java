@@ -11,5 +11,5 @@ public class DictEntry {
   private String definition;
   private String wordLevel;      // ENUM('고급','중급','초급','없음')
   private String usageExample;
-  private String origin;         // '고유어' or '한자어'
+  private String origin;         // '고유어' 또는 '한자어'
 }
