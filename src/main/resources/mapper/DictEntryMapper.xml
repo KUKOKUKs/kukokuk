@@ -3,12 +3,12 @@
 <mapper namespace="com.kukokuk.mapper.DictEntryMapper">
 
   <!--
-      public DictEntry selectEntryByNo(@Param("entryNo") int entryNo);
+      public DictEntry getEntryByNo(@Param("entryNo") int entryNo);
 
       단일 사전 엔트리 조회
       - entryNo: 조회할 단어의 고유 번호
   -->
-  <select id="selectEntryByNo" parameterType="int" resultType="DictEntry">
+  <select id="getEntryByNo" parameterType="int" resultType="DictEntry">
     SELECT *
     FROM KUKOKUK_DICT_ENTRIES
     WHERE ENTRY_NO = #{entryNo}
@@ -21,7 +21,7 @@
       - excludeEntryNo: 정답 단어 제외용
       - limit: 가져올 단어 수 (보통 3개)
   -->
-  <select id="selectRandomEntriesExclude" resultType="DictEntry">
+  <select id="getRandomEntriesExclude" resultType="DictEntry">
     SELECT *
     FROM KUKOKUK_DICT_ENTRIES
     WHERE ENTRY_NO != #{excludeEntryNo}

@@ -18,7 +18,7 @@ public interface DictEntryMapper {
      * @param entryNo 단어(표제어)의 고유 번호
      * @return 해당 단어의 사전 정보
      */
-    DictEntry GetEntryByNo(int entryNo);
+    DictEntry getEntryByNo(int entryNo);
 
     /**
      * 특정 ENTRY_NO를 제외하고 랜덤하게 사전 데이터를 조회한다.
@@ -27,6 +27,6 @@ public interface DictEntryMapper {
      * @param limit          가져올 단어 수 (3개)
      * @return 무작위로 선택된 단어 리스트
      */
-    List<DictEntry> GetRandomEntriesExclude(@Param("excludeEntryNo") int excludeEntryNo,
+    List<DictEntry> getRandomEntriesExclude(@Param("excludeEntryNo") int excludeEntryNo,
         @Param("limit") int limit);
 }
