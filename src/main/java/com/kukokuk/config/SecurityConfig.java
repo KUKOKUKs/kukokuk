@@ -90,13 +90,13 @@ public class SecurityConfig {
 
                 // 자유 접근 허용: 로그인 없이 가능한 경로
                 .requestMatchers(
-                    "/"             // 메인
+                    "/**"
+                    ,"/"            // 메인
                     , "/login"      // 로그인
                     , "/register"   // 회원가입
                     , "/css/**"     // css
                     , "/js/**"      // javascript
                     , "/images/**"  // 정적 이미지 경로
-                    , "/study"
                 ).permitAll()
 
                 // 인증 필요한 경로들
