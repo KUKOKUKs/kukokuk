@@ -9,12 +9,12 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @Alias("DailyQuestUser")
 public class DailyQuestUser {
-  private int dailyQuestUserNo;
-  private int dailyQuestNo;
-  private int userNo;
-  private String isObtained; // ENUM("N", "Y")
-  private Date createdDate;
+    private int dailyQuestUserNo;
+    private int dailyQuestNo;
+    private int userNo;
+    private String isObtained; // ENUM("N", "Y")
+    private Date createdDate;
 
-  private User user;
-  private DailyQuest dailyQuest;
+    private User user;
+    private DailyQuest dailyQuest;
 }

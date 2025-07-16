@@ -1,32 +1,42 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <div th:fragment="profile-fragment" id="profile-container" class="component">
-    <div class="profile_info">
-        <div class="thumbnail"><img src="" alt="profile thumbnail"></div>
-        <p class="name">홍길동</p>
-    </div>
+    <th:block sec:authorize="!isAuthenticated()">
+        <p class="welcome_info">만나서 반갑고 회원가입하고 회원이라면 로그인 감사여</p>
+        <div class="btn_list">
+            <a href="/register" class="btn white">회원가입</a>
+            <a href="/login" class="btn primary">로그인</a>
+        </div>
+    </th:block>
 
-    <div class="level_info">
-        <div class="level_top_info">
-            <div class="level_icon_info">
-                <div class="level_icon"><span class="level">Lv. 25</span></div>
-                <span class="level_detail">(2345/6455)</span>
+    <th:block sec:authorize="isAuthenticated()">
+        <div class="profile_info">
+            <div class="thumbnail"><img src="" alt="profile thumbnail"></div>
+            <p class="name">홍길동</p>
+        </div>
+
+        <div class="level_info">
+            <div class="level_top_info">
+                <div class="level_icon_info">
+                    <div class="level_icon"><span class="level">Lv. 25</span></div>
+                    <span class="level_detail">(2345/6455)</span>
+                </div>
+                <span class="percent">62%</span>
             </div>
-            <span class="percent">62%</span>
-        </div>
 
-        <div class="level_bar">
-            <div class="experience_point" style="width: 62%;"></div>
-        </div>
-    </div>
-
-    <th:block th:if="${menu == 'home'}">
-        <div class="learning_level_info">
-            <div class="learning_info">
-                <p class="learning_level">중등 2학년 / 3단계</p>
-                <div class="btn small white">변경</div>
+            <div class="level_bar">
+                <div class="experience_point" style="width: 62%;"></div>
             </div>
         </div>
+
+        <th:block th:if="${menu == 'home'}">
+            <div class="learning_level_info">
+                <div class="learning_info">
+                    <p class="learning_level">중등 2학년 / 3단계</p>
+                    <div class="btn small white">변경</div>
+                </div>
+            </div>
+        </th:block>
     </th:block>
 </div>
 </html>

@@ -1,0 +1,13 @@
+<!-- 상세 컨텐츠 레이아웃(중앙 정렬) -->
+<!DOCTYPE html>
+<html>
+<head th:replace="~{fragments/head :: head-fragment}"></head>
+<body>
+<div class="main">
+    <!-- contents -->
+    <div layout:fragment="content" class="content center"></div>
+</div>
+
+<th:block layout:fragment="script"></th:block>
+</body>
+</html>

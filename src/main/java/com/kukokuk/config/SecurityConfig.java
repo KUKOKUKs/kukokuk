@@ -92,7 +92,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/"             // 메인
                     , "/login"      // 로그인
-                    , "/signup"     // 회원가입
+                    , "/register"   // 회원가입
                     , "/css/**"     // css
                     , "/js/**"      // javascript
                     , "/images/**"  // 정적 이미지 경로
