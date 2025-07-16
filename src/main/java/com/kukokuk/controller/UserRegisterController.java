@@ -110,19 +110,20 @@ public class UserRegisterController {
         return "user/register/profile";
     }
 
-    // 5단계: 생년월일/성별 처리 후 → 생년월일/성별 단계로 이동
+    // 5단계: 생년월일/성별 처리 후 → 회원가입 요청
     @PostMapping("/profile")
     public String processProfile(@ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
         if (errors.hasErrors()) {
             return "user/register/profile"; // 유효성 검증 실패 시 다시 입력 페이지
         }
-        return "redirect:/register/profile"; // 성공 시 다음 단계로 리다이렉트
+        return "redirect:/register/complete"; // 성공 시 다음 단계로 리다이렉트
     }
 
-    // 회원가입 완료
+    // 회원가입 요청 처리
     @GetMapping("/complete")
     public String registerComplete() {
+        // 회원가입 처리 로직 추가 예정
         return "user/register/complete";
     }
 

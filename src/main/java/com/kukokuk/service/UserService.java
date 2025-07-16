@@ -40,7 +40,7 @@ public class UserService {
     public void registerUserByNickname(String nickname) {
         User foundUser = userMapper.getUserByNickname(nickname);
         if (foundUser != null) {
-            throw new UserRegisterException("username", "이미 사용중인 닉네임입니다.");
+            throw new UserRegisterException("nickname", "이미 사용중인 닉네임입니다.");
         }
     }
 
