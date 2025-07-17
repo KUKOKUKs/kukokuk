@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.mapper.UserMapper">
+
+    <!--
+        사용자 정보, 사용자 권한 정보 조회 ResultMap
+    -->
+    <resultMap id="UserResultMapWithRoleNames" type="User">
+        <id         column="USER_NO"            property="userNo"/>
+        <result     column="USERNAME"           property="username"/>
+        <result     column="PASSWORD"           property="password"/>
+        <result     column="NAME"               property="name"/>
+        <result     column="NICKNAME"           property="nickname"/>
+        <result     column="BIRTH_DATE"         property="birthDate"/>
+        <result     column="GENDER"             property="gender"/>
+        <result     column="PROFILE_FILENAME"   property="profileFilename"/>
+        <result     column="AUTH_PROVIDER"      property="authProvider"/>
+        <result     column="LEVEL"              property="level"/>
+        <result     column="EXPERIENCE_POINTS"  property="experiencePoints"/>
+        <result     column="STUDY_DIFFICULTY"   property="studyDifficulty"/>
+        <result     column="CURRENT_SCHOOL"     property="currentSchool"/>
+        <result     column="CURRENT_GRADE"      property="currentGrade"/>
+        <result     column="HINT_COUNT"         property="hintCount"/>
+        <result     column="IS_DELETED"         property="isDeleted"/>
+        <result     column="CREATED_DATE"       property="createdDate"/>
+        <result     column="UPDATED_DATE"       property="updatedDate"/>
+        <collection column="USER_NO"            property="roleNames"
+            ofType="string" select="getUserRoleNamesByUserNo"/>
+    </resultMap>
+
+    <!--
+        * 사용자 번호로 사용자, 사용자 권한 정보 조회
+        * @param userNo 사용자 번호
+        * @return 사용자, 사용자 권한 정보
+        User getUserByUserNoWithRoleNames(int userNo);
+    -->
+    <select id="getUserByUserNoWithRoleNames" resultMap="UserResultMapWithRoleNames">
+        SELECT
+            USER_NO
+            , USERNAME
+            , PASSWORD
+            , NAME
+            , NICKNAME
+            , BIRTH_DATE
+            , GENDER
+            , PROFILE_FILENAME
+            , AUTH_PROVIDER
+            , LEVEL
+            , EXPERIENCE_POINTS
+            , STUDY_DIFFICULTY
+            , CURRENT_SCHOOL
+            , CURRENT_GRADE
+            , HINT_COUNT
+            , IS_DELETED
+            , CREATED_DATE
+            , UPDATED_DATE
+        FROM
+            KUKOKUK_USERS
+        WHERE
+            USER_NO = #{userNo}
+    </select>
+
+    <!--
+        * 신규 사용자 등록
+        * @param user 신규 사용자 정보
+        void insertUser(User user);
+    -->
+    <insert id="insertUser" parameterType="User"
+        useGeneratedKeys="true"
+        keyProperty="userNo">
+        INSERT INTO KUKOKUK_USERS (
+            USERNAME
+            , PASSWORD
+            , NAME
+            , NICKNAME
+            , BIRTH_DATE
+            , GENDER
+        ) VALUES (
+            #{username}
+            , #{password}
+            , #{name}
+            , #{nickname}
+            , #{birthDate}
+            , #{gender}
+        )
+    </insert>
+
+    <!--
+        * 사용자 권한 등록
+        * @param userNo 사용자 번호
+        * @param roleName 권한 이름
+        void insertUserRole(@Param(("userNo")) int userNo
+        , @Param("roleName") String roleName);
+    -->
+    <insert id="insertUserRole">
+        INSERT INTO KUKOKUK_USER_ROLES (
+            ROLE_NAME
+            , USER_NO
+        ) VALUES (
+            #{roleName}
+            , #{userNo}
+        )
+    </insert>
+
+    <!--
+        사용자 정보 조회 ResultMap
+    -->
+    <resultMap id="UserResultMap" type="User">
+        <id         column="USER_NO"            property="userNo"/>
+        <result     column="USERNAME"           property="username"/>
+        <result     column="PASSWORD"           property="password"/>
+        <result     column="NAME"               property="name"/>
+        <result     column="NICKNAME"           property="nickname"/>
+        <result     column="BIRTH_DATE"         property="birthDate"/>
+        <result     column="GENDER"             property="gender"/>
+        <result     column="PROFILE_FILENAME"   property="profileFilename"/>
+        <result     column="AUTH_PROVIDER"      property="authProvider"/>
+        <result     column="LEVEL"              property="level"/>
+        <result     column="EXPERIENCE_POINTS"  property="experiencePoints"/>
+        <result     column="STUDY_DIFFICULTY"   property="studyDifficulty"/>
+        <result     column="CURRENT_SCHOOL"     property="currentSchool"/>
+        <result     column="CURRENT_GRADE"      property="currentGrade"/>
+        <result     column="HINT_COUNT"         property="hintCount"/>
+        <result     column="IS_DELETED"         property="isDeleted"/>
+        <result     column="CREATED_DATE"       property="createdDate"/>
+        <result     column="UPDATED_DATE"       property="updatedDate"/>
+    </resultMap>
+
+    <!--
+        * 사용자 이메일로 사용자 정보 조회
+        * @param username 사용자 이메일
+        * @return 사용자 정보
+        User getUserByUsername(String username);
+    -->
+    <select id="getUserByUsername" resultMap="UserResultMap">
+        SELECT
+            USER_NO
+            , USERNAME
+            , PASSWORD
+            , NAME
+            , NICKNAME
+            , BIRTH_DATE
+            , GENDER
+            , PROFILE_FILENAME
+            , AUTH_PROVIDER
+            , LEVEL
+            , EXPERIENCE_POINTS
+            , STUDY_DIFFICULTY
+            , CURRENT_SCHOOL
+            , CURRENT_GRADE
+            , HINT_COUNT
+            , IS_DELETED
+            , CREATED_DATE
+            , UPDATED_DATE
+        FROM
+            KUKOKUK_USERS
+        WHERE
+            USERNAME = #{username}
+    </select>
+
+    <!--
+        * 사용자 닉네임으로 사용자 정보 조회
+        * @param nickname 사용자 닉네임
+        * @return 사용자 정보
+        User getUserByNickname(String nickname);
+    -->
+    <select id="getUserByNickname" resultMap="UserResultMap">
+        SELECT
+            USER_NO
+            , USERNAME
+            , PASSWORD
+            , NAME
+            , NICKNAME
+            , BIRTH_DATE
+            , GENDER
+            , PROFILE_FILENAME
+            , AUTH_PROVIDER
+            , LEVEL
+            , EXPERIENCE_POINTS
+            , STUDY_DIFFICULTY
+            , CURRENT_SCHOOL
+            , CURRENT_GRADE
+            , HINT_COUNT
+            , IS_DELETED
+            , CREATED_DATE
+            , UPDATED_DATE
+        FROM
+            KUKOKUK_USERS
+        WHERE
+            NICKNAME = #{nickname}
+    </select>
+
+    <!--
+        * 사용자 번호로 사용자 권한 정보 조회
+        * @param userNo 사용자 번호
+        * @return 사용자 권한 목록
+        List<String> getUserRoleNamesByUserNo(int userNo);
+    -->
+    <select id="getUserRoleNamesByUserNo" resultType="string">
+        SELECT
+            ROLE_NAME
+        FROM
+            KUKOKUK_USER_ROLES
+        WHERE
+            USER_NO = #{userNo}
+    </select>
+
+</mapper>

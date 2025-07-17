@@ -105,10 +105,10 @@ public class SecurityConfig {
             .formLogin(formLogin -> formLogin
                 .usernameParameter("username")	// 로그인폼의 아이디 필드명을 지정한다.
                 .passwordParameter("password")	// 로그인폼의 비밀번호 필드명을 지정한다.
-                .loginPage("/login")			// 로그인폼을 요청하는 URL을 지정한다.
+                .loginPage("/login")		    // 직접 구현한 로그인폼 URL 지정(시큐리티 로그인폼 X)
                 .loginProcessingUrl("/login")	// 로그인처리를 요청하는 URL을 지정한다.
                 .defaultSuccessUrl("/")			// 로그인 성공시 이동할 URL을 지정한다.
-                .failureUrl("/login?failed")	// 로그인 실패시 이동할 URL을 지정한다.
+                .failureUrl("/login?error")	// 로그인 실패시 이동할 URL을 지정한다.
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")			// 로그아웃 요청 URL을 지정한다.
