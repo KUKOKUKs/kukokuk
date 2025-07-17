@@ -19,7 +19,6 @@ public interface DictEntryMapper {
      * @return 해당 단어의 사전 정보
      */
     DictEntry getEntryByNo(int entryNo);
-
     /**
      * 특정 ENTRY_NO를 제외하고 랜덤하게 사전 데이터를 조회한다.
      *
@@ -29,4 +28,11 @@ public interface DictEntryMapper {
      */
     List<DictEntry> getRandomEntriesExclude(@Param("excludeEntryNo") int excludeEntryNo,
         @Param("limit") int limit);
+
+    /**
+     * 전체 사전에서 무작위로 단어 하나를 조회한다.
+     *
+     * @return 무작위로 선택된 단어 정보
+     */
+    DictEntry getRandomOne();
 }

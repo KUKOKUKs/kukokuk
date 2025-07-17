@@ -14,7 +14,7 @@
   -->
   <insert id="insertQuiz" parameterType="QuizMaster">
     INSERT INTO KUKOKUK_QUIZ_MASTERS (
-      ENTRY_NO, QUESTION, OPTION_1, OPTION_2, OPTION_3, OPTION_4,
+      ENTRY_NO, QUESTION, OPTION1, OPTION2, OPTION3, OPTION4,
       SUCCESS_ANSWER, QUESTION_TYPE
     ) VALUES (
      #{entryNo}, #{question}, #{option1}, #{option2}, #{option3}, #{option4},
