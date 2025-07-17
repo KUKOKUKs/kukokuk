@@ -1,6 +1,9 @@
 package com.kukokuk.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kukokuk.security.CustomAccessDeniedHandler;
+import com.kukokuk.security.CustomAuthenticationEntryPoint;
+import jakarta.servlet.DispatcherType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -9,11 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import com.kukokuk.security.CustomAccessDeniedHandler;
-import com.kukokuk.security.CustomAuthenticationEntryPoint;
-
-import jakarta.servlet.DispatcherType;
 
 /*
  * @Configuration
@@ -37,15 +35,13 @@ import jakarta.servlet.DispatcherType;
  * - 메소드 기반 접근제어는 AOP 를 통해서 이루어진다.
  */
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    @Autowired
-    private CustomAccessDeniedHandler customAccessDeniedHandler;
-
-    @Autowired
-    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     /*
      * filterChain(HttpSecurity http) 메소드
@@ -90,13 +86,13 @@ public class SecurityConfig {
 
                 // 자유 접근 허용: 로그인 없이 가능한 경로
                 .requestMatchers(
-                    "/"             // 메인
+                    "/**"
+                    ,"/"            // 메인
                     , "/login"      // 로그인
                     , "/register"   // 회원가입
                     , "/css/**"     // css
                     , "/js/**"      // javascript
                     , "/images/**"  // 정적 이미지 경로
-                    , "/study"
                 ).permitAll()
 
                 // 인증 필요한 경로들
