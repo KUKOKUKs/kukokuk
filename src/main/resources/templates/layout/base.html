@@ -1,18 +1,18 @@
-<!-- 기본 레이아웃 -->
+<!--/* 기본 레이아웃 */-->
 <!DOCTYPE html>
 <html>
 <head th:replace="~{fragments/head :: head-fragment}"></head>
 <body>
-<!-- logo -->
+<!--/* logo */-->
 <th:block th:replace="~{fragments/logo :: logo-fragment}"></th:block>
 
-<div class="main">
-    <!-- nav -->
+<main class="main">
+    <!--/* nav */-->
     <nav th:replace="~{fragments/nav :: nav-fragment}"></nav>
 
-    <!-- contents -->
+    <!--/* contents */-->
     <div layout:fragment="content" class="content"></div>
-</div>
+</main>
 
 <th:block layout:fragment="script"></th:block>
 </body>

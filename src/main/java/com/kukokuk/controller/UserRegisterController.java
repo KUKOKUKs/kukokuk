@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 @Controller
 @SessionAttributes("userRegisterForm") // 세션 유지할 모델 이름
-@RequiredArgsConstructor  // final 필드 기반 생성자 자동 생성 (Lombok)
+@RequiredArgsConstructor  // final 필드 기반 생성자 자동 생성
 @RequestMapping("/register")
 public class UserRegisterController {
 

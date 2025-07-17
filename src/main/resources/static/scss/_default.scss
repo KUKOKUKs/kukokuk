@@ -16,9 +16,13 @@
     height: var(--logoHeight);
     background: url("/images/kukokuk_logo.png") 0 0 no-repeat;
     background-size: contain;
-    position: fixed;
-    top: var(--baseGap);
-    left: calc(var(--baseGap) + var(--baseFontSize));
+
+    &.fixed {
+        position: fixed;
+        top: var(--baseGap);
+        left: calc(var(--baseGap) + var(--baseFontSize));
+        z-index: 1;
+    }
 }
 
 .main {
@@ -31,14 +35,18 @@
     justify-content: center;
 
     &.center {
-        max-width: var(--centerContentWidth); /* 디테일 컨텐츠 사이즈 */
+        min-height: 100vh;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        max-width: var(--centerContentWidth); /* 디테일 컨텐츠 최대 사이즈 */
         margin: auto;
     }
 }
 
 #main-content {
     width: 100%;
-    max-width: var(--mainContentWidth);
+    max-width: var(--mainContentWidth); /* 컨텐츠 사이즈 */
     padding: var(--containerPadding);
 }
 
@@ -65,7 +73,97 @@
     padding: 1em;
 }
 
-/* 버튼 */
+/* form */
+.wrap_form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--largeGap);
+    border-radius: var(--bdrs);
+    border: var(--baseBorder);
+}
+
+.form_input_list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .input_info {
+        height: 60px;
+        font-size: var(--subFontSize);
+        padding: var(--inputPadding);
+        border-width: 0 1px 1px 1px;
+        border-style: solid;
+        border-color: var(--borderColor);
+        position: relative;
+
+        &:has(input:focus)::after {
+            content: "";
+            position: absolute;
+            top: -1px;
+            bottom: -1px;
+            left: -1px;
+            right: -1px;
+            border: 2px solid var(--primaryColor);
+            transition: border var(--trst);
+        }
+
+        &:first-child {
+            border-radius: var(--bdrs) var(--bdrs) 0 0;
+            border-width: 1px;
+
+            &:has(input:focus)::after {
+                border-radius: var(--bdrs) var(--bdrs) 0 0;
+            }
+        }
+
+        &:last-child {
+            border-radius: 0 0 var(--bdrs) var(--bdrs);
+
+            &:has(input:focus)::after {
+                border-radius: 0 0 var(--bdrs) var(--bdrs);
+            }
+        }
+
+        .input_title {
+            width: 100%;
+            padding: 0 15px;
+            font-size: var(--baseFontSize);
+            line-height: 22px;
+            color: var(--grayColor);
+            position: absolute;
+            top: 18px;
+            left: 0;
+            z-index: 1;
+            transition: top var(--trst), font-size var(--trst);
+            user-select: none;
+            -webkit-user-select: none; /* Safari/Chrome */
+            -moz-user-select: none;    /* Firefox */
+            -ms-user-select: none;     /* IE/Edge */
+        }
+
+        input {
+            height: 22px;
+            line-height: 22px;
+            font-size: var(--baseFontSize);
+            position: relative;
+            z-index: 1;
+        }
+
+        &:has(input:focus),
+        &:has(input:not(:placeholder-shown)) {
+            .input_title {
+                font-size: var(--smallFontSize);
+                color: var(--primaryColor);
+                top: 0.5em;
+                transform: none;
+                pointer-events: none;
+            }
+        }
+    }
+}
+
+/* button */
 .btn_list {
     display: flex;
     align-items: center;
@@ -106,7 +204,7 @@
     }
 }
 
-/* 플랙스 */
+/* flex */
 .d_flex {
     display: flex;
 
@@ -143,7 +241,7 @@
     }
 }
 
-/* 테두리 */
+/* border */
 .base_border {
     border: 2px solid var(--borderColor);
     border-radius: var(--bdrs);
@@ -170,7 +268,7 @@
     box-shadow: var(--bxsh);
 }
 
-/* 배경 */
+/* background */
 .bg_primary {
     background-color: var(--primaryColor);
 }
@@ -179,7 +277,7 @@
     background-color: var(--subColor);
 }
 
-/* 폰트 */
+/* font */
 .small_font {
     font-size: var(--smallFontSize);
 }
