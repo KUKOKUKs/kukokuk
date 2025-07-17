@@ -17,15 +17,10 @@ public class QuizService {
   private final DictEntryMapper dictEntryMapper;
 
   /**
-   * count
-   */
-
-  /**
    * 사전 데이터에서 무작위 단어 1개로 퀴즈를 생성하고 저장한다.
    */
   public void insertQuizByRandomEntry() {
     DictEntry correctEntry = dictEntryMapper.getRandomOne();
-    System.out.println("correctEntry" + correctEntry.getEntryNo());
 
     if (correctEntry == null) {
       throw new IllegalStateException("정답 단어를 찾을 수 없습니다.");
@@ -74,5 +69,7 @@ public class QuizService {
     }
 
   }
-
+  public int getQuizCount(){
+      return quizMasterMapper.getQuizCounter();
+  }
 }
