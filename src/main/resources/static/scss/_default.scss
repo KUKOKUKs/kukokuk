@@ -97,17 +97,6 @@
         border-color: var(--borderColor);
         position: relative;
 
-        &:has(input:focus)::after {
-            content: "";
-            position: absolute;
-            top: -1px;
-            bottom: -1px;
-            left: -1px;
-            right: -1px;
-            border: 2px solid var(--primaryColor);
-            transition: border var(--trst);
-        }
-
         &:first-child {
             border-radius: var(--bdrs) var(--bdrs) 0 0;
             border-width: 1px;
@@ -150,8 +139,42 @@
             z-index: 1;
         }
 
+        .input_icon {
+            display: none;
+            align-items: center;
+            gap: var(--smallGap);
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            z-index: 1;
+            transform: translateY(-50%);
+
+            .icon {
+                width: var(--smallIcon);
+                height: var(--smallIcon);
+                padding: 0.35em;
+                color: var(--darkGreenColor);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+
+                &.password {
+                    font-size: var(--baseFontSize);
+                }
+            }
+        }
+
+        &:has(input:not(:placeholder-shown)) {
+            .input_icon {
+                display: flex;
+            }
+        }
+
         &:has(input:focus),
         &:has(input:not(:placeholder-shown)) {
+            padding-right: 60px;
+
             .input_title {
                 font-size: var(--smallFontSize);
                 color: var(--primaryColor);
@@ -159,6 +182,17 @@
                 transform: none;
                 pointer-events: none;
             }
+        }
+
+        &:has(input:focus)::after {
+            content: "";
+            position: absolute;
+            top: -1px;
+            bottom: -1px;
+            left: -1px;
+            right: -1px;
+            border: 2px solid var(--primaryColor);
+            transition: border var(--trst);
         }
     }
 }

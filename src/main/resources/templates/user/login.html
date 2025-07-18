@@ -19,11 +19,29 @@
                 <div class="input_info">
                     <input type="email" name="username" id="username" autocomplete="username" placeholder=" ">
                     <label for="username" class="input_title">이메일</label>
+                    <div class="input_icon">
+                        <span class="icon input_delete_btn">
+                            <iconify-icon icon="jam:close-circle-f"></iconify-icon>
+                        </span>
+                    </div>
                 </div>
 
                 <div class="input_info">
-                    <input type="password" name="passoword" id="password" autocomplete="current-password" placeholder=" ">
+                    <input type="password"
+                           name="passoword"
+                           id="password"
+                           autocomplete="current-password"
+                           placeholder=" "
+                           maxlength="16">
                     <label for="password" class="input_title">비밀번호</label>
+                    <div class="input_icon">
+                        <span id="input-password-view-btn" class="icon password">
+                            <iconify-icon icon="clarity:eye-hide-solid"></iconify-icon>
+                        </span>
+                        <span class="icon input_delete_btn">
+                            <iconify-icon icon="jam:close-circle-f"></iconify-icon>
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -31,4 +49,8 @@
         </form>
     </div>
 </div>
+
+<th:block layout:fragment="script">
+    <script th:src="@{/js/sign-form.js}"></script>
+</th:block>
 </html>
