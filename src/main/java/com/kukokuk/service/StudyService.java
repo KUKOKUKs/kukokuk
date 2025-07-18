@@ -4,6 +4,8 @@ import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
+import com.kukokuk.request.ParseMaterialRequest;
+import com.kukokuk.response.ParseMaterialResponse;
 import com.kukokuk.util.SchoolGradeUtils;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
@@ -14,19 +16,23 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.internal.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class StudyService {
 
-    @Autowired
-    private DailyStudyMapper dailyStudyMapper;
+    private final DailyStudyMapper dailyStudyMapper;
 
-    @Autowired
-    private DailyQuestMapper dailyQuestMapper;
+    private final DailyQuestMapper dailyQuestMapper;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     /*
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto 를 반환한다
@@ -206,6 +212,32 @@ public class StudyService {
      * @return
      */
     private DailyStudy createDailyStudy(Integer dailyStudyMaterialNo, int studyDifficulty) {
+        return null;
+    }
+
+    /**
+    * 요청으로 받은 에듀넷 URL 리스트를 큐에 넣고 각각의 상태를 DB에 저장
+    * 파이썬 서버를 호출해 에듀넷 url에서 hwp 추출 후 텍스트 데이터를 반환받으면, 그 텍스트를 DB에 저장
+    * @param request
+    * @return
+    */
+    public ParseMaterialResponse createMaterial(ParseMaterialRequest request) {
+        List<String> fileUrls = request.getFileUrls();
+
+        for (String fileUrl : fileUrls) {
+
+            // 각 에듀넷 링크를 PARSE_JOB_STATUS 테이블에 저장
+
+            // Redis에 넣을 JSON 형태의 메시지 생성 (jobId + url 포함)
+            String jobPayload = String.format("{\"jobId\":%d,\"url\":\"%s\"}",fileUrl);
+
+            // 레디스에 URL 하나씩 푸시
+            ListOperations<String, String> listOperations = stringRedisTemplate.opsForList();
+            listOperations.rightPush("parse:queue", jobPayload);
+
+
+        }
+
         return null;
     }
 }
