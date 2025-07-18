@@ -19,38 +19,80 @@ public class QuizService {
   /**
    * 사전 데이터에서 무작위 단어 1개로 퀴즈를 생성하고 저장한다.
    */
-  public void insertQuizByRandomEntry() {
-    DictEntry correctEntry = dictEntryMapper.getRandomOne();
+  public void insertQuizByWordRandomEntry(int count) {
+    List<DictEntry> correctEntries = dictEntryMapper.getRandomDictEntries(count);
 
-    if (correctEntry == null) {
-      throw new IllegalStateException("정답 단어를 찾을 수 없습니다.");
-    }
-    List<DictEntry> candidates = dictEntryMapper.getRandomEntriesExclude(correctEntry.getEntryNo(), 3);
-    if (candidates.size() < 3) {
-      throw new IllegalStateException("오답 후보가 부족합니다.");
-    }
-    candidates.add(correctEntry);
-    Collections.shuffle(candidates);
-    int correctIndex = -1;
-    for (int i = 0; i < candidates.size(); i++) {
-      if (candidates.get(i).getEntryNo() == correctEntry.getEntryNo()) {
-        correctIndex = i + 1;
-        break;
+    int limit = correctEntries.size() * 3;
+    List<DictEntry> optionEntries = dictEntryMapper.getRandomEntriesExclude(correctEntries, limit);
+
+    for (int i = 0; i < correctEntries.size(); i++) {
+      DictEntry correct = correctEntries.get(i);
+
+      // optionEntries에서 i * 3부터 i * 3 + 3까지 3개 가져오기
+      List<DictEntry> options = optionEntries.subList(i * 3, i * 3 + 3);
+
+      options.add(correct);
+      Collections.shuffle(options);
+      int correctIndex = -1;
+      for (int j = 0; j < options.size(); j++) {
+        if (options.get(j).getEntryNo() == correct.getEntryNo()) {
+          correctIndex = j + 1;
+          break;
+        }
       }
-    }
-    QuizMaster quiz = new QuizMaster();
-    quiz.setEntryNo(correctEntry.getEntryNo());
-    System.out.println("getEntryNo" + correctEntry.getEntryNo());
-    quiz.setQuestion(correctEntry.getDefinition());
-    quiz.setOption1(candidates.get(0).getWord());
-    quiz.setOption2(candidates.get(1).getWord());
-    quiz.setOption3(candidates.get(2).getWord());
-    quiz.setOption4(candidates.get(3).getWord());
-    quiz.setSuccessAnswer(correctIndex);
-    quiz.setQuestionType("뜻");
-    quiz.setDifficulty(null);
+      QuizMaster quiz = new QuizMaster();
+      quiz.setEntryNo(correct.getEntryNo());
+      System.out.println("getEntryNo" + correct.getEntryNo());
+      quiz.setQuestion(correct.getDefinition());
+      quiz.setOption1(options.get(0).getWord());
+      quiz.setOption2(options.get(1).getWord());
+      quiz.setOption3(options.get(2).getWord());
+      quiz.setOption4(options.get(3).getWord());
+      quiz.setSuccessAnswer(correctIndex);
+      quiz.setQuestionType("뜻");
 
-    quizMasterMapper.insertQuiz(quiz);
+      quizMasterMapper.insertQuiz(quiz);
+      correctIndex = 0;
+    }
+  }
+
+  public void insertQuizByDefRandomEntry(int count) {
+    List<DictEntry> correctEntries = dictEntryMapper.getRandomDictEntries(count);
+
+    int limit = correctEntries.size() * 3;
+    List<DictEntry> optionEntries = dictEntryMapper.getRandomEntriesExclude(correctEntries, limit);
+
+
+
+    for (int i = 0; i < correctEntries.size(); i++) {
+      DictEntry correct = correctEntries.get(i);
+
+      // optionEntries에서 i * 3부터 i * 3 + 3까지 3개 가져오기
+      List<DictEntry> options = optionEntries.subList(i * 3, i * 3 + 3);
+
+      options.add(correct);
+      Collections.shuffle(options);
+      int correctIndex = -1;
+      for (int j = 0; j < options.size(); j++) {
+        if (options.get(j).getEntryNo() == correct.getEntryNo()) {
+          correctIndex = j + 1;
+          break;
+        }
+      }
+      QuizMaster quiz = new QuizMaster();
+      quiz.setEntryNo(correct.getEntryNo());
+      System.out.println("getEntryNo" + correct.getEntryNo());
+      quiz.setQuestion(correct.getWord());
+      quiz.setOption1(options.get(0).getDefinition());
+      quiz.setOption2(options.get(1).getDefinition());
+      quiz.setOption3(options.get(2).getDefinition());
+      quiz.setOption4(options.get(3).getDefinition());
+      quiz.setSuccessAnswer(correctIndex);
+      quiz.setQuestionType("단어");
+
+      quizMasterMapper.insertQuiz(quiz);
+      correctIndex = 0;
+    }
   }
 
 
@@ -60,16 +102,15 @@ public class QuizService {
    * @param count 생성할 퀴즈 수
    */
   public void insertRandomQuizBulk(int count) {
-    for (int i = 0; i < count; i++) {
       try {
-        insertQuizByRandomEntry();
+          insertQuizByWordRandomEntry(count);
+          insertQuizByDefRandomEntry(count);
       } catch (Exception e) {
-        System.out.println("[" + i + "] 번째 퀴즈 생성 실패: " + e.getMessage());
+        System.out.println("퀴즈 생성 도중 실패: " + e.getMessage());
       }
-    }
-
   }
-  public int getQuizCount(){
-      return quizMasterMapper.getQuizCounter();
+  //생성된 전체 퀴즈 갯수체크함수
+  public int getQuizCount(int usageCount){
+      return quizMasterMapper.getQuizCounter(usageCount);
   }
 }

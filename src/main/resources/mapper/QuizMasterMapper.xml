@@ -35,12 +35,13 @@
     </insert>
 
     <!--
-        * 퀴즈의 갯수를 조회한다.
+        * 풀이 횟수가 20회 미만인 퀴즈의 갯수를 조회한다.
         * @return int
-        int getQuizCounter();
+        int getQuizCounter(int usageCount);
     -->
     <select id="getQuizCounter" resultType="int">
         SELECT count(*)
         FROM KUKOKUK_QUIZ_MASTERS
+        WHERE USAGE_COUNT &lt; #{usageCount}
     </select>
 </mapper>

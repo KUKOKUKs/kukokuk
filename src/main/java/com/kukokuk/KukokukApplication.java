@@ -17,13 +17,13 @@ public class KukokukApplication {
         // 2. QuizService를 Bean으로부터 가져오기
         QuizService quizService = context.getBean(QuizService.class);
 
-        int quizCount = quizService.getQuizCount();
+        int quizCount = quizService.getQuizCount(20);
 
         if (100 > quizCount) {
             // 3. 퀴즈 100개 자동 생성 메소드 호출
             quizService.insertRandomQuizBulk(100-quizCount);
 
-            System.out.println("퀴즈 100개 생성 완료");
+            System.out.println("퀴즈 "+(100-quizCount)+"개 생성 완료");
         }
 
         }

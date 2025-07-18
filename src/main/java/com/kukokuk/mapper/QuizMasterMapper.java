@@ -13,7 +13,7 @@ public interface QuizMasterMapper {
    * 퀴즈의 갯수를 조회한다.
    * @return int
    */
-  int getQuizCounter();
+  int getQuizCounter(int usageCount);
 
   /**
    * 하나의 퀴즈를 등록한다.
