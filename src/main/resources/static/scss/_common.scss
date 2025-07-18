@@ -20,6 +20,7 @@
     --logoHeight: 65px;
     --mainContentWidth: 600px;
     --subContentWidth: 400px;
+    --centerContentWidth: 800px;
     --navWidth: 250px;
     --baseIcon: 30px;
     --smallIcon: 14px;
@@ -27,9 +28,11 @@
 
     --containerPadding: 1.5rem;
     --basePadding: 18px;
-    --smallPadding: .55em .75em;
+    --smallPadding: .75em;
+    --inputPadding: 27px 15px 8px;
 
     --baseBorder: 2px solid var(--borderColor);
+    --thinBorder: 1px solid var(--borderColor);
     --bdrs: 7px;
     --bxsh: 3px 3px 7px rgba(0,0,0, .07);
     --insetBxsh: inset -1px -1px 1px rgba(0,0,0, .25);
@@ -47,7 +50,7 @@ del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
 b, u, i, center,
 dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
+fieldset, form, input, button, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
@@ -56,11 +59,31 @@ time, mark, audio, video {
     margin: 0;
     padding: 0;
     border: 0;
-    font-size: 1em;
+    font-size: inherit;
     font: inherit;
     color: inherit;
     vertical-align: baseline;
     box-sizing: border-box;
+}
+
+input {
+    width: 100%;
+    outline: none;
+}
+
+/* 브라우저 인풋 자동완성 배경 제거 */
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+    box-shadow: 0 0 0px 1000px white inset !important;
+    -webkit-text-fill-color: var(--blackColor) !important; /* 텍스트 색상 복원 */
+}
+
+/* 브라우저 인풋 placeholder 선택 막기 */
+input::placeholder {
+    user-select: none;
+    -webkit-user-select: none; /* Safari/Chrome */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE/Edge */
 }
 
 article, aside, details, figcaption, figure,
@@ -70,7 +93,7 @@ footer, header, hgroup, menu, nav, section {
 
 body {
     font-size: var(--baseFontSize);
-    line-height: 1;
+    line-height: 1.4;
     color: var(--blackColor);
 }
 

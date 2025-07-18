@@ -1,6 +1,9 @@
 package com.kukokuk.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kukokuk.security.CustomAccessDeniedHandler;
+import com.kukokuk.security.CustomAuthenticationEntryPoint;
+import jakarta.servlet.DispatcherType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -9,11 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import com.kukokuk.security.CustomAccessDeniedHandler;
-import com.kukokuk.security.CustomAuthenticationEntryPoint;
-
-import jakarta.servlet.DispatcherType;
 
 /*
  * @Configuration
@@ -37,15 +35,13 @@ import jakarta.servlet.DispatcherType;
  * - 메소드 기반 접근제어는 AOP 를 통해서 이루어진다.
  */
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    @Autowired
-    private CustomAccessDeniedHandler customAccessDeniedHandler;
-
-    @Autowired
-    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     /*
      * filterChain(HttpSecurity http) 메소드
@@ -90,13 +86,13 @@ public class SecurityConfig {
 
                 // 자유 접근 허용: 로그인 없이 가능한 경로
                 .requestMatchers(
-                    "/"             // 메인
+                    "/**"
+                    ,"/"            // 메인
                     , "/login"      // 로그인
-                    , "/signup"     // 회원가입
+                    , "/register"   // 회원가입
                     , "/css/**"     // css
                     , "/js/**"      // javascript
                     , "/images/**"  // 정적 이미지 경로
-                    , "/study"
                 ).permitAll()
 
                 // 인증 필요한 경로들
@@ -109,10 +105,10 @@ public class SecurityConfig {
             .formLogin(formLogin -> formLogin
                 .usernameParameter("username")	// 로그인폼의 아이디 필드명을 지정한다.
                 .passwordParameter("password")	// 로그인폼의 비밀번호 필드명을 지정한다.
-                .loginPage("/login")			// 로그인폼을 요청하는 URL을 지정한다.
+                .loginPage("/login")		    // 직접 구현한 로그인폼 URL 지정(시큐리티 로그인폼 X)
                 .loginProcessingUrl("/login")	// 로그인처리를 요청하는 URL을 지정한다.
                 .defaultSuccessUrl("/")			// 로그인 성공시 이동할 URL을 지정한다.
-                .failureUrl("/login?failed")	// 로그인 실패시 이동할 URL을 지정한다.
+                .failureUrl("/login?error")	// 로그인 실패시 이동할 URL을 지정한다.
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")			// 로그아웃 요청 URL을 지정한다.

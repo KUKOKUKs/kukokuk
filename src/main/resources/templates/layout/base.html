@@ -1,39 +1,18 @@
+<!--/* 기본 레이아웃 */-->
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-<head>
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="/resources/favicon.ico" type="image/x-icon" />
-    <title>국어국</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
-
-    <script type="text/javascript">
-        const token = $("meta[name=_csrf]").attr('content');
-        const header = $("meta[name=_csrf_header]").attr('content');
-
-        $(document).on("ajaxSend", function(e, xhr, options) {
-            xhr.setRequestHeader(header, token);
-        });
-    </script>
-
-    <link rel="stylesheet" href="/css/main.css">
-</head>
+<html>
+<head th:replace="~{fragments/head :: head-fragment}"></head>
 <body>
-<!-- logo -->
+<!--/* logo */-->
 <th:block th:replace="~{fragments/logo :: logo-fragment}"></th:block>
 
-<div class="main">
-    <!-- nav -->
+<main class="main">
+    <!--/* nav */-->
     <nav th:replace="~{fragments/nav :: nav-fragment}"></nav>
 
-    <!-- contents -->
+    <!--/* contents */-->
     <div layout:fragment="content" class="content"></div>
-</div>
+</main>
 
 <th:block layout:fragment="script"></th:block>
 </body>

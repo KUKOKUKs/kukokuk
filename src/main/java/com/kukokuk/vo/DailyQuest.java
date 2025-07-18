@@ -8,7 +8,7 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @Alias("DailyQuest")
 public class DailyQuest {
-  private int dailyQuestNo;
-  private String contentType; // ENUM("QUIZ", "DICTATION", "TWENTY", "STUDY")
-  private String contentText;
+    private int dailyQuestNo;
+    private String contentType; // ENUM("QUIZ", "DICTATION", "TWENTY", "STUDY")
+    private String contentText;
 }
