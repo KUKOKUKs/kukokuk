@@ -4,11 +4,18 @@ import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
+<<<<<<< Updated upstream
+=======
+import com.kukokuk.mapper.MaterialParseJobMapper;
+import com.kukokuk.request.ParseMaterialRequest;
+import com.kukokuk.response.ParseMaterialResponse;
+>>>>>>> Stashed changes
 import com.kukokuk.util.SchoolGradeUtils;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
 import com.kukokuk.vo.DailyStudy;
 import com.kukokuk.vo.DailyStudyLog;
+import com.kukokuk.vo.MaterialParseJob;
 import com.kukokuk.vo.User;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,8 +32,16 @@ public class StudyService {
     @Autowired
     private DailyStudyMapper dailyStudyMapper;
 
+<<<<<<< Updated upstream
     @Autowired
     private DailyQuestMapper dailyQuestMapper;
+=======
+    private final DailyQuestMapper dailyQuestMapper;
+
+    private final MaterialParseJobMapper materialParseJobMapper;
+
+    private final StringRedisTemplate stringRedisTemplate;
+>>>>>>> Stashed changes
 
     /*
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto 를 반환한다
@@ -208,4 +223,51 @@ public class StudyService {
     private DailyStudy createDailyStudy(Integer dailyStudyMaterialNo, int studyDifficulty) {
         return null;
     }
+<<<<<<< Updated upstream
+=======
+
+    /**
+    * 요청으로 받은 에듀넷 URL 리스트를 큐에 넣고 각각의 상태를 DB에 저장
+    * 파이썬 서버를 호출해 에듀넷 url에서 hwp 추출 후 텍스트 데이터를 반환받으면, 그 텍스트를 DB에 저장
+    * @param request
+    * @return
+    */
+    public ParseMaterialResponse createMaterial(ParseMaterialRequest request) {
+        ParseMaterialResponse parseMaterialResponse = new ParseMaterialResponse();
+
+        List<String> allUrls = request.getFileUrls();
+
+        // 요청으로 받은 url 목록 중 이미 DB에 존재하는 url만 조회
+        List<String> existingUrls = materialParseJobMapper.getExistUrls(allUrls);
+        // API 반환 데이터에 skippedUrls 설정 (이미 처리된 경로라 스킵)
+        parseMaterialResponse.setSkippedUrls(existingUrls);
+
+        // db에 이미 있지 않은 신규 url만 필터링
+        List<String> newUrls = allUrls.stream()
+            .filter(url -> !existingUrls.contains(url))
+            .toList();
+        // API 반환 데이터에 enqueuedUrls 설정 (큐에 담긴후 백그라운드 작업 실행 될 url들)
+        parseMaterialResponse.setEnqueuedUrls(newUrls);
+
+        for (String fileUrl : newUrls) {
+
+            MaterialParseJob materialParseJob = new MaterialParseJob();
+            materialParseJob.setUrl(fileUrl);
+
+            // 각 에듀넷 링크를 PARSE_JOB_STATUS 테이블에 저장
+            materialParseJobMapper.insertParseJob(materialParseJob);
+
+            // Redis에 넣을 JSON 형태의 메시지 생성 (jobId + url 포함)
+            String jobPayload = String.format("{\"jobNo\":%d,\"url\":\"%s\"}",
+                materialParseJob.getMaterialParseJobNo(),
+                fileUrl);
+
+            // 레디스에 URL 하나씩 푸시
+            ListOperations<String, String> listOperations = stringRedisTemplate.opsForList();
+            listOperations.rightPush("parse:queue", jobPayload);
+        }
+
+        return parseMaterialResponse;
+    }
+>>>>>>> Stashed changes
 }

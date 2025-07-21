@@ -81,6 +81,7 @@ public class SecurityConfig {
         throws Exception {
 
         http
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/studies/**"))
             .authorizeHttpRequests(auth -> auth
                 .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE).permitAll()
 
@@ -93,6 +94,7 @@ public class SecurityConfig {
                     , "/css/**"     // css
                     , "/js/**"      // javascript
                     , "/images/**"  // 정적 이미지 경로
+                    , "/api/studies/**"
                 ).permitAll()
 
                 // 인증 필요한 경로들
