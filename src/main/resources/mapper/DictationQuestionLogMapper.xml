@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.mapper.DictationQuestionMapper">
+
+  <!-- insertLog(DictationQuestionLog dictationQuestionLog) -->
+  <insert id="insertLog" parameterType="DictationQuestionLog">
+    INSERT INTO KUKOKUK_DICTATION_QUESTION_LOGS (
+       USER_NO
+       ,DICTATION_QUESTION_NO
+       ,DICTATION_SESSION_NO
+       ,TRY_COUNT
+       ,IS_SUCCESS
+    ) VALUES (
+         #{userNo}
+        ,#{dictationQuestionNo}
+        ,#{dictationSessionNo}
+        ,#{tryCount}
+        ,#{isSuccess}
+    )
+  </insert>
+
+  <!-- updateHintUsed(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("userHint") String userHint) -->
+  <update id="updateHintUsed">
+    UPDATE KUKOKUK_DICTATION_QUESTION_LOGS
+    SET
+        USER_HINT = #{userHint}
+    WHERE DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+  </update>
+
+  <!-- updateIsSuccess(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("isSuccess") String isSuccess) -->
+  <update id="updateIsSuccess">
+    UPDATE KUKOKUK_DICTATION_QUESTION_LOGS
+    SET
+        isSuccess = #{isSuccess}
+    WHERE DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+  </update>
+
+  <!-- updateTryCount(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("tryCount") String tryCount) -->
+  <update id="updateTryCount">
+    UPDATE KUKOKUK_DICTATION_QUESTION_LOGS
+    SET
+        TRY_COUNT = TRY_COUNT + 1
+    WHERE DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+  </update>
+
+</mapper>

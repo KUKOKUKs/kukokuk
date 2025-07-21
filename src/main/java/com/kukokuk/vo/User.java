@@ -27,6 +27,7 @@ public class User {
     private int studyDifficulty;
     private String currentSchool; // ENUM("초","중")
     private int currentGrade;
+    private int hintCount;
     private String isDeleted; // ENUM("N", "Y")
     private Date createdDate;
     private Date updatedDate;

@@ -1,25 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.QuizMasterMapper">
+    <resultMap id="QuizMasterMap" type="QuizMaster">
+        <id property="quizNo" column="QUIZ_NO"/>
+        <result property="entryNo" column="ENTRY_NO"/>
+        <result property="question" column="QUESTION"/>
+        <result property="option1" column="OPTION1"/>
+        <result property="option2" column="OPTION2"/>
+        <result property="option3" column="OPTION3"/>
+        <result property="option4" column="OPTION4"/>
+        <result property="success_answer" column="SUCCESS_ANSWER"/>
+        <result property="question_type" column="QUESTION_TYPE"/>
+        <result property="difficulty" column="DIFFICULTY"/>
+        <result property="usage_count" column="USAGE_COUNT"/>
+        <result property="success_count" column="SUCCESS_COUNT"/>
 
-  <!--
-      public int insertQuiz(QuizMaster quiz);
+    </resultMap>
+    <!--
+        public int insertQuiz(QuizMaster quiz);
 
-      퀴즈 마스터 테이블에 새로운 퀴즈 1건을 저장한다.
-      - entryNo: 정답 사전 엔트리 번호
-      - question: 문제 텍스트 (뜻 or 단어)
-      - option1~4: 보기 항목
-      - successAnswer: 정답 위치 (1~4)
-      - questionType: 문제 유형 ('뜻' or '단어')
-  -->
-  <insert id="insertQuiz" parameterType="QuizMaster">
-    INSERT INTO KUKOKUK_QUIZ_MASTERS (
-      ENTRY_NO, QUESTION, OPTION_1, OPTION_2, OPTION_3, OPTION_4,
-      SUCCESS_ANSWER, QUESTION_TYPE
-    ) VALUES (
-     #{entryNo}, #{question}, #{option1}, #{option2}, #{option3}, #{option4},
-     #{successAnswer}, #{questionType}
-   )
-  </insert>
+        퀴즈 마스터 테이블에 새로운 퀴즈 1건을 저장한다.
+        - entryNo: 정답 사전 엔트리 번호
+        - question: 문제 텍스트 (뜻 or 단어)
+        - option1~4: 보기 항목
+        - successAnswer: 정답 위치 (1~4)
+        - questionType: 문제 유형 ('뜻' or '단어')
+    -->
+    <insert id="insertQuiz" parameterType="QuizMaster">
+        INSERT INTO KUKOKUK_QUIZ_MASTERS (ENTRY_NO, QUESTION, OPTION1, OPTION2, OPTION3, OPTION4,
+                                          SUCCESS_ANSWER, QUESTION_TYPE)
+        VALUES (#{entryNo}, #{question}, #{option1}, #{option2}, #{option3}, #{option4},
+                #{successAnswer}, #{questionType})
+    </insert>
+
+    <!--
+        * 풀이 횟수가 20회 미만인 퀴즈의 갯수를 조회한다.
+        * @return int
+        int getQuizCounterByUsageCount(int usageCount);
+    -->
+    <select id="getQuizCountByUsageCount" resultType="int">
+        SELECT count(*)
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE USAGE_COUNT &lt; #{usageCount}
+    </select>
+<!--
+    int getQuizCountByUsageCount(int usageCount);
+
+    * 특정 유형에서 USAGE_COUNT(풀이횟수)가 주어진 값 미만인 퀴즈 개수 반환
+    * @param questionType 문제 유형 ("뜻", "단어")
+    * @param usageCount 기준값
+    * @return 해당 조건에 맞는 퀴즈 개수
+
+    int get(@Param("questionType") String questionType,
+    @Param("usageCount") int usageCount);
+    -->
+    <select id="getQuizCountByTypeAndUsageCount" resultType="int">
+        SELECT COUNT(*)
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE QUESTION_TYPE = #{questionType}
+          AND USAGE_COUNT &lt; #{usageCount}
+    </select>
 
 </mapper>
