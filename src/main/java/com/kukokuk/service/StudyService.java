@@ -4,12 +4,9 @@ import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
-<<<<<<< Updated upstream
-=======
 import com.kukokuk.mapper.MaterialParseJobMapper;
 import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.response.ParseMaterialResponse;
->>>>>>> Stashed changes
 import com.kukokuk.util.SchoolGradeUtils;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
@@ -21,27 +18,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.internal.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class StudyService {
 
-    @Autowired
-    private DailyStudyMapper dailyStudyMapper;
-
-<<<<<<< Updated upstream
-    @Autowired
-    private DailyQuestMapper dailyQuestMapper;
-=======
+    private final  DailyStudyMapper dailyStudyMapper;
     private final DailyQuestMapper dailyQuestMapper;
 
     private final MaterialParseJobMapper materialParseJobMapper;
 
     private final StringRedisTemplate stringRedisTemplate;
->>>>>>> Stashed changes
 
     /*
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto 를 반환한다
@@ -223,8 +215,6 @@ public class StudyService {
     private DailyStudy createDailyStudy(Integer dailyStudyMaterialNo, int studyDifficulty) {
         return null;
     }
-<<<<<<< Updated upstream
-=======
 
     /**
     * 요청으로 받은 에듀넷 URL 리스트를 큐에 넣고 각각의 상태를 DB에 저장
@@ -269,5 +259,5 @@ public class StudyService {
 
         return parseMaterialResponse;
     }
->>>>>>> Stashed changes
+
 }
