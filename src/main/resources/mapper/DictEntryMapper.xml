@@ -32,32 +32,33 @@
   </select>
 
    <!--
-     * 특정 ENTRY_NO를 제외하고 랜덤하게 사전 데이터를 조회한다.
+     * 특정 ENTRY_WORD를 제외하고 랜덤하게 사전 데이터를 조회한다.
      * @param dictEntries 제외할 정답 ENTRY_NO
      * @return 무작위로 선택된 단어 리스트
      List<DictEntry> getRandomEntriesExclude(@Param("dictEntries") List<DictEntry> dictEntries
                                         , @Param("limit") int limit);
     -->
-  <select id="getRandomEntriesExclude" resultMap="dictEntryMap">
-      SELECT ENTRY_NO
-           , WORD
-           , DEFINITION
-           , WORD_LEVEL
-           , USAGE_EXAMPLE
-           , ORIGIN
-           , CREATED_DATE
-      FROM KUKOKUK_DICT_ENTRIES
-      <where>
-          <if test="dictEntries != null and dictEntries.size() > 0">
-              ENTRY_NO NOT IN
-              <foreach item="entry" collection="dictEntries" open="(" separator="," close=")">
-                  #{entry.entryNo}
-              </foreach>
-          </if>
-      </where>
-      ORDER BY RAND()
-      LIMIT #{limit}
-  </select>
+    <select id="getRandomEntriesExclude" resultMap="dictEntryMap">
+        SELECT ENTRY_NO
+        , WORD
+        , DEFINITION
+        , WORD_LEVEL
+        , USAGE_EXAMPLE
+        , ORIGIN
+        , CREATED_DATE
+        FROM KUKOKUK_DICT_ENTRIES
+        <where>
+            <if test="wordList != null and wordList.size() > 0">
+                WORD NOT IN
+                <foreach item="word" collection="wordList" open="(" separator="," close=")">
+                    #{word}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY RAND()
+        LIMIT #{limit}
+    </select>
+
     <!--
         * 전체 사전에서 무작위로 단어들을 조회한다.
         *

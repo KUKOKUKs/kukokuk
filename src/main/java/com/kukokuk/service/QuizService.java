@@ -4,6 +4,7 @@ import com.kukokuk.mapper.DictEntryMapper;
 import com.kukokuk.mapper.QuizMasterMapper;
 import com.kukokuk.vo.DictEntry;
 import com.kukokuk.vo.QuizMaster;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,14 @@ public class QuizService {
   public void insertQuizByWordRandomEntry(int count) {
     List<DictEntry> correctEntries = dictEntryMapper.getRandomDictEntries(count);
 
+    List<String> correctWords = new ArrayList<>();
+    for (DictEntry entry : correctEntries) {
+      correctWords.add(entry.getWord());
+    }
+
     int limit = correctEntries.size() * 3;
-    List<DictEntry> optionEntries = dictEntryMapper.getRandomEntriesExclude(correctEntries, limit);
+    List<DictEntry> optionEntries = dictEntryMapper.getRandomWordExclude(correctWords, limit);
+
 
     for (int i = 0; i < correctEntries.size(); i++) {
       DictEntry correct = correctEntries.get(i);
@@ -59,10 +66,13 @@ public class QuizService {
   public void insertQuizByDefRandomEntry(int count) {
     List<DictEntry> correctEntries = dictEntryMapper.getRandomDictEntries(count);
 
+    List<String> correctWords = new ArrayList<>();
+    for (DictEntry entry : correctEntries) {
+      correctWords.add(entry.getWord());
+    }
+
     int limit = correctEntries.size() * 3;
-    List<DictEntry> optionEntries = dictEntryMapper.getRandomEntriesExclude(correctEntries, limit);
-
-
+    List<DictEntry> optionEntries = dictEntryMapper.getRandomWordExclude(correctWords, limit);
 
     for (int i = 0; i < correctEntries.size(); i++) {
       DictEntry correct = correctEntries.get(i);
@@ -97,7 +107,7 @@ public class QuizService {
 
 
   /**
-   * 사전 데이터를 기반으로 랜덤 퀴즈 N개를 자동 생성하고 저장한다.
+   * 사전 데이터의 랜덤한 단어를 기반으로 서로 다른 유형의 퀴즈를 100개씩 생성한다.
    *
    * @param count 생성할 퀴즈 수
    */
@@ -109,8 +119,26 @@ public class QuizService {
         System.out.println("퀴즈 생성 도중 실패: " + e.getMessage());
       }
   }
-  //생성된 전체 퀴즈 갯수체크함수
-  public int getQuizCount(int usageCount){
-      return quizMasterMapper.getQuizCounter(usageCount);
+
+  public void insertRandomTypeQuizBulk(int usageCount) {
+    final int targetCount = 100;
+
+    // 뜻 유형
+    int meaningCount = quizMasterMapper.getQuizCountByTypeAndUsageCount("뜻",usageCount);
+    int meaningToCreate = Math.max(0, targetCount - meaningCount);
+    if (meaningToCreate > 0) {
+      insertQuizByWordRandomEntry(meaningToCreate);
+      System.out.println("뜻 퀴즈 " + meaningToCreate + "개 생성 완료");
+    }
+
+    // 단어 유형
+    int wordCount = quizMasterMapper.getQuizCountByTypeAndUsageCount("단어", usageCount);
+    int wordToCreate = Math.max(0, targetCount - wordCount);
+    if (wordToCreate > 0) {
+      insertQuizByDefRandomEntry(wordToCreate);
+      System.out.println("단어 퀴즈 " + wordToCreate + "개 생성 완료");
+    }
   }
+
+
 }
