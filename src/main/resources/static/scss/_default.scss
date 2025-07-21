@@ -114,7 +114,16 @@
             }
         }
 
-        .input_title {
+        input {
+            height: 22px;
+            line-height: 22px;
+            font-size: var(--baseFontSize);
+            position: relative;
+            z-index: 1;
+        }
+
+        .input_title,
+        .input_error {
             width: 100%;
             padding: 0 15px;
             font-size: var(--baseFontSize);
@@ -127,16 +136,17 @@
             transition: top var(--trst), font-size var(--trst);
             user-select: none;
             -webkit-user-select: none; /* Safari/Chrome */
-            -moz-user-select: none;    /* Firefox */
-            -ms-user-select: none;     /* IE/Edge */
+            -moz-user-select: none; /* Firefox */
+
+            &.disabled {
+                opacity: 0;
+            }
         }
 
-        input {
-            height: 22px;
-            line-height: 22px;
-            font-size: var(--baseFontSize);
-            position: relative;
-            z-index: 1;
+        .input_error {
+            color: var(--redColor);
+            pointer-events: none;
+            z-index: 2;
         }
 
         .input_icon {
@@ -175,9 +185,9 @@
         &:has(input:not(:placeholder-shown)) {
             padding-right: 60px;
 
-            .input_title {
+            .input_title,
+            .input_error {
                 font-size: var(--smallFontSize);
-                color: var(--primaryColor);
                 top: 0.5em;
                 transform: none;
                 pointer-events: none;

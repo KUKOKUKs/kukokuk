@@ -12,7 +12,10 @@
             <p class="title">로그인</p>
         </div>
 
-        <form method="post" action="@{/login}" class="wrap_form container">
+        <form method="post"
+              action="@{/login}"
+              class="wrap_form container"
+              id="login-form">
             <span class="logo"></span>
 
             <div class="form_input_list">
@@ -28,7 +31,7 @@
 
                 <div class="input_info">
                     <input type="password"
-                           name="passoword"
+                           name="password"
                            id="password"
                            autocomplete="current-password"
                            placeholder=" "
@@ -51,6 +54,6 @@
 </div>
 
 <th:block layout:fragment="script">
-    <script th:src="@{/js/sign-form.js}"></script>
+    <script type="module" th:src="@{/js/modules/sign/sign-form-handler.js}"></script>
 </th:block>
 </html>
