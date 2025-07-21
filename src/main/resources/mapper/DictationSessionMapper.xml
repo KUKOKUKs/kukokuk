@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.mapper.DictationSessionMapper">
+
+  <resultMap id="DictationSessionResultMap" type="DictationSession">
+    <id property="dictationSessionNo" column="DICTATION_SESSION_NO"/>
+    <result property="userNo" column="USER_NO"/>
+    <result property="startDate" column="START_DATE"/>
+    <result property="endDate" column="END_DATE"/>
+    <result property="correctScore" column="CORRECT_SCORE"/>
+    <result property="correctCount" column="CORRECT_COUNT"/>
+    <result property="hintUsedCount" column="HINT_USED_COUNT"/>
+  </resultMap>
+
+  <!-- insertDictationSession(DictationSession session) -->
+  <insert id="insertDictationSession" parameterType="DictationSession">
+    INSERT INTO KUKOKUK_DICTATION_SESSIONS (
+       USER_NO
+      ,START_DATE
+      ,END_DATE
+    ) VALUES (
+       #{userNo}
+      ,#{startDate}
+      ,#{endDate}
+    )
+  </insert>
+
+
+  <!-- DictationSession getSessionByNo(int dictationSessionNo) -->
+  <select id="getSessionByNo" parameterType="int" resultMap="dictationSessionResultMap">
+    SELECT
+       DICTATION_SESSION_NO
+      ,USER_NO
+      ,START_DATE
+      ,END_DATE
+      ,CORRECT_SCORE
+      ,CORRECT_COUNT
+      ,HINT_USED_COUNT
+    FROM
+        KUKOKUK_DICTATION_SESSIONS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
+  </select>
+
+  <!-- updateDictationSessionResult(DictationSession session) -->
+  <update id="updateDictationSessionResult" parameterType="DictationSession">
+    UPDATE KUKOKUK_DICTATION_SESSIONS
+    SET
+       END_DATE = NOW()
+      ,CORRECT_SCORE = #{correctScore}
+      ,CORRECT_COUNT = #{correctCount}
+      ,HINT_USED_COUNT = #{hintUsedCount}
+    WHERE
+       DICTATION_SESSION_NO = #{dictationSessionNo}
+  </update>
+
+
+</mapper>
