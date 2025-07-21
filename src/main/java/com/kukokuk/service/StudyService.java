@@ -21,6 +21,8 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.internal.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -259,5 +261,6 @@ public class StudyService {
 
         return parseMaterialResponse;
     }
+
 
 }
