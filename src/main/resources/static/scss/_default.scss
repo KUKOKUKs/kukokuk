@@ -78,9 +78,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--largeGap);
+    gap: var(--baseGap);
+    background-color: var(--lightGrayColor);
     border-radius: var(--bdrs);
-    border: var(--baseBorder);
+    border: var(--thinBorder);
 }
 
 .form_input_list {
@@ -91,11 +92,16 @@
     .input_info {
         height: 60px;
         font-size: var(--subFontSize);
+        background-color: #fff;
         padding: var(--inputPadding);
         border-width: 0 1px 1px 1px;
         border-style: solid;
         border-color: var(--borderColor);
         position: relative;
+
+        &:has(.input_icon) {
+            padding-right: 60px;
+        }
 
         &:first-child {
             border-radius: var(--bdrs) var(--bdrs) 0 0;
@@ -111,6 +117,14 @@
 
             &:has(input:focus)::after {
                 border-radius: 0 0 var(--bdrs) var(--bdrs);
+            }
+        }
+
+        &.one_input {
+            border-radius: var(--bdrs);
+
+            &:has(input:focus)::after {
+                border-radius: var(--bdrs);
             }
         }
 
@@ -183,8 +197,6 @@
 
         &:has(input:focus),
         &:has(input:not(:placeholder-shown)) {
-            padding-right: 60px;
-
             .input_title,
             .input_error {
                 font-size: var(--smallFontSize);
@@ -197,18 +209,23 @@
         &:has(input:focus)::after {
             content: "";
             position: absolute;
-            top: -1px;
-            bottom: -1px;
-            left: -1px;
-            right: -1px;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
             border: 2px solid var(--primaryColor);
             transition: border var(--trst);
         }
     }
 }
 
+.input_description {
+    width: 100%;
+}
+
 /* button */
 .btn_list {
+    width: 100%;
     display: flex;
     align-items: center;
     gap: var(--smallGap);
@@ -231,6 +248,11 @@
     box-shadow: var(--insetBxsh);
     cursor: pointer;
 
+    &.disabled {
+        pointer-events: none;
+        opacity: .5;
+    }
+
     &.small {
         width: max-content;
         font-size: var(--smallFontSize);
@@ -243,13 +265,14 @@
     }
 
     &.white {
-        border-color: var(--lightGrayColor);
+        border-color: var(--borderColor);
         background-color: #fff;
     }
 }
 
 /* flex */
 .d_flex {
+    width: 100%;
     display: flex;
 
     &.column {
@@ -271,18 +294,18 @@
     &.align_end {
         align-items: flex-end; /* 끝 정렬 */
     }
+}
 
-    &.base_gap {
-        gap: var(--baseGap); /* 기본 gap */
-    }
+.base_gap {
+    gap: var(--baseGap); /* 기본 gap */
+}
 
-    &.small_gap {
-        gap: var(--smallGap); /* 작은 gap */
-    }
+.small_gap {
+    gap: var(--smallGap); /* 작은 gap */
+}
 
-    &.large_gap {
-        gap: var(--largeGap); /* 큰 gap */
-    }
+.large_gap {
+    gap: var(--largeGap); /* 큰 gap */
 }
 
 /* border */

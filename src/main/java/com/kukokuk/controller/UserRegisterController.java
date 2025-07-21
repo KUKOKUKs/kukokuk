@@ -3,6 +3,7 @@ package com.kukokuk.controller;
 import com.kukokuk.dto.UserRegisterForm;
 import com.kukokuk.exception.UserRegisterException;
 import com.kukokuk.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
 @SessionAttributes("userRegisterForm") // 세션 유지할 모델 이름
@@ -28,13 +31,18 @@ public class UserRegisterController {
 
     // 1단계: 이메일 입력 폼
     @GetMapping
-    public String emailForm() {
+    public String emailForm(@RequestParam(required = false) Boolean reset
+        , SessionStatus sessionStatus) {
+        if (Boolean.TRUE.equals(reset)) {
+            sessionStatus.setComplete(); // 세션 초기화
+            return "redirect:/register";
+        }
         return "user/register/email";
     }
 
     // 1단계: 이메일 처리 후 → 비밀번호 단계로 이동
     @PostMapping("/email")
-    public String processEmail(@ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processEmail(@Valid @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
         // 유효성 검증 실패 시 다시 입력 페이지
         if (errors.hasErrors()) {
@@ -60,7 +68,7 @@ public class UserRegisterController {
 
     // 2단계: 비밀번호 처리 후 → 이름 단계로 이동
     @PostMapping("/password")
-    public String processPassword(@ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processPassword(@Valid @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
         if (errors.hasErrors()) {
             return "user/register/password"; // 유효성 검증 실패 시 다시 입력 페이지
@@ -77,7 +85,7 @@ public class UserRegisterController {
 
     // 3단계: 이름 처리 후 → 닉네임 단계로 이동
     @PostMapping("/name")
-    public String processName(@ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processName(@Valid @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
         if (errors.hasErrors()) {
             return "user/register/name"; // 유효성 검증 실패 시 다시 입력 페이지
@@ -94,7 +102,7 @@ public class UserRegisterController {
 
     // 4단계: 닉네임 처리 후 → 생년월일/성별 단계로 이동
     @PostMapping("/nickname")
-    public String processNickname(@ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processNickname(@Valid @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
         // 유효성 검증 실패 시 다시 입력 페이지
         if (errors.hasErrors()) {
@@ -120,7 +128,7 @@ public class UserRegisterController {
 
     // 5단계: 생년월일/성별 처리 후 → 회원가입 요청
     @PostMapping("/profile")
-    public String processProfile(@ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processProfile(@Valid @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
         if (errors.hasErrors()) {
             return "user/register/profile"; // 유효성 검증 실패 시 다시 입력 페이지

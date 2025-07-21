@@ -12,11 +12,12 @@
             <p class="title">로그인</p>
         </div>
 
+        <span class="logo"></span>
+
         <form method="post"
-              action="@{/login}"
+              th:action="@{/login}"
               class="wrap_form container"
               id="login-form">
-            <span class="logo"></span>
 
             <div class="form_input_list">
                 <div class="input_info">
@@ -50,6 +51,11 @@
 
             <button type="submit" class="btn primary">로그인</button>
         </form>
+
+        <div class="d_flex justify_content_center align_center base_gap">
+            <p class="small_font">계정이 없으신가요?</p>
+            <a href="/register?reset=true" class="bold color_primary">회원가입</a>
+        </div>
     </div>
 </div>
 

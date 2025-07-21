@@ -1,10 +1,68 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/center}" th:with="title='회원가입'">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div layout:fragment="content">
+    <div class="sign_wrap">
+        <div class="sign_top">
+            <a href="/" class="back_btn">
+                <span class="back_icon">
+                    <iconify-icon icon="ep:arrow-left-bold"></iconify-icon>
+                </span>
+                Home
+            </a>
+            <p class="title">회원가입</p>
+        </div>
 
-</body>
+        <span class="logo"></span>
+
+        <div class="step_bar">
+            <div class="step_circle_container">
+                <div class="step_circle"></div>
+                <div class="step_circle"></div>
+                <div class="step_circle"></div>
+                <div class="step_circle"></div>
+                <div class="step_circle"></div>
+            </div>
+            <div class="current_step"></div>
+        </div>
+
+        <form method="post"
+              th:action="@{/register/email}"
+              th:object="${userRegisterForm}"
+              class="wrap_form container"
+              id="register-form">
+
+            <div class="input_description">
+                <p class="description">사용중인 이메일을 입력해 주세요</p>
+            </div>
+
+            <div class="form_input_list">
+                <div class="input_info one_input">
+                    <input type="text" th:field="*{username}" autocomplete="username" placeholder=" ">
+
+                    <label for="username" class="input_title"
+                        th:classappend="${#fields.hasErrors('username')} ? 'disabled'">이메일</label>
+
+                    <span class="input_error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+
+                    <div class="input_icon">
+                        <span class="icon input_delete_btn">
+                            <iconify-icon icon="jam:close-circle-f"></iconify-icon>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn primary disabled">다음</button>
+        </form>
+
+        <div class="d_flex justify_content_center align_center base_gap">
+            <p class="small_font">계정이 있으신가요?</p>
+            <a href="/login" class="bold color_primary">로그인</a>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="module" th:src="@{/js/modules/sign/sign-form-handler.js}"></script>
+</th:block>
 </html>
