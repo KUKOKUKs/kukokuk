@@ -4,6 +4,7 @@ import com.kukokuk.mapper.DictEntryMapper;
 import com.kukokuk.mapper.QuizMasterMapper;
 import com.kukokuk.vo.DictEntry;
 import com.kukokuk.vo.QuizMaster;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,14 @@ public class QuizService {
   public void insertQuizByWordRandomEntry(int count) {
     List<DictEntry> correctEntries = dictEntryMapper.getRandomDictEntries(count);
 
+    List<String> correctWords = new ArrayList<>();
+    for (DictEntry entry : correctEntries) {
+      correctWords.add(entry.getWord());
+    }
+
     int limit = correctEntries.size() * 3;
-    List<DictEntry> optionEntries = dictEntryMapper.getRandomEntriesExclude(correctEntries, limit);
+    List<DictEntry> optionEntries = dictEntryMapper.getRandomWordExclude(correctWords, limit);
+
 
     for (int i = 0; i < correctEntries.size(); i++) {
       DictEntry correct = correctEntries.get(i);
@@ -59,10 +66,13 @@ public class QuizService {
   public void insertQuizByDefRandomEntry(int count) {
     List<DictEntry> correctEntries = dictEntryMapper.getRandomDictEntries(count);
 
+    List<String> correctWords = new ArrayList<>();
+    for (DictEntry entry : correctEntries) {
+      correctWords.add(entry.getWord());
+    }
+
     int limit = correctEntries.size() * 3;
-    List<DictEntry> optionEntries = dictEntryMapper.getRandomEntriesExclude(correctEntries, limit);
-
-
+    List<DictEntry> optionEntries = dictEntryMapper.getRandomWordExclude(correctWords, limit);
 
     for (int i = 0; i < correctEntries.size(); i++) {
       DictEntry correct = correctEntries.get(i);
@@ -129,4 +139,6 @@ public class QuizService {
       System.out.println("단어 퀴즈 " + wordToCreate + "개 생성 완료");
     }
   }
+
+
 }

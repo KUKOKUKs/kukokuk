@@ -1,21 +1,19 @@
 package com.kukokuk;
 
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
 @MapperScan("com.kukokuk.mapper")
 public class KukokukApplication {
 
-    public static void main(String[] args) {
-        // 1. SpringBoot 실행 → ApplicationContext 반환됨
-        ApplicationContext context = SpringApplication.run(KukokukApplication.class, args);
-
-        // 2. QuizService를 Bean으로부터 가져오기
-   /*     QuizService quizService = context.getBean(QuizService.class);
-        quizService.insertRandomTypeQuizBulk(20);
+//    public static void main(String[] args) {
+//        // 1. SpringBoot 실행 → ApplicationContext 반환됨
+//        ApplicationContext context = SpringApplication.run(KukokukApplication.class, args);
+//
+//        // 2. QuizService를 Bean으로부터 가져오기
+//        QuizService quizService = context.getBean(QuizService.class);
+//        quizService.insertRandomTypeQuizBulk(20);
 //        int quizCount = quizService.getQuizCount(20);
 //
 //        if (100 > quizCount) {
@@ -25,11 +23,11 @@ public class KukokukApplication {
 //            System.out.println("퀴즈 "+(100-quizCount)+"개 생성 완료");
 //        }
 //
-//*/
+////*/
 /*
         퀴즈생성 테스트 코드입니다.
  */
     }
-}
+
 
 
