@@ -3,11 +3,14 @@ package com.kukokuk.controller;
 import com.kukokuk.dto.UserRegisterForm;
 import com.kukokuk.exception.UserRegisterException;
 import com.kukokuk.service.UserService;
+import com.kukokuk.validation.EmailCheck;
+import com.kukokuk.validation.passwordCheck;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,25 +51,24 @@ public class UserRegisterController {
 
     // 1단계: 이메일 처리 후 → 비밀번호 단계로 이동
     @PostMapping("/email")
-    public String processEmail(@Valid @ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processEmail(@Validated(EmailCheck.class) @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
         log.info("processEmail() 컨트롤러 실행");
 
         // 유효성 검증 실패 시 다시 입력 페이지
         if (errors.hasErrors()) {
-            log.info("processEmail() 유효성 검증 실패");
+            log.info("processEmail() 유효성 검증 실패: {}", errors.getFieldError("username").getDefaultMessage());
             return "user/register/email";
         }
 
         try {
             // username 중복 체크
-            userService.registerUserByUsername(form.getUsername());
+            userService.duplicateUserByUsername(form.getUsername());
         } catch (UserRegisterException e) {
             log.info("processEmail() UserRegisterException {}", e.getMessage());
             errors.rejectValue(e.getField(), "duplicated", e.getMessage());
             return "user/register/email";
         }
-
         return "redirect:/register/password"; // 성공 시 다음 단계로 리다이렉트
     }
 
@@ -79,15 +81,14 @@ public class UserRegisterController {
 
     // 2단계: 비밀번호 처리 후 → 이름 단계로 이동
     @PostMapping("/password")
-    public String processPassword(@Valid @ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processPassword(@Validated(passwordCheck.class) @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
         log.info("processPassword() 컨트롤러 실행");
 
         if (errors.hasErrors()) {
-            log.info("processPassword() 유효성 검증 실패");
+            log.info("processPassword() 유효성 검증 실패: {}", errors.getFieldError("password").getDefaultMessage());
             return "user/register/password"; // 유효성 검증 실패 시 다시 입력 페이지
         }
-
         return "redirect:/register/name"; // 성공 시 다음 단계로 리다이렉트
     }
 
@@ -133,13 +134,12 @@ public class UserRegisterController {
 
         try {
             // nickname 중복 체크
-            userService.registerUserByNickname(form.getNickname());
+            userService.duplicateUserByNickname(form.getNickname());
         } catch (UserRegisterException e) {
             log.info("processNickname() UserRegisterException {}", e.getMessage());
             errors.rejectValue(e.getField(), "duplicated", e.getMessage());
             return "user/register/nickname";
         }
-
         return "redirect:/register/profile"; // 성공 시 다음 단계로 리다이렉트
     }
 
@@ -175,7 +175,6 @@ public class UserRegisterController {
                 return "user/register/nickname";
             }
         }
-
         return "redirect:/register/complete"; // 성공 시 회원가입 성공 페이지로 리다이렉트
     }
 

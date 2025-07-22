@@ -16,13 +16,13 @@
 
         <div class="step_bar">
             <div class="step_circle_container">
-                <div class="step_circle"></div>
+                <div class="step_circle action"></div>
                 <div class="step_circle"></div>
                 <div class="step_circle"></div>
                 <div class="step_circle"></div>
                 <div class="step_circle"></div>
             </div>
-            <div class="current_step"></div>
+            <div class="current_step" style="width: 0;"></div>
         </div>
 
         <form method="post"
@@ -37,7 +37,11 @@
 
             <div class="form_input_list">
                 <div class="input_info one_input">
-                    <input type="text" th:field="*{username}" autocomplete="username" placeholder=" ">
+                    <input type="text"
+                           th:field="*{username}"
+                           id="username"
+                           autocomplete="username"
+                           placeholder=" ">
 
                     <label for="username" class="input_title"
                         th:classappend="${#fields.hasErrors('username')} ? 'disabled'">이메일</label>

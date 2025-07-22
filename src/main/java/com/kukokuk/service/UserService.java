@@ -52,7 +52,7 @@ public class UserService {
      * 회원가입 이메일 중복 확인
      * @param username 이메일
      */
-    public void registerUserByUsername(String username) {
+    public void duplicateUserByUsername(String username) {
         log.info("registerUserByUsername() 실행");
         User foundUser = userMapper.getUserByUsername(username);
         if (foundUser != null) {
@@ -64,7 +64,7 @@ public class UserService {
      * 회원가입 닉네임 중복 확인
      * @param nickname 닉네임
      */
-    public void registerUserByNickname(String nickname) {
+    public void duplicateUserByNickname(String nickname) {
         log.info("registerUserByNickname() 실행");
         User foundUser = userMapper.getUserByNickname(nickname);
         if (foundUser != null) {

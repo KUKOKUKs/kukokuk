@@ -45,30 +45,30 @@ $(document).ready(() => {
     });
     
     // 회원가입 관련
-    const $registerForm = $("#register-form"); // 회원가입 폼
-    const $registerSubmitBtn = $("button[type='submit']");
-    const $registerEmail = $registerForm.find("input[name='username']"); // username input
-    const $registerPassword = $registerForm.find("input[name='password']"); // password input
-
-    // 회원가입 이메일 유효성 검증 처리
-    $registerEmail.on("input blur", function () {
-        clearInputErrorMessage($registerEmail); // 에러 메세지 초기화
-        $registerSubmitBtn.removeClass("disabled"); // 제출 버튼 활성 초기화
-        isFormValid = true; // 폼 유효성 검증 플래그
-
-        if (this.value === "") {
-            // 값이 없을 경우
-            addInputErrorMessage($registerEmail, "이메일을 입력해 주세요");
-            isFormValid = false;
-        } else if (!regExEmail.test($registerEmail.val())) {
-            // 정규표현식을 통과하지 못한 경우
-            addInputErrorMessage($registerEmail, "유효한 이메일 형식이 아닙니다");
-            isFormValid = false;
-        }
-
-        // 유효하지 않을 경우 제출 버튼 비활성화
-        if (!isFormValid) $registerSubmitBtn.addClass("disabled");
-    });
+    // const $registerForm = $("#register-form"); // 회원가입 폼
+    // const $registerSubmitBtn = $("button[type='submit']");
+    // const $registerEmail = $registerForm.find("input[name='username']"); // username input
+    // const $registerPassword = $registerForm.find("input[name='password']"); // password input
+    //
+    // // 회원가입 이메일 유효성 검증 처리
+    // $registerEmail.on("input blur", function () {
+    //     clearInputErrorMessage($registerEmail); // 에러 메세지 초기화
+    //     $registerSubmitBtn.removeClass("disabled"); // 제출 버튼 활성 초기화
+    //     isFormValid = true; // 폼 유효성 검증 플래그
+    //
+    //     if (this.value === "") {
+    //         // 값이 없을 경우
+    //         addInputErrorMessage($registerEmail, "이메일을 입력해 주세요");
+    //         isFormValid = false;
+    //     } else if (!regExEmail.test($registerEmail.val())) {
+    //         // 정규표현식을 통과하지 못한 경우
+    //         addInputErrorMessage($registerEmail, "유효한 이메일 형식이 아닙니다");
+    //         isFormValid = false;
+    //     }
+    //
+    //     // 유효하지 않을 경우 제출 버튼 비활성화
+    //     if (!isFormValid) $registerSubmitBtn.addClass("disabled");
+    // });
 
     // sign form 내부 아이콘 버튼으로 해당하는 input 값 초기화
     $inputDeleteBtn.click(function () {

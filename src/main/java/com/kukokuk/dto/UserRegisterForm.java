@@ -1,6 +1,7 @@
 package com.kukokuk.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kukokuk.validation.EmailCheck;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,8 +15,8 @@ import lombok.Setter;
 @Setter
 public class UserRegisterForm {
 
-    @NotBlank(message = "이메일을 입력해 주세요")
-    @Email(message = "유효한 이메일 형식이 아닙니다")
+    @NotBlank(message = "이메일을 입력해 주세요", groups = EmailCheck.class)
+    @Email(message = "유효한 이메일 형식이 아닙니다", groups = EmailCheck.class)
     private String username;
 
     @NotBlank(message = "비밀번호를 입력해 주세요")
