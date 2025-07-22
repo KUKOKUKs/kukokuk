@@ -7,7 +7,7 @@ import {
 $(document).ready(() => {
     // sign 공통 관련
     let isFormValid = false; // 폼 유효성 검증 플래그
-    const regExEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z.]{2,5}$/; // 이메일 정규표현식
+    const regExEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z.]{2,5}$/; // 이메일 정규표현식
     const $inputDeleteBtn = $(".input_delete_btn"); // 인풋 값 초기화 버튼
     const $inputPasswordViewBtn = $("#input-password-view-btn"); // password 타입 토글 버튼
 
