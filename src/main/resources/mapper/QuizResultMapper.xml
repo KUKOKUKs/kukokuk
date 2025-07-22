@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kukokuk.mapper.QuizResultMapper">
+
+    <resultMap id="QuizResultMap" type="QuizResult">
+        <id property="resultNo" column="RESULT_NO"/>
+        <result property="sessionNo" column="SESSION_NO"/>
+        <result property="selectedChoice" column="SELECTED_CHOICE"/>
+        <result property="isSuccess" column="IS_SUCCESS"/>
+        <result property="isBookmarked" column="IS_BOOKMARKED"/>
+        <result property="createdDate" column="CREATED_DATE"/>
+        <result property="updatedDate" column="UPDATED_DATE"/>
+        <result property="userNo" column="USER_NO"/>
+        <result property="quizNo" column="QUIZ_NO"/>
+    </resultMap>
+
+
+   <!--
+    * 퀴즈 결과를 저장한다.
+    * @param result 퀴즈 결과 객체
+    * @return insert 성공 여부
+    */
+    int insertQuizResult(QuizResult result);
+    -->
+    <insert id="insertQuizResult" parameterType="QuizResult">
+        INSERT INTO KUKOKUK_QUIZ_RESULTS
+        (
+         SESSION_NO,
+         SELECTED_CHOICE,
+         IS_SUCCESS,
+         IS_BOOKMARKED,
+         USER_NO, QUIZ_NO
+        )
+        VALUES (#{sessionNo}, #{selectedChoice}, #{isSuccess}, #{isBookmarked},
+                #{userNo}, #{quizNo})
+    </insert>
+
+   <!--
+    * 퀴즈 풀이 횟수를 +1 한다.
+    * @param quizNo 대상 퀴즈 번호
+    * @return update 성공 여부
+    */
+    int updateUsageCount(int quizNo);
+    -->
+    <update id="updateUsageCount" parameterType="int">
+        UPDATE KUKOKUK_QUIZ_MASTERS
+        SET USAGE_COUNT = USAGE_COUNT + 1
+        WHERE QUIZ_NO = #{quizNo}
+    </update>
+
+    <!--
+    * 정답 성공 횟수를 +1 한다.
+    * @param quizNo 대상 퀴즈 번호
+    * @return update 성공 여부
+    */
+    int updateSuccessCount(int quizNo);
+    -->
+    <update id="updateSuccessCount" parameterType="int">
+        UPDATE KUKOKUK_QUIZ_MASTERS
+        SET SUCCESS_COUNT = SUCCESS_COUNT + 1
+        WHERE QUIZ_NO = #{quizNo}
+    </update>
+
+</mapper>
