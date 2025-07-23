@@ -1,5 +1,6 @@
 package com.kukokuk.config;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
@@ -20,5 +21,14 @@ public class AppConfig {
             .setSkipNullEnabled(true);
 
         return mapper;
+    }
+
+    // dotenv 환경설정
+    @Bean
+    public Dotenv dotenv() {
+        // .env 파일을 읽어서 환경변수로 사용
+        return Dotenv.configure().directory("./")
+            .ignoreIfMissing() // .env 파일이 없어도 에러 발생 안함
+            .load();
     }
 }
