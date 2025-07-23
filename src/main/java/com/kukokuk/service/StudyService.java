@@ -4,6 +4,7 @@ import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
+import com.kukokuk.mapper.DailyStudyMaterialMapper;
 import com.kukokuk.mapper.MaterialParseJobMapper;
 import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.response.ParseMaterialResponse;
@@ -12,6 +13,7 @@ import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
 import com.kukokuk.vo.DailyStudy;
 import com.kukokuk.vo.DailyStudyLog;
+import com.kukokuk.vo.DailyStudyMaterial;
 import com.kukokuk.vo.MaterialParseJob;
 import com.kukokuk.vo.User;
 import java.util.Date;
@@ -32,6 +34,7 @@ public class StudyService {
 
     private final  DailyStudyMapper dailyStudyMapper;
     private final DailyQuestMapper dailyQuestMapper;
+    private DailyStudyMaterialMapper dailyStudyMaterialMapper;
 
     private final MaterialParseJobMapper materialParseJobMapper;
 
@@ -72,6 +75,7 @@ public class StudyService {
             dto.setUser(user);
 
             // 3. 유저의 수준에 맞고, 유저가 아직 학습하지 않았거나 학습중인 일일학습 5개 조회
+            // ++++ 유저의 수준이 아직 존재하지 않을 때 고려
             int recommendStudyCount = 5;
             List<DailyStudy> dailyStudies = getUserDailyStudies(user, recommendStudyCount);
             dto.setDailyStudies(dailyStudies);
@@ -189,7 +193,7 @@ public class StudyService {
             }
         }
 
-        // 3단계 : 조회한 학습원본데이터_학습자료_학습이력DTO 리스트 에서 학습자료가 NULL값인 원본데이터에 대해 학습자료 생성하기
+        // 3단계 : 조회한 학습원본데이터_학습자료_학습이력DTO 리스트에서 학습자료가 NULL값인 원본데이터에 대해 학습자료 생성하기
         for (UserStudyRecommendationDto rec : userStudyRecommendationDtos) {
             if (rec.getDailyStudyNo() == null) {
                 // 해당 학습원본데이터와 사용자수준에 맞는 학습자료 생성하기
@@ -214,7 +218,14 @@ public class StudyService {
      * @param studyDifficulty
      * @return
      */
-    private DailyStudy createDailyStudy(Integer dailyStudyMaterialNo, int studyDifficulty) {
+    private DailyStudy createDailyStudy(int dailyStudyMaterialNo, int studyDifficulty) {
+        // dailyStudyMaterialNo 로 학습자료 원본데이터 조회
+        DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
+
+        // Gemini에게 학습자료 원본 텍스트 전달해서, 응답 데이터 반환
+
+        // 응답데이터 파싱 및 DB에 저장
+
         return null;
     }
 
