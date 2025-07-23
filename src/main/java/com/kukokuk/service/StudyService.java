@@ -227,7 +227,7 @@ public class StudyService {
     public ParseMaterialResponse createMaterial(ParseMaterialRequest request) {
         ParseMaterialResponse parseMaterialResponse = new ParseMaterialResponse();
 
-        List<String> allUrls = request.getFileUrls();
+        List<String> allUrls = request.getUrls();
 
         // 요청으로 받은 url 목록 중 이미 DB에 존재하는 url만 조회
         List<String> existingUrls = materialParseJobMapper.getExistUrls(allUrls);
