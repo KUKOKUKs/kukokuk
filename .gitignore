@@ -41,6 +41,5 @@ out/
 src/main/resources/static/css/**/*.css
 src/main/resources/static/css/**/*.css.map
 
-
 # env 파일
 *.env

@@ -12,7 +12,12 @@
     <result property="hintUsedCount" column="HINT_USED_COUNT"/>
   </resultMap>
 
-  <!-- insertDictationSession(DictationSession session) -->
+  <!-- /**
+   * 받아쓰기 세트 생성
+   * @param session 받아쓰기 세트
+   */
+  insertDictationSession(DictationSession session)
+   -->
   <insert id="insertDictationSession" parameterType="DictationSession">
     INSERT INTO KUKOKUK_DICTATION_SESSIONS (
        USER_NO
@@ -25,9 +30,15 @@
     )
   </insert>
 
-
-  <!-- DictationSession getSessionByNo(int dictationSessionNo) -->
-  <select id="getSessionByNo" parameterType="int" resultMap="dictationSessionResultMap">
+  <!--
+  /**
+   * 세트 번호로 받아쓰기 세트 가져오기
+   * @param dictationSessionNo 세트 번호
+   * @return 받아쓰기 세트
+   */
+    DictationSession getDictationSessionByNo(int dictationSessionNo)
+   -->
+  <select id="getDictationSessionByNo" resultMap="DictationSessionResultMap">
     SELECT
        DICTATION_SESSION_NO
       ,USER_NO
@@ -42,7 +53,13 @@
         DICTATION_SESSION_NO = #{dictationSessionNo}
   </select>
 
-  <!-- updateDictationSessionResult(DictationSession session) -->
+  <!--
+   /**
+   * 받아쓰기 끝나고 해당 받아쓰기 세트 결과 업데이트
+   * @param session 받아쓰기 세트
+   */
+   updateDictationSessionResult(DictationSession session)
+   -->
   <update id="updateDictationSessionResult" parameterType="DictationSession">
     UPDATE KUKOKUK_DICTATION_SESSIONS
     SET
@@ -53,6 +70,5 @@
     WHERE
        DICTATION_SESSION_NO = #{dictationSessionNo}
   </update>
-
 
 </mapper>

@@ -2,45 +2,115 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DictationQuestionMapper">
 
-  <!-- insertLog(DictationQuestionLog dictationQuestionLog) -->
+  <!--
+  /**
+   * 받아쓰기 이력 생성
+   * @param dictationQuestionLog 받아쓰기 이력
+   */
+   insertLog(DictationQuestionLog dictationQuestionLog)
+   -->
   <insert id="insertLog" parameterType="DictationQuestionLog">
     INSERT INTO KUKOKUK_DICTATION_QUESTION_LOGS (
-       USER_NO
-       ,DICTATION_QUESTION_NO
-       ,DICTATION_SESSION_NO
-       ,TRY_COUNT
-       ,IS_SUCCESS
+          USER_NO
+         ,DICTATION_QUESTION_NO
+         ,DICTATION_SESSION_NO
+         ,USER_ANSWER
+         ,IS_SUCCESS
     ) VALUES (
          #{userNo}
         ,#{dictationQuestionNo}
         ,#{dictationSessionNo}
-        ,#{tryCount}
+        ,#{userAnswer}
         ,#{isSuccess}
     )
   </insert>
 
-  <!-- updateHintUsed(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("userHint") String userHint) -->
-  <update id="updateHintUsed">
-    UPDATE KUKOKUK_DICTATION_QUESTION_LOGS
+  <!--
+  /**
+   * 식별자 받아쓰기 힌트 사용 여부
+   * @param dictationQuestionLogNo 식별자
+   * @param userHint 힌트 사용 여부
+   */
+   updateHintUsed(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("userHint") String userHint)
+   -->
+  <update id="updateHintUsed" parameterType="DictationQuestionLog">
+    UPDATE
+        KUKOKUK_DICTATION_QUESTION_LOGS
     SET
         USER_HINT = #{userHint}
-    WHERE DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+    WHERE
+        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
   </update>
 
-  <!-- updateIsSuccess(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("isSuccess") String isSuccess) -->
+  <!--
+  /**
+   * 식별자 받아쓰기 정답 여부
+   * @param dictationQuestionLogNo 식별자
+   * @param isSuccess 정답 여부
+   */
+   updateIsSuccess(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("isSuccess") String isSuccess)
+   -->
   <update id="updateIsSuccess">
-    UPDATE KUKOKUK_DICTATION_QUESTION_LOGS
+    UPDATE
+        KUKOKUK_DICTATION_QUESTION_LOGS
     SET
         isSuccess = #{isSuccess}
-    WHERE DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+    WHERE
+        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
   </update>
 
-  <!-- updateTryCount(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("tryCount") String tryCount) -->
+  <!--
+  /**
+   * 식별자 받아쓰기 시도 횟수
+   * @param dictationQuestionLogNo 식별자
+   */
+   updateTryCount(@Param("dictationQuestionLogNo") int dictationQuestionLogNo
+   -->
   <update id="updateTryCount">
-    UPDATE KUKOKUK_DICTATION_QUESTION_LOGS
+    UPDATE
+        KUKOKUK_DICTATION_QUESTION_LOGS
     SET
         TRY_COUNT = TRY_COUNT + 1
-    WHERE DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+    WHERE
+        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
   </update>
+
+  <!--
+  /**
+   * 받아쓰기 문제 세트 맞은 문제 개수 조회
+   * @param dictationSessionNo 받아쓰기 문제 세트 번호
+   * @return 맞은 문제 개수
+   */
+   getcountCorrectAnswers(@Param("dictationSessionNo") int dictationSessionNo)
+  -->
+  <select id="getcountCorrectAnswers" resultType="int">
+    SELECT
+        COUNT(*)
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
+    AND
+        IS_SUCCESS = 'Y'
+  </select>
+
+  <!--
+  /**
+   * 받아쓰기 문제 세트 사용한 힌트 수 조회
+   * @param dictationSessionNo 받아쓰기 문제 세트 번호
+   * @return 사용한 힌트 개수
+   */
+   getcountHintsUsed(@Param("dictationSessionNo") int dictationSessionNo)
+   -->
+  <select id="getcountHintsUsed" resultType="int">
+    SELECT
+        COUNT(*)
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
+    AND
+        USED_HINT = 'Y'
+  </select>
 
 </mapper>
