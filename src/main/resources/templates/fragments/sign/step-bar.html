@@ -9,8 +9,9 @@
     </div>
 
     <div class="current_step"
-         th:with="percent=${step > 1 ? ((index - 1) * 100.0 / (step - 1)) : 0}"
-         th:style="'width:' + ${percent} + '%'">
+         th:with="percent=${step > 1 ? ((index - 1) * 100.0 / (step - 1)) : 0},
+                  formattedPercent=${#numbers.formatDecimal(percent, 0, 3)}"
+         th:style="'width:' + ${formattedPercent} + '%'">
     </div>
 </div>
 </html>

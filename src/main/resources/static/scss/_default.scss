@@ -98,6 +98,7 @@
         border-style: solid;
         border-color: var(--borderColor);
         position: relative;
+        overflow: hidden;
 
         &:has(.input_icon) {
             padding-right: 60px;
@@ -206,7 +207,7 @@
             }
         }
 
-        &:has(input:focus)::after {
+        &:not(.radio_info):has(input:focus)::after {
             content: "";
             position: absolute;
             top: 0;
@@ -217,11 +218,46 @@
             transition: border var(--trst);
         }
 
-        input[type="date"] {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
+        &.radio_info {
+            padding: 0;
+            display: flex;
+            align-items: center;
+
+            .radio_input {
+                width: 100%;
+                height: 100%;
+                border-right: var(--thinBorder);
+                transition: background-color var(--trst);
+
+                &:last-child {
+                    border-right: none;
+                }
+
+                .text {
+                    width: 100%;
+                    height: 100%;
+                    color: var(--grayColor);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                input[type=radio] {
+                    position: absolute;
+                    width: 0;
+                    height: 0;
+                    opacity: 0;
+                }
+
+                &:has(input:checked) {
+                    background-color: var(--subColor);
+
+                    .text {
+                        font-weight: bold;
+                        color: var(--primaryColor);
+                    }
+                }
+            }
         }
     }
 }

@@ -45,8 +45,15 @@
                     <span class="input_error" th:if="${#fields.hasErrors('birthDate')}" th:text="${#fields.errors('birthDate')[0]}"></span>
                 </div>
 
-                <div class="input_info">
-
+                <div class="input_info radio_info">
+                    <div class="radio_input">
+                        <label for="gender-m" class="text">남</label>
+                        <input type="radio" th:field="*{gender}" id="gender-m" value="M" checked>
+                    </div>
+                    <div class="radio_input">
+                        <label for="gender-f" class="text">여</label>
+                        <input type="radio" th:field="*{gender}" id="gender-f" value="F">
+                    </div>
                 </div>
             </div>
 
