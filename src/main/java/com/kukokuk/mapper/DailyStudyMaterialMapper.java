@@ -12,4 +12,7 @@ public interface DailyStudyMaterialMapper {
 
   // 해당 학교/ 학년의 가장 큰 시퀀스 값 조회
   int getMaxSequenceBySchoolAndGrade(@Param("school") String school, @Param("grade") int grade);
+
+  // 식별자로 학습자료 원본데이터 조회
+  DailyStudyMaterial getStudyMaterialByNo(int dailyStudyMaterialNo);
 }

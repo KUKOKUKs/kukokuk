@@ -80,4 +80,8 @@
 
 # 파이썬 서버 경로 설정
 pyserver:
-    url: http://127.0.0.1:8000
+  url: http://127.0.0.1:8000
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
