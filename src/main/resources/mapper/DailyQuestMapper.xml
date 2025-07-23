@@ -42,7 +42,7 @@
     FROM
         KUKOKUK_DAILY_QUEST_USERS U
         JOIN KUKOKUK_DAILY_QUESTS Q
-            ON U.DAILT_QUEST_NO = Q.DAILT_QUEST_NO
+            ON U.DAILY_QUEST_NO = Q.DAILY_QUEST_NO
     WHERE
         U.USER_NO = #{userNo}
         <if test="condition.contentType != null">

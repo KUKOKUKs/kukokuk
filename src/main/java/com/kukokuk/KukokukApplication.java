@@ -3,10 +3,12 @@ package com.kukokuk;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
 @MapperScan("com.kukokuk.mapper")
+@EnableScheduling
 public class KukokukApplication {
 
     public static void main(String[] args) {
