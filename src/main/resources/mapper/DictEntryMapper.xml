@@ -2,31 +2,81 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DictEntryMapper">
 
-  <!--
-      public DictEntry getEntryByNo(@Param("entryNo") int entryNo);
-
-      단일 사전 엔트리 조회
-      - entryNo: 조회할 단어의 고유 번호
-  -->
-  <select id="getEntryByNo" parameterType="int" resultType="DictEntry">
-    SELECT *
+  <resultMap id="dictEntryMap" type="DictEntry">
+    <id property="entryNo" column="ENTRY_NO"/>
+    <result property="word" column="WORD"/>
+    <result property="definition" column="DEFINITION"/>
+    <result property="wordLevel" column="WORD_LEVEL"/>
+    <result property="usageExample" column="USAGE_EXAMPLE"/>
+    <result property="origin" column="ORIGIN"/>
+  </resultMap>
+<!--
+    /**
+    * 특정 ENTRY_NO에 해당하는 사전 데이터를 조회한다.
+    *
+    * @param entryNo 단어(표제어)의 고유 번호
+    * @return 해당 단어의 사전 정보
+    */
+    DictEntry getEntryByNo(int entryNo);-->
+  <select id="getEntryByNo"  resultMap="dictEntryMap">
+    SELECT
+        ENTRY_NO
+         , WORD
+         , DEFINITION
+         , WORD_LEVEL
+         , USAGE_EXAMPLE
+         , ORIGIN
+         , CREATED_DATE
     FROM KUKOKUK_DICT_ENTRIES
     WHERE ENTRY_NO = #{entryNo}
   </select>
 
-  <!--
-      public List<DictEntry> selectRandomEntriesExclude(@Param("excludeEntryNo") int excludeEntryNo, @Param("limit") int limit);
+   <!--
+     * 특정 ENTRY_WORD를 제외하고 랜덤하게 사전 데이터를 조회한다.
+     * @param dictEntries 제외할 정답 ENTRY_NO
+     * @return 무작위로 선택된 단어 리스트
+     List<DictEntry> getRandomEntriesExclude(@Param("dictEntries") List<DictEntry> dictEntries
+                                        , @Param("limit") int limit);
+    -->
+    <select id="getRandomEntriesExclude" resultMap="dictEntryMap">
+        SELECT ENTRY_NO
+        , WORD
+        , DEFINITION
+        , WORD_LEVEL
+        , USAGE_EXAMPLE
+        , ORIGIN
+        , CREATED_DATE
+        FROM KUKOKUK_DICT_ENTRIES
+        <where>
+            <if test="wordList != null and wordList.size() > 0">
+                WORD NOT IN
+                <foreach item="word" collection="wordList" open="(" separator="," close=")">
+                    #{word}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY RAND()
+        LIMIT #{limit}
+    </select>
 
-      특정 ENTRY_NO를 제외하고 랜덤하게 N개 단어를 조회
-      - excludeEntryNo: 정답 단어 제외용
-      - limit: 가져올 단어 수 (보통 3개)
-  -->
-  <select id="getRandomEntriesExclude" resultType="DictEntry">
-    SELECT *
+    <!--
+        * 전체 사전에서 무작위로 단어들을 조회한다.
+        *
+        * @return 무작위로 선택된 단어 정보 목록
+        List<DictEntry> getRandomDictEntries(int count);
+    -->
+  <select id="getRandomDictEntries" resultMap="dictEntryMap">
+    SELECT
+        ENTRY_NO
+        , WORD
+        , DEFINITION
+        , WORD_LEVEL
+        , USAGE_EXAMPLE
+        , ORIGIN
+        , CREATED_DATE
     FROM KUKOKUK_DICT_ENTRIES
-    WHERE ENTRY_NO != #{excludeEntryNo}
     ORDER BY RAND()
-    LIMIT #{limit}
+    LIMIT #{count}
   </select>
 
 </mapper>

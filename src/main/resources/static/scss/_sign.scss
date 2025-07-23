@@ -1,0 +1,31 @@
+.sign_wrap {
+    width: 100%;
+    max-width: var(--subContentWidth);
+    padding: var(--containerPadding) 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--baseGap);
+}
+
+.sign_top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--baseGap);
+
+    .back_btn {
+        display: flex;
+        align-items: center;
+        font-size: var(--smallFontSize);
+
+        .back_icon {
+            width: var(--smallIcon);
+            height: var(--smallIcon);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}

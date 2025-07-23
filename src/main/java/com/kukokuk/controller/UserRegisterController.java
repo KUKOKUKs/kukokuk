@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 @Controller
 @SessionAttributes("userRegisterForm") // 세션 유지할 모델 이름
-@RequiredArgsConstructor  // final 필드 기반 생성자 자동 생성 (Lombok)
+@RequiredArgsConstructor  // final 필드 기반 생성자 자동 생성
 @RequestMapping("/register")
 public class UserRegisterController {
 
@@ -35,17 +35,20 @@ public class UserRegisterController {
     // 1단계: 이메일 처리 후 → 비밀번호 단계로 이동
     @PostMapping("/email")
     public String processEmail(@ModelAttribute("userRegisterForm") UserRegisterForm form
-                        , BindingResult errors) {
+        , BindingResult errors) {
         // 유효성 검증 실패 시 다시 입력 페이지
         if (errors.hasErrors()) {
             return "user/register/email";
         }
+
         try {
             // username 중복 체크
             userService.registerUserByUsername(form.getUsername());
         } catch (UserRegisterException e) {
             errors.rejectValue(e.getField(), "duplicated", e.getMessage());
+            return "user/register/email";
         }
+
         return "redirect:/register/password"; // 성공 시 다음 단계로 리다이렉트
     }
 
@@ -62,6 +65,7 @@ public class UserRegisterController {
         if (errors.hasErrors()) {
             return "user/register/password"; // 유효성 검증 실패 시 다시 입력 페이지
         }
+
         return "redirect:/register/name"; // 성공 시 다음 단계로 리다이렉트
     }
 
@@ -78,6 +82,7 @@ public class UserRegisterController {
         if (errors.hasErrors()) {
             return "user/register/name"; // 유효성 검증 실패 시 다시 입력 페이지
         }
+
         return "redirect:/register/nickname"; // 성공 시 다음 단계로 리다이렉트
     }
 
@@ -95,12 +100,15 @@ public class UserRegisterController {
         if (errors.hasErrors()) {
             return "user/register/nickname";
         }
+
         try {
             // nickname 중복 체크
             userService.registerUserByNickname(form.getNickname());
         } catch (UserRegisterException e) {
             errors.rejectValue(e.getField(), "duplicated", e.getMessage());
+            return "user/register/nickname";
         }
+
         return "redirect:/register/profile"; // 성공 시 다음 단계로 리다이렉트
     }
 
@@ -117,13 +125,27 @@ public class UserRegisterController {
         if (errors.hasErrors()) {
             return "user/register/profile"; // 유효성 검증 실패 시 다시 입력 페이지
         }
-        return "redirect:/register/complete"; // 성공 시 다음 단계로 리다이렉트
+
+        try {
+            // username, nickname 중복 체크 후 사용자, 사용자 권한 등록 요청
+            userService.registerUser(form);
+        } catch (UserRegisterException e) {
+            errors.rejectValue(e.getField(), "duplicated", e.getMessage());
+            // 각 오류 필드로 이동
+            if ("username".equals(e.getField())) {
+                return "user/register/email";
+            }
+            if ("nickname".equals(e.getField())) {
+                return "user/register/nickname";
+            }
+        }
+
+        return "redirect:/register/complete"; // 성공 시 회원가입 성공 페이지로 리다이렉트
     }
 
-    // 회원가입 요청 처리
+    // 회원가입 완료
     @GetMapping("/complete")
     public String registerComplete() {
-        // 회원가입 처리 로직 추가 예정
         return "user/register/complete";
     }
 
