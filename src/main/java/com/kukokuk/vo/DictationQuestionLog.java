@@ -14,7 +14,8 @@ public class DictationQuestionLog {
   private int userNo;                  // 회원번호
   private int dictationQuestionNo;     // 문제 번호
   private int dictationSessionNo;      // 문제 세트 번호
-  private String tryCount;             // ENUM('0','1','2') : 문자열로 처리
+  private String userAnswer;           // 제출문장
+  private int tryCount;                // 시도횟수
   private String isSuccess;            // ENUM('Y','N')
   private String usedHint;             // ENUM('Y','N'), default 'N'
   private Date createdDate;            // 생성일 (NOW())

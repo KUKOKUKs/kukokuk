@@ -21,27 +21,21 @@ public interface DictationQuestionMapper {
   List<DictationQuestion> getQuestionsBySessionNo(int dictationSessionNo);
 
   /**
-   * 특정 받아쓰기 문제 가져오기
-   * @param dictationQuestionNo 문제 번호
-   * @return DictationQuestion 특정 문제 가져오기
+   * 랜덤 문제 가져오기
+   * @param limit 문제 가져올 개수
+   * @return 문제 가져오기
    */
-  DictationQuestion getDictationQuestionByNo(int dictationQuestionNo);
-
-  /**
-   * 랜덤 문제 10개 가져오기
-   * @return 10개의 문제 가져오기
-   */
-  List<DictationQuestion> getRandomQuestions();
+  List<DictationQuestion> getRandomQuestions(int limit);
 
   /**
    * 받아쓰기 문제 수정
-   * @param dictationQuestion 문제
+   * @param dictationQuestion 받아쓰기 문제
    */
   void updateDictationQuestion(DictationQuestion dictationQuestion);
 
   /**
    * 받아쓰기 문제 삭제
-   * @param dictationQuestionNo 문제
+   * @param dictationQuestionNo 문제 번호
    */
   void deleteDictationQuestion(int dictationQuestionNo);
 }
