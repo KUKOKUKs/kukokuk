@@ -3,15 +3,23 @@ package com.kukokuk.controller;
 import com.kukokuk.dto.UserRegisterForm;
 import com.kukokuk.exception.UserRegisterException;
 import com.kukokuk.service.UserService;
+import com.kukokuk.validation.EmailCheck;
+import com.kukokuk.validation.passwordCheck;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 
+@Log4j2
 @Controller
 @SessionAttributes("userRegisterForm") // 세션 유지할 모델 이름
 @RequiredArgsConstructor  // final 필드 기반 생성자 자동 생성
@@ -23,63 +31,82 @@ public class UserRegisterController {
     // 세션에 바인딩할 폼 객체 초기화
     @ModelAttribute("userRegisterForm")
     public UserRegisterForm form() {
+        log.info("UserRegisterForm 객체 초기화");
         return new UserRegisterForm();
     }
 
     // 1단계: 이메일 입력 폼
     @GetMapping
-    public String emailForm() {
+    public String emailForm(@RequestParam(required = false) Boolean reset
+        , SessionStatus sessionStatus) {
+        log.info("emailForm() 컨트롤러 실행");
+
+        if (Boolean.TRUE.equals(reset)) {
+            log.info("emailForm() reset=true으로 세션 초기화");
+            sessionStatus.setComplete(); // 세션 초기화
+            return "redirect:/register";
+        }
         return "user/register/email";
     }
 
     // 1단계: 이메일 처리 후 → 비밀번호 단계로 이동
     @PostMapping("/email")
-    public String processEmail(@ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processEmail(@Validated(EmailCheck.class) @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
+        log.info("processEmail() 컨트롤러 실행");
+
         // 유효성 검증 실패 시 다시 입력 페이지
         if (errors.hasErrors()) {
+            log.info("processEmail() 유효성 검증 실패: {}", errors.getFieldError("username").getDefaultMessage());
             return "user/register/email";
         }
 
         try {
             // username 중복 체크
-            userService.registerUserByUsername(form.getUsername());
+            userService.duplicateUserByUsername(form.getUsername());
         } catch (UserRegisterException e) {
+            log.info("processEmail() UserRegisterException {}", e.getMessage());
             errors.rejectValue(e.getField(), "duplicated", e.getMessage());
             return "user/register/email";
         }
-
         return "redirect:/register/password"; // 성공 시 다음 단계로 리다이렉트
     }
 
     // 2단계: 비밀번호 입력 폼
     @GetMapping("/password")
     public String passwordForm() {
+        log.info("passwordForm() 컨트롤러 실행");
         return "user/register/password";
     }
 
     // 2단계: 비밀번호 처리 후 → 이름 단계로 이동
     @PostMapping("/password")
-    public String processPassword(@ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processPassword(@Validated(passwordCheck.class) @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
+        log.info("processPassword() 컨트롤러 실행");
+
         if (errors.hasErrors()) {
+            log.info("processPassword() 유효성 검증 실패: {}", errors.getFieldError("password").getDefaultMessage());
             return "user/register/password"; // 유효성 검증 실패 시 다시 입력 페이지
         }
-
         return "redirect:/register/name"; // 성공 시 다음 단계로 리다이렉트
     }
 
     // 3단계: 이름 입력 폼
     @GetMapping("/name")
     public String nameForm() {
+        log.info("nameForm() 컨트롤러 실행");
         return "user/register/name";
     }
 
     // 3단계: 이름 처리 후 → 닉네임 단계로 이동
     @PostMapping("/name")
-    public String processName(@ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processName(@Valid @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
+        log.info("processName() 컨트롤러 실행");
+
         if (errors.hasErrors()) {
+            log.info("processName() 유효성 검증 실패");
             return "user/register/name"; // 유효성 검증 실패 시 다시 입력 페이지
         }
 
@@ -89,40 +116,48 @@ public class UserRegisterController {
     // 4단계: 닉네임 입력 폼
     @GetMapping("/nickname")
     public String nicknameForm() {
+        log.info("nicknameForm() 컨트롤러 실행");
         return "user/register/nickname";
     }
 
     // 4단계: 닉네임 처리 후 → 생년월일/성별 단계로 이동
     @PostMapping("/nickname")
-    public String processNickname(@ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processNickname(@Valid @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
+        log.info("processNickname() 컨트롤러 실행");
+
         // 유효성 검증 실패 시 다시 입력 페이지
         if (errors.hasErrors()) {
+            log.info("processNickname() 유효성 검증 실패");
             return "user/register/nickname";
         }
 
         try {
             // nickname 중복 체크
-            userService.registerUserByNickname(form.getNickname());
+            userService.duplicateUserByNickname(form.getNickname());
         } catch (UserRegisterException e) {
+            log.info("processNickname() UserRegisterException {}", e.getMessage());
             errors.rejectValue(e.getField(), "duplicated", e.getMessage());
             return "user/register/nickname";
         }
-
         return "redirect:/register/profile"; // 성공 시 다음 단계로 리다이렉트
     }
 
     // 5단계: 생년월일/성별 입력 폼
     @GetMapping("/profile")
     public String profileForm() {
+        log.info("profileForm() 컨트롤러 실행");
         return "user/register/profile";
     }
 
     // 5단계: 생년월일/성별 처리 후 → 회원가입 요청
     @PostMapping("/profile")
-    public String processProfile(@ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processProfile(@Valid @ModelAttribute("userRegisterForm") UserRegisterForm form
         , BindingResult errors) {
+        log.info("processProfile() 컨트롤러 실행");
+
         if (errors.hasErrors()) {
+            log.info("processProfile() 유효성 검증 실패");
             return "user/register/profile"; // 유효성 검증 실패 시 다시 입력 페이지
         }
 
@@ -130,6 +165,7 @@ public class UserRegisterController {
             // username, nickname 중복 체크 후 사용자, 사용자 권한 등록 요청
             userService.registerUser(form);
         } catch (UserRegisterException e) {
+            log.info("processProfile() UserRegisterException {}", e.getMessage());
             errors.rejectValue(e.getField(), "duplicated", e.getMessage());
             // 각 오류 필드로 이동
             if ("username".equals(e.getField())) {
@@ -139,13 +175,13 @@ public class UserRegisterController {
                 return "user/register/nickname";
             }
         }
-
         return "redirect:/register/complete"; // 성공 시 회원가입 성공 페이지로 리다이렉트
     }
 
     // 회원가입 완료
     @GetMapping("/complete")
     public String registerComplete() {
+        log.info("registerComplete() 컨트롤러 실행");
         return "user/register/complete";
     }
 

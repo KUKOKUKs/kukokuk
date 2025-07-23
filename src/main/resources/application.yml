@@ -1,0 +1,87 @@
+  spring:
+    application:
+      name: kukokuk
+
+    datasource:
+      # 데이터베이스 연결 URL (MySQL)
+      url: jdbc:mysql://localhost:3306/kukokuk?serverTimezone=Asia/Seoul
+      username: kukokuk
+      password: zxcv1234
+
+    servlet:
+      encoding:
+        # 기본 문자셋
+        charset: UTF-8
+        # 인코딩 적용 여부
+        enabled: true
+        # 강제로 인코딩 설정 적용
+        force: true
+
+    # Redis 기본 설정
+    data:
+      redis:
+        host: localhost
+        port: 6379
+
+  server:
+    port: 8080
+
+  mybatis:
+    # Mapper XML 파일 위치
+    mapper-locations: classpath:mapper/*.xml
+
+    # Type Alias 패키지 설정
+    type-aliases-package: com.kukokuk.vo,com.kukokuk.dto
+
+    configuration:
+      # NULL 값 처리 방식
+      jdbc-type-for-null: 'NULL'
+
+      # MyBatis 로그 출력 방식 (log4j2 사용)
+      log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl
+
+  logging:
+    level:
+      # HikariCP 커넥션 풀 로그
+      com.zaxxer.hikari: INFO
+
+      # DataSource 관련 로그 비활성화
+      javax.sql.DataSource: OFF
+
+      jdbc:
+        # JDBC 감사 로그 비활성화
+        audit: OFF
+
+        # SQL 실행 결과 테이블 로그 활성화
+        resultsettable: INFO
+
+        # SQL만 로그로 출력 (비활성화)
+        sqlonly: OFF
+
+        # SQL 실행 시간 로그 활성화
+        sqltiming: INFO
+
+        # 커넥션 로그 비활성화
+        connection: OFF
+
+        # 결과셋 출력 비활성화
+        resultset: OFF
+
+      org:
+        hibernate:
+          # 하이버네이트 SQL 로그
+          SQL: DEBUG
+
+          type:
+            descriptor:
+              sql:
+                # 바인딩 파라미터 추적 로그
+                BasicBinder: TRACE
+
+# 파이썬 서버 경로 설정
+pyserver:
+  url: http://127.0.0.1:8000
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
