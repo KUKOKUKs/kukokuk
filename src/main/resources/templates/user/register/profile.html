@@ -1,10 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html layout:decorate="~{/layout/center}" th:with="title='회원가입'">
+<div layout:fragment="content">
+    <div class="sign_wrap">
+        <div th:replace="~{fragments/sign/register-top :: register-top-fragment('회원가입')}"></div>
 
-</body>
+        <span class="logo"></span>
+
+        <div th:replace="~{fragments/sign/step-bar :: step-fragment(4, 3)}"></div>
+
+        <form method="post"
+              th:action="@{/register/profile}"
+              th:object="${userRegisterForm}"
+              class="wrap_form container"
+              id="register-form">
+
+            <div class="input_description">
+                <p class="description">원활한 서비스 이용을 위해 이름, 생년월일 8자, 성별을 입력해 주세요</p>
+            </div>
+
+            <div class="form_input_list">
+                <div class="input_info">
+                    <input type="text"
+                           th:field="*{name}"
+                           id="name"
+                           autocomplete="name"
+                           placeholder=" ">
+
+                    <label for="name" class="input_title"
+                           th:classappend="${#fields.hasErrors('name')} ? 'disabled'">이름</label>
+
+                    <span class="input_error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                </div>
+
+                <div class="input_info" id="date-picker-input">
+                    <input type="text"
+                           th:field="*{birthDate}"
+                           id="birth-date"
+                           maxlength="8"
+                           placeholder=" ">
+
+                    <label for="birth-date" class="input_title"
+                           th:classappend="${#fields.hasErrors('birthDate')} ? 'disabled'">생년월일 8자(YYYYMMDD)</label>
+
+                    <span class="input_error" th:if="${#fields.hasErrors('birthDate')}" th:text="${#fields.errors('birthDate')[0]}"></span>
+                </div>
+
+                <div class="input_info">
+
+                </div>
+            </div>
+
+            <div class="btn_list">
+                <a href="/register/password" class="btn white">이전</a>
+                <button type="submit" id="submit-btn" class="btn primary">다음</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <!--/* 최초 랜더링 시 제출 버튼 활성화 설정 */-->
+    <script th:inline="javascript">
+        let hasError = [[${hasError}]];
+        const name = $("#name").val().trim();
+        const birthDate = $("#birth-date").val().trim();
+
+        if (name === "" || birthDate === "" || hasError) {
+            $("#submit-btn").addClass("disabled");
+        }
+    </script>
+    <script type="module" th:src="@{/js/modules/sign/sign-form-handler.js}"></script>
+</th:block>
 </html>

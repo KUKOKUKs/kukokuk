@@ -2,28 +2,11 @@
 <html layout:decorate="~{/layout/center}" th:with="title='회원가입'">
 <div layout:fragment="content">
     <div class="sign_wrap">
-        <div class="sign_top">
-            <a href="/" class="back_btn">
-                <span class="back_icon">
-                    <iconify-icon icon="ep:arrow-left-bold"></iconify-icon>
-                </span>
-                Home
-            </a>
-            <p class="title">회원가입</p>
-        </div>
+        <div th:replace="~{fragments/sign/register-top :: register-top-fragment('회원가입')}"></div>
 
         <span class="logo"></span>
 
-        <div class="step_bar">
-            <div class="step_circle_container">
-                <div class="step_circle action"></div>
-                <div class="step_circle"></div>
-                <div class="step_circle"></div>
-                <div class="step_circle"></div>
-                <div class="step_circle"></div>
-            </div>
-            <div class="current_step" style="width: 0;"></div>
-        </div>
+        <div th:replace="~{fragments/sign/step-bar :: step-fragment(4, 1)}"></div>
 
         <form method="post"
               th:action="@{/register/email}"
@@ -56,7 +39,10 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn primary disabled">다음</button>
+            <div class="btn_list">
+                <a href="/" class="btn white">취소</a>
+                <button type="submit" id="submit-btn" class="btn primary">다음</button>
+            </div>
         </form>
 
         <div class="d_flex justify_content_center align_center base_gap">
@@ -67,6 +53,15 @@
 </div>
 
 <th:block layout:fragment="script">
+    <!--/* 최초 랜더링 시 제출 버튼 활성화 설정 */-->
+    <script th:inline="javascript">
+        let hasError = [[${hasError}]];
+        const username = $("#username").val().trim();
+
+        if (username === "" || hasError) {
+            $("#submit-btn").addClass("disabled");
+        }
+    </script>
     <script type="module" th:src="@{/js/modules/sign/sign-form-handler.js}"></script>
 </th:block>
 </html>

@@ -196,7 +196,7 @@
         }
 
         &:has(input:focus),
-        &:has(input:not(:placeholder-shown)) {
+        &:has(input:not(:placeholder-shown):not([type="date"])) {
             .input_title,
             .input_error {
                 font-size: var(--smallFontSize);
@@ -216,11 +216,19 @@
             border: 2px solid var(--primaryColor);
             transition: border var(--trst);
         }
+
+        input[type="date"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+        }
     }
 }
 
 .input_description {
     width: 100%;
+    font-size: var(--subFontSize);
 }
 
 /* button */
@@ -270,7 +278,11 @@
     }
 }
 
-/* flex */
+/* display */
+.d_none {
+    display: none;
+}
+
 .d_flex {
     width: 100%;
     display: flex;

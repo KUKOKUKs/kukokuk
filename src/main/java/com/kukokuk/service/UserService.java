@@ -53,7 +53,7 @@ public class UserService {
      * @param username 이메일
      */
     public void duplicateUserByUsername(String username) {
-        log.info("registerUserByUsername() 실행");
+        log.info("duplicateUserByUsername() 실행");
         User foundUser = userMapper.getUserByUsername(username);
         if (foundUser != null) {
             throw new UserRegisterException("username", "이미 사용중인 이메일입니다.");
@@ -65,7 +65,7 @@ public class UserService {
      * @param nickname 닉네임
      */
     public void duplicateUserByNickname(String nickname) {
-        log.info("registerUserByNickname() 실행");
+        log.info("duplicateUserByNickname() 실행");
         User foundUser = userMapper.getUserByNickname(nickname);
         if (foundUser != null) {
             throw new UserRegisterException("nickname", "이미 사용중인 닉네임입니다.");
