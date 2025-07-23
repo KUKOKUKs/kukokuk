@@ -90,7 +90,7 @@ public class SecurityConfig {
                     "/**"
                     ,"/"            // 메인
                     , "/login"      // 로그인
-                    , "/register"   // 회원가입
+                    , "/register/**"   // 회원가입
                     , "/css/**"     // css
                     , "/js/**"      // javascript
                     , "/images/**"  // 정적 이미지 경로

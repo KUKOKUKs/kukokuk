@@ -23,27 +23,65 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.0'
-	implementation 'org.modelmapper:modelmapper:3.1.1'
-	compileOnly 'org.projectlombok:lombok'
+	// Spring Boot 개발 도구 (LiveReload, 자동 재시작 등 개발 편의)
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// Spring Web MVC 및 REST API 지원
+	implementation('org.springframework.boot:spring-boot-starter-web')
+
+	// Thymeleaf 템플릿 엔진
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	// Thymeleaf Layout Dialect (템플릿 레이아웃 구조 지원 ex. fragment 사용)
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.0'
+
+	// Lombok (코드 자동 생성: @Getter, @Setter, @Log4j2 등)
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// Log4j2 로깅 설정 (Spring Boot의 기본 로그백을 Log4j2로 교체)
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+	// Spring Security + Thymeleaf 연동 (로그인/권한 처리)
+	implementation('org.springframework.boot:spring-boot-starter-security')
+
+	// Thymeleaf와 Spring Security 연동 지원 (sec:authorize 등)
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+	// Bean Validation (JSR-380) - @NotBlank, @Email 등 사용
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// MySQL 드라이버 (DB 연동용, runtimeOnly로 설정)
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// MyBatis 연동 (SQL 매핑 및 Mapper 인터페이스 사용)
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
+
+	// DTO ↔ Entity 변환 자동화 도구 (간단한 매핑 라이브러리)
+	implementation 'org.modelmapper:modelmapper:3.1.1'
+
+	// 테스트 도구 (Spring Boot Test, JUnit, Security Test 포함)
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	// https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter
-	// Spring Boot Starter로 자동구성되는 라이브러리 등록
-	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
+
+	// SQL 로그 출력용 log4jdbc (Log4j2 전용 버전)
+	// - 쿼리 + 파라미터 + 실행 시간 확인 가능
+	// - 사용 시 log4jdbc용 DataSource 설정 필요
+	// implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+	// Redis (인메모리 데이터 저장소)
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+configurations.all {
+	// log4j-to-slf4j는 log4j-slf4j2-impl과 충돌하므로 명시적으로 제거
+	exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
+	// logback-classic은 log4j2와 충돌하므로 명시적으로 제거
+	exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
