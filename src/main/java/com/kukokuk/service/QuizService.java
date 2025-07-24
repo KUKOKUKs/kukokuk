@@ -16,7 +16,6 @@ public class QuizService {
 
   private final QuizMasterMapper quizMasterMapper;
   private final DictEntryMapper dictEntryMapper;
-
   /**
    * 사전 데이터에서 무작위 단어 1개로 퀴즈를 생성하고 저장한다.
    */

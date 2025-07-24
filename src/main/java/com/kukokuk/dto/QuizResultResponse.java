@@ -13,7 +13,7 @@ public class QuizResultResponse {
     private int quizNo;               // 퀴즈 고유 번호
     private String question;          // 퀴즈 질문
     private String option1;           // 보기 1
-    private String option2;           // 보기 2
+    private String option2;           // 보기  2
     private String option3;           // 보기 3
     private String option4;           // 보기 4
 

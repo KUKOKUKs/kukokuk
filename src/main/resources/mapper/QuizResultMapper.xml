@@ -76,7 +76,7 @@
 
     <select id="getQuizResultsBySessionNoAndUserNo"
       parameterType="map"
-      resultType="com.kukokuk.response.QuizResultResponse">
+      resultType="com.kukokuk.dto.QuizResultResponse">
         SELECT qm.QUIZ_NO          AS quizNo,
                qm.QUESTION         AS question,
                qm.OPTION1          AS option1,
