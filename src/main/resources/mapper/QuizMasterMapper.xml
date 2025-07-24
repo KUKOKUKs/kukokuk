@@ -15,7 +15,6 @@
         <result property="difficulty" column="DIFFICULTY"/>
         <result property="usage_count" column="USAGE_COUNT"/>
         <result property="success_count" column="SUCCESS_COUNT"/>
-
     </resultMap>
     <!--
         public int insertQuiz(QuizMaster quiz);
