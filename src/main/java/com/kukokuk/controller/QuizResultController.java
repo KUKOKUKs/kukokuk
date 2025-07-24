@@ -1,6 +1,6 @@
 package com.kukokuk.controller;
 
-import com.kukokuk.dto.QuizResultResponse;
+import com.kukokuk.response.QuizResultResponse;
 import com.kukokuk.service.QuizResultService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
