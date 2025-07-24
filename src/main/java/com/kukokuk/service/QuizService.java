@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class QuizService {
@@ -48,7 +50,7 @@ public class QuizService {
       }
       QuizMaster quiz = new QuizMaster();
       quiz.setEntryNo(correct.getEntryNo());
-      System.out.println("getEntryNo" + correct.getEntryNo());
+      log.info("생성된 EntryNo: {}", correct.getEntryNo());
       quiz.setQuestion(correct.getDefinition());
       quiz.setOption1(options.get(0).getWord());
       quiz.setOption2(options.get(1).getWord());
@@ -90,7 +92,7 @@ public class QuizService {
       }
       QuizMaster quiz = new QuizMaster();
       quiz.setEntryNo(correct.getEntryNo());
-      System.out.println("getEntryNo" + correct.getEntryNo());
+      log.info("생성된 EntryNo: {}", correct.getEntryNo());
       quiz.setQuestion(correct.getWord());
       quiz.setOption1(options.get(0).getDefinition());
       quiz.setOption2(options.get(1).getDefinition());
@@ -115,7 +117,7 @@ public class QuizService {
           insertQuizByWordRandomEntry(count);
           insertQuizByDefRandomEntry(count);
       } catch (Exception e) {
-        System.out.println("퀴즈 생성 도중 실패: " + e.getMessage());
+        log.info("퀴즈 생성 도중 실패 : {}", e.getMessage());
       }
   }
 
@@ -127,7 +129,7 @@ public class QuizService {
     int meaningToCreate = Math.max(0, targetCount - meaningCount);
     if (meaningToCreate > 0) {
       insertQuizByWordRandomEntry(meaningToCreate);
-      System.out.println("뜻 퀴즈 " + meaningToCreate + "개 생성 완료");
+      log.info("생성된 뜻 유형 퀴즈 수 : {}", meaningToCreate);
     }
 
     // 단어 유형
@@ -135,8 +137,9 @@ public class QuizService {
     int wordToCreate = Math.max(0, targetCount - wordCount);
     if (wordToCreate > 0) {
       insertQuizByDefRandomEntry(wordToCreate);
-      System.out.println("단어 퀴즈 " + wordToCreate + "개 생성 완료");
+      log.info("생성된 단어유형 퀴즈 수 : {}", wordToCreate);
     }
+
   }
 
 

@@ -35,10 +35,10 @@
      * 특정 ENTRY_WORD를 제외하고 랜덤하게 사전 데이터를 조회한다.
      * @param dictEntries 제외할 정답 ENTRY_NO
      * @return 무작위로 선택된 단어 리스트
-     List<DictEntry> getRandomEntriesExclude(@Param("dictEntries") List<DictEntry> dictEntries
+     List<DictEntry> getRandomWordExclude(@Param("dictEntries") List<DictEntry> dictEntries
                                         , @Param("limit") int limit);
     -->
-    <select id="getRandomEntriesExclude" resultMap="dictEntryMap">
+    <select id="getRandomWordExclude" resultMap="dictEntryMap">
         SELECT ENTRY_NO
         , WORD
         , DEFINITION

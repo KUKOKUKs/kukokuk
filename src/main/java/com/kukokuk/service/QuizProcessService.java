@@ -1,16 +1,17 @@
 package com.kukokuk.service;
 
+import com.kukokuk.mapper.QuizMasterMapper;
 import com.kukokuk.mapper.QuizResultMapper;
 import com.kukokuk.mapper.QuizSessionSummaryMapper;
-import com.kukokuk.mapper.QuizMasterMapper;
 import com.kukokuk.vo.QuizResult;
 import com.kukokuk.vo.QuizSessionSummary;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class QuizProcessService {
@@ -25,12 +26,13 @@ public class QuizProcessService {
      * @param summary 세션 요약
      * @param results 문제 결과 리스트
      */
+
     @Transactional
     public void insertQuizSessionAndResults(QuizSessionSummary summary, List<QuizResult> results) {
         // 1. 세션 저장
         int inserted = quizSessionSummaryMapper.insertQuizSessionSummary(summary);
         if (inserted != 1) throw new RuntimeException("세션 저장 실패");
-
+        log.info("세션 저장 성공");
         int sessionNo = summary.getSessionNo();
 
         // 2. 퀴즈 결과 저장
@@ -42,6 +44,7 @@ public class QuizProcessService {
             if ("Y".equals(result.getIsSuccess())) {
                 quizResultMapper.updateSuccessCount(result.getQuizNo());
             }
+            log.info("퀴즈 결과 저장 성공");
         }
 
         // 3. 세션 종료 후 퀴즈 자동 보충
@@ -60,7 +63,7 @@ public class QuizProcessService {
         if (currentMeaning < TARGET_COUNT) {
             int toCreate = TARGET_COUNT - currentMeaning;
             quizService.insertQuizByWordRandomEntry(toCreate);
-            System.out.println("뜻 퀴즈 " + toCreate + "개 보충 생성");
+            log.info("보충된 뜻 유형 퀴즈 {}개", toCreate);
         }
 
         // 단어 유형
@@ -68,7 +71,7 @@ public class QuizProcessService {
         if (currentWord < TARGET_COUNT) {
             int toCreate = TARGET_COUNT - currentWord;
             quizService.insertQuizByDefRandomEntry(toCreate);
-            System.out.println("단어 퀴즈 " + toCreate + "개 보충 생성");
+            log.info("보충된 단어 유형 퀴즈 {}개", toCreate);
         }
     }
 }
