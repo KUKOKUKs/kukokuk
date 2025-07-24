@@ -1,7 +1,7 @@
 import {
     addInputErrorMessage,
     allClearFormErrorMessage
-} from "/js/util/form-error-util.js";
+} from "/js/utils/form-error-util.js";
 
 // 로그인 폼 제출 시 유효성 검사
 export function validateLoginForm($form) {

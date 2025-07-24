@@ -2,8 +2,8 @@ import {validateLoginForm} from '/js/modules/sign/sign-form-validator.js';
 import {
     addInputErrorMessage,
     clearInputErrorMessage
-} from '/js/util/form-error-util.js';
-import {validateDate} from '/js/util/validation-util.js';
+} from '/js/utils/form-error-util.js';
+import {validateDate} from '/js/utils/validation-util.js';
 
 $(document).ready(() => {
     let isValid = true; // 인풋 유효성 검증 플래그
