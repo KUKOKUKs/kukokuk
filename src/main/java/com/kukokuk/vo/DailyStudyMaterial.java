@@ -1,6 +1,9 @@
 package com.kukokuk.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Date;
+import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.ibatis.type.Alias;
@@ -8,6 +11,7 @@ import org.apache.ibatis.type.Alias;
 @Getter
 @Setter
 @Alias("DailyStudyMaterial")
+@Builder
 public class DailyStudyMaterial {
   private int dailyStudyMaterialNo;
   private String school;

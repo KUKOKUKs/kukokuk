@@ -17,7 +17,7 @@ public interface DictationSessionMapper {
    * @param dictationSessionNo 세트 번호
    * @return 받아쓰기 세트
    */
-  DictationSession getSessionByNo(int dictationSessionNo);
+  DictationSession getDictationSessionByNo(int dictationSessionNo);
 
   /**
    * 받아쓰기 끝나고 해당 받아쓰기 세트 결과 업데이트

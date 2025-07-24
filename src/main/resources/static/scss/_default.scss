@@ -78,9 +78,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--largeGap);
+    gap: var(--baseGap);
+    background-color: var(--lightGrayColor);
     border-radius: var(--bdrs);
-    border: var(--baseBorder);
+    border: var(--thinBorder);
 }
 
 .form_input_list {
@@ -91,21 +92,15 @@
     .input_info {
         height: 60px;
         font-size: var(--subFontSize);
+        background-color: #fff;
         padding: var(--inputPadding);
         border-width: 0 1px 1px 1px;
         border-style: solid;
         border-color: var(--borderColor);
         position: relative;
 
-        &:has(input:focus)::after {
-            content: "";
-            position: absolute;
-            top: -1px;
-            bottom: -1px;
-            left: -1px;
-            right: -1px;
-            border: 2px solid var(--primaryColor);
-            transition: border var(--trst);
+        &:has(.input_icon) {
+            padding-right: 60px;
         }
 
         &:first-child {
@@ -125,7 +120,24 @@
             }
         }
 
-        .input_title {
+        &.one_input {
+            border-radius: var(--bdrs);
+
+            &:has(input:focus)::after {
+                border-radius: var(--bdrs);
+            }
+        }
+
+        input {
+            height: 22px;
+            line-height: 22px;
+            font-size: var(--baseFontSize);
+            position: relative;
+            z-index: 1;
+        }
+
+        .input_title,
+        .input_error {
             width: 100%;
             padding: 0 15px;
             font-size: var(--baseFontSize);
@@ -138,33 +150,82 @@
             transition: top var(--trst), font-size var(--trst);
             user-select: none;
             -webkit-user-select: none; /* Safari/Chrome */
-            -moz-user-select: none;    /* Firefox */
-            -ms-user-select: none;     /* IE/Edge */
+            -moz-user-select: none; /* Firefox */
+
+            &.disabled {
+                opacity: 0;
+            }
         }
 
-        input {
-            height: 22px;
-            line-height: 22px;
-            font-size: var(--baseFontSize);
-            position: relative;
+        .input_error {
+            color: var(--redColor);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .input_icon {
+            display: none;
+            align-items: center;
+            gap: var(--smallGap);
+            position: absolute;
+            top: 50%;
+            right: 15px;
             z-index: 1;
+            transform: translateY(-50%);
+
+            .icon {
+                width: var(--smallIcon);
+                height: var(--smallIcon);
+                padding: 0.35em;
+                color: var(--darkGreenColor);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+
+                &.password {
+                    font-size: var(--baseFontSize);
+                }
+            }
+        }
+
+        &:has(input:not(:placeholder-shown)) {
+            .input_icon {
+                display: flex;
+            }
         }
 
         &:has(input:focus),
         &:has(input:not(:placeholder-shown)) {
-            .input_title {
+            .input_title,
+            .input_error {
                 font-size: var(--smallFontSize);
-                color: var(--primaryColor);
                 top: 0.5em;
                 transform: none;
                 pointer-events: none;
             }
         }
+
+        &:has(input:focus)::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border: 2px solid var(--primaryColor);
+            transition: border var(--trst);
+        }
     }
+}
+
+.input_description {
+    width: 100%;
 }
 
 /* button */
 .btn_list {
+    width: 100%;
     display: flex;
     align-items: center;
     gap: var(--smallGap);
@@ -187,6 +248,11 @@
     box-shadow: var(--insetBxsh);
     cursor: pointer;
 
+    &.disabled {
+        pointer-events: none;
+        opacity: .5;
+    }
+
     &.small {
         width: max-content;
         font-size: var(--smallFontSize);
@@ -199,13 +265,14 @@
     }
 
     &.white {
-        border-color: var(--lightGrayColor);
+        border-color: var(--borderColor);
         background-color: #fff;
     }
 }
 
 /* flex */
 .d_flex {
+    width: 100%;
     display: flex;
 
     &.column {
@@ -227,18 +294,18 @@
     &.align_end {
         align-items: flex-end; /* 끝 정렬 */
     }
+}
 
-    &.base_gap {
-        gap: var(--baseGap); /* 기본 gap */
-    }
+.base_gap {
+    gap: var(--baseGap); /* 기본 gap */
+}
 
-    &.small_gap {
-        gap: var(--smallGap); /* 작은 gap */
-    }
+.small_gap {
+    gap: var(--smallGap); /* 작은 gap */
+}
 
-    &.large_gap {
-        gap: var(--largeGap); /* 큰 gap */
-    }
+.large_gap {
+    gap: var(--largeGap); /* 큰 gap */
 }
 
 /* border */

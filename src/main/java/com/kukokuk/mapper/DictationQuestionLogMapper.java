@@ -30,9 +30,8 @@ public interface DictationQuestionLogMapper {
   /**
    * 식별자 받아쓰기 시도 횟수
    * @param dictationQuestionLogNo 식별자
-   * @param tryCount 시도 횟수
    */
-  void updateTryCount(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("tryCount") String tryCount);
+  void updateTryCount(@Param("dictationQuestionLogNo") int dictationQuestionLogNo);
 
   /**
    * 받아쓰기 문제 세트 맞은 문제 개수 조회
@@ -47,5 +46,6 @@ public interface DictationQuestionLogMapper {
    * @return 사용한 힌트 개수
    */
   int getcountHintsUsed(@Param("dictationSessionNo") int dictationSessionNo);
+
 
 }

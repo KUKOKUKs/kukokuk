@@ -4,7 +4,7 @@
     <th:block sec:authorize="!isAuthenticated()">
         <p class="welcome_info">만나서 반갑고 회원가입하고 회원이라면 로그인 감사여</p>
         <div class="btn_list">
-            <a href="/register" class="btn white">회원가입</a>
+            <a href="/register?reset=true" class="btn white">회원가입</a>
             <a href="/login" class="btn primary">로그인</a>
         </div>
     </th:block>
