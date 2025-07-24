@@ -22,6 +22,30 @@ public class UserService {
     private final UserMapper userMapper;
 
     /**
+     * 회원가입 이메일 중복 확인
+     * @param username 이메일
+     */
+    public void duplicateUserByUsername(String username) {
+        log.info("duplicateUserByUsername() 실행");
+        User foundUser = userMapper.getUserByUsername(username);
+        if (foundUser != null) {
+            throw new UserRegisterException("username", "이미 사용중인 이메일입니다.");
+        }
+    }
+
+    /**
+     * 회원가입 닉네임 중복 확인
+     * @param nickname 닉네임
+     */
+    public void duplicateUserByNickname(String nickname) {
+        log.info("duplicateUserByNickname() 실행");
+        User foundUser = userMapper.getUserByNickname(nickname);
+        if (foundUser != null) {
+            throw new UserRegisterException("nickname", "이미 사용중인 닉네임입니다.");
+        }
+    }
+
+    /**
      * 회원가입 처리
      * @param form 신규 사용자 회원가입 정보
      */
@@ -46,30 +70,6 @@ public class UserService {
         // 사용자, 사용자 권한 등록 처리
         userMapper.insertUser(user);
         userMapper.insertUserRole(user.getUserNo(),"ROLE_USER");
-    }
-
-    /**
-     * 회원가입 이메일 중복 확인
-     * @param username 이메일
-     */
-    public void duplicateUserByUsername(String username) {
-        log.info("duplicateUserByUsername() 실행");
-        User foundUser = userMapper.getUserByUsername(username);
-        if (foundUser != null) {
-            throw new UserRegisterException("username", "이미 사용중인 이메일입니다.");
-        }
-    }
-
-    /**
-     * 회원가입 닉네임 중복 확인
-     * @param nickname 닉네임
-     */
-    public void duplicateUserByNickname(String nickname) {
-        log.info("duplicateUserByNickname() 실행");
-        User foundUser = userMapper.getUserByNickname(nickname);
-        if (foundUser != null) {
-            throw new UserRegisterException("nickname", "이미 사용중인 닉네임입니다.");
-        }
     }
 
 }
