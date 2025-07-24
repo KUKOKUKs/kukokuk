@@ -1,6 +1,7 @@
 package com.kukokuk.dto;
 
 import com.kukokuk.validation.EmailCheck;
+import com.kukokuk.validation.NicknameCheck;
 import com.kukokuk.validation.PasswordCheck;
 import com.kukokuk.validation.ProfileCheck;
 import jakarta.validation.constraints.Email;
@@ -23,9 +24,9 @@ public class UserRegisterForm {
     private String username;
 
     @NotBlank(message = "비밀번호를 입력해 주세요", groups = PasswordCheck.class)
-    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[@$!%*?&])[a-zA-Z\\d@$!%*?&]{8,16}$",
-        message = "유효한 비밀번호 형식이 아닙니다",
-        groups = PasswordCheck.class)
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[@$!%*?&])[a-zA-Z\\d@$!%*?&]{8,16}$"
+        , message = "유효한 비밀번호 형식이 아닙니다"
+        , groups = PasswordCheck.class)
     private String password;
 
     @NotBlank(message = "비밀번호 확인란을 입력해 주세요", groups = PasswordCheck.class)
@@ -42,8 +43,11 @@ public class UserRegisterForm {
     @NotBlank(message = "성별을 선택해 주세요", groups = ProfileCheck.class)
     private String gender;
 
-    @NotBlank(message = "닉네임을 입력해 주세요")
-    @Size(min = 6, message = "6자 이상 입력해 주세요")
+    @NotBlank(message = "닉네임을 입력해 주세요", groups = NicknameCheck.class)
+    @Size(min = 4, max = 16, message = "4~16자로 입력해 주세요", groups = NicknameCheck.class)
+    @Pattern(regexp = "^[a-zA-Z0-9가-힣_]{4,16}$"
+        , message = "유효한 닉네임 형식이 아닙니다."
+        , groups = NicknameCheck.class)
     private String nickname;
 
 }

@@ -9,6 +9,7 @@ $(document).ready(() => {
     let isValid = true; // 인풋 유효성 검증 플래그
     const regExEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z.]{2,5}$/; // 이메일 정규표현식
     const regExPassword = /^(?=.*[a-zA-Z])(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,16}$/; // 비밀번호 정규표현식
+    const regExNickname = /^[a-zA-Z0-9가-힣_]{4,16}$/; // 닉네임 정규표현식
     const $submitBtn = $("button[type='submit']");
     const $inputDeleteBtn = $(".input_delete_btn"); // 인풋 값 초기화 버튼
     const $inputPasswordViewBtn = $(".input-password-view-btn"); // password 타입 토글 버튼
@@ -20,9 +21,9 @@ $(document).ready(() => {
     const $registerPasswordConfirm = $registerForm.find("input[name='passwordConfirm']"); // passwordConfirm input
     const $registerName = $registerForm.find("input[name='name']"); // name input
     const $registerBirthDate = $registerForm.find("input[name='birthDate']"); // birthDate input
+    const $registerNickname = $registerForm.find("input[name='nickname']"); // birthDate input
     let isValidName = false; // 이름 유효성 검사 여부
     let isValidBirthDate = false; // 생년월일 유효성 검사 여부
-    let isValidGender = false; // 성별 선택 여부
 
     // 회원가입 이메일 유효성 검증 처리
     $registerEmail.on("input blur", function () {
@@ -99,7 +100,7 @@ $(document).ready(() => {
         }
 
         // 제출 버튼 활성화/비활성화 설정
-        handleSubmitBtn(isValidName && isValidBirthDate && isValidGender);
+        handleSubmitBtn(isValidName && isValidBirthDate);
     });
 
     // 회원가입 생년월일 유효성 검증 처리
@@ -148,7 +149,25 @@ $(document).ready(() => {
         }
 
         // 제출 버튼 활성화/비활성화 설정
-        handleSubmitBtn(isValidName && isValidBirthDate && isValidGender);
+        handleSubmitBtn(isValidName && isValidBirthDate);
+    });
+
+    $registerNickname.on("input blur", function () {
+        clearInputErrorMessage($registerNickname); // 에러 메세지 초기화
+        isValid = true; // 인풋 유효성 검증 플래그
+        const val = $(this).val();
+
+        if (val === "") {
+            addInputErrorMessage($registerNickname, "닉네임을 입력해 주세요");
+            isValid = false;
+        } else if (!regExNickname.test(val)) {
+            // 정규표현식을 통과하지 못한 경우
+            addInputErrorMessage($registerNickname, "유효한 닉네임 형식이 아닙니다");
+            isValid = false;
+        }
+
+        // 제출 버튼 활성화/비활성화 설정
+        handleSubmitBtn(isValid);
     });
 
     // 로그인 관련

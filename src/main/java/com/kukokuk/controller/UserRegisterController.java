@@ -122,8 +122,9 @@ public class UserRegisterController {
 
     // 3단계: 이름/생년월일/성별 입력 폼
     @GetMapping("/profile")
-    public String profileForm() {
+    public String profileForm(@ModelAttribute("userRegisterForm") UserRegisterForm form) {
         log.info("profileForm() 컨트롤러 실행");
+        form.setGender("M"); // 성별 기본값 설정
         return "user/register/profile";
     }
 
