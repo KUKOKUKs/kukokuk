@@ -22,6 +22,43 @@ public class UserService {
     private final UserMapper userMapper;
 
     /**
+     * username을 전달받아 사용자 정보 조회
+     * @param username username
+     * @return 사용자 정보
+     */
+    public User getUserByUsername(String username) {
+        log.info("getUserByUsername() 실행");
+        return userMapper.getUserByUsername(username);
+    }
+
+    /**
+     * 회원가입 처리
+     * @param form 신규 사용자 회원가입 정보
+     */
+    public void registerUser(UserRegisterForm form) {
+        log.info("registerUser() 실행");
+        // 폼 입력하는 동안 다른 사용자의 가입이 있을 경우를 대비하여
+        // 중복 재확인(username, nickname)
+        User foundUserByUsername = userMapper.getUserByUsername(form.getUsername());
+        if (foundUserByUsername != null) {
+            throw new UserRegisterException("username", "이미 사용중인 이메일입니다.");
+        }
+        User foundUserByNickname = userMapper.getUserByNickname(form.getNickname());
+        if (foundUserByNickname != null) {
+            throw new UserRegisterException("nickname", "이미 사용중인 닉네임입니다.");
+        }
+
+        // 폼 입력 값으로 User 객체 생성
+        User user = modelMapper.map(form, User.class);
+        // 비밀번호 암호화
+        user.setPassword(passwordEncoder.encode(form.getPassword()));
+
+        // 사용자, 사용자 권한 등록 처리
+        userMapper.insertUser(user);
+        userMapper.insertUserRole(user.getUserNo(),"ROLE_USER");
+    }
+
+    /**
      * 회원가입 이메일 중복 확인
      * @param username 이메일
      */
@@ -43,33 +80,6 @@ public class UserService {
         if (foundUser != null) {
             throw new UserRegisterException("nickname", "이미 사용중인 닉네임입니다.");
         }
-    }
-
-    /**
-     * 회원가입 처리
-     * @param form 신규 사용자 회원가입 정보
-     */
-    public void registerUser(UserRegisterForm form) {
-        log.info("registerUser() 실행");
-        // 폼 입력하는 동안 다른 사용자의 가입이 있을 경우를 대비하여 
-        // 중복 재확인(username, nickname)
-        User foundUserByUsername = userMapper.getUserByUsername(form.getUsername());
-        if (foundUserByUsername != null) {
-            throw new UserRegisterException("username", "이미 사용중인 이메일입니다.");
-        }
-        User foundUserByNickname = userMapper.getUserByNickname(form.getNickname());
-        if (foundUserByNickname != null) {
-            throw new UserRegisterException("nickname", "이미 사용중인 닉네임입니다.");
-        }
-
-        // 폼 입력 값으로 User 객체 생성
-        User user = modelMapper.map(form, User.class);
-        // 비밀번호 암호화
-        user.setPassword(passwordEncoder.encode(form.getPassword()));
-
-        // 사용자, 사용자 권한 등록 처리
-        userMapper.insertUser(user);
-        userMapper.insertUserRole(user.getUserNo(),"ROLE_USER");
     }
 
 }
