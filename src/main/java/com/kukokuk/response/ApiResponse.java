@@ -1,6 +1,8 @@
 package com.kukokuk.response;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * 응답 데이터 구조를 정의하는 역할
@@ -9,6 +11,8 @@ import lombok.Getter;
  * 상태코드는 기본값으로 설정 / ResponseEntityUtils에서 상태코드  설정 담당
  */
 @Getter
+@Setter
+@NoArgsConstructor
 public class ApiResponse<T> {
 
     private boolean success;

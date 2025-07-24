@@ -1,23 +1,25 @@
 package com.kukokuk.vo;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.ibatis.type.Alias;
 
+import java.util.Date;
+
 @Getter
 @Setter
-@NoArgsConstructor
 @Alias("QuizResult")
 public class QuizResult {
 
-    private int resultNo;
-    private int sessionNo;
-    private int selectedChoice;
-    private String isSuccess;      // ENUM("Y","N")
-    private String isBookmarked;   // ENUM("Y","N")
-    private String createdDate;
-    private String updatedDate;
-    private int userNo;
-    private int quizNo;
+    private int resultNo;            // 결과 고유 번호 (PK)
+    private int sessionNo;           // 퀴즈 세션 번호 (FK)
+    private int quizNo;              // 퀴즈 번호 (FK)
+    private int userNo;              // 사용자 번호 (FK)
+
+    private int selectedChoice;      // 사용자가 선택한 보기 번호
+    private String isSuccess;        // 정답 여부 ("Y" / "N")
+    private String isBookmarked;     // 북마크 여부 ("Y" / "N")
+
+    private Date createdDate;        // 생성일
+    private Date updatedDate;        // 수정일
 }

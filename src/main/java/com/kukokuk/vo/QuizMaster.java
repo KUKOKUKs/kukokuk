@@ -1,5 +1,6 @@
 package com.kukokuk.vo;
 
+import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,4 +24,6 @@ public class QuizMaster {
     private String difficulty;     // ENUM('상','중','하')
     private int usageCount;
     private int successCount;
+    private Date createdDate; // 생성일
+    private Date updatedDate; // 수정일
 }

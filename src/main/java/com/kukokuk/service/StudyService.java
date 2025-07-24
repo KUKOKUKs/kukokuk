@@ -4,29 +4,41 @@ import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
+import com.kukokuk.mapper.DailyStudyMaterialMapper;
+import com.kukokuk.mapper.MaterialParseJobMapper;
+import com.kukokuk.request.ParseMaterialRequest;
+import com.kukokuk.response.ParseMaterialResponse;
 import com.kukokuk.util.SchoolGradeUtils;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
 import com.kukokuk.vo.DailyStudy;
 import com.kukokuk.vo.DailyStudyLog;
+import com.kukokuk.vo.DailyStudyMaterial;
+import com.kukokuk.vo.MaterialParseJob;
 import com.kukokuk.vo.User;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.internal.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class StudyService {
 
-    @Autowired
-    private DailyStudyMapper dailyStudyMapper;
+    private final  DailyStudyMapper dailyStudyMapper;
+    private final DailyQuestMapper dailyQuestMapper;
+    private DailyStudyMaterialMapper dailyStudyMaterialMapper;
 
-    @Autowired
-    private DailyQuestMapper dailyQuestMapper;
+    private final MaterialParseJobMapper materialParseJobMapper;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     /*
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto 를 반환한다
@@ -63,6 +75,7 @@ public class StudyService {
             dto.setUser(user);
 
             // 3. 유저의 수준에 맞고, 유저가 아직 학습하지 않았거나 학습중인 일일학습 5개 조회
+            // ++++ 유저의 수준이 아직 존재하지 않을 때 고려
             int recommendStudyCount = 5;
             List<DailyStudy> dailyStudies = getUserDailyStudies(user, recommendStudyCount);
             dto.setDailyStudies(dailyStudies);
@@ -180,7 +193,7 @@ public class StudyService {
             }
         }
 
-        // 3단계 : 조회한 학습원본데이터_학습자료_학습이력DTO 리스트 에서 학습자료가 NULL값인 원본데이터에 대해 학습자료 생성하기
+        // 3단계 : 조회한 학습원본데이터_학습자료_학습이력DTO 리스트에서 학습자료가 NULL값인 원본데이터에 대해 학습자료 생성하기
         for (UserStudyRecommendationDto rec : userStudyRecommendationDtos) {
             if (rec.getDailyStudyNo() == null) {
                 // 해당 학습원본데이터와 사용자수준에 맞는 학습자료 생성하기
@@ -205,7 +218,60 @@ public class StudyService {
      * @param studyDifficulty
      * @return
      */
-    private DailyStudy createDailyStudy(Integer dailyStudyMaterialNo, int studyDifficulty) {
+    private DailyStudy createDailyStudy(int dailyStudyMaterialNo, int studyDifficulty) {
+        // dailyStudyMaterialNo 로 학습자료 원본데이터 조회
+        DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
+
+        // Gemini에게 학습자료 원본 텍스트 전달해서, 응답 데이터 반환
+
+        // 응답데이터 파싱 및 DB에 저장
+
         return null;
     }
+
+    /**
+    * 요청으로 받은 에듀넷 URL 리스트를 큐에 넣고 각각의 상태를 DB에 저장
+    * 파이썬 서버를 호출해 에듀넷 url에서 hwp 추출 후 텍스트 데이터를 반환받으면, 그 텍스트를 DB에 저장
+    * @param request
+    * @return
+    */
+    public ParseMaterialResponse createMaterial(ParseMaterialRequest request) {
+        ParseMaterialResponse parseMaterialResponse = new ParseMaterialResponse();
+
+        List<String> allUrls = request.getUrls();
+
+        // 요청으로 받은 url 목록 중 이미 DB에 존재하는 url만 조회
+        List<String> existingUrls = materialParseJobMapper.getExistUrls(allUrls);
+        // API 반환 데이터에 skippedUrls 설정 (이미 처리된 경로라 스킵)
+        parseMaterialResponse.setSkippedUrls(existingUrls);
+
+        // db에 이미 있지 않은 신규 url만 필터링
+        List<String> newUrls = allUrls.stream()
+            .filter(url -> !existingUrls.contains(url))
+            .toList();
+        // API 반환 데이터에 enqueuedUrls 설정 (큐에 담긴후 백그라운드 작업 실행 될 url들)
+        parseMaterialResponse.setEnqueuedUrls(newUrls);
+
+        for (String fileUrl : newUrls) {
+
+            MaterialParseJob materialParseJob = new MaterialParseJob();
+            materialParseJob.setUrl(fileUrl);
+
+            // 각 에듀넷 링크를 PARSE_JOB_STATUS 테이블에 저장
+            materialParseJobMapper.insertParseJob(materialParseJob);
+
+            // Redis에 넣을 JSON 형태의 메시지 생성 (jobId + url 포함)
+            String jobPayload = String.format("{\"jobNo\":%d,\"url\":\"%s\"}",
+                materialParseJob.getMaterialParseJobNo(),
+                fileUrl);
+
+            // 레디스에 URL 하나씩 푸시
+            ListOperations<String, String> listOperations = stringRedisTemplate.opsForList();
+            listOperations.rightPush("parse:queue", jobPayload);
+        }
+
+        return parseMaterialResponse;
+    }
+
+
 }
