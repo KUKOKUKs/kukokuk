@@ -23,8 +23,12 @@ spring:
       host: localhost
       port: 6379
 
-server:
-  port: 8080
+    # env 관련 설정 추가
+    config:
+      import: optional:file:.env[.properties]
+
+  server:
+    port: 8080
 
 mybatis:
   # Mapper XML 파일 위치
