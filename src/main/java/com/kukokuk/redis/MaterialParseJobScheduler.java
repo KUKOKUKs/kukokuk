@@ -49,7 +49,6 @@ public class MaterialParseJobScheduler {
     // redis 리스트에 저장된 데이터를 하나씩 뽑아옴
     String payload = stringRedisTemplate.opsForList().leftPop("parse:queue");
 
-    System.out.println("payload : " + payload);
     if (payload == null) {
       return;
     }
