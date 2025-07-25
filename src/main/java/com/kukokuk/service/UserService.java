@@ -22,12 +22,22 @@ public class UserService {
     private final UserMapper userMapper;
 
     /**
+     * username을 전달받아 사용자 정보 조회
+     * @param username username
+     * @return 사용자 정보
+     */
+    public User getUserByUsername(String username) {
+        log.info("getUserByUsername() 실행");
+        return userMapper.getUserByUsername(username);
+    }
+
+    /**
      * 회원가입 처리
      * @param form 신규 사용자 회원가입 정보
      */
     public void registerUser(UserRegisterForm form) {
         log.info("registerUser() 실행");
-        // 폼 입력하는 동안 다른 사용자의 가입이 있을 경우를 대비하여 
+        // 폼 입력하는 동안 다른 사용자의 가입이 있을 경우를 대비하여
         // 중복 재확인(username, nickname)
         User foundUserByUsername = userMapper.getUserByUsername(form.getUsername());
         if (foundUserByUsername != null) {
@@ -53,7 +63,7 @@ public class UserService {
      * @param username 이메일
      */
     public void duplicateUserByUsername(String username) {
-        log.info("registerUserByUsername() 실행");
+        log.info("duplicateUserByUsername() 실행");
         User foundUser = userMapper.getUserByUsername(username);
         if (foundUser != null) {
             throw new UserRegisterException("username", "이미 사용중인 이메일입니다.");
@@ -65,7 +75,7 @@ public class UserService {
      * @param nickname 닉네임
      */
     public void duplicateUserByNickname(String nickname) {
-        log.info("registerUserByNickname() 실행");
+        log.info("duplicateUserByNickname() 실행");
         User foundUser = userMapper.getUserByNickname(nickname);
         if (foundUser != null) {
             throw new UserRegisterException("nickname", "이미 사용중인 닉네임입니다.");

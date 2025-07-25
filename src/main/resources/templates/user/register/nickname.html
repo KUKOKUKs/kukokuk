@@ -1,10 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html layout:decorate="~{/layout/center}" th:with="title='회원가입'">
+<div layout:fragment="content">
+    <div class="sign_wrap">
+        <div th:replace="~{fragments/sign/register-top :: register-top-fragment('회원가입')}"></div>
 
-</body>
+        <span class="logo"></span>
+
+        <div th:replace="~{fragments/sign/step-bar :: step-fragment(4, 4)}"></div>
+
+        <form method="post"
+              th:action="@{/register/nickname}"
+              th:object="${userRegisterForm}"
+              class="wrap_form container"
+              id="register-form">
+
+            <div class="input_description">
+                <p class="description">닉네임은 4~16자 이내로 영문, 숫자, 한글, 밑줄(_)만 사용할 수 있습니다.</p>
+            </div>
+
+            <div class="form_input_list">
+                <div class="input_info one_input">
+                    <input type="text"
+                           th:field="*{nickname}"
+                           id="nickname"
+                           maxlength="16"
+                           autocomplete="nickname"
+                           placeholder=" ">
+
+                    <label for="nickname" class="input_title"
+                           th:classappend="${#fields.hasErrors('nickname')} ? 'disabled'">닉네임</label>
+
+                    <span class="input_error" th:if="${#fields.hasErrors('nickname')}" th:text="${#fields.errors('nickname')[0]}"></span>
+                </div>
+            </div>
+
+            <div class="btn_list">
+                <a href="/register/profile" class="btn white">이전</a>
+                <button type="submit" id="submit-btn" class="btn primary">완료</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <!--/* 최초 랜더링 시 제출 버튼 활성화 설정 */-->
+    <script th:inline="javascript">
+        let hasError = [[${hasError}]];
+        const nickname = $("#nickname").val().trim();
+
+        if (nickname === "" || hasError) {
+            $("#submit-btn").addClass("disabled");
+        }
+    </script>
+    <script type="module" th:src="@{/js/modules/sign/sign-form.js}"></script>
+</th:block>
 </html>

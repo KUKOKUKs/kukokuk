@@ -17,6 +17,10 @@ spring:
       # 강제로 인코딩 설정 적용
       force: true
 
+  validation:
+    # 유효성 순차 검증
+    fail-fast: true
+
   # Redis 기본 설정
   data:
     redis:
@@ -27,7 +31,7 @@ spring:
     config:
       import: optional:file:.env[.properties]
 
-  server:
+server:
     port: 8080
 
 mybatis:
