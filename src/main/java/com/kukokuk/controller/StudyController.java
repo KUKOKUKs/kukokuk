@@ -1,5 +1,6 @@
 package com.kukokuk.controller;
 
+import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.service.StudyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,9 @@ public class StudyController {
   @GetMapping("/study")
   public String studyMain(Model model,
       @AuthenticationPrincipal UserDetails userDetails){
-    studyService.getMainStudyView(userDetails);
+    MainStudyViewDto dto = studyService.getMainStudyView(userDetails);
+    model.addAttribute("data", dto);
+    System.out.println(dto.getUser().getUserNo());
     return "study/main";
   }
 }
