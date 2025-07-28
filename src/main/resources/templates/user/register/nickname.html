@@ -6,7 +6,7 @@
 
         <span class="logo"></span>
 
-        <div th:replace="~{fragments/sign/step-bar :: step-fragment(4, 4)}"></div>
+        <div th:replace="~{fragments/sign/step-bar :: step-fragment(5, 4)}"></div>
 
         <form method="post"
               th:action="@{/register/nickname}"
@@ -46,7 +46,10 @@
     <!--/* 최초 랜더링 시 제출 버튼 활성화 설정 */-->
     <script th:inline="javascript">
         let hasError = [[${hasError}]];
-        const nickname = $("#nickname").val().trim();
+        const $focusElement = $("#nickname");
+        const nickname = $focusElement.val().trim();
+
+        $focusElement.focus();
 
         if (nickname === "" || hasError) {
             $("#submit-btn").addClass("disabled");
