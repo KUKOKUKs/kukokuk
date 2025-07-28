@@ -14,7 +14,8 @@ public interface QuizMasterMapper {
    * 퀴즈의 갯수를 조회한다.
    * @return int
    */
-  int getQuizCountByUsageCount(int usageCount);
+  int getQuizCount();
+
   /**
    * 특정 유형에서 USAGE_COUNT가 주어진 값 미만인 퀴즈 개수 반환
    * @param questionType 문제 유형 ("뜻", "단어")
@@ -23,12 +24,12 @@ public interface QuizMasterMapper {
    */
   int getQuizCountByTypeAndUsageCount(@Param("questionType") String questionType,
       @Param("usageCount") int usageCount);
+
   /**
    * 하나의 퀴즈를 등록한다.
    * @param quiz 생성할 퀴즈 객체
    */
   void insertQuiz(QuizMaster quiz);
-
 
 }
 
