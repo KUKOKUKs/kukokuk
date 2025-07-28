@@ -1,18 +1,23 @@
 <!--/* 기본 레이아웃 */-->
 <!DOCTYPE html>
-<!--/* suppress XmlUnusedNamespaceDeclaration */-->
+<!--/*
+    suppress XmlUnusedNamespaceDeclaration 주석 제거 금지
+    사용되지 않는 namespace 유지 설정
+*/-->
+<!--suppress XmlUnusedNamespaceDeclaration -->
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 >
-<head th:replace="~{fragments/head :: head-fragment}"></head>
+<head th:replace="~{fragments/common/head :: head-fragment}"></head>
 <body>
 <!--/* logo */-->
-<th:block th:replace="~{fragments/logo :: logo-fragment}"></th:block>
+<th:block th:replace="~{fragments/common/logo :: logo-fragment}"></th:block>
 
 <main class="main">
     <!--/* nav */-->
-    <nav th:replace="~{fragments/nav :: nav-fragment}"></nav>
+    <nav th:replace="~{fragments/common/nav :: nav-fragment}"></nav>
 
     <!--/* contents */-->
     <div layout:fragment="content" class="content"></div>

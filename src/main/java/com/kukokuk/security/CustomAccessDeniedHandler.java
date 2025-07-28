@@ -38,7 +38,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             // json 텍스트를 응답으로 보내기
             response.getWriter().write(jsonText);
 
-        } else {								// 일반 JSP 요청
+        } else {
             response.sendRedirect("/access-denied");
         }
     }

@@ -11,8 +11,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CustomAuthenticationEntryPoint
-    implements AuthenticationEntryPoint {
+public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -31,7 +30,7 @@ public class CustomAuthenticationEntryPoint
             String jsonText = objectMapper.writeValueAsString(apiResponse);
             response.getWriter().write(jsonText);
 
-        } else {								// 일반 JSP 요청
+        } else {
             response.sendRedirect("/login");
         }
 
