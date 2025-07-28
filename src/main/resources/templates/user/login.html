@@ -49,6 +49,8 @@
                 </div>
             </div>
 
+            <div th:if="${param.failed}" class="error_message">입력하신 정보가 올바르지 않습니다. 확인 후 다시 시도해 주세요.</div>
+
             <button type="submit" class="btn primary disabled">로그인</button>
         </form>
 
