@@ -20,8 +20,11 @@ public interface MaterialParseJobMapper {
   // MaterialParseJob의 상태를 IN_PROGRESS로 업데이트
   void updateParseJobStatusToInProgress(int jobNo);
 
-  // MaterialParseJob의 상태를 SUCCESS로 업데이트
-  void updateParseJobStatusToSuccess(int jobNo);
+  // MaterialParseJob의 상태를 SUCCESS로 업데이트 + 생성된 학습자료 식별자를 컬럼에 추가
+  void updateParseJobStatusToSuccess(@Param("jobNo") int jobNo, @Param("dailyStudyMaterialNo") int dailyStudyMaterialNo);
 
   void updateParseJobStatusToFailed(@Param("jobNo") int jobNo, @Param("message") String message);
+
+  // 자료파싱작업 목록을 생성된 학습자료와 함께 조회
+  List<MaterialParseJob> getParseJobsWithMaterial(int rows);
 }
