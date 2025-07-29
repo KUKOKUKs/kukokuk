@@ -15,4 +15,6 @@ public interface DailyStudyMaterialMapper {
 
   // 식별자로 학습자료 원본데이터 조회
   DailyStudyMaterial getStudyMaterialByNo(int dailyStudyMaterialNo);
+
+
 }

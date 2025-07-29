@@ -64,13 +64,14 @@
   </update>
 
   <!--
-    void updateParseJobStatusToSuccess(int jobNo);
+    void updateParseJobStatusToSuccess(@Param("jobNo") int jobNo, @Param("dailyStudyMaterialNo") int dailyStudyMaterialNo);
   -->
   <update id="updateParseJobStatusToSuccess">
     UPDATE
       KUKOKUK_MATERIAL_PARSE_JOBS
     SET
       STATUS = 'SUCCESS',
+      DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo},
       UPDATED_DATE = NOW()
     WHERE
       MATERIAL_PARSE_JOB_NO = #{jobNo}
@@ -84,10 +85,36 @@
       KUKOKUK_MATERIAL_PARSE_JOBS
     SET
       STATUS = 'FAILED',
-      MESSAGE = #{message}
+      MESSAGE = #{message},
       UPDATED_DATE = NOW()
     WHERE
       MATERIAL_PARSE_JOB_NO = #{jobNo}
   </update>
+
+  <!--
+   List<MaterialParseJob> getParseJobsWithMaterial(int offset);
+  -->
+  <select id="getParseJobsWithMaterial" resultType="MaterialParseJob">
+    SELECT
+        J.MATERIAL_PARSE_JOB_NO AS materialParseJobNo,
+        J.URL,
+        J.MESSAGE,
+        J.STATUS,
+        J.CREATED_DATE AS createdDate,
+        J.UPDATED_DATE AS updatedDate,
+        M.DAILY_STUDY_MATERIAL_NO AS "dailyStudyMaterialNo",
+        M.MATERIAL_TITLE AS "dailyStudyMaterial.materialTitle",
+        M.SCHOOL AS "dailyStudyMaterial.school",
+        M.GRADE AS "dailyStudyMaterial.grade",
+        M.SEQUENCE AS "dailyStudyMaterial.sequence"
+    FROM
+      KUKOKUK_MATERIAL_PARSE_JOBS J
+      LEFT OUTER JOIN
+      KUKOKUK_DAILY_STUDY_MATERIALS M
+        ON
+      J.DAILY_STUDY_MATERIAL_NO = M.DAILY_STUDY_MATERIAL_NO
+    ORDER BY MATERIAL_PARSE_JOB_NO
+    LIMIT #{rows}
+  </select>
 
 </mapper>

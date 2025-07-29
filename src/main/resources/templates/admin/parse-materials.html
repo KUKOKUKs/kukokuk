@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/center.html}">
+<div layout:fragment="content">
+  <p class="large_font title color_primary bold padding">학습자료 관리 페이지</p>
+  <div class="component">
+      <form  class="wrap_form container">
+        <div class="form_input_list">
+          <input class="input_info" type="text" placeholder="email을 쉼표(,)로 구분하여 입력하세요" id="url-input" name="urls">
+        </div>
+          <button class="btn primary" type="button" id="parse-btn">학습데이터 추출하기</button>
+      </form>
+  </div>
+  <div class="padding"></div>
+  <!-- 작업 현황 목록 -->
+  <div class="component">
+    <p class="bold color_primary list-info">작업 진행중</p>
+    <div class="component" id="enqueued-url-list">
+    </div>
+    <p class="bold color_primary list-info">스킵된 작업</p>
+    <div class="component"  id="skipped-url-list">
+    </div>
+  </div>
+  <div class="padding "></div>
+  <!-- 작업 목록 -->
+  <div class="d_flex justify_content_between padding">
+    <p class="title bold color_primary list-info large_font"> 전체 작업 목록 </p>
+    <!-- 새로고침 버튼 -->
+    <button type="button" class="btn white small" id="refresh-btn"><iconify-icon icon="subway:round-arrow-2"></iconify-icon></button>
+  </div>
+  <div class="component">
+    <table>
+      <tr>
+        <th>작업번호</th>
+        <th style="width: 20%">url</th>
+        <th>작업상태</th>
+        <th>메세지</th>
+        <th style="width: 30%">학습자료 제목 </th>
+        <th></th>
+      </tr>
+      <tr th:each="job : ${parseJobs}">
+        <td th:text="${job.getMaterialParseJobNo()}">1</td>
+        <td th:text="${job.getUrl()}">url</td>
+        <td th:text="${job.getStatus()}">SUCCESS</td>
+        <td th:text="${job.getMessage()}">ERROR</td>
+        <td th:text="${job.getDailyStudyMaterial() != null} ? ${job.getDailyStudyMaterial().getMaterialTitle()} : ''">제목</td>
+        <th:block th:if="${'FAILED'.equals(job.getStatus)}">
+          <td>
+            <button class="btn white" type="button">새로</button>
+          </td>
+        </th:block>
+      </tr>
+    </table>
+  </div>
+</div>
+<script layout:fragment="script">
+
+  // 학습데이터 추출하기 버튼 클릭시의 이벤트 핸들러
+    $('#parse-btn').click(function() {
+      console.log("urlList");
+      const rawInput = $('#url-input').val();
+
+      // 쉼표로 분리한 뒤 양쪽 공백제거, 빈문자열 제거
+      const urlList = rawInput
+      .split(',').map(url => url.trim()).filter(url => url !== '');
+
+
+      if (urlList.length !== 0){
+        // Ajax로 서버에 전송
+        $.ajax({
+          url: '/api/admin/studies/parse-materials',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({urls: urlList}),  // {"urls": [...]},
+          dataType: 'json',
+          success: function (res) {
+            console.log(res.data);
+            // 스킵된 url을 스킵된작업 목록에 표시
+            for(const url of res.data.skippedUrls) {
+              const skippedContent = `
+                <div class="text-background small_font">
+                  ${url}
+                </div>
+              `;
+              $('#skipped-url-list').empty().append(skippedContent);
+            }
+            // 작업 진행중인 url을 진행중인 작업 목록에 표시
+            for(const url of res.data.enqueuedUrls) {
+              const enqueuedContent = `
+                <div class="text-background small_font">
+                  ${url}
+                </div>
+              `;
+              $('#enqueued-url-list').empty().append(enqueuedContent);
+            }
+          },
+          error: function (err) {
+            alert("에러 발생");
+            console.error(err);
+          }
+        });
+      }
+    });
+
+    $('#refresh-btn').click(function() {
+
+    })
+</script>
+</html>

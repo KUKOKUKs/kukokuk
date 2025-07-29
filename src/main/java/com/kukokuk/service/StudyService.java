@@ -62,7 +62,6 @@ public class StudyService {
     private final DailyStudyCardMapper dailyStudyCardMapper;
     private final DailyStudyQuizMapper dailyStudyQuizMapper;
     private final DailyStudyEssayQuizMapper dailyStudyEssayQuizMapper;
-
     private final MaterialParseJobMapper materialParseJobMapper;
 
     private final StringRedisTemplate stringRedisTemplate;
@@ -422,5 +421,15 @@ public class StudyService {
         return parseMaterialResponse;
     }
 
+    /**
+     * parseMaterialJobs 테이블에서 목록을 조회해서 반환
+     */
+    public List<MaterialParseJob> getMaterialParseJobs() {
+        int rows = 10;
+
+        List<MaterialParseJob> jobs = materialParseJobMapper.getParseJobsWithMaterial(rows);
+
+        return jobs;
+    }
 
 }
