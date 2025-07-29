@@ -1,6 +1,7 @@
 package com.kukokuk.mapper;
 
 import com.kukokuk.dto.UserStudyRecommendationDto;
+import com.kukokuk.vo.DailyStudy;
 import com.kukokuk.vo.DailyStudyLog;
 import java.util.List;
 import java.util.Map;
@@ -40,4 +41,6 @@ public interface DailyStudyMapper {
         @Param("userInfo") Map<String, Object> userInfo,
         @Param("condition") Map<String, Object> condition);
 
+    // 학습자료를 생성
+  void insertDailyStudy(DailyStudy dailyStudy);
 }

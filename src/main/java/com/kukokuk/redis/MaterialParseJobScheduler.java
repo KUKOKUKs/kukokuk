@@ -31,6 +31,7 @@ public class MaterialParseJobScheduler {
   private final StringRedisTemplate stringRedisTemplate;
   private final MaterialParseJobMapper materialParseJobMapper;
   private final DailyStudyMaterialMapper dailyStudyMaterialMapper;
+  private final ObjectMapper objectMapper;
 
   @Value("${pyserver.url}")
   private String pyserverUrl;
@@ -57,7 +58,6 @@ public class MaterialParseJobScheduler {
     int jobNo = 0;
     try {
       // 1. JSON 파싱하기
-      ObjectMapper objectMapper = new ObjectMapper();
       // objectMapper.readTree()는 파라미터로 전달되는 JSON 구조에 맞는 JsonNode의 하위클래스를 반환함
       // Ex) { "name": "다영" } -> OnjectNode, [1, 2, 3] -> ArrayNode
       JsonNode node = objectMapper.readTree(payload); // Checked Exception이므로 예외처리 필수
@@ -95,11 +95,7 @@ public class MaterialParseJobScheduler {
       // body에서 data필드 추출
       PyParseMaterialResponse data = pyResponseBody.getData();
 
-      // 4. 응답받은 자료의 학교, 학년으로 다음 시퀀스 값 조회
-      int lastSequence = dailyStudyMaterialMapper.getMaxSequenceBySchoolAndGrade(data.getSchool(), data.getGrade());
-      int sequence = lastSequence + 1;
-
-      // 5. 응답으로 반환받은 데이터를 dailyStudyMaterial테이블에 저장
+      // 4. 응답으로 반환받은 데이터를 dailyStudyMaterial테이블에 저장
       DailyStudyMaterial dailyStudyMaterial = DailyStudyMaterial.builder()
           .content(data.getContent())
           .grade(data.getGrade())
@@ -108,12 +104,17 @@ public class MaterialParseJobScheduler {
           .keywords(data.getKeywords())
           .sourceFilename(data.getSourceFilename())
           .build();
+      // 해당 school, grade에서의 마지막 sequence 값을 조회
+      int sequence = dailyStudyMaterialMapper.getMaxSequenceBySchoolAndGrade(dailyStudyMaterial.getSchool(), dailyStudyMaterial.getGrade());
+      dailyStudyMaterial.setSequence(sequence + 1);
+
       // sequence 값은 해당 school과 grade로 mapper내에서 계산해서 저장됨
       dailyStudyMaterialMapper.insertStudyMaterial(dailyStudyMaterial);
 
-      // 6. jobId로 해당 job의 status를 SUCCESS로 업데이트하기
+      // 5. jobId로 해당 job의 status를 SUCCESS로 업데이트하기
       // - MaterialParseJob를 업데이트
-      materialParseJobMapper.updateParseJobStatusToSuccess(jobNo);
+      System.out.println("dailyStudyMaterialNo : " +dailyStudyMaterial.getDailyStudyMaterialNo());
+      materialParseJobMapper.updateParseJobStatusToSuccess(jobNo, dailyStudyMaterial.getDailyStudyMaterialNo());
 
     } catch (Exception e) {
       materialParseJobMapper.updateParseJobStatusToFailed(jobNo, e.getMessage()); // 에러 메시지 저장

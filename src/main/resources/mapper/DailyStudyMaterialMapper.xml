@@ -42,4 +42,25 @@
         SCHOOL = #{school}
         AND GRADE = #{grade}
   </select>
+
+  <!--
+    DailyStudyMaterial getStudyMaterialByNo(int dailyStudyMaterialNo);
+  -->
+  <select id="getStudyMaterialByNo" resultType="DailyStudyMaterial">
+    SELECT
+        DAILY_STUDY_MATERIAL_NO AS dailyStudyMaterialNo,
+        SCHOOL,
+        GRADE,
+        MATERIAL_TITLE AS materialTitle,
+        KEYWORDS,
+        CONTENT,
+        SOURCE_FILENAME AS sourceFilename,
+        SEQUENCE,
+        CREATED_DATE AS createdDate,
+        UPDATED_DATE AS updatedDate
+    FROM
+        KUKOKUK_DAILY_STUDY_MATERIALS
+    WHERE
+        DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo}
+  </select>
 </mapper>

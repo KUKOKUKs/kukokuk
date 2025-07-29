@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.mapper.DailyStudyEssayQuizMapper">
+
+  <!--
+     void insertdailyStudyEssayQuiz(DailyStudyEssayQuiz dailyStudyEssayQuiz);
+  -->
+  <insert id="insertdailyStudyEssayQuiz" parameterType="dailyStudyEssayQuiz">
+    INSERT INTO KUKOKUK_DAILY_STUDY_ESSAY_QUIZZES
+      (DAILY_STUDY_NO, QUESTION)
+    VALUES
+      (#{dailyStudyNo}, #{question})
+  </insert>
+
+</mapper>

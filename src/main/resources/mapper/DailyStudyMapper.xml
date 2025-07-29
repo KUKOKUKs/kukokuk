@@ -131,7 +131,7 @@
             M.GRADE,
             M.SEQUENCE
         FROM
-            KUKOKUK_DAILY_STUDY_MATERIAL M
+            KUKOKUK_DAILY_STUDY_MATERIALS M
             LEFT OUTER JOIN KUKOKUK_DAILY_STUDIES S
                 ON M.DAILY_STUDY_MATERIAL_NO = S.DAILY_STUDY_MATERIAL_NO
             LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_LOGS L
@@ -164,6 +164,16 @@
             /* 학습자료 원본데이터의 자료순서대로 */
             M.SEQUENCE ASC
         LIMIT 0, #{condition.rows}
-</select>
+    </select>
+
+    <!--
+        void insertDailyStudy(DailyStudy dailyStudy);
+    -->
+    <insert id="insertDailyStudy" parameterType="DailyStudy" useGeneratedKeys="true" keyProperty="dailyStudyNo" keyColumn="DAILY_STUDY_NO">
+        INSERT INTO KUKOKUK_DAILY_STUDIES
+            (STUDY_DIFFICULTY, TITLE, DAILY_STUDY_MATERIAL_NO, CARD_COUNT)
+        VALUES
+            (#{studyDifficulty}, #{title}, #{dailyStudyMaterialNo}, #{cardCount})
+    </insert>
 
 </mapper>

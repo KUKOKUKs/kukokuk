@@ -1,5 +1,6 @@
 package com.kukokuk.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -29,5 +30,10 @@ public class AppConfig {
         // .env 파일을 읽어서 환경변수로 사용
         return Dotenv.configure().directory("./")
             .load();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper(){
+        return new ObjectMapper();
     }
 }
