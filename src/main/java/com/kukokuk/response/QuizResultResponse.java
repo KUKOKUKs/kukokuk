@@ -1,4 +1,4 @@
-package com.kukokuk.dto;
+package com.kukokuk.response;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -18,7 +18,7 @@ public class KukokukApplication {
         // QuizService Bean 꺼내기
         QuizService quizService = context.getBean(QuizService.class);
 
-        // 퀴즈 유형별 100개씩 생성 (기존 퀴즈 중 usageCount 이상인 것은 제외됨)
-        quizService.insertRandomTypeQuizBulk(20); // usageCount 0 이상 → 모든 퀴즈 고려
+        // 퀴즈 유형별 100개씩 생성
+        quizService.insertRandomQuizBulk(100);
     }
 }
