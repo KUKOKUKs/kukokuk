@@ -267,6 +267,11 @@
     font-size: var(--subFontSize);
 }
 
+.error_message {
+    font-size: var(--smallFontSize);
+    color: var(--redColor);
+}
+
 /* button */
 .btn_list {
     width: 100%;
@@ -311,6 +316,24 @@
     &.white {
         border-color: var(--borderColor);
         background-color: #fff;
+    }
+}
+
+.icon_btn {
+    width: var(--baseIcon);
+    min-width: var(--baseIcon);
+    height: var(--baseIcon);
+    font-size: var(--baseIcon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &.small {
+        width: var(--smallIcon);
+        min-width: var(--smallIcon);
+        height: var(--smallIcon);
+        font-size: var(--smallIcon);
     }
 }
 
@@ -401,6 +424,14 @@
     font-size: var(--largeFontSize);
 }
 
+.titlt_font {
+    font-size: var(--titleFontSize);
+}
+
+.tac {
+    text-align: center;
+}
+
 .bold {
     font-weight: bold;
 }
@@ -411,6 +442,10 @@
 
 .color_sub {
     color: var(--subColor);
+}
+
+.color_gray {
+    color: var(--grayColor);
 }
 
 .color_white {

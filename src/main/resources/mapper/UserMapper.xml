@@ -29,12 +29,12 @@
     </resultMap>
 
     <!--
-        * 사용자 번호로 사용자, 사용자 권한 정보 조회
-        * @param userNo 사용자 번호
+        * username으로 사용자, 사용자 권한 정보 조회
+        * @param username username
         * @return 사용자, 사용자 권한 정보
-        User getUserByUserNoWithRoleNames(int userNo);
+        User getUserByUsernameWithRoleNames(String username);
     -->
-    <select id="getUserByUserNoWithRoleNames" resultMap="UserResultMapWithRoleNames">
+    <select id="getUserByUsernameWithRoleNames" resultMap="UserResultMapWithRoleNames">
         SELECT
             USER_NO
             , USERNAME
@@ -57,7 +57,7 @@
         FROM
             KUKOKUK_USERS
         WHERE
-            USER_NO = #{userNo}
+            USERNAME = #{username}
     </select>
 
     <!--

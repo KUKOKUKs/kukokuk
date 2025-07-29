@@ -2,23 +2,47 @@
 <html>
 <div th:fragment="profile-fragment" id="profile-container" class="component">
     <th:block sec:authorize="!isAuthenticated()">
-        <p class="welcome_info">만나서 반갑고 회원가입하고 회원이라면 로그인 감사여</p>
+        <p class="welcome_info">
+            AI가 추천하는 맞춤 국어 학습 자료와<br>
+            퀴즈로 더 재미있게 공부하세요!
+        </p>
         <div class="btn_list">
             <a href="/register?reset=true" class="btn white">회원가입</a>
             <a href="/login" class="btn primary">로그인</a>
         </div>
     </th:block>
 
-    <th:block sec:authorize="isAuthenticated()">
+    <th:block sec:authorize="isAuthenticated()"
+              th:with="user=${#authentication.principal.user}">
         <div class="profile_info">
-            <div class="thumbnail"><img src="" alt="profile thumbnail"></div>
-            <p class="name">홍길동</p>
+            <div class="thumbnail">
+                <!--/* 프로필 이미지가 있는 경우 */-->
+                <img th:if="${user.profileFilename != null}"
+                     th:src="${user.profileFilename}"
+                     alt="profile thumbnail">
+
+                <!--/* 프로필 이미지가 없는 경우 (기본 아이콘 출력) */-->
+                <iconify-icon th:if="${user.profileFilename == null}"
+                              icon="streamline-color:user-profile-focus-flat"></iconify-icon>
+            </div>
+            <p class="name"
+               sec:authentication="principal.user.nickname">홍길동</p>
+
+            <form th:action="@{/logout}"
+                  method="post"
+                  id="logout-form">
+                <button type="submit" class="icon_btn color_gray">
+                    <iconify-icon icon="material-symbols:logout-rounded"></iconify-icon>
+                </button>
+            </form>
         </div>
 
         <div class="level_info">
             <div class="level_top_info">
                 <div class="level_icon_info">
-                    <div class="level_icon"><span class="level">Lv. 25</span></div>
+                    <div class="level_icon">
+                        <span class="level" th:text="'Lv. ' + ${user.level}">Lv. 1</span>
+                    </div>
                     <span class="level_detail">(2345/6455)</span>
                 </div>
                 <span class="percent">62%</span>

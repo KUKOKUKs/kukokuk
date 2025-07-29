@@ -7,6 +7,6 @@
         </span>
         Home
     </a>
-    <p class="title">[[${title}]]</p>
+    <p th:if="${title != ''}" class="title">[[${title}]]</p>
 </div>
 </html>
