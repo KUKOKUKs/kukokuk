@@ -1,6 +1,6 @@
 package com.kukokuk.service;
 
-import com.kukokuk.dto.QuizResultResponse;
+import com.kukokuk.response.QuizResultResponse;
 import com.kukokuk.mapper.QuizResultMapper;
 import com.kukokuk.vo.QuizResult;
 import java.util.List;
