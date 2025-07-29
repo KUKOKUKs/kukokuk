@@ -1,0 +1,47 @@
+/* 퀴즈 선택지 스타일 */
+button.selected {
+  border-color: var(--primaryColor);
+  background-color: var(--primaryColor);
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+/* 정답/오답 확인용 */
+button.correct {
+  background-color: #4caf50 !important;
+  color: white;
+}
+
+button.wrong {
+  background-color: #f44336 !important;
+  color: white;
+}
+
+/* 타이머 시각적 효과 */
+#quiz-timer {
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+#quiz-timer.low-time {
+  color: red;
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+// 보기 앞 번호 스타일
+.choice-no {
+  font-weight: bold;
+  margin-right: 6px;
+  color: #666;
+}
+
+// 질문 영역 중앙 정렬 (JS에서도 보장하지만 SCSS로도 안정화)
+#quiz-question {
+  text-align: center;
+  line-height: 1.6;
+}

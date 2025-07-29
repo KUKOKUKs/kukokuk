@@ -1,6 +1,8 @@
 package com.kukokuk.controller;
 
+import com.kukokuk.response.QuizMasterResponse;
 import com.kukokuk.service.QuizService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,4 +27,16 @@ public class QuizController {
         quizService.insertRandomQuizBulk(count);
         return ResponseEntity.ok(count + "개의 랜덤 퀴즈가 생성되었습니다.");
     }
+
+
+    @GetMapping("/speed")
+    public List<QuizMasterResponse> getSpeedQuizList() {
+        int usageThreshold = 20;
+        int limit = 10;
+        return quizService.getSpeedQuizList(usageThreshold, limit)
+            .stream()
+            .map(QuizMasterResponse::from)
+            .toList();
+    }
+
 }

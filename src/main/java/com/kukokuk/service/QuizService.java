@@ -146,5 +146,17 @@ public class QuizService {
 
     }
 
+    // 위치: com.kukokuk.service.QuizService
+
+    /**
+     * 스피드 퀴즈용 문제 10개 조회
+     * @param usageCount 기준 usage_count
+     * @param limit 개수 제한
+     * @return QuizMaster 리스트
+     */
+    public List<QuizMaster> getSpeedQuizList(int usageCount, int limit) {
+        return quizMasterMapper.getQuizMastersForSpeed(usageCount, limit);
+    }
+
 
 }

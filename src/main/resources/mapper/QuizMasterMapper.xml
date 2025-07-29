@@ -71,4 +71,23 @@
           AND USAGE_COUNT &lt; #{usageCount}
     </select>
 
+    <!-- QuizMasterMapper.xml -->
+    <select id="getQuizMastersForSpeed" resultType="com.kukokuk.vo.QuizMaster">
+        SELECT
+            quiz_no,
+            question,
+            option1,
+            option2,
+            option3,
+            option4,
+            success_answer,
+            question_type,
+            entry_no,
+            usage_count
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE usage_count &lt; #{usageCount}
+        ORDER BY RAND()
+        LIMIT #{limit}
+    </select>
+
 </mapper>
