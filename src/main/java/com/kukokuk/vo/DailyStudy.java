@@ -10,7 +10,7 @@ import org.apache.ibatis.type.Alias;
 @Alias("DailyStudy")
 public class DailyStudy {
   private int dailyStudyNo;
-  private int studyMaterialNo;
+  private int dailyStudyMaterialNo;
   private String title;
   private int studyDifficulty;
   private int cardCount;
