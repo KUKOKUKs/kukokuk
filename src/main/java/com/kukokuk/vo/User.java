@@ -25,7 +25,7 @@ public class User {
     private int level;
     private String experiencePoints;
     private int studyDifficulty;
-    private String currentSchool; // ENUM("초","중")
+    private String currentSchool; // ENUM("초등","중증")
     private int currentGrade;
     private int hintCount;
     private String isDeleted; // ENUM("N", "Y")
