@@ -19,6 +19,6 @@ public class KukokukApplication {
         QuizService quizService = context.getBean(QuizService.class);
 
         // 퀴즈 유형별 100개씩 생성
-        quizService.insertRandomQuizBulk(100);
+        quizService.insertRandomQuizBulk(200);
     }
 }

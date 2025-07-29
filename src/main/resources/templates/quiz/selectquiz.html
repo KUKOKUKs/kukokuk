@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+<head>
+    <title>스피드 퀴즈</title>
+    <meta charset="UTF-8">
+</head>
+
+<!-- ✅ center.html 레이아웃 확장 -->
+<body layout:decorate="~{layout/center}">
+<main>
+    <div layout:fragment="content" class="quiz-speed-wrapper component d_flex column base_gap">
+        <!-- 진행 정보 -->
+        <div class="quiz-progress d_flex justify_content_between align_center">
+            <div class="small_font bold">문제 <span id="quiz-current">1</span> / <span id="quiz-total">10</span></div>
+            <div class="small_font">남은 시간: <span id="quiz-timer">00:30</span></div>
+        </div>
+
+        <!-- 문제 영역 -->
+        <div class="question-area">
+            <h2 class="large_font bold" id="quiz-question">문제가 여기에 표시됩니다</h2>
+        </div>
+
+        <!-- 선택지 영역 -->
+        <div class="option-list d_flex column small_gap" id="quiz-options">
+            <!-- JS로 버튼 생성 -->
+        </div>
+
+        <!-- 정답 제출 버튼 -->
+        <button class="btn primary" id="quiz-submit-btn">제출</button>
+    </div>
+</main>
+
+<!-- JS 분리 -->
+<th:block layout:fragment="script">
+    <script th:src="@{/js/quiz/speed.js}"></script>
+</th:block>
+</body>
+</html>

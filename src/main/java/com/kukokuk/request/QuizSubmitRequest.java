@@ -11,5 +11,5 @@ import java.util.List;
 public class QuizSubmitRequest {
     private int userNo;
     private int totalTimeSec;
-    private List<QuizSubmitResult> results;
+    private List<QuizSubmitResultRequest> results;
 }
