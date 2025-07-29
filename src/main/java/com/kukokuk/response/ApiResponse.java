@@ -4,6 +4,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 응답 데이터 구조를 정의하는 역할
+ * 응답 JSON의 구조를 통일 (success, status, message, data)
+ * 응답 내용을 Java 객체로 표현
+ * 상태코드는 기본값으로 설정 / ResponseEntityUtils에서 상태코드  설정 담당
+ */
 @Getter
 @Setter
 @NoArgsConstructor

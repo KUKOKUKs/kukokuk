@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kukokuk.mapper.QuizResultMapper">
+
+    <resultMap id="QuizResultMap" type="QuizResult">
+        <id property="resultNo" column="RESULT_NO"/>
+        <result property="sessionNo" column="SESSION_NO"/>
+        <result property="selectedChoice" column="SELECTED_CHOICE"/>
+        <result property="isSuccess" column="IS_SUCCESS"/>
+        <result property="isBookmarked" column="IS_BOOKMARKED"/>
+        <result property="createdDate" column="CREATED_DATE"/>
+        <result property="updatedDate" column="UPDATED_DATE"/>
+        <result property="userNo" column="USER_NO"/>
+        <result property="quizNo" column="QUIZ_NO"/>
+    </resultMap>
+
+
+    <!--
+     * 퀴즈 결과를 저장한다.
+     * @param result 퀴즈 결과 객체
+     * @return insert 성공 여부
+     */
+     int insertQuizResult(QuizResult result);
+     -->
+    <insert id="insertQuizResult" parameterType="QuizResult">
+        INSERT INTO KUKOKUK_QUIZ_RESULTS
+        (SESSION_NO,
+         SELECTED_CHOICE,
+         IS_SUCCESS,
+         IS_BOOKMARKED,
+         USER_NO, QUIZ_NO)
+        VALUES (#{sessionNo},
+                #{selectedChoice},
+                #{isSuccess},
+                #{isBookmarked},
+                #{userNo},
+                #{quizNo})
+    </insert>
+
+    <!--
+     * 퀴즈 풀이 횟수를 +1 한다.
+     * @param quizNo 대상 퀴즈 번호
+     * @return update 성공 여부
+     */
+     int updateUsageCount(int quizNo);
+     -->
+    <update id="updateUsageCount" parameterType="int">
+        UPDATE KUKOKUK_QUIZ_MASTERS
+        SET USAGE_COUNT = USAGE_COUNT + 1
+        WHERE QUIZ_NO = #{quizNo}
+    </update>
+
+    <!--
+    * 정답 성공 횟수를 +1 한다.
+    * @param quizNo 대상 퀴즈 번호
+    * @return update 성공 여부
+    */
+    int updateSuccessCount(int quizNo);
+    -->
+    <update id="updateSuccessCount" parameterType="int">
+        UPDATE KUKOKUK_QUIZ_MASTERS
+        SET SUCCESS_COUNT = SUCCESS_COUNT + 1
+        WHERE QUIZ_NO = #{quizNo}
+    </update>
+
+    <!--
+        * 세션 번호와 사용자 번호로 푼 퀴즈 결과를 조회한다.
+        * @param sessionNo 세션 번호
+        * @param userNo 사용자 번호
+        * @return 퀴즈 결과 응답 리스트
+        List<QuizResultResponse> getQuizResultsBySession(@Param("sessionNo") int sessionNo,
+        @Param("userNo") int userNo);
+    -->
+
+    <select id="getQuizResultsBySessionNoAndUserNo"
+      parameterType="map"
+      resultType="com.kukokuk.response.QuizResultResponse">
+        SELECT qm.QUIZ_NO          AS quizNo,
+               qm.QUESTION         AS question,
+               qm.OPTION1          AS option1,
+               qm.OPTION2          AS option2,
+               qm.OPTION3          AS option3,
+               qm.OPTION4          AS option4,
+               qr.SELECTED_CHOICE  AS selectedChoice,
+               qm.SUCCESS_ANSWER   AS correctAnswer,
+               qr.IS_SUCCESS = 'Y' AS isCorrect,
+               qm.QUESTION_TYPE    AS questionType
+        FROM KUKOKUK_QUIZ_RESULTS qr
+                 JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
+        WHERE qr.SESSION_NO = #{sessionNo}
+          AND qr.USER_NO = #{userNo}
+        ORDER BY qr.RESULT_NO ASC
+    </select>
+
+</mapper>
