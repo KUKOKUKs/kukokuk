@@ -24,6 +24,7 @@
         <result     column="IS_DELETED"         property="isDeleted"/>
         <result     column="CREATED_DATE"       property="createdDate"/>
         <result     column="UPDATED_DATE"       property="updatedDate"/>
+        <result     column="MAX_EXP"            property="maxExp"/>
         <collection column="USER_NO"            property="roleNames"
             ofType="string" select="getUserRoleNamesByUserNo"/>
     </resultMap>
@@ -36,26 +37,31 @@
     -->
     <select id="getUserByUsernameWithRoleNames" resultMap="UserResultMapWithRoleNames">
         SELECT
-            USER_NO
-            , USERNAME
-            , PASSWORD
-            , NAME
-            , NICKNAME
-            , BIRTH_DATE
-            , GENDER
-            , PROFILE_FILENAME
-            , AUTH_PROVIDER
-            , LEVEL
-            , EXPERIENCE_POINTS
-            , STUDY_DIFFICULTY
-            , CURRENT_SCHOOL
-            , CURRENT_GRADE
-            , HINT_COUNT
-            , IS_DELETED
-            , CREATED_DATE
-            , UPDATED_DATE
+            U.USER_NO
+            , U.USERNAME
+            , U.PASSWORD
+            , U.NAME
+            , U.NICKNAME
+            , U.BIRTH_DATE
+            , U.GENDER
+            , U.PROFILE_FILENAME
+            , U.AUTH_PROVIDER
+            , U.LEVEL
+            , U.EXPERIENCE_POINTS
+            , U.STUDY_DIFFICULTY
+            , U.CURRENT_SCHOOL
+            , U.CURRENT_GRADE
+            , U.HINT_COUNT
+            , U.IS_DELETED
+            , U.CREATED_DATE
+            , U.UPDATED_DATE
+            , L.MAX_EXP
         FROM
-            KUKOKUK_USERS
+            KUKOKUK_USERS U
+        JOIN
+            KUKOKUK_LEVEL L
+        ON
+            U.LEVEL = L.LEVEL
         WHERE
             USERNAME = #{username}
     </select>

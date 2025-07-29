@@ -37,19 +37,20 @@
             </form>
         </div>
 
-        <div class="level_info">
+        <div class="level_info"
+             th:with="percent=${#numbers.formatDecimal((user.experiencePoints * 100.0) / user.maxExp, 0, 2)} + '%'">
             <div class="level_top_info">
                 <div class="level_icon_info">
                     <div class="level_icon">
-                        <span class="level" th:text="'Lv. ' + ${user.level}">Lv. 1</span>
+                        <span class="level" th:text="${level}">Lv. 1</span>
                     </div>
-                    <span class="level_detail">(2345/6455)</span>
+                    <span class="level_detail" th:text="'(' + ${user.experiencePoints} + '/' + ${user.maxExp} + ')'">(0/100)</span>
                 </div>
-                <span class="percent">62%</span>
+                <span class="percent" th:text="${percent}">0%</span>
             </div>
 
             <div class="level_bar">
-                <div class="experience_point" style="width: 62%;"></div>
+                <div class="experience_point" th:style="'width:' + ${percent} + ';'"></div>
             </div>
         </div>
 
