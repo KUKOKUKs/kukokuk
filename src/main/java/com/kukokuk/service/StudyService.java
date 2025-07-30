@@ -13,6 +13,7 @@ import com.kukokuk.ai.GeminiStudyResponse.Quiz;
 import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.mapper.DailyQuestMapper;
+import com.kukokuk.mapper.DailyQuestUserMapper;
 import com.kukokuk.mapper.DailyStudyCardMapper;
 import com.kukokuk.mapper.DailyStudyEssayQuizMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
@@ -58,6 +59,7 @@ public class StudyService {
 
     private final  DailyStudyMapper dailyStudyMapper;
     private final DailyQuestMapper dailyQuestMapper;
+    private final DailyQuestUserMapper dailyQuestUserMapper;
     private final DailyStudyMaterialMapper dailyStudyMaterialMapper;
     private final StudyDifficultyMapper studyDifficultyMapper;
     private final DailyStudyCardMapper dailyStudyCardMapper;
@@ -111,7 +113,7 @@ public class StudyService {
             Map<String, Object> dailyQuestUserCondition = new HashMap<>();
             dailyQuestUserCondition.put("completedDate", new Date());
             dailyQuestUserCondition.put("contentType", "STUDY");
-            List<DailyQuestUser> dailyQuestUsers = dailyQuestMapper.getDailyQuestUserByUserNo(
+            List<DailyQuestUser> dailyQuestUsers = dailyQuestUserMapper.getDailyQuestUsersByUserNo(
                 user.getUserNo(), dailyQuestUserCondition);
             dto.setDailyQuestUsers(dailyQuestUsers);
         }
