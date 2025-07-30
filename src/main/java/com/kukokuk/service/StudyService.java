@@ -75,9 +75,8 @@ public class StudyService {
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
       <MainStudyViewDto 에 포함되는 데이터>
         1. 학습탭의 일일 도전과제 목록
-        2. 유저의 수준에 맞는 일일학습 목록
-        3. 사용자의 이전 학습 이력 목록
-        4. 사용자_일일 도전과제 목록 (아이템 획득 여부)
+        2. 사용자의 이전 학습 이력 목록
+        3. 사용자_일일 도전과제 목록 (아이템 획득 여부)
      */
     public MainStudyViewDto getMainStudyView(SecurityUser securityUser) {
         MainStudyViewDto dto = new MainStudyViewDto();
