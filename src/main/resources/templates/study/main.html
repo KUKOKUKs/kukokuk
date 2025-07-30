@@ -12,8 +12,10 @@
 <!--  <p>냠냠</p>-->
 <!--  <p th:text="${data.getDailyQuests().get(0).getContentText()}">냠냠</p>-->
 <!--  <p th:text="${data.getDailyQuestUsers().get(0).getDailyQuestUserNo()}">냠냠</p>-->
+  <button type="button" id="hint-item-btn" data-daily-quest-user-no="${}">힌트 획득</button>
 
   <th:block layout:fragment="script">
+    <!-- 인증된 사용자일떄만 학습자료 목록 조회 ajax 실행 -->
     <th:block sec:authorize="isAuthenticated()">
       <script>
         $(document).ready(() => {
@@ -45,6 +47,27 @@
           }
         })
       }
+
+      /**
+       * 힌트아이템 버튼 클릭 시 힌트 획득하는 API 요청
+       */
+      $('#hint-item-btn').click(function() {
+        const dailyQuestUserNo = $(this).attr("data-daily-quest-user-no");
+
+        $.ajax({
+          url: `/api/daily-quests/${dailyQuestUserNo}`,
+          type: 'PUT',
+          contentType: 'application/json',
+          dataType: 'json',
+          success: function (res) {
+            console.log(res);
+            // 화면 표현
+          },
+          error: function (err) {
+            console.log(err);
+          }
+        })
+      });
     </script>
 
 
