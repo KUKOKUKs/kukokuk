@@ -3,6 +3,59 @@
 <mapper namespace="com.kukokuk.mapper.UserMapper">
 
     <!--
+        * 사용자 정보 업데이트
+        * @param user 사용자 정보
+        void updateUser(User user);
+    -->
+    <update id="updateUser" parameterType="User">
+        UPDATE
+            KUKOKUK_USERS
+        SET
+            UPDATED_DATE = CURRENT_TIMESTAMP
+            <if test="password != null">
+                , PASSWORD = #{password}
+            </if>
+            <if test="name != null">
+                , NAME = #{name}
+            </if>
+            <if test="nickname != null">
+                , NICKNAME = #{nickname}
+            </if>
+            <if test="birthDate != null">
+                , BIRTH_DATE = #{birthDate}
+            </if>
+            <if test="gender != null">
+                , GENDER = #{gender}
+            </if>
+            <if test="profileFilename != null">
+                , PROFILE_FILENAME = #{profileFilename}
+            </if>
+            <if test="level != null">
+                , LEVEL = #{level}
+            </if>
+            <if test="experiencePoints != null">
+                , EXPERIENCE_POINTS = #{experiencePoints}
+            </if>
+            <if test="studyDifficulty != null">
+                , STUDY_DIFFICULTY = #{studyDifficulty}
+            </if>
+            <if test="currentSchool != null">
+                , CURRENT_SCHOOL = #{currentSchool}
+            </if>
+            <if test="currentGrade != null">
+                , CURRENT_GRADE = #{currentGrade}
+            </if>
+            <if test="hintCount != null">
+                , HINT_COUNT = #{hintCount}
+            </if>
+            <if test="isDeleted != null">
+                , IS_DELETED = #{isDeleted}
+            </if>
+        WHERE
+            USER_NO = #{userNo}
+    </update>
+
+    <!--
         사용자 정보, 사용자 권한 정보 조회 ResultMap
     -->
     <resultMap id="UserResultMapWithRoleNames" type="User">
@@ -194,6 +247,38 @@
             KUKOKUK_USERS
         WHERE
             NICKNAME = #{nickname}
+    </select>
+
+    <!--
+        * 사용자 번호로 사용자 정보 조회
+        * @param userNo 사용자 번호
+        * @return 사용자 정보
+        User getUserByUserNo(int userNo);
+    -->
+    <select id="getUserByUserNo" resultMap="UserResultMap">
+        SELECT
+            USER_NO
+             , USERNAME
+             , PASSWORD
+             , NAME
+             , NICKNAME
+             , BIRTH_DATE
+             , GENDER
+             , PROFILE_FILENAME
+             , AUTH_PROVIDER
+             , LEVEL
+             , EXPERIENCE_POINTS
+             , STUDY_DIFFICULTY
+             , CURRENT_SCHOOL
+             , CURRENT_GRADE
+             , HINT_COUNT
+             , IS_DELETED
+             , CREATED_DATE
+             , UPDATED_DATE
+        FROM
+            KUKOKUK_USERS
+        WHERE
+            USER_NO = #{userNo}
     </select>
 
     <!--
