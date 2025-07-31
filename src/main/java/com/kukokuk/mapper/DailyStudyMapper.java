@@ -30,7 +30,7 @@ public interface DailyStudyMapper {
      * @param userNo 사용자 번호
      * @param userInfo 사용자의 수준/진도 정보
      *                 - "studyDifficulty" : int 사용자 수준 (1~6)
-     *                 - "currentSchool" : String 사용자 진도 학교 (초, 중)
+     *                 - "currentSchool" : String 사용자 진도 학교 (초등, 중등)
      *                 - "currentGrade" : int 사용자 학년
      * @param condition 조회 조건
      *                  - "rows" : int 조회 행 개수
