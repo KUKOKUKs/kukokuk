@@ -13,6 +13,7 @@ import com.kukokuk.ai.GeminiStudyResponse.Quiz;
 import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.mapper.DailyQuestMapper;
+import com.kukokuk.mapper.DailyQuestUserMapper;
 import com.kukokuk.mapper.DailyStudyCardMapper;
 import com.kukokuk.mapper.DailyStudyEssayQuizMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
@@ -22,6 +23,7 @@ import com.kukokuk.mapper.MaterialParseJobMapper;
 import com.kukokuk.mapper.StudyDifficultyMapper;
 import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.response.ParseMaterialResponse;
+import com.kukokuk.security.SecurityUser;
 import com.kukokuk.util.SchoolGradeUtils;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
@@ -57,6 +59,7 @@ public class StudyService {
 
     private final  DailyStudyMapper dailyStudyMapper;
     private final DailyQuestMapper dailyQuestMapper;
+    private final DailyQuestUserMapper dailyQuestUserMapper;
     private final DailyStudyMaterialMapper dailyStudyMaterialMapper;
     private final StudyDifficultyMapper studyDifficultyMapper;
     private final DailyStudyCardMapper dailyStudyCardMapper;
@@ -74,12 +77,10 @@ public class StudyService {
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
       <MainStudyViewDto 에 포함되는 데이터>
         1. 학습탭의 일일 도전과제 목록
-        2. 유저 정보
-        3. 유저의 수준에 맞는 일일학습 목록
-        4. 사용자의 이전 학습 이력 목록
-        5. 사용자_일일 도전과제 목록 (아이템 획득 여부)
+        2. 사용자의 이전 학습 이력 목록
+        3. 사용자_일일 도전과제 목록 (아이템 획득 여부)
      */
-    public MainStudyViewDto getMainStudyView(UserDetails userDetails) {
+    public MainStudyViewDto getMainStudyView(SecurityUser securityUser) {
         MainStudyViewDto dto = new MainStudyViewDto();
 
         // 1. 학습탭의 일일 도전과제 정보 조회 (인증된 유저와 관련 X)
@@ -87,28 +88,9 @@ public class StudyService {
         dto.setDailyQuests(dailyQuests);
 
         // 인증된 사용자일때 (인증되지 않은 사용자는 미리 설정한 일일학습 자료 제공 예정)
-        if (userDetails == null) { // 수정필요
+        if (securityUser != null) { // 수정필요
 
-      /*
-        테스트를 위한 유저 객체 생성
-        ------------------------------
-       */
-            User user = new User();
-            user.setUserNo(1);
-            user.setStudyDifficulty(4);
-      /*
-        ------------------------------
-      */
-            // User user = userDetails.getUser();
-
-            // 2. 사용자 정보 추가
-            dto.setUser(user);
-
-            // 3. 유저의 수준에 맞고, 유저가 아직 학습하지 않았거나 학습중인 일일학습 5개 조회
-            // ++++ 유저의 수준이 아직 존재하지 않을 때 고려
-            int recommendStudyCount = 5;
-            List<DailyStudy> dailyStudies = getUserDailyStudies(user, recommendStudyCount);
-            dto.setDailyStudies(dailyStudies);
+            User user = securityUser.getUser();
 
             // 4. 사용자의 이전 학습이력 목록 5개 조회
       /*
@@ -131,7 +113,7 @@ public class StudyService {
             Map<String, Object> dailyQuestUserCondition = new HashMap<>();
             dailyQuestUserCondition.put("completedDate", new Date());
             dailyQuestUserCondition.put("contentType", "STUDY");
-            List<DailyQuestUser> dailyQuestUsers = dailyQuestMapper.getDailyQuestUserByUserNo(
+            List<DailyQuestUser> dailyQuestUsers = dailyQuestUserMapper.getDailyQuestUsersByUserNo(
                 user.getUserNo(), dailyQuestUserCondition);
             dto.setDailyQuestUsers(dailyQuestUsers);
         }
@@ -160,7 +142,7 @@ public class StudyService {
      * @param recommendStudyCount recommendStudyCount 반환할 학습자료 수
      * @return 학습자료 목록 (DailyStudy)
      */
-    private List<DailyStudy> getUserDailyStudies(User user, int recommendStudyCount) {
+    public List<UserStudyRecommendationDto> getUserDailyStudies(User user, int recommendStudyCount) {
         // 1단계 : 현재 사용자 수준/진도 기준으로 학습원본데이터_학습자료_학습이력DTO 목록 조회
       /*
         조회 조건
@@ -186,6 +168,9 @@ public class StudyService {
             dailyStudyCondition
         );
 
+        // 생성되는 DTO 확인 로그
+        userStudyRecommendationDtos.forEach(dto -> log.info(dto.toString()));
+
         // 2단계 : 만약 학습원본데이터_학습자료_학습이력DTO가 5개 미만일 경우, 다음 학년에서 추가조회하여 채워넣기
         if (userStudyRecommendationDtos.size() < 5) {
 
@@ -199,7 +184,7 @@ public class StudyService {
 
             // 다음 학년이 null이 아닐때만 추가 조회
             if (nextGrade != null) {
-
+                log.info("다음학년 추가 조회");
                 // 더 조회해야할 학습자료 개수 조건 갱신
                 int remainingRowCount = recommendStudyCount - userStudyRecommendationDtos.size();
                 dailyStudyCondition.put("rows", remainingRowCount);
@@ -217,6 +202,8 @@ public class StudyService {
 
                 // 기존의 학습원본데이터_학습자료_학습이력DTO 리스트에 추가조회한 DTO 추가
                 userStudyRecommendationDtos.addAll(addUserStudyRecommendationDtos);
+
+                // 다음학년을 조회했음에도 채우지못했으면, 5개가 채워질때까지 학년을 변경하도록 설정
             } else {
                 // 다음학년이 null이면 화면에 이를 식별하는 값을 전달하고,
                 // 화면에서 마지막 학년 학습자료라는 표시되고 다른 수준 선택하는 등의 로직 처리
@@ -233,12 +220,9 @@ public class StudyService {
             }
         }
 
-        // 4단게 : 최종 학습원본데이터_학습자료_학습이력DTO 에서 학습자료만 컨트롤러에 전달할 DTO에 담기
-        List<DailyStudy> dailyStudies = userStudyRecommendationDtos.stream()
-            .map(userStudyRecommendationDto -> userStudyRecommendationDto.getDailyStudy())
-            .toList();
+        // 4단게 : 최종 학습원본데이터_학습자료_학습이력DTO 를 컨트롤러에 전달
 
-        return dailyStudies;
+        return userStudyRecommendationDtos;
     }
 
     /**

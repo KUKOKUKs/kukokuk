@@ -6,6 +6,7 @@ import com.kukokuk.vo.DailyStudyMaterial;
 import com.kukokuk.vo.User;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.ibatis.type.Alias;
 
 /**
@@ -14,6 +15,7 @@ import org.apache.ibatis.type.Alias;
 @Getter
 @Setter
 @Alias("UserStudyRecommendationDto")
+@ToString
 public class UserStudyRecommendationDto {
     // null이 담길 수 있도록 int대신 Integer 로 설정
     private Integer dailyStudyMaterialNo;

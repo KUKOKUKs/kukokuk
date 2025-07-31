@@ -19,5 +19,4 @@ public class HomeController {
         log.info("loginform() 컨트롤러 실행");
         return "user/login";
     }
-
 }

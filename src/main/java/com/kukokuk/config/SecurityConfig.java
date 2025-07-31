@@ -81,7 +81,8 @@ public class SecurityConfig {
         throws Exception {
 
         http
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/studies/**"))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**",
+                "/login"))
             .authorizeHttpRequests(auth -> auth
                 .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE).permitAll()
 
