@@ -11,13 +11,16 @@ import com.kukokuk.ai.GeminiStudyResponse.Card;
 import com.kukokuk.ai.GeminiStudyResponse.EssayQuiz;
 import com.kukokuk.ai.GeminiStudyResponse.Quiz;
 import com.kukokuk.dto.MainStudyViewDto;
+import com.kukokuk.dto.StudyProgressViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyQuestUserMapper;
 import com.kukokuk.mapper.DailyStudyCardMapper;
 import com.kukokuk.mapper.DailyStudyEssayQuizMapper;
+import com.kukokuk.mapper.DailyStudyLogMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
 import com.kukokuk.mapper.DailyStudyMaterialMapper;
+import com.kukokuk.mapper.DailyStudyQuizLogMapper;
 import com.kukokuk.mapper.DailyStudyQuizMapper;
 import com.kukokuk.mapper.MaterialParseJobMapper;
 import com.kukokuk.mapper.StudyDifficultyMapper;
@@ -33,6 +36,7 @@ import com.kukokuk.vo.DailyStudyEssayQuiz;
 import com.kukokuk.vo.DailyStudyLog;
 import com.kukokuk.vo.DailyStudyMaterial;
 import com.kukokuk.vo.DailyStudyQuiz;
+import com.kukokuk.vo.DailyStudyQuizLog;
 import com.kukokuk.vo.MaterialParseJob;
 import com.kukokuk.vo.StudyDifficulty;
 import com.kukokuk.vo.User;
@@ -58,12 +62,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudyService {
 
     private final  DailyStudyMapper dailyStudyMapper;
+    private final DailyStudyLogMapper dailyStudyLogMapper;
     private final DailyQuestMapper dailyQuestMapper;
     private final DailyQuestUserMapper dailyQuestUserMapper;
     private final DailyStudyMaterialMapper dailyStudyMaterialMapper;
     private final StudyDifficultyMapper studyDifficultyMapper;
     private final DailyStudyCardMapper dailyStudyCardMapper;
     private final DailyStudyQuizMapper dailyStudyQuizMapper;
+    private final DailyStudyQuizLogMapper dailyStudyQuizLogMapper;
     private final DailyStudyEssayQuizMapper dailyStudyEssayQuizMapper;
     private final MaterialParseJobMapper materialParseJobMapper;
 
@@ -73,7 +79,7 @@ public class StudyService {
 
     private final ObjectMapper objectMapper;
 
-    /*
+    /**
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
       <MainStudyViewDto 에 포함되는 데이터>
         1. 학습탭의 일일 도전과제 목록
@@ -101,7 +107,7 @@ public class StudyService {
             Map<String, Object> dailyStudyLogCondition = new HashMap<>();
             dailyStudyLogCondition.put("rows", 5);
             dailyStudyLogCondition.put("order", "updatedDate");
-            List<DailyStudyLog> dailyStudyLogs = dailyStudyMapper.getDailyStudyLogsByUserNo(
+            List<DailyStudyLog> dailyStudyLogs = dailyStudyLogMapper.getStudyLogsByUserNo(
                 user.getUserNo(), dailyStudyLogCondition);
             dto.setDailyStudyLogs(dailyStudyLogs);
 
@@ -416,4 +422,43 @@ public class StudyService {
         return jobs;
     }
 
+    /**
+     * 학습 진행 화면에 필요한 데이터를 담은 StudyProgressViewDto 반환한다
+     *       <StudyProgressViewDto 에 포함되는 데이터>
+     *         1. dailyStudyNo에 해당하는 일일학습 정보
+     *         2. 일일학습 카드 목록
+     *         3. 사용자의 일일학습 이력
+     *         4. 일일학습 퀴즈 목록
+     *         5. 사용자의 일일학습 퀴즈 이력 목록
+     */
+  public StudyProgressViewDto getStudyProgressView(int dailyStudyNo, int userNo) {
+      StudyProgressViewDto dto = new StudyProgressViewDto();
+
+      // 1. dailyStudyNo에 해당하는 일일학습 정보 조회
+      DailyStudy dailyStudy = dailyStudyMapper.getDailyStudyByNo(dailyStudyNo);
+
+      dto.setDailyStudy(dailyStudy);
+
+      // 2. 해당 일일학습에 속한 일일학습 카드 목록 조회
+      List<DailyStudyCard> studyCards = dailyStudyCardMapper.getCardsByDailyStudyNo(dailyStudyNo);
+
+      dto.setCards(studyCards);
+
+      // 3. 사용자의 일일학습 이력 조회
+      DailyStudyLog studyLog = dailyStudyLogMapper.getStudyLogsByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
+
+      dto.setLog(studyLog);
+
+      // 4. 일일학습 퀴즈 목록 조회
+      List<DailyStudyQuiz> studyQuizzes = dailyStudyQuizMapper.getStudyQuizzesByDailyStudyNo(dailyStudyNo);
+
+      dto.setQuizzes(studyQuizzes);
+
+      // 5. 사용자의 일일학습 퀴즈 이력 목록
+      List<DailyStudyQuizLog> studyQuizLogs = dailyStudyQuizLogMapper.getStudyQuizLogsByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
+
+      dto.setQuizLogs(studyQuizLogs);
+
+      return dto;
+  }
 }
