@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kukokuk.mapper.DictationQuestionMapper">
+<mapper namespace="com.kukokuk.mapper.DictationQuestionLogMapper">
 
   <!--
   /**
    * 받아쓰기 이력 생성
    * @param dictationQuestionLog 받아쓰기 이력
    */
-   insertLog(DictationQuestionLog dictationQuestionLog)
+   insertDictationQuestionLogLog(DictationQuestionLog dictationQuestionLog)
    -->
-  <insert id="insertLog" parameterType="DictationQuestionLog">
+  <insert id="insertDictationQuestionLog" parameterType="DictationQuestionLog">
     INSERT INTO KUKOKUK_DICTATION_QUESTION_LOGS (
           USER_NO
          ,DICTATION_QUESTION_NO
@@ -24,6 +24,40 @@
         ,#{isSuccess}
     )
   </insert>
+
+  <!--
+    /**
+   * 받아쓰기 문제 풀이 이력 식별자 번호로 받아쓰기 문제 번호 조회
+   * @param dictationQuestionLogNo 식별자
+   * @return 받아쓰기 문제 번호
+   */
+  int getQuestionNoByLogNo(int dictationQuestionLogNo);
+   -->
+  <select id="getQuestionNoByLogNo" resultType="int">
+    SELECT
+        DICTATION_QUESTION_NO
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+  </select>
+
+  <!--
+   /**
+   * 식별자로 시도 횟수 조회
+   * @param dictationQuestionLogNo 식별자
+   * @return 시도 횟수
+   */
+  int getTryCount(int dictationQuestionLogNo);
+   -->
+  <select id="getTryCount" resultType="int">
+    SELECT
+        TRY_COUNT
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+  </select>
 
   <!--
   /**
@@ -43,36 +77,21 @@
   </update>
 
   <!--
-  /**
-   * 식별자 받아쓰기 정답 여부
-   * @param dictationQuestionLogNo 식별자
-   * @param isSuccess 정답 여부
+   /**
+   * 정답 제출 버튼을 눌렀을 때 제출문장, 시도 누적 횟수, 정답 여부 반영
+   * @param dictationQuestionLoglog 받아쓰기 문제 풀이 이력
    */
-   updateIsSuccess(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("isSuccess") String isSuccess)
+  updateDictationQuestionLog(DictationQuestionLog dictationQuestionLog)
    -->
-  <update id="updateIsSuccess">
+  <update id="updateDictationQuestionLog">
     UPDATE
         KUKOKUK_DICTATION_QUESTION_LOGS
     SET
-        isSuccess = #{isSuccess}
+       IS_SUCCESS = #{isSuccess}
+      ,TRY_COUNT = #{tryCount}
+      ,USER_ANSWER = #{userAnswer}
     WHERE
-        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
-  </update>
-
-  <!--
-  /**
-   * 식별자 받아쓰기 시도 횟수
-   * @param dictationQuestionLogNo 식별자
-   */
-   updateTryCount(@Param("dictationQuestionLogNo") int dictationQuestionLogNo
-   -->
-  <update id="updateTryCount">
-    UPDATE
-        KUKOKUK_DICTATION_QUESTION_LOGS
-    SET
-        TRY_COUNT = TRY_COUNT + 1
-    WHERE
-        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+       DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
   </update>
 
   <!--
@@ -111,6 +130,42 @@
         DICTATION_SESSION_NO = #{dictationSessionNo}
     AND
         USED_HINT = 'Y'
+  </select>
+
+  <!--
+  /**
+   * 특정 세트 번호와 문제 번호에 해당하는 받아쓰기 문제 풀이 이력을 조회
+   * @param dictationSessionNo 문제 세트 번호
+   * @param dictationQuestionNo 문제 번호
+   * @return 해당 받아쓰기 세트에 대한 문제 풀이 이력 (없으면 null)
+   */
+  DictationQuestionLog getLogBySessionAndQuestion(@Param("dictationSessionNo") int dictationSessionNo, @Param("dictationQuestionNo") int dictationQuestionNo);
+  -->
+  <select id="getLogBySessionAndQuestion" resultType="DictationQuestionLog">
+    SELECT *
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
+      AND
+        DICTATION_QUESTION_NO = #{questionNo}
+  </select>
+
+  <!--
+   /**
+   * 가장 먼저 푼 문제 시각 조회
+   * @param sessionNo 문제 세트 번호
+   * @return 첫 문제 푼 시각
+   */
+  Date getEarliestAnswerDate(int sessionNo)
+  -->
+  <select id="getEarliestAnswerDate" resultType="java.util.Date">
+    SELECT
+        MIN(CREATE_DATE)
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
   </select>
 
 </mapper>

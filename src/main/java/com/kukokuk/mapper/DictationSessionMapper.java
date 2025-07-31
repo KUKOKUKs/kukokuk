@@ -8,9 +8,9 @@ public interface DictationSessionMapper {
 
   /**
    * 받아쓰기 세트 생성
-   * @param session 받아쓰기 세트
+   * @param dictationSession 받아쓰기 세트
    */
-  void insertDictationSession(DictationSession session);
+  void insertDictationSession(DictationSession dictationSession);
 
   /**
    * 세트 번호로 받아쓰기 세트 가져오기

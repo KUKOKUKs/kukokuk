@@ -4,7 +4,6 @@
 
   <resultMap id="dictationQuestionResultMap" type="DictationQuestion">
     <id property="dictationQuestionNo" column="DICTATION_QUESTION_NO"/>
-    <result property="dictationSessionNo" column="DICTATION_SESSION_NO"/>
     <result property="correctAnswer" column="CORRECT_ANSWER"/>
     <result property="hint1" column="HINT1"/>
     <result property="hint2" column="HINT2"/>
@@ -12,27 +11,76 @@
   </resultMap>
 
   <!--
-  /**
-   * 세트 번호로 문제 전체 가져오기
-   * @param dictationSessionNo 세트 번호
-   * @return 문제 리스트
+   /**
+   * 받아쓰기 문제를 생성한다.
+   * @param dictationQuestion 문제 번호
    */
-   List<DictationQuestion> getQuestionsBySessionNo(int dictationSessionNo)
+  void insertDictationQuestion(DictationQuestion dictationQuestion);
    -->
-  <select id="getQuestionsBySessionNo" resultMap="dictationQuestionResultMap">
+  <insert id="insertDictationQuestion" parameterType="DictationQuestion">
+    INSERT INTO KUKOKUK_DICTATION_QUESTIONS (
+       DICTATION_QUESTION_NO
+      ,CORRECT_ANSWER
+      ,HINT1
+      ,HINT2
+      ,HINT3
+    ) VALUES (
+       #{dictationQuestionNo}
+      ,#{correctAnswer}
+      ,#{hint1}
+      ,#{hint2}
+      ,#{hint3}
+    )
+  </insert>
+
+  <!--
+   /**
+   * 랜덤으로 받아쓰기 문제 조회
+   * @param count 문제 개수
+   * @return 랜덤으로 가져온 받아쓰기 문제
+   */
+  List<DictationQuestion> getRandomDictationQuestions(int count);
+   -->
+  <select id="getRandomDictationQuestions" resultMap="dictationQuestionResultMap">
     SELECT
        DICTATION_QUESTION_NO
-      ,DICTATION_SESSION_NO
       ,CORRECT_ANSWER
       ,HINT1
       ,HINT2
       ,HINT3
     FROM
        KUKOKUK_DICTATION_QUESTIONS
+    ORDER BY RAND()
+      LIMIT #{count}
+  </select>
+
+  <!--
+   /**
+   * 사용자가 푼 문제 목록 조회 (풀었던 문제만)
+   * @param userNo 사용자 번호
+   * @return 사용자가 푼 DictationQuestion 리스트
+   */
+  List<DictationQuestion> getSolvedQuestionsByUserNo(int userNo);
+   -->
+  <select id="getSolvedQuestionsByUser" resultMap="dictationQuestionResultMap">
+    SELECT
+       dq.DICTATION_QUESTION_NO
+      ,dq.CORRECT_ANSWER
+      ,dq.HINT1
+      ,dq.HINT2
+      ,dq.HINT3
+    FROM
+       KUKOKUK_DICTATION_QUESTIONS dq
+    JOIN
+       KUKOKUK_DICTATION_QUESTION_LOGS dql
+    ON
+       dq.DICTATION_QUESTION_NO = dql.DICTATION_QUESTION_NO
+    JOIN
+       KUKOKUK_DICTATION_SETS ds
+    ON
+       dql.DICTATION_SESSION_NO = ds.DICTATION_SESSION_NO
     WHERE
-       DICTATION_SESSION_NO = #{dictationSessionNo}
-    ORDER BY
-       DICTATION_QUESTION_NO
+       ds.USER_NO = #{userNo}
   </select>
 
   <!--
@@ -46,7 +94,6 @@
   <select id="getRandomQuestions" resultMap="dictationQuestionResultMap">
     SELECT
        DICTATION_QUESTION_NO
-      ,DICTATION_SESSION_NO
       ,CORRECT_ANSWER
       ,HINT1
       ,HINT2
@@ -55,6 +102,23 @@
       KUKOKUK_DICTATION_QUESTIONS
     ORDER BY RAND()
       LIMIT #{limit}
+  </select>
+
+  <!--
+   /**
+   * 받아쓰기 문제 번호로 정답문장 가져오기
+   * @param dictationQuestionNo 문제 번호
+   * @return 정답 문장
+   */
+  String getCorrectAnswerByQuestionNo(int dictationQuestionNo);
+   -->
+  <select id="getCorrectAnswerByQuestionNo" resultType="String">
+    SELECT
+        CORRECT_ANSWER
+    FROM
+        KUKOKUK_DICTATION_QUESTIONS
+    WHERE
+        DICTATION_QUESTION_NO = #{dictationQuestionNo}
   </select>
 
   <!--
@@ -91,4 +155,38 @@
         DICTATION_QUESTION_NO = #{dictationQuestionNo}
   </delete>
 
+  <!--
+   /**
+   * 사용자에게 아직 출제되지 않은 받아쓰기 문제 중에서
+   * 랜덤하게 지정한 개수만큼 문제를 조회하는 메서드
+   *
+   * @param userNo 문제를 푼 이력이 있는 사용자 번호
+   * @param count 조회할 문제 개수
+   * @return 사용자가 풀지 않은 문제 리스트
+   */
+  List<DictationQuestion> getRandomDictationQuestionsExcludeUser(
+      @Param("userNo") int userNo,
+      @Param("count") int count
+  -->
+  <select id="getRandomDictationQuestionsExcludeUser" resultMap="dictationQuestionResultMap">
+    SELECT
+         dq.CORRECT_ANSWER
+        ,dq.HINT1
+        ,dq.HINT2
+        ,dq.HINT3
+    FROM
+        KUKOKUK_DICTATION_QUESTIONS dq
+    WHERE
+        dq.DICTATION_QUESTION_NO
+    NOT IN (
+      SELECT
+          dql.DICTATION_QUESTION_NO
+      FROM
+          KUKOKUK_DICTATION_QUESTION_LOGS dql
+      WHERE
+          dql.USER_NO = #{userNo}
+    )
+    ORDER BY RAND()
+      LIMIT #{count}
+  </select>
 </mapper>

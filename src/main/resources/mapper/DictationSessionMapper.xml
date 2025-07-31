@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DictationSessionMapper">
 
-  <resultMap id="DictationSessionResultMap" type="DictationSession">
+  <resultMap id="dictationSessionResultMap" type="DictationSession">
     <id property="dictationSessionNo" column="DICTATION_SESSION_NO"/>
     <result property="userNo" column="USER_NO"/>
     <result property="startDate" column="START_DATE"/>
@@ -16,17 +16,23 @@
    * 받아쓰기 세트 생성
    * @param session 받아쓰기 세트
    */
-  insertDictationSession(DictationSession session)
+  insertDictationSession(DictationSession dictationSession)
    -->
-  <insert id="insertDictationSession" parameterType="DictationSession">
+  <insert id="insertDictationSession" parameterType="DictationSession" useGeneratedKeys="true" keyProperty="dictationSessionNo">
     INSERT INTO KUKOKUK_DICTATION_SESSIONS (
        USER_NO
       ,START_DATE
       ,END_DATE
+      ,CORRECT_COUNT
+      ,HINT_USED_COUNT
+      ,CORRECT_SCORE
     ) VALUES (
        #{userNo}
       ,#{startDate}
       ,#{endDate}
+      ,#{correctCount}
+      ,#{hintUsedCount}
+      ,#{correctScore}
     )
   </insert>
 
@@ -38,7 +44,7 @@
    */
     DictationSession getDictationSessionByNo(int dictationSessionNo)
    -->
-  <select id="getDictationSessionByNo" resultMap="DictationSessionResultMap">
+  <select id="getDictationSessionByNo" resultMap="dictationSessionResultMap">
     SELECT
        DICTATION_SESSION_NO
       ,USER_NO
@@ -61,7 +67,8 @@
    updateDictationSessionResult(DictationSession session)
    -->
   <update id="updateDictationSessionResult" parameterType="DictationSession">
-    UPDATE KUKOKUK_DICTATION_SESSIONS
+    UPDATE
+        KUKOKUK_DICTATION_SESSIONS
     SET
        END_DATE = NOW()
       ,CORRECT_SCORE = #{correctScore}

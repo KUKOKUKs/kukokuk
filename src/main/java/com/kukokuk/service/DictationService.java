@@ -9,8 +9,11 @@ import com.kukokuk.vo.DictationSession;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class DictationService {
@@ -19,50 +22,153 @@ public class DictationService {
   private final DictationQuestionLogMapper dictationQuestionLogMapper;
   private final DictationSessionMapper dictationSessionMapper;
 
-  /*
-    받아쓰기 게임을 시작할 떄 받아쓰기 문제에서 랜덤으로 10개를 가져와 받아쓰기 세트에 담기
+
+  /**
+   * 사용자가 아직 풀지 않은 받아쓰기 문제 중에서 무작위로 count 개수를 가져오기
+   * @param userNo 사용자 번호
+   * @param count 문제 수
+   * @return 사용자가 아직 풀지 않은 받아쓰기 문제 리스트
    */
-
-  public DictationSession startDictationSession(int userNo) {
-    // 1. 받아쓰기 세트 생성
-    DictationSession session = new DictationSession();
-    session.setUserNo(userNo);
-    session.setStartDate(new Date());
-    dictationSessionMapper.insertDictationSession(session);
-
-    // 2. 기존 DB 저장된 문제 랜덤 10개 가져오기
-    List<DictationQuestion> randomQuestions = dictationQuestionMapper.getRandomQuestions(10);
-
-    // 3. 받아쓰기 문제 풀이 이력과 연결(DictationSessionNo으로 문제 가져오기, 이력 10개 생성)
-    for (DictationQuestion question : randomQuestions) {
-      DictationQuestionLog log = new DictationQuestionLog();
-      log.setDictationSessionNo(session.getDictationSessionNo());
-      log.setDictationQuestionNo(question.getDictationQuestionNo());
-      dictationQuestionLogMapper.insertLog(log);
-    }
-
-    return session;
+  public List<DictationQuestion> getRandomDictationQuestionsExcludeUser(int userNo, int count) {
+    return dictationQuestionMapper.getRandomDictationQuestionsExcludeUser(userNo, count);
   }
 
-  /*
-    받아쓰기 끝났을 때 받아쓰기 문제 세트 정답 점수, 맞은 개수, 사용한 힌트 수 결과 반영
+  /**
+   * 받아쓰기 문제를 count 개수만큼 생성하여 DB에 저장하는 서비스 메서드
+   * @param count 생성할 문제 개수
    */
-  public void finishDictationSession(int dictationSessionNo) {
-    // 1. 받아쓰기 문제 풀이 이력 테이블에서 정답 수, 힌트 사용 수 조회
-    int correctCount = dictationQuestionLogMapper.getcountCorrectAnswers(dictationSessionNo);
-    int correctScore = correctCount * 10; // 문제당 10점(임의)
-    int hintUsedCount = dictationQuestionLogMapper.getcountHintsUsed(dictationSessionNo);
+  public void insertDictationRandomEntry(int count) {
+    for (int i = 0; i < count; i++) {
+      // 임시
+      //List<DictationQuestion> newQuestions = getRandomQuestions(count);
 
-    // 2. 받아쓰기 세트 결과 반영용 객체 생성
+      // 1. 문제 객체 생성 및 값 세팅
+     // DictationQuestion question = new DictationQuestion();
+      //question.setCorrectAnswer(correctAnswer);
+     // question.setHint1(hint1);
+     // question.setHint2(hint2);
+     // question.setHint3(hint3);
+
+      // 2. DB에 문제 저장
+      //dictationQuestionMapper.insertDictationQuestion(question);
+    }
+  }
+
+  /**
+   * 사용자에게 제공할 받아쓰기 문제 10개를 가져오기
+   * 이미 푼 문제는 제외하며, 부족하면 문제를 새로 생성한 뒤 다시 가져온다
+   * @param userNo 사용자 번호
+   * @return 받아쓰기 문제 리스트 (총 10개)
+   */
+  public List<DictationQuestion> getDictationQuestionsByUserNo(int userNo) {
+
+      // 1. 사용자 기준, 푼 문제는 제외하고 10문제 가져오기
+      List<DictationQuestion> questions = dictationQuestionMapper.getRandomDictationQuestionsExcludeUser(userNo, 10);
+
+      // 2. 10문제 보다 부족한 문제 수세기 (예: 4개 부족)
+      if (questions.size() < 10) {
+        int toCreate = 10 - questions.size();
+
+      // 3. 부족한 수 만큼 새로운 문제 생성 (예: 4개 생성)
+      insertDictationRandomEntry(toCreate);
+
+      // 4. 새로 생성한 문제 중에서도 사용자 기준으로 푼 문제는 다시 제외하고 가져오기 (예: 새로 생성된 4개 가져옴)
+      List<DictationQuestion> additional = dictationQuestionMapper.getRandomDictationQuestionsExcludeUser(userNo, toCreate);
+
+      // 5. 기존에 가져온 문제 리스트에 추가 (예: 새로 생성된 4개 합쳐서 questions에 집어넣어 10개 만들기)
+      questions.addAll(additional);
+    }
+
+    return questions;
+  }
+
+  /**
+   * 받아쓰기 문제 결과 받아쓰기 세트에 저장
+   * @param dictationSessionNo 문제 세트 번호
+   * @param userNo 회원 번호
+   */
+  @Transactional
+  public void saveDictationSessionResult(int dictationSessionNo, int userNo) {
+    // 1. 정답 개수 조회
+    int correctCount = dictationQuestionLogMapper.getCountCorrectAnswers(dictationSessionNo);
+
+    // 2. 힌트 사용 횟수 조회
+    int hintUsedCount = dictationQuestionLogMapper.getCountHintsUsed(dictationSessionNo);
+
+    // 3. 시작 시간 조회 (가장 이른 문제 풀이 시간)
+    Date startDate = dictationQuestionLogMapper.getEarliestAnswerDate(dictationSessionNo);
+
+    // 4. 종료 시간은 현재 시각
+    Date endDate = new Date();
+
+    // 5. 점수 계산
+    int correctScore = correctCount * 10;
+
+    // 6. 세션 저장
     DictationSession session = new DictationSession();
-    session.setDictationSessionNo(dictationSessionNo);
+    session.setDictationSessionNo(dictationSessionNo); // 외부에서 받은 세션 번호 사용
+    session.setUserNo(userNo);
+    session.setStartDate(startDate);
+    session.setEndDate(endDate);
     session.setCorrectCount(correctCount);
-    session.setCorrectScore(correctScore);
     session.setHintUsedCount(hintUsedCount);
+    session.setCorrectScore(correctScore);
 
-    // 3. 받아쓰기 세트 결과 반영
-    dictationSessionMapper.updateDictationSessionResult(session);
+    dictationSessionMapper.insertDictationSession(session);
+  }
 
+  /**
+   * 문제 제출 시 이력에 저장
+   * @param dictationSessionNo 문제 세트 번호
+   * @param dictaionquestionNo 문제 번호
+   * @param userAnswer 제출 문장
+   */
+  @Transactional
+  public void submitAnswer(int dictationSessionNo, int dictaionquestionNo, String userAnswer) {
+
+    // 1. 정답 문장 가져오기
+    String correctAnswer = dictationQuestionMapper.getCorrectAnswerByQuestionNo(dictaionquestionNo);
+    // 2. 기존 제출 이력 확인
+    DictationQuestionLog existingLog = dictationQuestionLogMapper.getLogBySessionAndQuestion(dictationSessionNo, dictaionquestionNo);
+
+    // 3. 제출 이력에 담기
+    if (existingLog == null) {
+      // 첫 제출 → INSERT
+      DictationQuestionLog newLog = new DictationQuestionLog();
+      newLog.setDictationSessionNo(dictationSessionNo);                                 // 세트 번호
+      newLog.setDictationQuestionNo(dictaionquestionNo);                                // 문제 번호
+      newLog.setUserAnswer(userAnswer);                                                 // 사용자가 제출한 답안
+      newLog.setTryCount(1);                                                            // 첫 시도, 시도 횟수 1
+      newLog.setIsSuccess(isCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N");      // 정답 여부 판정
+
+      dictationQuestionLogMapper.insertDictationQuestionLog(newLog);                    // DB에 INSERT
+    } else {
+      // 두 번째 제출 → UPDATE
+      existingLog.setUserAnswer(userAnswer);                                            // 사용자가 새로 제출한 답안
+      existingLog.setTryCount(existingLog.getTryCount() + 1);                           // 시도 횟수 증가
+      existingLog.setIsSuccess(isCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N"); // 정답 여부 판정
+
+      dictationQuestionLogMapper.updateDictationQuestionLog(existingLog);               // DB에 UPDATE
+    }
+  }
+
+  /**
+   * 사용자 제출 문장과 정답 문장을 비교하여 정답 여부를 판별
+   * 문장부호 및 특수문자는 제외하고 한글, 숫자, 띄어쓰기만 남긴 후 비교
+   * @param userAnswer 제출문장
+   * @param correctAnswer 정답문장
+   * @return 두 문장이 같으면 true (정답), 다르면 false (오답)
+   */
+  private boolean isCorrectAnswer(String userAnswer, String correctAnswer) {
+    // 제출문장, 정답문장 두 문장 모두 NULL이 아니게 예외처리
+    if (userAnswer == null || correctAnswer == null) return false;
+
+    // 받아쓰기 정답 여부 판별을 위해 문장부호 및 특수문자는 제외하고 한글, 숫자, 띄어쓰기만 남김
+    String refinedUserAnswer = userAnswer.replaceAll("[^ㄱ-ㅎ가-힣0-9 ]", "");
+    String refinedCorrectAnswer = correctAnswer.replaceAll("[^ㄱ-ㅎ가-힣0-9 ]", "");
+
+    // 비교해서 같다(true) 아니면 다르다(false)로 반환
+    return refinedUserAnswer.equals(refinedCorrectAnswer);
   }
 
   /**
