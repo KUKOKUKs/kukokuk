@@ -1,12 +1,19 @@
+// noinspection ES6UnusedImports
+
 import {validateLoginForm} from '/js/modules/sign/sign-form-validator.js';
 import {
     addInputErrorMessage,
     clearInputErrorMessage
-} from '/js/util/form-error-util.js';
-import {validateDate} from '/js/util/validation-util.js';
+} from '/js/utils/form-error-util.js';
+import {validateDate} from '/js/utils/validation-util.js';
+import {debounce} from '/js/utils/debounce-util.js';
+import {
+    checkNicknameDuplicate,
+    checkUsernameDuplicate
+} from '/js/modules/sign/sign-api.js';
 
 $(document).ready(() => {
-    let isValid = true; // 인풋 유효성 검증 플래그
+    let isValid = false; // 인풋 유효성 검증 플래그
     const regExEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z.]{2,5}$/; // 이메일 정규표현식
     const regExPassword = /^(?=.*[a-zA-Z])(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,16}$/; // 비밀번호 정규표현식
     const regExNickname = /^[a-zA-Z0-9가-힣_]{4,16}$/; // 닉네임 정규표현식
@@ -25,44 +32,80 @@ $(document).ready(() => {
     let isValidName = false; // 이름 유효성 검사 여부
     let isValidBirthDate = false; // 생년월일 유효성 검사 여부
 
+    // username(email) 중복 체크
+    async function handleEmailInput(username) {
+        clearInputErrorMessage($registerEmail); // 에러 메세지 초기화
+        isValid = await checkUsernameDuplicate(username);
+        console.log("handleEmailInput 실행 결과: ", isValid);
+
+        if (isValid) {
+            addInputErrorMessage($registerEmail, "사용중인 이메일입니다");
+        }
+
+        // 제출 버튼 활성화/비활성화 설정
+        handleSubmitBtn(!isValid); // true=중복, false=중복이 아니므로 !로 적용
+    }
+
+    // nickname 중복 체크
+    async function handleNicknameInput(nickname) {
+        clearInputErrorMessage($registerNickname); // 에러 메세지 초기화
+        isValid = await checkNicknameDuplicate(nickname);
+        console.log("handleNicknameInput 실행 결과: ", isValid);
+
+        if (isValid) {
+            addInputErrorMessage($registerNickname, "사용중인 닉네임입니다");
+        }
+
+        // 제출 버튼 활성화/비활성화 설정
+        handleSubmitBtn(!isValid); // true=중복, false=중복이 아니므로 !로 적용
+    }
+
+    // 중복 체크 요청
+    const emailCheckDebounce = debounce(handleEmailInput, 300); // email
+    const nicknameCheckDebounce = debounce(handleNicknameInput, 300); // nickname
+
     // 회원가입 이메일 유효성 검증 처리
     $registerEmail.on("input blur", function () {
         clearInputErrorMessage($registerEmail); // 에러 메세지 초기화
-        isValid = true; // 인풋 유효성 검증 플래그
+        isValid = false; // 인풋 유효성 검증 플래그
         const val = $(this).val();
 
         if (val === "") {
             // 값이 없을 경우
             addInputErrorMessage($registerEmail, "이메일을 입력해 주세요");
-            isValid = false;
         } else if (!regExEmail.test(val)) {
             // 정규표현식을 통과하지 못한 경우
             addInputErrorMessage($registerEmail, "유효한 이메일 형식이 아닙니다");
-            isValid = false;
+        } else {
+            isValid = true;
         }
 
-        // 제출 버튼 활성화/비활성화 설정
-        handleSubmitBtn(isValid);
+        if (isValid) {
+            // 기본 유효성 검증 통과 시 중복 검사 실행
+            emailCheckDebounce(val);
+        } else {
+            // 제출 버튼 활성화/비활성화 설정
+            handleSubmitBtn(isValid);
+        }
     });
 
     // 회원가입 비밀번호 유효성 검증 처리
     $registerPassword.on("input blur", function () {
         clearInputErrorMessage($registerPassword); // 에러 메세지 초기화
-        isValid = true; // 인풋 유효성 검증 플래그
+        isValid = false; // 인풋 유효성 검증 플래그
         const val = $(this).val();
 
         if (val === "") {
             // 값이 없을 경우
             addInputErrorMessage($registerPassword, "비밀번호를 입력해 주세요");
-            isValid = false;
         } else if (!regExPassword.test(val)) {
             // 정규표현식을 통과하지 못한 경우
             addInputErrorMessage($registerPassword, "유효한 비밀번호 형식이 아닙니다");
-            isValid = false;
         } else if ($registerPasswordConfirm.val().trim() !== "" && val !== $registerPasswordConfirm.val()) {
             // 비빌번호 확인란이 비어있지 않고 비밀번호가 비빌번호 확인 값이 같지 않을 경우
             addInputErrorMessage($registerPasswordConfirm, "비밀번호가 일치하지 않습니다");
-            isValid = false;
+        } else {
+            isValid = true;
         }
 
         // 제출 버튼 활성화/비활성화 설정
@@ -72,31 +115,33 @@ $(document).ready(() => {
     // 회원가입 비밀번호 확인 유효성 검증 처리
     $registerPasswordConfirm.on("input blur", function () {
         clearInputErrorMessage($registerPasswordConfirm); // 에러 메세지 초기화
-        isValid = true; // 인풋 유효성 검증 플래그
+        isValid = false; // 인풋 유효성 검증 플래그
         const val = $(this).val();
 
         if (val === "") {
             // 값이 없을 경우
             addInputErrorMessage($registerPasswordConfirm, "비밀번호를 다시 입력해 주세요");
-            isValid = false;
         } else if ($registerPassword.val().trim() !== "" && $registerPassword.val() !== val) {
             // 비빌번호 확인란이 비어있지 않고 비밀번호가 비빌번호 확인 값이 같지 않을 경우
             addInputErrorMessage($registerPasswordConfirm, "비밀번호가 일치하지 않습니다");
-            isValid = false;
+        }  else {
+            isValid = true;
         }
 
         // 제출 버튼 활성화/비활성화 설정
         handleSubmitBtn(isValid);
     });
 
+    // 회원가입 이름 유효성 검증 처리
     $registerName.on("input blur", function () {
         clearInputErrorMessage($registerName); // 에러 메세지 초기화
-        isValidName = true; // 인풋 유효성 검증 플래그
+        isValidName = false; // 인풋 유효성 검증 플래그
         const val = $(this).val();
         
         if (val === "") {
             addInputErrorMessage($registerName, "이름을 입력해 주세요");
-            isValidName = false;
+        }  else {
+            isValidName = true;
         }
 
         // 제출 버튼 활성화/비활성화 설정
@@ -106,7 +151,7 @@ $(document).ready(() => {
     // 회원가입 생년월일 유효성 검증 처리
     $registerBirthDate.on("input blur", function () {
         clearInputErrorMessage($registerBirthDate); // 에러 메세지 초기화
-        isValidBirthDate = true; // 인풋 유효성 검증 플래그
+        isValidBirthDate = false; // 인풋 유효성 검증 플래그
 
         // 숫자가 아닌 값이 입력될 경우 실시간 제거
         const original = $(this).val();
@@ -122,7 +167,6 @@ $(document).ready(() => {
         // 값이 비었거나 8자리 이하일 경우
         if (current === "" || current.length < 8) {
             addInputErrorMessage($registerBirthDate, "생년월일을 입력해 주세요");
-            isValidBirthDate = false;
         } else {
             const y = current.slice(0, 4);
             const m = current.slice(4, 6);
@@ -137,14 +181,13 @@ $(document).ready(() => {
                 // 오늘 이전 날짜인지 확인
                 if (inputDate >= today) {
                     addInputErrorMessage($registerBirthDate, "유효한 생년월일이 아닙니다");
-                    isValidBirthDate = false;
                 } else {
                     const formattedDate = `${y}-${m}-${d}`;
                     $(this).val(formattedDate);
+                    isValidBirthDate = true;
                 }
             } else {
                 addInputErrorMessage($registerBirthDate, "유효한 생년월일이 아닙니다");
-                isValidBirthDate = false;
             }
         }
 
@@ -152,22 +195,28 @@ $(document).ready(() => {
         handleSubmitBtn(isValidName && isValidBirthDate);
     });
 
+    // 회원가입 닉네임 유효성 검증 처리
     $registerNickname.on("input blur", function () {
         clearInputErrorMessage($registerNickname); // 에러 메세지 초기화
-        isValid = true; // 인풋 유효성 검증 플래그
+        isValid = false; // 인풋 유효성 검증 플래그
         const val = $(this).val();
 
         if (val === "") {
             addInputErrorMessage($registerNickname, "닉네임을 입력해 주세요");
-            isValid = false;
         } else if (!regExNickname.test(val)) {
             // 정규표현식을 통과하지 못한 경우
             addInputErrorMessage($registerNickname, "유효한 닉네임 형식이 아닙니다");
-            isValid = false;
+        } else {
+            isValid = true; // 인풋 유효성 검증 플래그
         }
 
-        // 제출 버튼 활성화/비활성화 설정
-        handleSubmitBtn(isValid);
+        if (isValid) {
+            // 기본 유효성 검증 통과 시 중복 검사 실행
+            nicknameCheckDebounce(val);
+        } else {
+            // 제출 버튼 활성화/비활성화 설정
+            handleSubmitBtn(isValid);
+        }
     });
 
     // 로그인 관련
@@ -188,23 +237,35 @@ $(document).ready(() => {
 
     // 실시간 인풋 유효성 검사(로그인폼에서는 입력 유무만 체크)
     $loginEmail.on("input blur", function () {
-        if (this.value === "") {
-            $submitBtn.addClass("disabled");
+        clearInputErrorMessage($loginEmail);
+        isValid = false; // 인풋 유효성 검증 플래그
+        const val = $(this).val();
+
+        if (val === "") {
+            // 값이 없을 경우
             addInputErrorMessage($loginEmail, "이메일을 입력해 주세요");
-        } else {
-            $submitBtn.removeClass("disabled");
-            clearInputErrorMessage($loginEmail);
+        } else if (val !== "" && $loginPassword.val().trim() !== "") {
+            isValid = true;
         }
+
+        // 제출 버튼 활성화/비활성화 설정
+        handleSubmitBtn(isValid);
     });
 
     $loginPassword.on("input blur", function () {
-        if (this.value === "") {
-            $submitBtn.addClass("disabled");
+        clearInputErrorMessage($loginPassword);
+        isValid = false; // 인풋 유효성 검증 플래그
+        const val = $(this).val();
+
+        if (val === "") {
+            // 값이 없을 경우
             addInputErrorMessage($loginPassword, "비밀번호를 입력해 주세요");
-        } else {
-            $submitBtn.removeClass("disabled");
-            clearInputErrorMessage($loginPassword);
+        } else if (val !== "" && $loginEmail.val().trim() !== "") {
+            isValid = true;
         }
+
+        // 제출 버튼 활성화/비활성화 설정
+        handleSubmitBtn(isValid);
     });
 
     // 제출 버튼 활성화 핸들러

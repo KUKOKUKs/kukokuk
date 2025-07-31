@@ -1,47 +1,77 @@
 package com.kukokuk.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kukokuk.ai.GeminiClient;
+import com.kukokuk.ai.GeminiStudyPromptBuilder;
+import com.kukokuk.ai.GeminiStudyResponse;
+import com.kukokuk.ai.GeminiStudyResponse.Card;
+import com.kukokuk.ai.GeminiStudyResponse.EssayQuiz;
+import com.kukokuk.ai.GeminiStudyResponse.Quiz;
 import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.mapper.DailyQuestMapper;
+import com.kukokuk.mapper.DailyStudyCardMapper;
+import com.kukokuk.mapper.DailyStudyEssayQuizMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
 import com.kukokuk.mapper.DailyStudyMaterialMapper;
+import com.kukokuk.mapper.DailyStudyQuizMapper;
 import com.kukokuk.mapper.MaterialParseJobMapper;
+import com.kukokuk.mapper.StudyDifficultyMapper;
 import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.response.ParseMaterialResponse;
 import com.kukokuk.util.SchoolGradeUtils;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
 import com.kukokuk.vo.DailyStudy;
+import com.kukokuk.vo.DailyStudyCard;
+import com.kukokuk.vo.DailyStudyEssayQuiz;
 import com.kukokuk.vo.DailyStudyLog;
 import com.kukokuk.vo.DailyStudyMaterial;
+import com.kukokuk.vo.DailyStudyQuiz;
 import com.kukokuk.vo.MaterialParseJob;
+import com.kukokuk.vo.StudyDifficulty;
 import com.kukokuk.vo.User;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.juli.logging.Log;
 import org.modelmapper.internal.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StudyService {
 
     private final  DailyStudyMapper dailyStudyMapper;
     private final DailyQuestMapper dailyQuestMapper;
-    private DailyStudyMaterialMapper dailyStudyMaterialMapper;
-
+    private final DailyStudyMaterialMapper dailyStudyMaterialMapper;
+    private final StudyDifficultyMapper studyDifficultyMapper;
+    private final DailyStudyCardMapper dailyStudyCardMapper;
+    private final DailyStudyQuizMapper dailyStudyQuizMapper;
+    private final DailyStudyEssayQuizMapper dailyStudyEssayQuizMapper;
     private final MaterialParseJobMapper materialParseJobMapper;
 
     private final StringRedisTemplate stringRedisTemplate;
 
+    private final GeminiClient geminiClient;
+
+    private final ObjectMapper objectMapper;
+
     /*
-      메인 화면에 필요한 데이터를 담은 MainStudyViewDto 를 반환한다
+      메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
       <MainStudyViewDto 에 포함되는 데이터>
         1. 학습탭의 일일 도전과제 목록
         2. 유저 정보
@@ -57,7 +87,7 @@ public class StudyService {
         dto.setDailyQuests(dailyQuests);
 
         // 인증된 사용자일때 (인증되지 않은 사용자는 미리 설정한 일일학습 자료 제공 예정)
-        if (userDetails != null) {
+        if (userDetails == null) { // 수정필요
 
       /*
         테스트를 위한 유저 객체 생성
@@ -213,20 +243,138 @@ public class StudyService {
 
     /**
      * 학습원본데이터를 기반으로 AI 재구성을 통해 학습자료를 DB에 저장하고, 반환하는 메소드
-     *
+     * 1. 학습 원본자료와 사용자 수준의 프롬프트 텍스트 조회
+     * 2. 프롬프트를 생성하고, 프롬프트를 Gemini에게 전달해 응답 반환
+     * 3. 응답을 파싱해서 DB에 엔티티 insert
      * @param dailyStudyMaterialNo
-     * @param studyDifficulty
+     * @param studyDifficultyNo
      * @return
      */
-    private DailyStudy createDailyStudy(int dailyStudyMaterialNo, int studyDifficulty) {
+    public DailyStudy createDailyStudy(int dailyStudyMaterialNo, int studyDifficultyNo) {
         // dailyStudyMaterialNo 로 학습자료 원본데이터 조회
-        DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
+         DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
+
+         // studyDifficulty로 사용자 수준의 프롬프트 텍스트 조회
+        StudyDifficulty studyDifficulty = studyDifficultyMapper.getDifficultyByNo(studyDifficultyNo);
+
+         // 학습자료 원본데이터와 사용자의 학습 수준으로 프롬프트 생성
+        String prompt = GeminiStudyPromptBuilder.buildPrompt(dailyStudyMaterial.getContent(),
+            studyDifficulty.getPromptText());
 
         // Gemini에게 학습자료 원본 텍스트 전달해서, 응답 데이터 반환
+        String content = geminiClient.getGeminiResponse(prompt);
 
-        // 응답데이터 파싱 및 DB에 저장
+        // 응답데이터에서 JSON만 추출
+        String contentJsonOnly = content.substring(content.indexOf("{"), content.lastIndexOf("}") + 1);
 
-        return null;
+        DailyStudy dailyStudy = null;
+        // try문 범위 고민
+        try {
+            // Json응답데이터를 객체로 매핑
+            GeminiStudyResponse geminiStudyResponse = objectMapper.readValue(contentJsonOnly, GeminiStudyResponse.class);
+
+            // 학습자료, 학습자료카드, 학습퀴즈, 학습 서술형퀴즈를 DB에 저장하는 메소드 호출
+            dailyStudy = insertDailyStudyWithOtherComponents(geminiStudyResponse, dailyStudyMaterialNo, studyDifficultyNo);
+        } catch (JsonProcessingException e){
+            log.error( e.getMessage());
+            // 오류처리 추가
+        }
+
+        return dailyStudy;
+    }
+
+    /**
+     * 전달받은 Gemini 응답 객체를 학습자료, 학습자료카드, 학습퀴즈, 학습 서술형퀴즈를 DB에 저장하는 메소드
+     * @param response Gemini 응답 객체
+     * @param dailyStudyMaterialNo 원본데이터 식별자
+     * @param studyDifficultyNo 학습수준 식별자
+     * @return DB에 저장된 학습자료 (DailyStudy)
+     * @throws JsonProcessingException 호출하는 부분에서 try-catch 처리
+     */
+    @Transactional
+    public DailyStudy insertDailyStudyWithOtherComponents(GeminiStudyResponse response, int dailyStudyMaterialNo, int studyDifficultyNo)
+        throws JsonProcessingException {
+        // 학습자료(DailyStudy) DB에 추가
+        DailyStudy study = insertStudy(response, dailyStudyMaterialNo, studyDifficultyNo);
+        // 학습자료카드(DailyStudyCard) DB에 추가
+        insertCards(response.getCards(), study.getDailyStudyNo());
+        // 학습자료퀴즈(DailyStudyQuiz) DB에 추가
+        insertQuizzes(response.getQuizzes(), study.getDailyStudyNo());
+        // 학습자료서술형쿼즈(DailyStudyEssayQuiz) DB에 추가
+        insertEssayQuiz(response.getEssay(), study.getDailyStudyNo());
+
+        return study;
+    }
+
+    /**
+     * 학습자료(DailyStudy) DB에 추가하는 메소드 
+     */
+    private DailyStudy insertStudy(GeminiStudyResponse response, int dailyStudyMaterialNo, int studyDifficultyNo) {
+        // 학습자료 테이블에 데이터 추가
+        DailyStudy dailyStudy = new DailyStudy();
+        dailyStudy.setStudyDifficulty(studyDifficultyNo);
+        dailyStudy.setTitle(response.getMainTitle());
+        dailyStudy.setDailyStudyMaterialNo(dailyStudyMaterialNo);
+        dailyStudy.setCardCount(response.getCards().size());
+
+        // 매퍼 호출
+        dailyStudyMapper.insertDailyStudy(dailyStudy);
+
+        return dailyStudy;
+    }
+    
+    /**
+     * 학습자료카드(DailyStudyCard) DB에 추가하는 메소드
+     */
+    private void insertCards(List<Card> cards, int dailyStudyNo) throws JsonProcessingException {
+        // 학습 카드 테이블에 데이터 추가
+        for (int i = 0; i < cards.size(); i++){
+            Card card = cards.get(i);
+            DailyStudyCard dailyStudyCard = new DailyStudyCard();
+            dailyStudyCard.setTitle(card.getTitle());
+            dailyStudyCard.setContent(objectMapper.writeValueAsString(card.getBody()));
+            dailyStudyCard.setCardIndex(i + 1);
+            dailyStudyCard.setDailyStudyNo(dailyStudyNo);
+
+            // 매퍼 호출
+            dailyStudyCardMapper.insertDailyStudyCard(dailyStudyCard);
+        }
+    }
+
+    /**
+     * 학습자료퀴즈(DailyStudyQuiz) DB에 추가하는 메소드
+     */
+    private void insertQuizzes(List<Quiz> quizzes, int dailyStudyNo) {
+        // 퀴즈 테이블에 데이터 추가
+        for (Quiz quiz : quizzes){
+            DailyStudyQuiz dailyStudyQuiz = new DailyStudyQuiz();
+            dailyStudyQuiz.setQuestion(quiz.getQuestion());
+            dailyStudyQuiz.setOption1(quiz.getOptions().get(0));
+            dailyStudyQuiz.setOption2(quiz.getOptions().get(1));
+            dailyStudyQuiz.setOption3(quiz.getOptions().get(2));
+            dailyStudyQuiz.setOption4(quiz.getOptions().get(3));
+            dailyStudyQuiz.setSuccessAnswer(quiz.getAnswer());
+            dailyStudyQuiz.setDailyStudyNo(dailyStudyNo);
+
+            // 매퍼 호출
+            dailyStudyQuizMapper.insertDailyStudyQuiz(dailyStudyQuiz);
+        }
+    }
+    
+    /**
+     * 학습자료서술형쿼즈(DailyStudyEssayQuiz) DB에 추가하는 메소드
+     */
+    private void insertEssayQuiz(EssayQuiz essayQuiz, int dailyStudyNo) {
+        // 생성형 퀴즈 테이블에 데이터 추가
+        DailyStudyEssayQuiz dailyStudyEssayQuiz = new DailyStudyEssayQuiz();
+        dailyStudyEssayQuiz.setQuestion(essayQuiz.getQuestion());
+        dailyStudyEssayQuiz.setDailyStudyNo(dailyStudyNo);
+        // 채점기준도 추가
+        // 채점기준도 추가
+        // 채점기준도 추가
+
+        // 매퍼호출
+        dailyStudyEssayQuizMapper.insertdailyStudyEssayQuiz(dailyStudyEssayQuiz);
     }
 
     /**
@@ -273,5 +421,15 @@ public class StudyService {
         return parseMaterialResponse;
     }
 
+    /**
+     * parseMaterialJobs 테이블에서 목록을 조회해서 반환
+     */
+    public List<MaterialParseJob> getMaterialParseJobs() {
+        int rows = 10;
+
+        List<MaterialParseJob> jobs = materialParseJobMapper.getParseJobsWithMaterial(rows);
+
+        return jobs;
+    }
 
 }

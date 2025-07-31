@@ -5,16 +5,7 @@
   <!--
    void insertStudyMaterial(DailyStudyMaterial dailyStudyMaterial);
   -->
-  <insert id="insertStudyMaterial" parameterType="DailyStudyMaterial">
-    <selectKey resultType="int" keyProperty="sequence" order="BEFORE">
-      SELECT
-        IFNULL(MAX(SEQUENCE), 0) + 1
-      FROM
-         KUKOKUK_DAILY_STUDY_MATERIALS
-      WHERE
-        SCHOOL = #{school}
-        AND GRADE = #{grade}
-    </selectKey>
+  <insert id="insertStudyMaterial" parameterType="DailyStudyMaterial" useGeneratedKeys="true" keyProperty="dailyStudyMaterialNo" keyColumn="DAILY_STUDY_MATERIAL_NO">
     INSERT INTO
         KUKOKUK_DAILY_STUDY_MATERIALS
         (SCHOOL, GRADE, MATERIAL_TITLE, KEYWORDS, CONTENT, SOURCE_FILENAME, SEQUENCE)
@@ -35,11 +26,32 @@
   -->
   <select id="getMaxSequenceBySchoolAndGrade" resultType="int">
     SELECT
-        MAX(SEQUENCE)
+      IFNULL(MAX(SEQUENCE), 0)
     FROM
       KUKOKUK_DAILY_STUDY_MATERIALS
     WHERE
         SCHOOL = #{school}
         AND GRADE = #{grade}
+  </select>
+
+  <!--
+    DailyStudyMaterial getStudyMaterialByNo(int dailyStudyMaterialNo);
+  -->
+  <select id="getStudyMaterialByNo" resultType="DailyStudyMaterial">
+    SELECT
+        DAILY_STUDY_MATERIAL_NO AS dailyStudyMaterialNo,
+        SCHOOL,
+        GRADE,
+        MATERIAL_TITLE AS materialTitle,
+        KEYWORDS,
+        CONTENT,
+        SOURCE_FILENAME AS sourceFilename,
+        SEQUENCE,
+        CREATED_DATE AS createdDate,
+        UPDATED_DATE AS updatedDate
+    FROM
+        KUKOKUK_DAILY_STUDY_MATERIALS
+    WHERE
+        DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo}
   </select>
 </mapper>

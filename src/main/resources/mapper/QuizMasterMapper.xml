@@ -17,6 +17,16 @@
         <result property="success_count" column="SUCCESS_COUNT"/>
     </resultMap>
     <!--
+        * 퀴즈의 갯수를 조회한다.
+        * @return int
+        int getQuizCount();
+    -->
+    <select id="getQuizCount" resultType="int">
+        SELECT count(*)
+        FROM KUKOKUK_QUIZ_MASTERS
+    </select>
+
+    <!--
         public int insertQuiz(QuizMaster quiz);
 
         퀴즈 마스터 테이블에 새로운 퀴즈 1건을 저장한다.
@@ -43,17 +53,17 @@
         FROM KUKOKUK_QUIZ_MASTERS
         WHERE USAGE_COUNT &lt; #{usageCount}
     </select>
-<!--
-    int getQuizCountByUsageCount(int usageCount);
+    <!--
+        int getQuizCountByUsageCount(int usageCount);
 
-    * 특정 유형에서 USAGE_COUNT(풀이횟수)가 주어진 값 미만인 퀴즈 개수 반환
-    * @param questionType 문제 유형 ("뜻", "단어")
-    * @param usageCount 기준값
-    * @return 해당 조건에 맞는 퀴즈 개수
+        * 특정 유형에서 USAGE_COUNT(풀이횟수)가 주어진 값 미만인 퀴즈 개수 반환
+        * @param questionType 문제 유형 ("뜻", "단어")
+        * @param usageCount 기준값
+        * @return 해당 조건에 맞는 퀴즈 개수
 
-    int get(@Param("questionType") String questionType,
-    @Param("usageCount") int usageCount);
-    -->
+        int get(@Param("questionType") String questionType,
+        @Param("usageCount") int usageCount);
+        -->
     <select id="getQuizCountByTypeAndUsageCount" resultType="int">
         SELECT COUNT(*)
         FROM KUKOKUK_QUIZ_MASTERS

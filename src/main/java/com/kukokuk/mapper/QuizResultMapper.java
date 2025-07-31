@@ -1,6 +1,6 @@
 package com.kukokuk.mapper;
 
-import com.kukokuk.dto.QuizResultResponse;
+import com.kukokuk.response.QuizResultResponse;
 import com.kukokuk.vo.QuizResult;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;

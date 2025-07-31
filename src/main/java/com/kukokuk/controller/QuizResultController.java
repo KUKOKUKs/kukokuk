@@ -1,6 +1,6 @@
 package com.kukokuk.controller;
 
-import com.kukokuk.dto.QuizResultResponse;
+import com.kukokuk.response.QuizResultResponse;
 import com.kukokuk.service.QuizResultService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,4 +33,20 @@ public class QuizResultController {
         log.info("getQuizResults() 실행됨 {}", userNo);
         return quizResultService.getQuizResultsBySession(sessionNo, userNo);
     }
+
+    // QuizResultController.java
+
+    // 📁 com.kukokuk.controller.QuizResultController.java
+//    @PostMapping("/quiz-results")
+//    public ResponseEntity<?> submitQuizResults(@RequestBody QuizSubmitRequest request) {
+//        try {
+//            int sessionNo = quizResultService.saveQuizResults(request);
+//            return ResponseEntity.ok(Map.of("sessionNo", sessionNo));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(Map.of("message", "퀴즈 제출 실패", "error", e.getMessage()));
+//        }
+//    }
+
+
 }
