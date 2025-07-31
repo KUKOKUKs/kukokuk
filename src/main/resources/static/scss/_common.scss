@@ -2,7 +2,7 @@
     /* font */
     --baseFontSize: 16px;
     --subFontSize: 0.9em;
-    --titleFontSize: 24px;
+    --titleFontSize: 22px;
     --smallFontSize: 0.8em;
     --largeFontSize: 1.25em;
 
@@ -16,6 +16,7 @@
     --yellowColor: #ffc43b;
     --redColor: #ff5b45;
     --borderColor: #d9d9d9;
+    --dimmedColor: rgba(0, 0, 0, 0.3);
 
     /* element property */
     --logoWidth: 100px;
@@ -23,6 +24,9 @@
     --mainContentWidth: 600px;
     --subContentWidth: 400px;
     --centerContentWidth: 800px;
+    --modalWidth: 400px;
+    --modalMinHeight: 300px;
+    --modalMaxHeight: 450px;
     --navWidth: 250px;
     --baseIcon: 30px;
     --smallIcon: 16px;
@@ -33,6 +37,8 @@
     --smallPadding: .75em;
     --tinyPadding: .3em;
     --inputPadding: 27px 15px 8px;
+    --modalPadding: 16px;
+    --modalPaddingBottom: 80px;
 
     --baseBorder: 2px solid var(--borderColor);
     --thinBorder: 1px solid var(--borderColor);
@@ -69,6 +75,11 @@ time, mark, audio, video {
     box-sizing: border-box;
 }
 
+img {
+    max-width: 100%;
+    vertical-align: top;
+}
+
 button {
     background-color: inherit;
 }
@@ -76,6 +87,18 @@ button {
 input {
     width: 100%;
     outline: none;
+}
+
+select {
+    width: 100%;
+    height: 100%;
+    padding: 0 15px;
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url('/icons/gray_arrow.png') right 15px center no-repeat;
 }
 
 /* 브라우저 인풋 자동완성 배경 제거 */

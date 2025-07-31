@@ -9,4 +9,8 @@
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
     </div>
 </div>
+
+<th:block layout:fragment="script">
+    <script type="module" th:src="@{/js/modules/main/main.js}"></script>
+</th:block>
 </html>
