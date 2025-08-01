@@ -30,7 +30,7 @@ public class HomeController {
         model.addAttribute("error", "Forbidden");
         model.addAttribute("message", "접근 권한이 없습니다.");
         log.error("[{}] {} - {}", HttpServletResponse.SC_FORBIDDEN, "Forbidden", "접근 권한이 없습니다.");
-        return "error-page";
+        return "/resources/templates/error/error-page.html";
     }
 
 }

@@ -11,7 +11,7 @@ export async function checkUsernameDuplicate(username) {
     console.log("checkUsernameDuplicate() api 요청 실행", username);
     const response = await $.ajax({
         method: "GET",
-        url: "/api/users/username",
+        url: "/api/users/duplicate/username",
         data: { username },
         dataType: "json",
     });
@@ -28,7 +28,7 @@ export async function checkNicknameDuplicate(nickname) {
     console.log("checkNicknameDuplicate() api 요청 실행", nickname);
     const response = await $.ajax({
         method: "GET",
-        url: "/api/users/nickname",
+        url: "/api/users/duplicate/nickname",
         data: { nickname },
         dataType: "json",
     });
