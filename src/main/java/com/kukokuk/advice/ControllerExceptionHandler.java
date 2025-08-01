@@ -1,33 +1,58 @@
 package com.kukokuk.advice;
 
 import com.kukokuk.exception.AppException;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataAccessException;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
+@Log4j2
 @ControllerAdvice(basePackages = "com.kukokuk.controller")
 public class ControllerExceptionHandler {
 
-    @ExceptionHandler(AppException.class)
-    public String handlerAppException(AppException ex, Model model) {
-        model.addAttribute("message", ex.getMessage());
+    // 반환할 model, http 값 설정
+    private String buildErrorPage(HttpServletResponse response, Model model,
+        int status, String error, String message) {
+        response.setStatus(status);
+        model.addAttribute("error", error);
+        model.addAttribute("status", status);
+        model.addAttribute("message", message);
+        log.error("[{}] {} - {}", status, error, message);
+        return "error-page";
+    }
 
-        return "error/app";
+    @ExceptionHandler(AppException.class)
+    public String handlerAppException(AppException ex, HttpServletResponse response, Model model) {
+        return buildErrorPage(response, model, 500,  "App Error", ex.getMessage());
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public String handlerDataAccessException(DataAccessException ex, Model model) {
-        model.addAttribute("message", ex.getMessage());
-
-        return "error/db";
+    public String handlerDataAccessException(DataAccessException ex, HttpServletResponse response, Model model) {
+        return buildErrorPage(response, model, 500,  "Database Error", ex.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public String handlerRuntimeException(RuntimeException ex, Model model) {
-        model.addAttribute("message", ex.getMessage());
+    public String handlerRuntimeException(RuntimeException ex, HttpServletResponse response, Model model) {
+        return buildErrorPage(response, model, 500,  "Runtime Error", ex.getMessage());
+    }
 
-        return "error/server";
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public String handleBadRequest(MethodArgumentNotValidException ex, HttpServletResponse response, Model model) {
+        return buildErrorPage(response, model, 400,  "Bad Request", "입력 값이 올바르지 않습니다.");
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public String handleNotFound(NoHandlerFoundException ex, HttpServletResponse response, Model model) {
+        return buildErrorPage(response, model, 404,  "Not Found", "요청하신 페이지를 찾을 수 없습니다.");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public String handlerException(Exception ex, HttpServletResponse response, Model model) {
+        return buildErrorPage(response, model, 500,  "Unknown Error", "알수 없는 오류가 발생했습니다.\n메인 페이지로 이동합니다.");
     }
 
 }

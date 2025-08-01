@@ -2,6 +2,15 @@ spring:
   application:
     name: kukokuk
 
+  # 아래 설정하지 않을 시 존재하지 않는 페이지 요청 발생 시 WhiteLabel Error Page
+  mvc:
+    # 404(Not Found)일 때 예외(NoHandlerFoundException)를 발생시키도록 설정
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      # 정적 리소스 경로 매핑을 비활성화 (필요 시 커스터마이징한 핸들러를 타게 하기 위해)
+      add-mappings: false
+
   datasource:
     # 데이터베이스 연결 URL (MySQL)
     url: jdbc:mysql://localhost:3306/kukokuk?serverTimezone=Asia/Seoul

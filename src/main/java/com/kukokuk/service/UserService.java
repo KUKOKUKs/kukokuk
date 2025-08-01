@@ -109,7 +109,7 @@ public class UserService {
         log.info("duplicateUserByUsername() 서비스 실행");
         User foundUser = userMapper.getUserByUsername(username);
         if (foundUser != null) {
-            throw new UserRegisterException("username", "이미 사용중인 이메일입니다.");
+            throw new RuntimeException("이미 사용중인 이메일입니다.");
         }
     }
 

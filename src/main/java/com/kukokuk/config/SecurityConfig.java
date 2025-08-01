@@ -88,10 +88,10 @@ public class SecurityConfig {
 
                 // 자유 접근 허용: 로그인 없이 가능한 경로
                 .requestMatchers(
-                    "/**"
-                    ,"/"                // 메인
+                    "/"                // 메인
                     , "/login"          // 로그인
                     , "/register/**"    // 회원가입
+                    , "/access-denied"  // 접근권한 제한 페이지
                     , "/css/**"         // css
                     , "/js/**"          // javascript
                     , "/images/**"      // 정적 이미지 경로

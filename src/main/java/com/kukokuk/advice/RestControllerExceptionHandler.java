@@ -11,8 +11,7 @@ public class RestControllerExceptionHandler {
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<Void>> handlerAppException(AppException ex) {
-        ApiResponse<Void> apiResponse
-            = ApiResponse.fail(500, ex.getMessage());
+        ApiResponse<Void> apiResponse = ApiResponse.fail(500, ex.getMessage());
 
         return ResponseEntity
             .status(500)
