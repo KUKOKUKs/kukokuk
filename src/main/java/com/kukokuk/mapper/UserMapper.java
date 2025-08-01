@@ -7,13 +7,12 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserMapper {
-    
+
     /**
-     * username으로 사용자, 사용자 권한 정보 조회
-     * @param username username
-     * @return 사용자, 사용자 권한 정보
+     * 사용자 정보 업데이트
+     * @param user 사용자 정보
      */
-    User getUserByUsernameWithRoleNames(String username);
+    void updateUser(User user);
 
     /**
      * 신규 사용자 등록
@@ -30,6 +29,13 @@ public interface UserMapper {
         , @Param("roleName") String roleName);
 
     /**
+     * username으로 사용자, 사용자 권한 정보 조회
+     * @param username username
+     * @return 사용자, 사용자 권한 정보
+     */
+    User getUserByUsernameWithRoleNames(String username);
+
+    /**
      * 사용자 이메일로 사용자 정보 조회
      * @param username 사용자 이메일
      * @return 사용자 정보
@@ -42,6 +48,13 @@ public interface UserMapper {
      * @return 사용자 정보
      */
     User getUserByNickname(String nickname);
+
+    /**
+     * 사용자 번호로 사용자 정보 조회
+     * @param userNo 사용자 번호
+     * @return 사용자 정보
+     */
+    User getUserByUserNo(int userNo);
 
     /**
      * 사용자 번호로 사용자 권한 정보 조회
