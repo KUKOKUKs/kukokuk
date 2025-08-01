@@ -11,6 +11,7 @@ import org.apache.ibatis.type.Alias;
 public class DailyStudyQuizLog {
   private int dailyStudyQuizLogNo;
   private String isSuccess; // ENUM("Y", "N")
+  private int selectedChoice;
   private Date createdDate;
   private Date updatedDate;
   private int userNo;

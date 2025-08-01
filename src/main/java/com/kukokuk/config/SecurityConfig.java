@@ -91,7 +91,7 @@ public class SecurityConfig {
             : "default";
 
         http
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**")) // 제거 예정
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/login")) // 제거 예정
             .authorizeHttpRequests(auth -> {
                 auth
                     .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE).permitAll()

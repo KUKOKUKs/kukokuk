@@ -1,6 +1,12 @@
 spring:
   application:
     name: kukokuk
+  # JSON 응답 날짜 데이터 포맷 설정
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss
+    time-zone: Asia/Seoul
+    serialization:
+      write-dates-as-timestamps: false
 
   profiles:
     # 개발 환경: dev, 배포 환경: prod
