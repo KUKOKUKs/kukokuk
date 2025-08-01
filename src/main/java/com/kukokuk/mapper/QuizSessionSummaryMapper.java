@@ -16,4 +16,11 @@ public interface QuizSessionSummaryMapper {
      */
     int insertQuizSessionSummary(QuizSessionSummary summary);
 
+    /**
+     * 세션 요약 정보를 수정한다 (정답 수, 평균 시간 드ㅇ)
+     * @param summary 수정할 세션 정보
+     * @return 수정된 행 수
+     */
+    int updateQuizSessionSummary(QuizSessionSummary summary);
+
 }

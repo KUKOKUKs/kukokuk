@@ -40,5 +40,12 @@ public interface QuizMasterMapper {
    */
   List<QuizMaster> getQuizMastersForSpeed(@Param("usageCount") int usageCount, @Param("limit") int limit);
 
+
+  /**
+   * 특정 퀴즈 번호의 정답 번호를 조회한다.
+   * @param quizNo 퀴즈 번호
+   * @return 정답 선택 번호
+   */
+  Integer getCorrectChoiceByQuizNo(int quizNo);
 }
 

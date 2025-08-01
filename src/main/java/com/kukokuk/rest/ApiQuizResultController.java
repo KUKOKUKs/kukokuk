@@ -1,4 +1,4 @@
-package com.kukokuk.controller;
+package com.kukokuk.rest;
 
 import com.kukokuk.request.QuizSubmitRequest;
 import com.kukokuk.request.QuizSubmitResultRequest;
@@ -7,18 +7,22 @@ import com.kukokuk.service.QuizProcessService;
 import com.kukokuk.service.QuizResultService;
 import com.kukokuk.vo.QuizResult;
 import com.kukokuk.vo.QuizSessionSummary;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 퀴즈 결과 처리용 API 컨트롤러
+ */
 @Log4j2
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/quiz/result")
-public class QuizResultController {
+@RequestMapping("/api/quiz/result")
+public class ApiQuizResultController {
 
     private final QuizResultService quizResultService;
     private final QuizProcessService quizProcessService;
@@ -30,6 +34,8 @@ public class QuizResultController {
      */
     @PostMapping
     public ResponseEntity<Integer> submitQuizResults(@RequestBody QuizSubmitRequest request) {
+        log.info("submitQuizResults() 호출됨: userNo={}, totalTimeSec={}", request.getUserNo(), request.getTotalTimeSec());
+
         // 1. 세션 요약 생성
         QuizSessionSummary summary = new QuizSessionSummary();
         summary.setUserNo(request.getUserNo());
@@ -38,29 +44,21 @@ public class QuizResultController {
         int totalQuestions = request.getResults().size();
         summary.setTotalQuestion(totalQuestions);
 
-        int correctAnswers = 0;
-        for (QuizSubmitResultRequest r : request.getResults()) {
-            if ("Y".equals(r.getIsSuccess())) correctAnswers++;
-        }
-        summary.setCorrectAnswers(correctAnswers);
-        summary.setAverageTimePerQuestion((float) request.getTotalTimeSec() / totalQuestions);
-
-        // 2. 퀴즈 결과 리스트 생성
+        // 정답 수는 QuizProcessService에서 판단됨
         List<QuizResult> quizResults = new ArrayList<>();
         for (QuizSubmitResultRequest r : request.getResults()) {
             QuizResult qr = new QuizResult();
             qr.setUserNo(request.getUserNo());
             qr.setQuizNo(r.getQuizNo());
             qr.setSelectedChoice(r.getSelectedChoice());
-            qr.setIsSuccess(r.getIsSuccess());
             qr.setIsBookmarked(r.getIsBookmarked());
             quizResults.add(qr);
         }
 
-        // 3. 서비스 호출
+        // 2. 저장 처리 + 내부에서 정답 판단 포함
         quizProcessService.insertQuizSessionAndResults(summary, quizResults);
 
-        // 4. 생성된 세션 번호 응답
+        // 3. 생성된 세션 번호 반환
         return ResponseEntity.ok(summary.getSessionNo());
     }
 

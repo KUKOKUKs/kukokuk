@@ -90,4 +90,16 @@
         LIMIT #{limit}
     </select>
 
+ <!--
+    * 특정 퀴즈 번호의 정답 번호를 조회한다.
+    * @param quizNo 퀴즈 번호
+    * @return 정답 선택 번호
+    int getCorrectChoiceByQuizNo(int quizNo);
+ -->
+    <select id="getCorrectChoiceByQuizNo" resultType="int">
+        SELECT success_answer
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE quiz_no = #{quizNo}
+    </select>
+
 </mapper>

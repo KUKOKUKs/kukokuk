@@ -31,5 +31,17 @@
                 #{userNo}
             )
     </insert>
+<!--
+    * 세션 요약 정보를 수정한다 (정답 수, 평균 시간 드ㅇ)
+    * @param summary 수정할 세션 정보
+    * @return 수정된 행 수
+    int updateQuizSessionSummary(QuizSessionSummary summary);
+    -->
+    <update id="updateQuizSessionSummary" parameterType="QuizSessionSummary">
+        UPDATE KUKOKUK_QUIZ_SESSION_SUMMARIES
+        SET CORRECT_ANSWERS = #{correctAnswers},
+            AVERAGE_TIME_PER_QUESTION = #{averageTimePerQuestion}
+        WHERE SESSION_NO = #{sessionNo}
+    </update>
 
 </mapper>

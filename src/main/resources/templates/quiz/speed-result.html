@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/center}">
+
+<head>
+    <title>퀴즈 결과</title>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+<div layout:fragment="content" class="quiz-result-wrapper component column base_gap">
+
+    <h2 class="large_font bold center">퀴즈 결과 요약</h2>
+
+    <!-- 요약 정보 -->
+    <div class="quiz-summary-box">
+        <p>총 문항 수: <span th:text="${summary.totalQuestion}">10</span>문제</p>
+        <p>맞힌 문항 수: <span th:text="${summary.correctAnswers}">7</span>문제</p>
+        <p>정답률: <span th:text="${summary.percentile}">70</span>%</p>
+        <p>총 소요 시간: <span th:text="${summary.totalTimeSec}">85</span>초</p>
+        <p>문항당 평균 시간: <span th:text="${summary.averageTimePerQuestion}">8.5</span>초</p>
+    </div>
+
+    <!-- 문제별 결과 -->
+    <div class="quiz-result-list">
+        <h3>문제별 결과</h3>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>문제</th>
+                <th>선택</th>
+                <th>정답</th>
+                <th>결과</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="result, stat : ${results}">
+                <td th:text="${stat.index + 1}">1</td>
+                <td th:text="${result.question}">문제 내용</td>
+                <td th:text="${result.selectedChoice}">2</td>
+                <td th:text="${result.successAnswer}">3</td>
+                <td>
+                    <span th:if="${result.isSuccess == 'Y'}">✔</span>
+                    <span th:if="${result.isSuccess == 'N'}">✘</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

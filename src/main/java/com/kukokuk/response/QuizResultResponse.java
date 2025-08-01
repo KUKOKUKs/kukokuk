@@ -18,7 +18,7 @@ public class QuizResultResponse {
     private String option4;           // 보기 4
 
     private int selectedChoice;       // 사용자가 선택한 보기 번호
-    private int correctAnswer;        // 실제 정답 보기 번호
+    private int successAnswer;       // 실제 정답 보기 번호
     private boolean isCorrect;        // 정답 여부
     private String questionType;      // 퀴즈 유형 ("단어", "뜻")
 }
