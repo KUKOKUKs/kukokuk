@@ -1,7 +1,4 @@
-import {
-  getSpeedQuizList,
-  insertSpeedQuizResult
-} from "/js/modules/quiz/speed-api.js";
+import { getSpeedQuizList } from "/js/modules/quiz/speed-api.js";
 
 $(document).ready(async function () {
   let quizzes = [];
@@ -41,8 +38,8 @@ $(document).ready(async function () {
     for (let i = 1; i <= 4; i++) {
       const optionText = quiz["option" + i];
       const $btn = $(`<button class="btn white" data-choice="${i}">
-          <span class="choice-no">${i}.</span> ${optionText}
-      </button>`);
+                <span class="choice-no">${i}.</span> ${optionText}
+            </button>`);
 
       $btn.on("click", function () {
         selectedAnswers[currentQuizIndex] = i;
@@ -86,30 +83,40 @@ $(document).ready(async function () {
     if (currentQuizIndex < quizzes.length) {
       renderCurrentQuiz();
     } else {
-      console.log("퀴즈 완료! 결과 저장 요청 시작");
+      console.log("퀴즈 완료! 결과 폼 제출");
 
       const totalTimeSec = Math.floor((Date.now() - quizStartTime) / 1000);
 
-      const results = quizzes.map((quiz, idx) => ({
-        quizNo: quiz.quizNo,
-        selectedChoice: selectedAnswers[idx],
-        isBookmarked: "N"
+      const $form = $("#quiz-result-form");
+
+      $form.append($("<input>", {
+        type: "hidden",
+        name: "totalTimeSec",
+        value: totalTimeSec
       }));
 
-      const payload = {
-        userNo: 1,
-        totalTimeSec: totalTimeSec,
-        results: results
-      };
+      quizzes.forEach((quiz, idx) => {
+        $form.append($("<input>", {
+          type: "hidden",
+          name: `results[${idx}].quizNo`,
+          value: quiz.quizNo
+        }));
 
-      try {
-        const sessionNo = await insertSpeedQuizResult(payload);
-        console.log("결과 저장 성공, sessionNo:", sessionNo);
-        window.location.href = `/quiz/speed-result?sessionNo=${sessionNo}&userNo=1`;
-      } catch (error) {
-        console.error("결과 저장 실패:", error);
-        alert("결과 저장 중 오류가 발생했습니다.");
-      }
+        $form.append($("<input>", {
+          type: "hidden",
+          name: `results[${idx}].selectedChoice`,
+          value: selectedAnswers[idx] ?? 0
+        }));
+
+        $form.append($("<input>", {
+          type: "hidden",
+          name: `results[${idx}].isBookmarked`,
+          value: "N"
+        }));
+      });
+
+      $("body").append($form);
+      $form.submit();
     }
   }
 });

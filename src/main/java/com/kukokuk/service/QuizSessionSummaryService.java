@@ -19,11 +19,27 @@ public class QuizSessionSummaryService {
      */
     @Transactional
     public int insertQuizSessionSummary(QuizSessionSummary summary) {
+
         int sessionInserted = quizSessionSummaryMapper.insertQuizSessionSummary(summary);
-        if (sessionInserted  != 1) {
+        if (sessionInserted != 1) {
             throw new RuntimeException("퀴즈 세션 저장 실패: userNo=" + summary.getUserNo());
         }
 
-        return summary.getSessionNo(); // useGeneratedKeys를 여기서 사용
+        return summary.getSessionNo();
+    }
+
+    /**
+     * 특정 세션 번호 + 유저 번호에 해당하는 퀴즈 요약 정보를 조회한다.
+     * @param sessionNo 세션 번호
+     * @param userNo 유저 번호
+     * @return 퀴즈 요약 정보
+     */
+    @Transactional(readOnly = true)
+    public QuizSessionSummary getSummaryBySessionNoAndUserNo(int sessionNo, int userNo) {
+        QuizSessionSummary summary = quizSessionSummaryMapper.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
+        if (summary == null) {
+            throw new RuntimeException("해당 세션 정보를 찾을 수 없습니다. sessionNo=" + sessionNo);
+        }
+        return summary;
     }
 }

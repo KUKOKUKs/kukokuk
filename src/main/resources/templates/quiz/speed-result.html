@@ -1,57 +1,46 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/center}">
-
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>퀴즈 결과</title>
     <meta charset="UTF-8">
+    <title>퀴즈 결과</title>
+    <link rel="stylesheet" href="/css/main.css" />
 </head>
-
 <body>
-<div layout:fragment="content" class="quiz-result-wrapper component column base_gap">
+<div class="result-container" style="max-width: 800px; margin: 0 auto;">
+    <h1 style="text-align: center;">퀴즈 결과</h1>
 
-    <h2 class="large_font bold center">퀴즈 결과 요약</h2>
-
-    <!-- 요약 정보 -->
-    <div class="quiz-summary-box">
-        <p>총 문항 수: <span th:text="${summary.totalQuestion}">10</span>문제</p>
-        <p>맞힌 문항 수: <span th:text="${summary.correctAnswers}">7</span>문제</p>
-        <p>정답률: <span th:text="${summary.percentile}">70</span>%</p>
-        <p>총 소요 시간: <span th:text="${summary.totalTimeSec}">85</span>초</p>
-        <p>문항당 평균 시간: <span th:text="${summary.averageTimePerQuestion}">8.5</span>초</p>
+    <div style="margin-bottom: 20px; text-align: center;">
+        <p><strong>총 문항 수:</strong> <span th:text="${summary.totalQuestion}">0</span>개</p>
+        <p><strong>총 소요 시간:</strong> <span th:text="${summary.totalTimeSec}">0</span>초</p>
     </div>
 
-    <!-- 문제별 결과 -->
-    <div class="quiz-result-list">
-        <h3>문제별 결과</h3>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>번호</th>
-                <th>문제</th>
-                <th>선택</th>
-                <th>정답</th>
-                <th>결과</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="result, stat : ${results}">
-                <td th:text="${stat.index + 1}">1</td>
-                <td th:text="${result.question}">문제 내용</td>
-                <td th:text="${result.selectedChoice}">2</td>
-                <td th:text="${result.successAnswer}">3</td>
-                <td>
-                    <span th:if="${result.isSuccess == 'Y'}">✔</span>
-                    <span th:if="${result.isSuccess == 'N'}">✘</span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+        <tr style="background-color: #f0f0f0;">
+            <th>#</th>
+            <th>문제</th>
+            <th>선택한 보기</th>
+            <th>정답</th>
+            <th>정오답</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="result, iterStat : ${results}">
+            <td th:text="${iterStat.count}">1</td>
+            <td th:text="${result.question}">문제</td>
+            <td th:text="${result.selectedChoice}">1</td>
+            <td th:text="${result.successAnswer}">2</td>
+            <td>
+                <span th:if="${result.correct}" style="color: green;">정답</span>
+                <span th:unless="${result.correct}" style="color: red;">오답</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="/" class="btn white">홈으로</a>
+    </div>
 </div>
-
 </body>
 </html>

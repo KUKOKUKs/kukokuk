@@ -1,41 +1,31 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{layout/center}">
-
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>스피드 퀴즈</title>
     <meta charset="UTF-8">
+    <title>스피드 퀴즈</title>
+    <link rel="stylesheet" href="/css/main.css" />
 </head>
-
 <body>
-<!-- layout/center.html의 <div layout:fragment="content"> 여기에 들어가는 내용 -->
-<div layout:fragment="content" class="quiz-speed-wrapper component d_flex column base_gap">
+<div class="quiz-container">
+    <h1 style="text-align: center;">스피드 퀴즈</h1>
 
-    <!-- 진행 정보 -->
-    <div class="quiz-progress d_flex justify_content_between align_center">
-        <div class="small_font bold">문제 <span id="quiz-current">1</span> / <span id="quiz-total">10</span></div>
-        <div class="small_font">남은 시간: <span id="quiz-timer">00:30</span></div>
+    <div id="quiz-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+        <div>
+            <span id="quiz-current">1</span> / <span id="quiz-total">10</span>
+        </div>
+        <div id="quiz-timer" style="font-weight: bold;">00:10</div>
     </div>
 
-    <!-- 문제 -->
-    <div class="question-area">
-        <h2 class="large_font bold" id="quiz-question">문제가 여기에 표시됩니다</h2>
-    </div>
+    <div id="quiz-question" style="margin-bottom: 20px; font-size: 18px; font-weight: bold; text-align: center;"></div>
 
-    <!-- 선택지 -->
-    <div class="option-list d_flex column small_gap" id="quiz-options">
-        <!-- 버튼이 JS로 삽입됨 -->
-    </div>
-
+    <div id="quiz-options" style="display: flex; flex-direction: column; gap: 10px;"></div>
 </div>
 
-<!-- 개별 JS 삽입 -->
-<th:block layout:fragment="script">
-    <script type="module" th:src="@{/js/modules/quiz/speed.js}"></script>
+<form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
 
-</th:block>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- speed.js 모듈 연결 -->
+<script type="module" src="/js/modules/quiz/speed.js"></script>
 </body>
 </html>

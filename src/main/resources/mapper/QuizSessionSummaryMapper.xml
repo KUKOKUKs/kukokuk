@@ -43,5 +43,21 @@
             AVERAGE_TIME_PER_QUESTION = #{averageTimePerQuestion}
         WHERE SESSION_NO = #{sessionNo}
     </update>
+<!--
+    * 세션 번호와 유저 번호로 퀴즈 세션 요약 정보를 조회한다.
+    * 결과 화면에 표시할 요약 정보 조회 시 사용.
+    *
+    * @param sessionNo 세션 번호
+    * @param userNo 유저 번호
+    * @return 해당하는 세션 요약 정보, 없으면 null
+    QuizSessionSummary getSummaryBySessionNoAndUserNo(@Param("sessionNo") int sessionNo,
+    @Param("userNo") int userNo);
+    -->
+    <select id="getSummaryBySessionNoAndUserNo" resultType="QuizSessionSummary">
+        SELECT *
+        FROM KUKOKUK_QUIZ_SESSION_SUMMARIES
+        WHERE SESSION_NO = #{sessionNo}
+          AND USER_NO = #{userNo}
+    </select>
 
 </mapper>

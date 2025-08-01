@@ -9,5 +9,4 @@ import lombok.Setter;
 public class QuizSubmitResultRequest {
     private int quizNo;            // 퀴즈 번호
     private int selectedChoice;    // 사용자가 선택한 보기 번호
-    private String isBookmarked;   // "Y" / "N"
 }
