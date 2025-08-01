@@ -12,5 +12,23 @@
       (#{dailyStudyNo}, #{cardIndex}, #{title}, #{content})
   </insert>
 
+  <!--
+  List<DailyStudyCard> getCardsByDailyStudyNo(int dailyStudyNo);
+  -->
+  <select id="getCardsByDailyStudyNo" resultType="DailyStudyCard">
+    SELECT
+        DAILY_STUDY_CARD_NO AS dailyStudyCardNo,
+        TITLE,
+        CONTENT,
+        CARD_INDEX AS cardIndex,
+        DAILY_STUDY_NO AS dailyStudyNo
+    FROM
+        KUKOKUK_DAILY_STUDY_CARDS
+    WHERE
+      DAILY_STUDY_NO = #{dailyStudyNo}
+    ORDER BY
+        CARD_INDEX ASC
+  </select>
+
 
 </mapper>

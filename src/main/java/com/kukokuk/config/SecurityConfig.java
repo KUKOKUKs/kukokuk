@@ -95,7 +95,6 @@ public class SecurityConfig {
                     , "/css/**"         // css
                     , "/js/**"          // javascript
                     , "/images/**"      // 정적 이미지 경로
-                    , "/api/studies/**"
                 ).permitAll()
 
                 // 인증 필요한 경로들

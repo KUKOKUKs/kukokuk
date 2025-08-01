@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/center}">
+<div layout:fragment="content">
+  <th:block th:each="card : ${data.cards}">
+    <p th:text="${card.cardIndex}"></p>
+    <p th:text="${card.content}"></p>
+    <p th:text="${card.dailyStudyCardNo}"></p>
+  </th:block>
+
+</div>
+
+<script layout:fragment="script">
+
+</script>
+</html>
