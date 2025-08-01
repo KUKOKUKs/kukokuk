@@ -31,9 +31,4 @@ public class AppConfig {
         return Dotenv.configure().directory("./")
             .load();
     }
-
-    @Bean
-    public ObjectMapper objectMapper(){
-        return new ObjectMapper();
-    }
 }

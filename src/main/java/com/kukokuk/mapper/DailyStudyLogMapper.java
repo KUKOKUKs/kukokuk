@@ -31,5 +31,24 @@ public interface DailyStudyLogMapper {
      * @param dailyStudyNo 학습자료번호
      * @return 조회된 사용자의 해당 학습자료의 일일학습 이력 
      */
-    DailyStudyLog getStudyLogsByUserNoAndDailyStudyNo(@Param("userNo") int userNo, @Param("dailyStudyNo") int dailyStudyNo);
+    DailyStudyLog getStudyLogByUserNoAndDailyStudyNo(@Param("userNo") int userNo, @Param("dailyStudyNo") int dailyStudyNo);
+
+    /**
+     * 사용자의 학습 이력을 생성
+     * @param dailyStudyLog
+     */
+    void createStudyLog(DailyStudyLog dailyStudyLog);
+
+    /**
+     * 학습 이력 번호로 학습이력 조회
+     * @param dailyStudyLogNo
+     * @return
+     */
+    DailyStudyLog getStudyLogByNo(int dailyStudyLogNo);
+
+    /**
+     * 학습이력을 수정
+     * @param updateLog
+     */
+    void updateStudyLog(DailyStudyLog updateLog);
 }

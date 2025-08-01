@@ -63,9 +63,9 @@
     </select>
 
     <!--
-    DailyStudyLog getStudyLogsByUserNoAndDailyStudyNo(@Param("userNo") int userNo, @Param("dailyStudyNo") int dailyStudyNo);
+    DailyStudyLog getStudyLogByUserNoAndDailyStudyNo(@Param("userNo") int userNo, @Param("dailyStudyNo") int dailyStudyNo);
     -->
-    <select id="getStudyLogsByUserNoAndDailyStudyNo" resultMap="DailyStudyLogResultMap">
+    <select id="getStudyLogByUserNoAndDailyStudyNo" resultMap="DailyStudyLogResultMap">
         SELECT
             DAILY_STUDY_LOG_NO,
             USER_NO,
@@ -81,5 +81,67 @@
             USER_NO = #{userNo}
             AND DAILY_STUDY_NO = #{dailyStudyNo}
     </select>
+
+    <!--
+     void createStudyLog(DailyStudyLog dailyStudyLog);
+    -->
+    <insert id="createStudyLog" parameterType="DailyStudyLog"
+      useGeneratedKeys="true" keyColumn="DAILY_STUDY_LOG_NO" keyProperty="dailyStudyLogNo">
+        INSERT INTO
+            KUKOKUK_DAILY_STUDY_LOGS
+            (
+             DAILY_STUDY_NO,
+             USER_NO
+            )
+        VALUES
+            (
+             #{dailyStudyNo},
+             #{userNo}
+            )
+    </insert>
+
+    <!--
+    DailyStudyLog getStudyLogByNo(int dailyStudyLogNo);
+    -->
+    <select id="getStudyLogByNo" resultMap="DailyStudyLogResultMap">
+        SELECT
+            DAILY_STUDY_LOG_NO,
+            USER_NO,
+            DAILY_STUDY_NO,
+            STUDIED_CARD_COUNT,
+            COMPLETED_DATE,
+            STATUS,
+            CREATED_DATE,
+            UPDATED_DATE
+        FROM
+            KUKOKUK_DAILY_STUDY_LOGS
+        WHERE
+            DAILY_STUDY_LOG_NO = #{dailyStudyLogNo}
+    </select>
+
+    <!--
+     void updateStudyLog(DailyStudyLog updateLog);
+    -->
+    <update id="updateStudyLog" parameterType="DailyStudyLog">
+        UPDATE
+            KUKOKUK_DAILY_STUDY_LOGS
+        SET
+            UPDATED_DATE = NOW()
+
+            <!-- null이 아닌 필드만 변경 -->
+            <if test="studiedCardCount != null">
+                , STUDIED_CARD_COUNT = #{studiedCardCount}
+            </if>
+
+            <if test="status != null">
+                , STATUS = #{status}
+            </if>
+
+            <if test="status == 'COMPLETED'">
+                , COMPLETED_DATE = NOW()
+            </if>
+        WHERE
+            DAILY_STUDY_LOG_NO = #{dailyStudyLogNo}
+    </update>
 
 </mapper>

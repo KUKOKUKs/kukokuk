@@ -52,4 +52,23 @@
         CREATED_DATE ASC
   </select>
 
+  <!--
+   DailyStudyQuiz getStudyQuizByNo(int studyQuizNo);
+  -->
+  <select id="getStudyQuizByNo" resultMap="DailyStudyQuizResultMap">
+    SELECT
+      DAILY_STUDY_QUIZ_NO,
+      QUESTION,
+      OPTION1,
+      OPTION2,
+      OPTION3,
+      OPTION4,
+      SUCCESS_ANSWER,
+      DAILY_STUDY_NO
+    FROM
+      KUKOKUK_DAILY_STUDY_QUIZZES
+    WHERE
+      DAILY_STUDY_QUIZ_NO = #{studyQuizNo}
+  </select>
+
 </mapper>

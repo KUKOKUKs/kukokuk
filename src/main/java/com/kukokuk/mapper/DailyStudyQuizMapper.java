@@ -13,4 +13,9 @@ public interface DailyStudyQuizMapper {
    * 해당 학습자료에 속하는 학습 퀴즈 목록 조회
    */
   List<DailyStudyQuiz> getStudyQuizzesByDailyStudyNo(int dailyStudyNo);
+
+  /**
+   * 학습퀴즈 번호로 학습퀴즈 조회
+   */
+  DailyStudyQuiz getStudyQuizByNo(int studyQuizNo);
 }
