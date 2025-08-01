@@ -61,6 +61,11 @@
     padding: var(--containerPadding);
 }
 
+.copyright {
+    font-size: var(--smallFontSize);
+    padding: 1em;
+}
+
 .component {
     width: 100%;
     padding: var(--basePadding);
@@ -68,9 +73,34 @@
     border: var(--baseBorder);
 }
 
-.copyright {
-    font-size: var(--smallFontSize);
-    padding: 1em;
+/* error page */
+.error_wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--largeGap);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    .error_title {
+        display: flex;
+        align-items: center;
+        gap: var(--baseGap);
+        font-size: var(--titleFontSize);
+
+        .error_icon {
+            width: var(--largeIcon);
+            min-width: var(--largeIcon);
+            height: var(--largeIcon);
+            font-size: var(--largeIcon);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
 }
 
 /* form */
@@ -412,6 +442,10 @@
         color: var(--primaryColor);
         background-color: #fff;
     }
+
+    &.compact {
+        width: max-content;
+    }
 }
 
 .icon_btn {
@@ -511,6 +545,10 @@
 
 .border_circle {
     border-radius: 50%;
+}
+
+.border_none {
+    border: none;
 }
 
 /* 그림자 효과 */

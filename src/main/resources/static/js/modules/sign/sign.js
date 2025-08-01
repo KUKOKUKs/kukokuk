@@ -61,8 +61,8 @@ $(document).ready(() => {
     }
 
     // 중복 체크 요청
-    const emailCheckDebounce = debounce(handleEmailInput, 300); // email
-    const nicknameCheckDebounce = debounce(handleNicknameInput, 300); // nickname
+    const emailCheckDebounce = debounce(handleEmailInput, 500); // email
+    const nicknameCheckDebounce = debounce(handleNicknameInput, 500); // nickname
 
     // 회원가입 이메일 유효성 검증 처리
     $registerEmail.on("input blur", function () {
