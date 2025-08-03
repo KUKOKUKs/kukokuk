@@ -1,8 +1,7 @@
 package com.kukokuk.service;
 
-import com.kukokuk.dto.UserRegisterForm;
-import com.kukokuk.dto.UserUpdateForm;
-import com.kukokuk.exception.UserRegisterException;
+import com.kukokuk.dto.UserForm;
+import com.kukokuk.exception.UserFormException;
 import com.kukokuk.mapper.UserMapper;
 import com.kukokuk.security.SecurityUtil;
 import com.kukokuk.vo.User;
@@ -28,8 +27,24 @@ public class UserService {
      * @param form 사용자 정보가 담긴 폼
      * @param userNo 사용자 번호
      */
-    public void updateUser(UserUpdateForm form, int userNo) {
+    public void updateUser(UserForm form, int userNo) {
         log.info("updateUser() 서비스 실행");
+
+        // 닉네임을 포함한 폼을 전달 받았을 경우
+        if (form.getNickname() != null) {
+            // 사용자 번호로 사용자 정보 조회
+            User foundUserByUserNo = getUserByUserNo(userNo);
+
+            // 사용자 닉네임과 폼에 입력된 닉네임이 다를 경우(닉네임 변경 요청으로 판단)
+            if (!form.getNickname().equals(foundUserByUserNo.getNickname())) {
+                // 폼에 입력된 닉네임으로 사용자 정보 조회
+                User foundUserByNickname = getUserByNickname(form.getNickname());
+                if (foundUserByNickname != null) {
+                    throw new UserFormException("nickname", "이미 사용중인 닉네임입니다.");
+                }
+            }
+        }
+
         User user = modelMapper.map(form, User.class);
         user.setUserNo(userNo);
         userMapper.updateUser(user);
@@ -93,17 +108,17 @@ public class UserService {
      * 회원가입 처리
      * @param form 신규 사용자 회원가입 정보
      */
-    public void registerUser(UserRegisterForm form) {
+    public void registerUser(UserForm form) {
         log.info("registerUser() 서비스 실행");
         // 폼 입력하는 동안 다른 사용자의 가입이 있을 경우를 대비하여
         // 중복 재확인(username, nickname)
         User foundUserByUsername = userMapper.getUserByUsername(form.getUsername());
         if (foundUserByUsername != null) {
-            throw new UserRegisterException("username", "이미 사용중인 이메일입니다.");
+            throw new UserFormException("username", "이미 사용중인 이메일입니다.");
         }
         User foundUserByNickname = userMapper.getUserByNickname(form.getNickname());
         if (foundUserByNickname != null) {
-            throw new UserRegisterException("nickname", "이미 사용중인 닉네임입니다.");
+            throw new UserFormException("nickname", "이미 사용중인 닉네임입니다.");
         }
 
         // 폼 입력 값으로 User 객체 생성
@@ -124,7 +139,7 @@ public class UserService {
         log.info("duplicateUserByUsername() 서비스 실행");
         User foundUser = userMapper.getUserByUsername(username);
         if (foundUser != null) {
-            throw new UserRegisterException("username", "이미 사용중인 이메일입니다.");
+            throw new UserFormException("username", "이미 사용중인 이메일입니다.");
         }
     }
 
@@ -136,7 +151,7 @@ public class UserService {
         log.info("duplicateUserByNickname() 서비스 실행");
         User foundUser = userMapper.getUserByNickname(nickname);
         if (foundUser != null) {
-            throw new UserRegisterException("nickname", "이미 사용중인 닉네임입니다.");
+            throw new UserFormException("nickname", "이미 사용중인 닉네임입니다.");
         }
     }
 

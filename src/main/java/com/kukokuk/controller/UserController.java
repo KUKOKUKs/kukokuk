@@ -1,14 +1,20 @@
 package com.kukokuk.controller;
 
-import com.kukokuk.dto.UserUpdateForm;
+import com.kukokuk.dto.UserForm;
+import com.kukokuk.exception.UserFormException;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.UserService;
+import com.kukokuk.validation.UserModifyCheck;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,19 +37,53 @@ public class UserController {
 
     // 프로필 수정 요청
     @PostMapping("/profile")
-    public String profileModify(@ModelAttribute UserUpdateForm form
-        , @AuthenticationPrincipal SecurityUser securityUser) {
+    public String profileModify(@Validated(UserModifyCheck.class) @ModelAttribute UserForm form
+        , @AuthenticationPrincipal SecurityUser securityUser
+        , BindingResult errors
+        , Model model) {
         log.info("profileModify() 컨트롤러 실행");
 
-        // 사용자 정보 업데이트 요청
-        userService.updateUser(form, securityUser.getUser().getUserNo());
+        // 유효성 검증 실패 시 다시 입력 페이지
+        if (errors.hasErrors()) {
+            if (errors.hasFieldErrors("name")) {
+                log.info("name 필드 오류: {}", Objects.requireNonNull(
+                    errors.getFieldError("name")).getDefaultMessage());
+            }
+
+            if (errors.hasFieldErrors("birthDate")) {
+                log.info("birthDate 필드 오류: {}", Objects.requireNonNull(
+                    errors.getFieldError("birthDate")).getDefaultMessage());
+            }
+
+            if (errors.hasFieldErrors("nickname")) {
+                log.info("nickname() 필드 오류: {}", Objects.requireNonNull(
+                    errors.getFieldError("nickname")).getDefaultMessage());
+            }
+
+            if (errors.hasFieldErrors("gender")) {
+                log.info("gender() 필드 오류: {}", Objects.requireNonNull(
+                    errors.getFieldError("gender")).getDefaultMessage());
+            }
+
+            model.addAttribute("hasError", true); // 에러 플래그 전달
+            return "user/profile/form"; // 유효성 검증 실패 시 다시 입력 페이지
+        }
+
+        // nickname 중복 체크 후 사용자 정보 업데이트 요청
+        try {
+            userService.updateUser(form, securityUser.getUser().getUserNo());
+        } catch (UserFormException e) {
+            log.info("profileModify() UserFormException {}", e.getMessage());
+            errors.rejectValue(e.getField(), "duplicated", e.getMessage());
+            return "user/profile/form";
+        }
 
         return "redirect:/user/profile";
     }
 
     // 사용자 학습 진도/단계 수정 요청
     @PostMapping("/study-level")
-    public String studyLevel(@ModelAttribute UserUpdateForm form
+    public String studyLevel(@ModelAttribute UserForm form
         , @AuthenticationPrincipal SecurityUser securityUser
         , HttpServletRequest request) {
         log.info("studyLevel() 컨트롤러 실행");
@@ -60,5 +100,4 @@ public class UserController {
         // 클라이언트에서 요청 보낸 페이지로 리다이렉트
         return "redirect:" + (path != null ? path : "/");
     }
-
 }
