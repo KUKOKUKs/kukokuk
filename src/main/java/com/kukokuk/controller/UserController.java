@@ -1,6 +1,6 @@
 package com.kukokuk.controller;
 
-import com.kukokuk.dto.UserStudyLevelForm;
+import com.kukokuk.dto.UserUpdateForm;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.security.SecurityUtil;
 import com.kukokuk.service.UserService;
@@ -29,16 +29,23 @@ public class UserController {
         log.info("profileForm() 컨트롤러 실행");
         return "user/profile/form";
     }
+    
+    // 프로필 수정 요청
+    @PostMapping("/profile")
+    public String profileModify() {
+
+        return "redirect:/user/profile";
+    }
 
     // 사용자 학습 진도/단계 수정 요청
     @PostMapping("/study-level")
-    public String studyLevel(@ModelAttribute UserStudyLevelForm form
+    public String studyLevel(@ModelAttribute UserUpdateForm form
         , @AuthenticationPrincipal SecurityUser securityUser
         , HttpServletRequest request) {
         log.info("studyLevel() 컨트롤러 실행");
 
         // 사용자 정보 업데이트 요청
-        userService.updateUserStudyLevel(form, securityUser.getUser().getUserNo());
+        userService.updateUser(form, securityUser.getUser().getUserNo());
 
         // 업데이트된 사용자 정보 조회하여 시큐리티 사용자 정보 갱신
         User updatedUser = userService.getUserByUsernameWithRoleNames(securityUser.getUser().getUsername());

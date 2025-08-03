@@ -1,7 +1,7 @@
 package com.kukokuk.service;
 
 import com.kukokuk.dto.UserRegisterForm;
-import com.kukokuk.dto.UserStudyLevelForm;
+import com.kukokuk.dto.UserUpdateForm;
 import com.kukokuk.exception.UserRegisterException;
 import com.kukokuk.mapper.UserMapper;
 import com.kukokuk.vo.User;
@@ -21,14 +21,14 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-
+    
     /**
-     * 사용자 진도/단계 업데이트
-     * @param form 사용자 진도, 단계 정보가 담긴 폼
+     * 사용자 정보 업데이트
+     * @param form 사용자 정보가 담긴 폼
      * @param userNo 사용자 번호
      */
-    public void updateUserStudyLevel(UserStudyLevelForm form, int userNo) {
-        log.info("updateUserStudyLevel() 서비스 실행");
+    public void updateUser(UserUpdateForm form, int userNo) {
+        log.info("updateUser() 서비스 실행");
         User user = modelMapper.map(form, User.class);
         user.setUserNo(userNo);
         userMapper.updateUser(user);
