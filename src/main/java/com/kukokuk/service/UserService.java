@@ -4,6 +4,7 @@ import com.kukokuk.dto.UserRegisterForm;
 import com.kukokuk.dto.UserUpdateForm;
 import com.kukokuk.exception.UserRegisterException;
 import com.kukokuk.mapper.UserMapper;
+import com.kukokuk.security.SecurityUtil;
 import com.kukokuk.vo.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,6 +33,20 @@ public class UserService {
         User user = modelMapper.map(form, User.class);
         user.setUserNo(userNo);
         userMapper.updateUser(user);
+
+        // 업데이트된 사용자 정보 조회하여 시큐리티 사용자 정보 갱신
+        User updatedUser = getUserByUserNoWithRoleNames(userNo);
+        SecurityUtil.updateAuthentication(updatedUser);
+    }
+
+    /**
+     * 사용자 번호로 사용자 정보, 권한 정보 조회
+     * @param userNo 사용자 번호
+     * @return 사용자 정보, 권한 정보
+     */
+    public User getUserByUserNoWithRoleNames(int userNo) {
+        log.info("getUserByUserNoWithRoleNames() 서비스 실행");
+        return userMapper.getUserByUserNoWithRoleNames(userNo);
     }
 
     /**

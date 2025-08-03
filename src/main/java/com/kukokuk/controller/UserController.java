@@ -2,10 +2,9 @@ package com.kukokuk.controller;
 
 import com.kukokuk.dto.UserUpdateForm;
 import com.kukokuk.security.SecurityUser;
-import com.kukokuk.security.SecurityUtil;
 import com.kukokuk.service.UserService;
-import com.kukokuk.vo.User;
 import jakarta.servlet.http.HttpServletRequest;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,10 +28,15 @@ public class UserController {
         log.info("profileForm() 컨트롤러 실행");
         return "user/profile/form";
     }
-    
+
     // 프로필 수정 요청
     @PostMapping("/profile")
-    public String profileModify() {
+    public String profileModify(@ModelAttribute UserUpdateForm form
+        , @AuthenticationPrincipal SecurityUser securityUser) {
+        log.info("profileModify() 컨트롤러 실행");
+
+        // 사용자 정보 업데이트 요청
+        userService.updateUser(form, securityUser.getUser().getUserNo());
 
         return "redirect:/user/profile";
     }
@@ -44,16 +48,17 @@ public class UserController {
         , HttpServletRequest request) {
         log.info("studyLevel() 컨트롤러 실행");
 
+        // 클라이언트에서 요청 보낸 페이지
+        String referer = request.getHeader("Referer");
+        URI uri = URI.create(referer);
+        String path = uri.getPath();
+        log.info("studyLevel() 요청 path: {}", path);
+
         // 사용자 정보 업데이트 요청
         userService.updateUser(form, securityUser.getUser().getUserNo());
 
-        // 업데이트된 사용자 정보 조회하여 시큐리티 사용자 정보 갱신
-        User updatedUser = userService.getUserByUsernameWithRoleNames(securityUser.getUser().getUsername());
-        SecurityUtil.updateAuthentication(updatedUser);
-
         // 클라이언트에서 요청 보낸 페이지로 리다이렉트
-        String referer = request.getHeader("Referer");
-        return "redirect:" + (referer != null ? referer : "/");
+        return "redirect:" + (path != null ? path : "/");
     }
 
 }
