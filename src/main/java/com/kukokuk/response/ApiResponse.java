@@ -47,8 +47,4 @@ public class ApiResponse<T> {
         return new ApiResponse<Void>(false, status, message, null);
     }
 
-    // 실패 응답 - status:응답코드, message:메세지, data:데이터
-    public static <T>ApiResponse<T> fail(int status, String message, T data) {
-        return new ApiResponse<T>(false, status, message, data);
-    }
 }

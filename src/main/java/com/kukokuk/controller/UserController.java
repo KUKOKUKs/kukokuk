@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +22,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
 
     private final UserService userService;
+    
+    // 프로필 수정 폼
+    @GetMapping("/profile")
+    public String profileForm() {
+        log.info("profileForm() 컨트롤러 실행");
+        return "user/profile/form";
+    }
 
+    // 사용자 학습 진도/단계 수정 요청
     @PostMapping("/study-level")
     public String studyLevel(@ModelAttribute UserStudyLevelForm form
         , @AuthenticationPrincipal SecurityUser securityUser
