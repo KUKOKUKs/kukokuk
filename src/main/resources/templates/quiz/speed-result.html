@@ -31,9 +31,10 @@
             <td th:text="${result.selectedChoice}">1</td>
             <td th:text="${result.successAnswer}">2</td>
             <td>
-                <span th:if="${result.correct}" style="color: green;">정답</span>
-                <span th:unless="${result.correct}" style="color: red;">오답</span>
+                <span th:if="${result.isSuccess == 'Y'}" style="color: green;">정답</span>
+                <span th:if="${result.isSuccess != 'Y'}" style="color: red;">오답</span>
             </td>
+
         </tr>
         </tbody>
     </table>
