@@ -116,6 +116,7 @@ public class ApiStudyController {
           return DailyStudySummaryResponse.builder()
               .dailyStudyNo(study.getDailyStudyNo())
               .title(study.getTitle())
+              .explanation((study.getExplanation()))
               .cardCount(totalCardCount)
               .status(status)
               .studiedCardCount(studiedCardCount)

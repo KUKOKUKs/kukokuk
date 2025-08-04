@@ -329,6 +329,7 @@ public class StudyService {
         DailyStudy dailyStudy = new DailyStudy();
         dailyStudy.setStudyDifficulty(studyDifficultyNo);
         dailyStudy.setTitle(response.getMainTitle());
+        dailyStudy.setExplanation(response.getMainExplanation());
         dailyStudy.setDailyStudyMaterialNo(dailyStudyMaterialNo);
         dailyStudy.setCardCount(response.getCards().size());
 

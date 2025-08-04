@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GeminiStudyResponse {
   private String mainTitle;
+  private String mainExplanation;
   private List<Card> cards;
   private List<Quiz> quizzes;
   private EssayQuiz essay;
