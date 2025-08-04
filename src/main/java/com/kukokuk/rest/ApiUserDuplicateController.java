@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
-public class ApiUserController {
+public class ApiUserDuplicateController {
 
     private final UserService userService;
 
     // username 중복 체크 요청
-    @GetMapping("/username")
+    @GetMapping("/duplicate/username")
     public ResponseEntity<ApiResponse<Boolean>> checkUsernameDuplicate(@RequestParam("username") String username) {
         log.info("checkUsernameDuplicate() 컨트롤러 실행");
         User foundUser = userService.getUserByUsername(username);
@@ -30,7 +30,7 @@ public class ApiUserController {
     }
 
     // nickname 중복 체크 요청
-    @GetMapping("/nickname")
+    @GetMapping("/duplicate/nickname")
     public ResponseEntity<ApiResponse<Boolean>> checkNicknameDuplicate(@RequestParam("nickname") String nickname) {
         log.info("checkNicknameDuplicate() 컨트롤러 실행");
         User foundUser = userService.getUserByNickname(nickname);

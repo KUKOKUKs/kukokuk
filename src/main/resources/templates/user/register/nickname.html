@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/center}" th:with="title='회원가입'">
 <div layout:fragment="content">
-    <div class="sign_wrap">
+    <div class="form_component">
         <div th:replace="~{fragments/sign/register-top :: register-top-fragment('회원가입')}"></div>
 
         <span class="logo"></span>
@@ -11,7 +11,7 @@
         <form method="post"
               th:action="@{/register/nickname}"
               th:object="${userRegisterForm}"
-              class="wrap_form container bg_light_gray"
+              class="form_wrap container bg_light_gray"
               id="register-form">
 
             <div class="input_description">

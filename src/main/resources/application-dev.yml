@@ -1,0 +1,66 @@
+spring:
+  datasource:
+    # 데이터베이스 연결 URL (MySQL)
+    url: jdbc:mysql://localhost:3306/kukokuk?serverTimezone=Asia/Seoul
+    username: kukokuk
+    password: zxcv1234
+
+  # Redis 기본 설정
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  # env 관련 설정 추가
+  config:
+    import: optional:file:.env[.properties]
+
+server:
+    port: 8080
+
+logging:
+  level:
+    # HikariCP 커넥션 풀 로그
+    com.zaxxer.hikari: INFO
+
+    # DataSource 관련 로그 비활성화
+    javax.sql.DataSource: OFF
+
+    jdbc:
+      # JDBC 감사 로그 비활성화
+      audit: OFF
+
+      # SQL 실행 결과 테이블 로그 활성화
+      resultsettable: INFO
+
+      # SQL만 로그로 출력 (비활성화)
+      sqlonly: OFF
+
+      # SQL 실행 시간 로그 활성화
+      sqltiming: INFO
+
+      # 커넥션 로그 비활성화
+      connection: OFF
+
+      # 결과셋 출력 비활성화
+      resultset: OFF
+
+    org:
+      hibernate:
+        # 하이버네이트 SQL 로그
+        SQL: DEBUG
+
+        type:
+          descriptor:
+            sql:
+              # 바인딩 파라미터 추적 로그
+              BasicBinder: TRACE
+
+# 파이썬 서버 경로 설정
+pyserver:
+  url: http://127.0.0.1:8000
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
+    baseUrl: https://generativelanguage.googleapis.com

@@ -4,8 +4,10 @@ import com.kukokuk.security.CustomAccessDeniedHandler;
 import com.kukokuk.security.CustomAuthenticationEntryPoint;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,6 +36,7 @@ import org.springframework.security.web.SecurityFilterChain;
  *   메소드 기반 젭근제어를 적용한다.
  * - 메소드 기반 접근제어는 AOP 를 통해서 이루어진다.
  */
+@Log4j2
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -42,6 +45,11 @@ public class SecurityConfig {
 
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    /*
+        스프링 기본 인터페이스로 
+        현재 활성화된 프로파일 등 환경설정을 담은 Environment 객체를 자동으로 주입
+     */
+    private final Environment environment;
 
     /*
      * filterChain(HttpSecurity http) 메소드
@@ -77,40 +85,58 @@ public class SecurityConfig {
      *
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http)
-        throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        String activeProfile = environment.getActiveProfiles().length > 0
+            ? environment.getActiveProfiles()[0]
+            : "default";
 
         http
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**",
-                "/login"))
-            .authorizeHttpRequests(auth -> auth
-                .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE).permitAll()
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/login")) // 제거 예정
+            .authorizeHttpRequests(auth -> {
+                auth
+                    .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE).permitAll()
 
-                // 자유 접근 허용: 로그인 없이 가능한 경로
-                .requestMatchers(
-                    "/**"
-                    ,"/"                // 메인
-                    , "/login"          // 로그인
-                    , "/register/**"    // 회원가입
-                    , "/css/**"         // css
-                    , "/js/**"          // javascript
-                    , "/images/**"      // 정적 이미지 경로
-                ).permitAll()
+                    // 자유 접근 허용: 로그인 없이 가능한 경로
+                    .requestMatchers(
+                        "/"                             // 메인
+                        , "/login"                      // 로그인
+                        , "/register/**"                // 회원가입
+                        , "/api/users/duplicate/**"     // 사용자 username, nickname 중복확인 요청 (회원가입, 프로필수정 페이지에서 사용)
+                        , "/access-denied"              // 접근권한 제한 페이지
+                        , "/css/**"                     // css
+                        , "/js/**"                      // javascript
+                        , "/images/**"                  // 정적 이미지 경로
+                    ).permitAll();
+
+                // DevTools, 브라우저 프록시 확장기능 요청 시 허용(개발환경만 적용)
+                // 개발환경(dev)에서만 허용할 경로
+                if ("dev".equals(activeProfile)) {
+                    auth.requestMatchers("/.well-known/**").permitAll();
+                }
 
                 // 인증 필요한 경로들
-                .requestMatchers("/user/**").hasRole("USER")
-                .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
+                auth
+                    .requestMatchers("/user/**").hasRole("USER")
+                    .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
 
-                // 그 외 모든 요청은 로그인 필요
-                .anyRequest().authenticated()
-            )
+                    // 그 외 모든 요청은 로그인 필요
+                    .anyRequest().authenticated();
+            })
             .formLogin(formLogin -> formLogin
                 .usernameParameter("username")	// 로그인폼의 아이디 필드명을 지정한다.
                 .passwordParameter("password")	// 로그인폼의 비밀번호 필드명을 지정한다.
                 .loginPage("/login")		    // 직접 구현한 로그인폼 URL 지정(시큐리티 로그인폼 X)
                 .loginProcessingUrl("/login")	// 로그인처리를 요청하는 URL을 지정한다.
-                .defaultSuccessUrl("/")			// 로그인 성공시 이동할 URL을 지정한다.
-                .failureUrl("/login?failed")	// 로그인 실패시 이동할 URL을 지정한다.
+                //.defaultSuccessUrl("/")			// 로그인 성공시 이동할 URL을 지정한다.
+                //.failureUrl("/login?failed")	// 로그인 실패시 이동할 URL을 지정한다.
+                .successHandler((request, response, authentication) -> {
+                    log.info("로그인 성공: {}", authentication.getName());
+                    response.sendRedirect("/");
+                })
+                .failureHandler((request, response, exception) -> {
+                    log.info("로그인 실패: {}", exception.getMessage());
+                    response.sendRedirect("/login?failed");
+                })
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")			// 로그아웃 요청 URL을 지정한다.

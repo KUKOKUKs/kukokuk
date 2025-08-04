@@ -9,14 +9,14 @@ import lombok.Getter;
  *  message는 유효성 검증 실패 메세지다.
  */
 @Getter
-public class UserRegisterException extends AppException {
+public class UserFormException extends AppException {
 
     @Serial
     private static final long serialVersionUID = -4860672033504039964L;
 
     private final String field;
 
-    public UserRegisterException(String field, String message) {
+    public UserFormException(String field, String message) {
         super(message);
         this.field = field;
     }
