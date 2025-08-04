@@ -751,4 +751,10 @@
 /* 힌트를 획득한 후 보여줄 이이콘 스타일 */
 .hint_obtained_icon {
     color: var(--redColor);
+    height: 100%;
+    padding: 4px;
+    font-size: var(--baseIcon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

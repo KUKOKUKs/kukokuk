@@ -131,7 +131,7 @@
               // index가 0일때만 표시할 버튼 html구성
               const buttons = index === 0 ? `
                 <div class="study_btn_list">
-                  <button class="btn dark">${statusText}</button>
+                  <a href="/study/${study.dailyStudyNo}" class="btn dark">${statusText}</a>
                   <button class="btn white">AI 피드백 기반 논술형 퀴즈 풀기</button>
                 </div>
               ` : ``;
@@ -169,11 +169,12 @@
         if ($(this).find('.study_btn_list').length === 0) {
           // 커스텀 속성에서 상태 텍스트 가져오기
           const statusText = $(this).attr('data-study-status');
+          const dailyStudyNo = $(this).attr('data-study-no');
 
           // 버튼 HTML
           const buttonsHtml = `
             <div class="study_btn_list">
-              <button class="btn dark">${statusText}</button>
+              <a href="/study/${dailyStudyNo}" class="btn dark">${statusText}</a>
               <button class="btn white">AI 피드백 기반 논술형 퀴즈 풀기</button>
             </div>
           `;

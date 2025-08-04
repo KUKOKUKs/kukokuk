@@ -288,6 +288,8 @@ public class StudyService {
             // Json응답데이터를 객체로 매핑
             GeminiStudyResponse geminiStudyResponse = objectMapper.readValue(contentJsonOnly, GeminiStudyResponse.class);
 
+            log.info("geminiStudyResponse : " + geminiStudyResponse.getMainExplanation());
+
             // 학습자료, 학습자료카드, 학습퀴즈, 학습 서술형퀴즈를 DB에 저장하는 메소드 호출
             dailyStudy = insertDailyStudyWithOtherComponents(geminiStudyResponse, dailyStudyMaterialNo, studyDifficultyNo);
         } catch (JsonProcessingException e){
