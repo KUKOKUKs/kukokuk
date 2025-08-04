@@ -1,0 +1,130 @@
+// noinspection ES6UnusedImports
+
+import {
+    validateProfileForm
+} from '/js/modules/profile/profile-form-validator.js';
+import {
+    addInputErrorMessage,
+    clearInputErrorMessage
+} from '/js/utils/form-error-util.js';
+import {checkNicknameDuplicate} from '/js/modules/sign/sign-api.js';
+import {debounce} from '/js/utils/debounce-util.js';
+import {elementarySchool, middleSchool} from '/js/utils/handler-util.js';
+import {regExNickname, validateDate} from '/js/utils/validation-util.js';
+
+$(document).ready(() => {
+    // 프로필 설정 관련
+    const $userUpdateForm = $("#profile-update-form"); // 프로필 설정 폼
+    const $userUpdateName = $userUpdateForm.find("input[name='name']"); // name input
+    const $userUpdateNickname = $userUpdateForm.find("input[name='nickname']"); // nickname input
+    const $userUpdateBirthDate = $userUpdateForm.find("input[name='birthDate']"); // birthDate input
+    const $userUpdateCurrentNickname = $userUpdateForm.find("input[name='currentNickname']"); // currentNickname input
+    const $userUpdateCurrentSchool = $userUpdateForm.find("select[name='currentSchool']"); // currentSchool select
+    const $userUpdateCurrentGrade = $userUpdateForm.find("select[name='currentGrade']"); // currentGrade select
+
+    // 프로필 설정 폼 제출 이벤트 발생 시 유효성 검사 후 제출
+    $userUpdateForm.submit(function (e) {
+        e.preventDefault();
+
+        // 유효성 검사 통화 시 제출
+        if (validateProfileForm($(this))) {
+            this.submit();
+        }
+    });
+
+    // nickname 중복 체크
+    async function handleNicknameInput(nickname) {
+        clearInputErrorMessage($userUpdateNickname); // 에러 메세지 초기화
+        const isDuplicated = await checkNicknameDuplicate(nickname);
+        console.log("handleNicknameInput 실행 결과: ", isDuplicated);
+
+        const isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
+
+        if (!isValid) {
+            addInputErrorMessage($userUpdateNickname, "사용중인 닉네임입니다");
+        }
+    }
+
+    // 중복 체크 요청
+    const nicknameCheckDebounce = debounce(handleNicknameInput, 500); // nickname
+
+    // 프로필 설정 이름 유효성 검증 처리
+    $userUpdateName.on("input blur", function () {
+        clearInputErrorMessage($userUpdateName); // 에러 메세지 초기화
+        const val = $(this).val();
+
+        if (val === "") {
+            addInputErrorMessage($userUpdateName, "이름을 입력해 주세요");
+        }
+    });
+
+    // 프로필 설정 닉네임 유효성 검증 처리
+    $userUpdateNickname.on("input blur", function () {
+        clearInputErrorMessage($userUpdateNickname); // 에러 메세지 초기화
+        const val = $(this).val();
+
+        if (val === "") {
+            addInputErrorMessage($userUpdateNickname, "닉네임을 입력해 주세요");
+        } else if (!regExNickname.test(val)) {
+            // 정규표현식을 통과하지 못한 경우
+            addInputErrorMessage($userUpdateNickname, "유효한 닉네임 형식이 아닙니다");
+        } else if (val !== $userUpdateCurrentNickname.val()) {
+            // 사용자 현재 닉네임과 입력한 닉네임이 같지 않을 경우 중복 검사
+            nicknameCheckDebounce(val);
+        }
+    });
+
+    // 프로필 설정 생년월일 유효성 검증 처리
+    $userUpdateBirthDate.on("input blur", function () {
+        clearInputErrorMessage($userUpdateBirthDate); // 에러 메세지 초기화
+
+        // 숫자가 아닌 값이 입력될 경우 실시간 제거
+        const original = $(this).val();
+        const digitsOnly = original.replace(/\D/g, ''); // 숫자만 추출
+        const current = digitsOnly.slice(0, 8); // 최대 8자리까지 유지
+
+        // 현재 값이 8자리가 아니면 하이픈 제거
+        if (current.length < 8 && original !== current) {
+            // 같지 않다면 숫자 이외의 값이 입력이 되었다고 판단
+            $(this).val(current); // 숫자 이외 제거
+        }
+
+        // 값이 비었거나 8자리 이하일 경우
+        if (current === "" || current.length < 8) {
+            addInputErrorMessage($userUpdateBirthDate, "생년월일을 확인해 주세요");
+        } else {
+            const y = current.slice(0, 4);
+            const m = current.slice(4, 6);
+            const d = current.slice(6, 8);
+
+            // 8자리 숫자가 입력되었고 유효한 날짜인 경우 yyyy-MM-dd 형식으로 변경
+            if (validateDate(y, m, d)) {
+                const inputDate = new Date(`${y}-${m}-${d}`);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // 시간을 0으로 설정하여 비교 안정성 확보
+
+                // 오늘 이전 날짜인지 확인
+                if (inputDate >= today) {
+                    addInputErrorMessage($userUpdateBirthDate, "유효한 생년월일이 아닙니다");
+                } else {
+                    const formattedDate = `${y}-${m}-${d}`;
+                    $(this).val(formattedDate);
+                }
+            } else {
+                addInputErrorMessage($userUpdateBirthDate, "유효한 생년월일이 아닙니다");
+            }
+        }
+    });
+
+    // 프로필 설정 진도 선택 핸들러
+    $userUpdateCurrentSchool.on("change", function () {
+        const val = $(this).val();
+
+        // grade 옵션 세팅
+        if (val === "초등") {
+            $userUpdateCurrentGrade.html(elementarySchool);
+        } else if (val === "중등") {
+            $userUpdateCurrentGrade.html(middleSchool);
+        }
+    });
+});

@@ -15,10 +15,11 @@
         </div>
 
         <form method="post"
-              th:action="@{/register/profile}"
+              th:action="@{/user/profile}"
               th:object="${userUpdateForm}"
               class="form_wrap container pd_0"
-              id="user-update-form">
+              id="profile-update-form">
+            <input type="hidden" name="currentNickname" th:value="${userUpdateForm.nickname}">
 
             <div class="form_input_list">
                 <div class="input_info">
@@ -75,7 +76,7 @@
                 <div class="input_info select_info">
                     <p class="select_title">진도</p>
                     <select th:field="*{currentSchool}" class="form_select">
-                        <option th:if="${currentSchool == null}" value="" selected disabled>선택</option>
+                        <option th:if="${userUpdateForm.currentSchool == null}" value="" selected disabled>선택</option>
                         <option value="초등">초등</option>
                         <option value="중등">중등</option>
                     </select>
@@ -83,30 +84,33 @@
 
                 <div class="input_info select_info">
                     <p class="select_title">학년</p>
-                    <select th:if="${currentSchool == '초등'}" th:field="*{currentGrade}" class="form_select">
-                        <option value="1">1학년</option>
-                        <option value="2">2학년</option>
-                        <option value="3">3학년</option>
-                        <option value="4">4학년</option>
-                        <option value="5">5학년</option>
-                        <option value="6">6학년</option>
-                    </select>
+                    <select th:field="*{currentGrade}" class="form_select">
+                        <option value="" disabled selected
+                                th:if="${userUpdateForm.currentGrade == null}">선택</option>
 
-                    <select th:if="${currentSchool == '중등'}" th:field="*{currentGrade}" class="form_select">
-                        <option value="1">1학년</option>
-                        <option value="2">2학년</option>
-                        <option value="3">3학년</option>
-                    </select>
+                        <!--/* 초등용 옵션 */-->
+                        <th:block th:if="${userUpdateForm.currentSchool == '초등'}">
+                            <option th:value="1">1학년</option>
+                            <option th:value="2">2학년</option>
+                            <option th:value="3">3학년</option>
+                            <option th:value="4">4학년</option>
+                            <option th:value="5">5학년</option>
+                            <option th:value="6">6학년</option>
+                        </th:block>
 
-                    <select th:if="${currentSchool == null}" th:field="*{currentGrade}" class="form_select">
-                        <option value="" selected disabled>선택</option>
+                        <!--/* 중등용 옵션 */-->
+                        <th:block th:if="${userUpdateForm.currentSchool == '중등'}">
+                            <option th:value="1">1학년</option>
+                            <option th:value="2">2학년</option>
+                            <option th:value="3">3학년</option>
+                        </th:block>
                     </select>
                 </div>
 
                 <div class="input_info select_info">
                     <p class="select_title">단계</p>
                     <select th:field="*{studyDifficulty}" class="form_select">
-                        <option th:if="${studyDifficulty == null}" value="" selected disabled>선택</option>
+                        <option th:if="${userUpdateForm.studyDifficulty == null}" value="" selected disabled>선택</option>
                         <option value="1">1단계</option>
                         <option value="2">2단계</option>
                         <option value="3">3단계</option>
@@ -118,9 +122,14 @@
             </div>
 
             <div class="btn_list">
+                <a href="/" class="btn white">취소</a>
                 <button type="submit" id="submit-btn" class="btn primary">수정</button>
             </div>
         </form>
     </div>
 </div>
+
+<th:block layout:fragment="script">
+    <script type="module" th:src="@{/js/modules/profile/profile.js}"></script>
+</th:block>
 </html>

@@ -32,11 +32,14 @@ public class UserService {
 
         // 닉네임을 포함한 폼을 전달 받았을 경우
         if (form.getNickname() != null) {
+            log.info("폼으로 전달 받은 닉네임: {}", form.getNickname());
             // 사용자 번호로 사용자 정보 조회
             User foundUserByUserNo = getUserByUserNo(userNo);
 
             // 사용자 닉네임과 폼에 입력된 닉네임이 다를 경우(닉네임 변경 요청으로 판단)
             if (!form.getNickname().equals(foundUserByUserNo.getNickname())) {
+                log.info("닉네임 변경으로 중복검사 실행");
+                
                 // 폼에 입력된 닉네임으로 사용자 정보 조회
                 User foundUserByNickname = getUserByNickname(form.getNickname());
                 if (foundUserByNickname != null) {

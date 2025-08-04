@@ -105,7 +105,7 @@ public class UserController {
 
     // 사용자 학습 진도/단계 수정 요청
     @PostMapping("/study-level")
-    public String studyLevel(@ModelAttribute("userUpdateForm") UserForm form
+    public String studyLevel(@ModelAttribute("userForm") UserForm form
         , @AuthenticationPrincipal SecurityUser securityUser
         , HttpServletRequest request) {
         log.info("studyLevel() 컨트롤러 실행");
