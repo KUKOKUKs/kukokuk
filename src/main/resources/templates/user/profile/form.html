@@ -1,16 +1,11 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/center}" th:with="title='회원가입'">
+<html layout:decorate="~{/layout/base}" th:with="title='프로필', menu='profile'">
 <div layout:fragment="content">
     <div class="form_component">
-        <div th:replace="~{fragments/sign/register-top :: register-top-fragment('회원가입')}"></div>
-
-        <span class="logo"></span>
-
-        <div th:replace="~{fragments/sign/step-bar :: step-fragment(5, 3)}"></div>
+        <h1 class="content_title">프로필</h1>
 
         <form method="post"
               th:action="@{/register/profile}"
-              th:object="${userRegisterForm}"
               class="form_wrap container bg_light_gray"
               id="register-form">
 
@@ -64,21 +59,4 @@
         </form>
     </div>
 </div>
-
-<th:block layout:fragment="script">
-    <!--/* 최초 랜더링 시 제출 버튼 활성화 설정 */-->
-    <script th:inline="javascript">
-        let hasError = [[${hasError}]];
-        const $focusElement = $("#name");
-        const name = $focusElement.val().trim();
-        const birthDate = $("#birth-date").val().trim();
-
-        $focusElement.focus();
-
-        if (name === "" || birthDate === "" || hasError) {
-            $("#submit-btn").addClass("disabled");
-        }
-    </script>
-    <script type="module" th:src="@{/js/modules/sign/sign.js}"></script>
-</th:block>
 </html>

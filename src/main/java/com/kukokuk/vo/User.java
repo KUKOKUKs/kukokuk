@@ -23,7 +23,7 @@ public class User {
     private String profileFilename;
     private String authProvider;
     private Integer level;
-    private int experiencePoints;
+    private Integer experiencePoints;
     private Integer studyDifficulty;
     private String currentSchool; // ENUM("초등","중등")
     private Integer currentGrade;
@@ -31,7 +31,7 @@ public class User {
     private String isDeleted; // ENUM("N", "Y")
     private Date createdDate;
     private Date updatedDate;
-    private int maxExp; // 레벨업에 필요한 누적 경험치
+    private Integer maxExp; // 레벨업에 필요한 누적 경험치
     private List<String> roleNames; // 사용자 권한 정보 목록
 
 }

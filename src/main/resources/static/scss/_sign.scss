@@ -1,13 +1,3 @@
-.sign_wrap {
-    width: 100%;
-    max-width: var(--subContentWidth);
-    padding: var(--containerPadding) 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--baseGap);
-}
-
 .sign_top {
     width: 100%;
     display: flex;
@@ -26,40 +16,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-    }
-}
-
-.step_bar {
-    width: 100%;
-    margin: 5px 0;
-    background-color: var(--lightGrayColor);
-    position: relative;
-
-    .current_step {
-        height: 3px;
-        background-color: var(--primaryColor);
-    }
-
-    .step_circle_container {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-
-        .step_circle {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--lightGrayColor);
-
-            &.active {
-                background-color: var(--primaryColor);
-            }
         }
     }
 }

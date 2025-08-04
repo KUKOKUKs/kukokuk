@@ -4,6 +4,7 @@ import com.kukokuk.validation.EmailCheck;
 import com.kukokuk.validation.NicknameCheck;
 import com.kukokuk.validation.PasswordCheck;
 import com.kukokuk.validation.ProfileCheck;
+import com.kukokuk.validation.UserModifyCheck;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
-public class UserRegisterForm {
+public class UserForm {
 
     @NotBlank(message = "이메일을 입력해 주세요", groups = EmailCheck.class)
     @Email(message = "유효한 이메일 형식이 아닙니다", groups = EmailCheck.class)
@@ -32,22 +33,31 @@ public class UserRegisterForm {
     @NotBlank(message = "비밀번호 확인란을 입력해 주세요", groups = PasswordCheck.class)
     private String passwordConfirm;
 
-    @NotBlank(message = "이름을 입력해 주세요", groups = ProfileCheck.class)
+    @NotBlank(message = "이름을 입력해 주세요", groups = {ProfileCheck.class, UserModifyCheck.class})
     private String name;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @NotNull(message = "생년월일을 입력해 주세요", groups = ProfileCheck.class)
-    @Past(message = "유효한 생년월일을 입력해 주세요", groups = ProfileCheck.class)
+    @NotNull(message = "생년월일을 입력해 주세요", groups = {ProfileCheck.class, UserModifyCheck.class})
+    @Past(message = "유효한 생년월일을 입력해 주세요", groups = {ProfileCheck.class, UserModifyCheck.class})
     private Date birthDate;
 
-    @NotBlank(message = "성별을 선택해 주세요", groups = ProfileCheck.class)
+    @NotBlank(message = "성별을 선택해 주세요", groups = {ProfileCheck.class, UserModifyCheck.class})
     private String gender;
 
-    @NotBlank(message = "닉네임을 입력해 주세요", groups = NicknameCheck.class)
-    @Size(min = 4, max = 16, message = "4~16자로 입력해 주세요", groups = NicknameCheck.class)
+    @NotBlank(message = "닉네임을 입력해 주세요", groups = {NicknameCheck.class, UserModifyCheck.class})
+    @Size(min = 4, max = 16, message = "4~16자로 입력해 주세요", groups = {NicknameCheck.class, UserModifyCheck.class})
     @Pattern(regexp = "^[a-zA-Z0-9가-힣_]{4,16}$"
         , message = "유효한 닉네임 형식이 아닙니다."
-        , groups = NicknameCheck.class)
+        , groups = {NicknameCheck.class, UserModifyCheck.class})
     private String nickname;
+
+    private String profileFilename;
+    private Integer level;
+    private Integer experiencePoints;
+    private String currentSchool; // ENUM("초등","중등")
+    private Integer currentGrade;
+    private Integer studyDifficulty;
+    private Integer hintCount;
+    private String isDeleted; // ENUM("N", "Y")
 
 }

@@ -83,6 +83,43 @@
     </resultMap>
 
     <!--
+        * 사용자 번호로 사용자, 사용자 권한 정보 조회
+        * @param userNo 사용자 번호
+        * @return 사용자, 사용자 권한 정보
+        User getUserByUserNoWithRoleNames(int userNo);
+    -->
+    <select id="getUserByUserNoWithRoleNames" resultMap="UserResultMapWithRoleNames">
+        SELECT
+            U.USER_NO
+             , U.USERNAME
+             , U.PASSWORD
+             , U.NAME
+             , U.NICKNAME
+             , U.BIRTH_DATE
+             , U.GENDER
+             , U.PROFILE_FILENAME
+             , U.AUTH_PROVIDER
+             , U.LEVEL
+             , U.EXPERIENCE_POINTS
+             , U.STUDY_DIFFICULTY
+             , U.CURRENT_SCHOOL
+             , U.CURRENT_GRADE
+             , U.HINT_COUNT
+             , U.IS_DELETED
+             , U.CREATED_DATE
+             , U.UPDATED_DATE
+             , L.MAX_EXP
+        FROM
+            KUKOKUK_USERS U
+                JOIN
+            KUKOKUK_LEVEL L
+            ON
+                U.LEVEL = L.LEVEL
+        WHERE
+            U.USER_NO = #{userNo}
+    </select>
+
+    <!--
         * username으로 사용자, 사용자 권한 정보 조회
         * @param username username
         * @return 사용자, 사용자 권한 정보
@@ -116,7 +153,7 @@
         ON
             U.LEVEL = L.LEVEL
         WHERE
-            USERNAME = #{username}
+            U.USERNAME = #{username}
     </select>
 
     <!--
