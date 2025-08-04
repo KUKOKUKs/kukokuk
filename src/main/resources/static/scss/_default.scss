@@ -608,6 +608,10 @@
     gap: var(--largeGap); /* 큰 gap */
 }
 
+.pd_0 {
+    padding: 0;
+}
+
 /* border */
 .base_border {
     border: 2px solid var(--borderColor);
@@ -640,6 +644,10 @@
 }
 
 /* background */
+.bg_none {
+    background: none;
+}
+
 .bg_primary {
     background-color: var(--primaryColor);
 }

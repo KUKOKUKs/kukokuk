@@ -68,7 +68,7 @@ dependencies {
 	// SQL 로그 출력용 log4jdbc (Log4j2 전용 버전)
 	// - 쿼리 + 파라미터 + 실행 시간 확인 가능
 	// - 사용 시 log4jdbc용 DataSource 설정 필요
-	// implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
 
 	// Redis (인메모리 데이터 저장소)
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
