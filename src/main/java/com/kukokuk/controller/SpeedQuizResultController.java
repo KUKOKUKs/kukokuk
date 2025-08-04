@@ -33,11 +33,7 @@ public class SpeedQuizResultController {
     private final QuizResultService quizResultService;
 
     /**
-     * 스피드 퀴즈 풀이 결과를 저장한다 (폼 기반 제출)
-     * @param request 사용자가 제출한 퀴즈 결과
-     * @param securityUser 로그인 사용자 정보
-     * @param model 결과 페이지에 전달할 모델
-     * @return speed-result.html 뷰로 이동
+     * 퀴즈 결과 저장 처리 및 요약 결과 페이지 리다이렉트
      */
     @PostMapping("/result")
     public String submitQuizResults(@ModelAttribute QuizSubmitRequest request,
@@ -46,10 +42,10 @@ public class SpeedQuizResultController {
         int userNo = securityUser.getUser().getUserNo();
         log.info("폼 제출 - userNo: {}, totalTimeSec: {}", userNo, request.getTotalTimeSec());
 
+        // 세션 요약 객체 초기화
         QuizSessionSummary summary = new QuizSessionSummary();
         summary.setUserNo(userNo);
         summary.setTotalTimeSec(request.getTotalTimeSec());
-        summary.setTotalQuestion(request.getResults().size());
 
         List<QuizResult> quizResults = new ArrayList<>();
         for (QuizSubmitResultRequest r : request.getResults()) {
@@ -60,32 +56,41 @@ public class SpeedQuizResultController {
             quizResults.add(qr);
         }
 
-        quizProcessService.insertQuizSessionAndResults(summary, quizResults);
+        // 세션 저장 및 결과 저장 → sessionNo 반환받음
+        int sessionNo = quizProcessService.insertQuizSessionAndResults(summary, quizResults);
 
-        // 결과 페이지로 redirect (세션 번호 전달)
-        return "redirect:/quiz/speed-result?sessionNo=" + summary.getSessionNo();
+
+        return "redirect:/quiz/speed-summary?sessionNo=" + sessionNo;
     }
 
     /**
-     * 결과 페이지 렌더링
-     * @param sessionNo 세션 번호
-     * @param securityUser 로그인 유저
-     * @param model 모델 전달
-     * @return speed-result.html 뷰
+     * 퀴즈 결과 요약 페이지 렌더링 (speed-result1)
      */
-    @GetMapping("/speed-result")
-    public String viewSpeedResult(@RequestParam int sessionNo,
+    @GetMapping("/speed-summary")
+    public String viewSpeedQuizSummary(@RequestParam int sessionNo,
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
-        log.info("securityUser = {}", securityUser);
         int userNo = securityUser.getUser().getUserNo();
-        log.info("스피드 결과 요청 - sessionNo: {}, userNo: {}", sessionNo, userNo);
+        log.info("결과 요약 페이지 요청 - sessionNo: {}, userNo: {}", sessionNo, userNo);
 
+        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
+        model.addAttribute("summary", summary);
+        return "quiz/speed-result1";
+    }
+
+    /**
+     * 상세 결과 페이지 렌더링 (speed-result2)
+     */
+    @GetMapping("/result/detail")
+    public String viewSpeedResultDetail(@RequestParam int sessionNo,
+        @AuthenticationPrincipal SecurityUser securityUser,
+        Model model) {
+        int userNo = securityUser.getUser().getUserNo();
         QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
         List<QuizResultResponse> results = quizResultService.getQuizResultsBySession(sessionNo, userNo);
 
         model.addAttribute("summary", summary);
         model.addAttribute("results", results);
-        return "quiz/speed-result";
+        return "quiz/speed-result2";
     }
 }
