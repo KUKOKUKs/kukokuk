@@ -2,12 +2,16 @@ package com.kukokuk.controller;
 
 import com.kukokuk.dto.DictationAnswerDto;
 import com.kukokuk.dto.DictationSessionRequestDto;
+import com.kukokuk.response.ApiResponse;
+import com.kukokuk.response.ResponseEntityUtils;
+import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.DictationService;
 import com.kukokuk.vo.DictationQuestion;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,21 +29,26 @@ public class ApiDictationController {
 
   /**
    * 받아쓰기 문제를 사용자에게 제공하는 API
-   * - 사용자가 아직 풀지 않은 받아쓰기 문제를 랜덤으로 10개 반환
-   * - 만약 사용자가 푼 문제로 인해 10개를 채우지 못하면, 부족한 개수만큼 문제를 새로 생성한 후 다시 가져옴
-   *
-   * @param userNo 사용자 식별 번호
+   *  - 사용자가 아직 풀지 않은 받아쓰기 문제를 랜덤으로 10개 반환
+   *  - 만약 사용자가 푼 문제로 인해 10개를 채우지 못하면, 부족한 개수만큼 문제를 새로 생성한 후 다시 가져옴
+   * @param securityUser 사용자 식별 번호
    * @return 받아쓰기 문제 리스트 (최대 10개)
    */
   @GetMapping("/questions")
-  public List<DictationQuestion> getQuestions(@RequestParam("userNo") int userNo) {
+  public ResponseEntity<ApiResponse<List<DictationQuestion>>> getQuestions(@AuthenticationPrincipal SecurityUser securityUser) {
+    log.info("getQuestions() 컨트롤러 실행");
+    int userNo = securityUser.getUser().getUserNo();
+    log.info("question userNo: {}", userNo);
     List<DictationQuestion> questions = dictationService.getDictationQuestionsByUserNo(userNo);
-    return questions; // JSON 형식으로 자동 변환되어 응답됨
+    for (DictationQuestion q : questions) {
+      log.info("questions info: {}", q.getDictationQuestionNo());
+    }
+    return ResponseEntityUtils.ok(questions); // JSON 형식으로 자동 변환되어 응답됨
   }
 
   /**
    *
-   * 받아쓰기 문제의 정답을 제출하는 API
+   * 받아쓰기 문제의 정답을 제출하는 API`
    * 클라이언트에서 문제 풀이 결과(세트 번호, 문제 번호, 제출 답안)를 전송하면
    * 서비스 로직을 통해 DB에 제출 결과를 저장하거나 업데이트
    * 요청 형식 (JSON):
@@ -54,9 +63,11 @@ public class ApiDictationController {
   @PostMapping("/submit-answer")
   public ResponseEntity<Void> submitAnswer(@RequestBody DictationAnswerDto answerDto) {
     dictationService.submitAnswer(
+        answerDto.getUserNo(),
         answerDto.getDictationSessionNo(),
         answerDto.getDictationQuestionNo(),
-        answerDto.getUserAnswer()
+        answerDto.getUserAnswer(),
+        answerDto.getUsedHint()
     );
     return ResponseEntity
           .ok()

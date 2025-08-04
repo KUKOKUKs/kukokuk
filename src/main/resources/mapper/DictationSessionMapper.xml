@@ -18,21 +18,15 @@
    */
   insertDictationSession(DictationSession dictationSession)
    -->
-  <insert id="insertDictationSession" parameterType="DictationSession" useGeneratedKeys="true" keyProperty="dictationSessionNo">
-    INSERT INTO KUKOKUK_DICTATION_SESSIONS (
-       USER_NO
-      ,START_DATE
-      ,END_DATE
-      ,CORRECT_COUNT
-      ,HINT_USED_COUNT
-      ,CORRECT_SCORE
-    ) VALUES (
-       #{userNo}
-      ,#{startDate}
-      ,#{endDate}
-      ,#{correctCount}
-      ,#{hintUsedCount}
-      ,#{correctScore}
+  <insert id="insertDictationSession" useGeneratedKeys="true" keyProperty="dictationSessionNo">
+    INSERT INTO KUKOKUK_DICTATION_SESSIONS(
+      USER_NO
+     ,START_DATE
+     ,END_DATE
+    )VALUES(
+      #{userNo}
+     ,#{startDate}
+     ,#{endDate}
     )
   </insert>
 
@@ -66,14 +60,15 @@
    */
    updateDictationSessionResult(DictationSession session)
    -->
-  <update id="updateDictationSessionResult" parameterType="DictationSession">
-    UPDATE
-        KUKOKUK_DICTATION_SESSIONS
+  <update id="updateDictationSessionResult">
+    UPDATE KUKOKUK_DICTATION_SESSIONS
     SET
-       END_DATE = NOW()
-      ,CORRECT_SCORE = #{correctScore}
+       USER_NO = #{userNo}
+      ,START_DATE = #{startDate}
+      ,END_DATE = #{endDate}
       ,CORRECT_COUNT = #{correctCount}
       ,HINT_USED_COUNT = #{hintUsedCount}
+      ,CORRECT_SCORE = #{correctScore}
     WHERE
        DICTATION_SESSION_NO = #{dictationSessionNo}
   </update>

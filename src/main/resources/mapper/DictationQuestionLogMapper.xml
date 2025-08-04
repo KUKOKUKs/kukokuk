@@ -15,12 +15,14 @@
          ,DICTATION_QUESTION_NO
          ,DICTATION_SESSION_NO
          ,USER_ANSWER
+         ,TRY_COUNT
          ,IS_SUCCESS
     ) VALUES (
          #{userNo}
         ,#{dictationQuestionNo}
         ,#{dictationSessionNo}
         ,#{userAnswer}
+        ,#{tryCount}
         ,#{isSuccess}
     )
   </insert>
@@ -100,9 +102,9 @@
    * @param dictationSessionNo 받아쓰기 문제 세트 번호
    * @return 맞은 문제 개수
    */
-   getcountCorrectAnswers(@Param("dictationSessionNo") int dictationSessionNo)
+   getCountCorrectAnswers(@Param("dictationSessionNo") int dictationSessionNo)
   -->
-  <select id="getcountCorrectAnswers" resultType="int">
+  <select id="getCountCorrectAnswers" resultType="int">
     SELECT
         COUNT(*)
     FROM
@@ -119,9 +121,9 @@
    * @param dictationSessionNo 받아쓰기 문제 세트 번호
    * @return 사용한 힌트 개수
    */
-   getcountHintsUsed(@Param("dictationSessionNo") int dictationSessionNo)
+   getCountHintsUsed(@Param("dictationSessionNo") int dictationSessionNo)
    -->
-  <select id="getcountHintsUsed" resultType="int">
+  <select id="getCountHintsUsed" resultType="int">
     SELECT
         COUNT(*)
     FROM
@@ -148,24 +150,7 @@
     WHERE
         DICTATION_SESSION_NO = #{dictationSessionNo}
       AND
-        DICTATION_QUESTION_NO = #{questionNo}
-  </select>
-
-  <!--
-   /**
-   * 가장 먼저 푼 문제 시각 조회
-   * @param sessionNo 문제 세트 번호
-   * @return 첫 문제 푼 시각
-   */
-  Date getEarliestAnswerDate(int sessionNo)
-  -->
-  <select id="getEarliestAnswerDate" resultType="java.util.Date">
-    SELECT
-        MIN(CREATE_DATE)
-    FROM
-        KUKOKUK_DICTATION_QUESTION_LOGS
-    WHERE
-        DICTATION_SESSION_NO = #{dictationSessionNo}
+        DICTATION_QUESTION_NO = #{dictationQuestionNo}
   </select>
 
 </mapper>

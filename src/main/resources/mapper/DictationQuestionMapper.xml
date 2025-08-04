@@ -170,7 +170,8 @@
   -->
   <select id="getRandomDictationQuestionsExcludeUser" resultMap="dictationQuestionResultMap">
     SELECT
-         dq.CORRECT_ANSWER
+         dq.DICTATION_QUESTION_NO
+        ,dq.CORRECT_ANSWER
         ,dq.HINT1
         ,dq.HINT2
         ,dq.HINT3
@@ -189,4 +190,14 @@
     ORDER BY RAND()
       LIMIT #{count}
   </select>
+
+  <select id="getCountCorrectAnswers" resultType="int" parameterType="int">
+    SELECT
+        COUNT(*)
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE USER_NO = #{userNo}
+      AND IS_SUCCESS = 'Y'
+  </select>
+
 </mapper>

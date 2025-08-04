@@ -3,15 +3,22 @@ package com.kukokuk.service;
 import com.kukokuk.mapper.DictationQuestionLogMapper;
 import com.kukokuk.mapper.DictationQuestionMapper;
 import com.kukokuk.mapper.DictationSessionMapper;
+import com.kukokuk.security.SecurityUser;
 import com.kukokuk.vo.DictationQuestion;
 import com.kukokuk.vo.DictationQuestionLog;
 import com.kukokuk.vo.DictationSession;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.support.SessionStatus;
 
 @Log4j2
 @Service
@@ -96,7 +103,7 @@ public class DictationService {
     int hintUsedCount = dictationQuestionLogMapper.getCountHintsUsed(dictationSessionNo);
 
     // 3. 시작 시간 조회 (가장 이른 문제 풀이 시간)
-    Date startDate = dictationQuestionLogMapper.getEarliestAnswerDate(dictationSessionNo);
+    Date startDate = new Date();
 
     // 4. 종료 시간은 현재 시각
     Date endDate = new Date();
@@ -114,43 +121,48 @@ public class DictationService {
     session.setHintUsedCount(hintUsedCount);
     session.setCorrectScore(correctScore);
 
-    dictationSessionMapper.insertDictationSession(session);
+    dictationSessionMapper.updateDictationSessionResult(session);
   }
 
   /**
    * 문제 제출 시 이력에 저장
    * @param dictationSessionNo 문제 세트 번호
-   * @param dictaionquestionNo 문제 번호
+   * @param dictationQuestionNo 문제 번호
    * @param userAnswer 제출 문장
    */
   @Transactional
-  public void submitAnswer(int dictationSessionNo, int dictaionquestionNo, String userAnswer) {
+  public void submitAnswer(int userNo, int dictationSessionNo, int dictationQuestionNo, String userAnswer, String usedHint) {
 
     // 1. 정답 문장 가져오기
-    String correctAnswer = dictationQuestionMapper.getCorrectAnswerByQuestionNo(dictaionquestionNo);
-    // 2. 기존 제출 이력 확인
-    DictationQuestionLog existingLog = dictationQuestionLogMapper.getLogBySessionAndQuestion(dictationSessionNo, dictaionquestionNo);
+    String correctAnswer = dictationQuestionMapper.getCorrectAnswerByQuestionNo(dictationQuestionNo);
 
-    // 3. 제출 이력에 담기
+    // 2. 기존 제출 이력 확인
+    DictationQuestionLog existingLog = dictationQuestionLogMapper.getLogBySessionAndQuestion(dictationSessionNo, dictationQuestionNo);
+
+    // 3. 제출 이력 저장
     if (existingLog == null) {
       // 첫 제출 → INSERT
       DictationQuestionLog newLog = new DictationQuestionLog();
-      newLog.setDictationSessionNo(dictationSessionNo);                                 // 세트 번호
-      newLog.setDictationQuestionNo(dictaionquestionNo);                                // 문제 번호
-      newLog.setUserAnswer(userAnswer);                                                 // 사용자가 제출한 답안
-      newLog.setTryCount(1);                                                            // 첫 시도, 시도 횟수 1
-      newLog.setIsSuccess(isCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N");      // 정답 여부 판정
+      newLog.setUserNo(userNo);                                                       // 사용자 번호
+      newLog.setDictationSessionNo(dictationSessionNo);                               // 문제 세트 번호
+      newLog.setDictationQuestionNo(dictationQuestionNo);                             // 문제 번호
+      newLog.setUserAnswer(userAnswer);                                               // 사용자 제출 답안
+      newLog.setTryCount(1);                                                          // 첫 시도
+      newLog.setIsSuccess(isCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N");    // 정답 여부
+      newLog.setUsedHint(usedHint);                                                   // 힌트 사용 여부
 
-      dictationQuestionLogMapper.insertDictationQuestionLog(newLog);                    // DB에 INSERT
+      dictationQuestionLogMapper.insertDictationQuestionLog(newLog);
     } else {
       // 두 번째 제출 → UPDATE
-      existingLog.setUserAnswer(userAnswer);                                            // 사용자가 새로 제출한 답안
-      existingLog.setTryCount(existingLog.getTryCount() + 1);                           // 시도 횟수 증가
-      existingLog.setIsSuccess(isCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N"); // 정답 여부 판정
+      existingLog.setUserAnswer(userAnswer);                                           // 새로 제출한 답안
+      existingLog.setTryCount(existingLog.getTryCount() + 1);                          // 시도 횟수 증가
+      existingLog.setIsSuccess(isCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N");// 정답 여부 판정
+      existingLog.setUsedHint(usedHint);                                               // 힌트 사용 여부 갱신
 
-      dictationQuestionLogMapper.updateDictationQuestionLog(existingLog);               // DB에 UPDATE
+      dictationQuestionLogMapper.updateDictationQuestionLog(existingLog);
     }
   }
+
 
   /**
    * 사용자 제출 문장과 정답 문장을 비교하여 정답 여부를 판별
@@ -172,7 +184,7 @@ public class DictationService {
   }
 
   /**
-   * 받아쓰기 세트 번호로 받아쓰기 세트 가져오기(결과용)
+   * 받아쓰기 세트 번호로 받아쓰기 세트 가져오기
    * @param dictationSessionNo 문제 세트 번호
    * @return 받아쓰기 세트
    */
@@ -203,4 +215,21 @@ public class DictationService {
   public void deleteDictationQuestion(int dictationQuestionNo) {
     dictationQuestionMapper.deleteDictationQuestion(dictationQuestionNo);
   }
+
+  /**
+   * 사용자의 번호를 기반으로 받아쓰기 세트 객체를 생성하고,
+   * 시작일자와 종료일자를 현재 시각으로 설정한 후 DB에 저장
+   * @param userNo 사용자 번호
+   * @return 생성된 받아쓰기 세트
+   */
+  public int createDictationSession(int userNo) {
+    DictationSession session = new DictationSession();
+    session.setUserNo(userNo);
+    session.setStartDate(new Date());
+    session.setEndDate(new Date());
+    dictationSessionMapper.insertDictationSession(session);
+    return session.getDictationSessionNo(); // MyBatis에서 자동 채번되어 들어간다고 가정
+  }
+
+
 }

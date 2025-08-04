@@ -63,10 +63,4 @@ public interface DictationQuestionLogMapper {
    */
   DictationQuestionLog getLogBySessionAndQuestion(@Param("dictationSessionNo") int dictationSessionNo, @Param("dictationQuestionNo") int dictationQuestionNo);
 
-  /**
-   * 가장 먼저 푼 문제 시각 조회
-   * @param dictationSessionNo 문제 세트 번호
-   * @return 첫 문제 푼 시각
-   */
-  Date getEarliestAnswerDate(int dictationSessionNo);
 }
