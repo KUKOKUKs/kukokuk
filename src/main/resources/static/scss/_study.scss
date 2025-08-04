@@ -30,7 +30,7 @@
   justify-content: space-between;
   border-top: var(--thinBorder);
   align-items: center;
-  line-height: 3;
+  padding: var(--basePadding) 0;
 
   &:first-child {
     border-top: none;
@@ -44,11 +44,14 @@
 .study_history_item {
   @extend %list_item_common;
 
+
   .history_info {
     display: flex;
     gap: 4px;
     align-items: center;
+    justify-content: end;
     font-size: var(--smallFontSize);
+    min-width: 170px;
 
     /* 학습완료 */
     &.completed {
@@ -88,6 +91,11 @@
   padding: var(--basePadding);
   border-radius: var(--bdrs);
   border: var(--baseBorder);
+  cursor: pointer;
+
+  &.no_cursor {
+    cursor: default;
+  }
 
   .study_info {
     display: flex;

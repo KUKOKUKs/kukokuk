@@ -110,7 +110,7 @@ public class StudyService {
             Map<String, Object> dailyStudyLogCondition = new HashMap<>();
             dailyStudyLogCondition.put("rows", 5);
             dailyStudyLogCondition.put("order", "updatedDate");
-            List<DailyStudyLog> dailyStudyLogs = dailyStudyLogMapper.getStudyLogsByUserNo(
+            List<DailyStudyLog> dailyStudyLogs = dailyStudyLogMapper.getStudyLogsWithStudyByUserNo(
                 user.getUserNo(), dailyStudyLogCondition);
             dto.setDailyStudyLogs(dailyStudyLogs);
 

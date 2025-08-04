@@ -726,7 +726,7 @@
     justify-content: center;
 
     &.deactive {
-        cursor: none;
+        cursor: default;
         img {
             filter: grayscale(100%);
         }
