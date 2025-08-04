@@ -4,14 +4,23 @@
     <div class="form_component">
         <h1 class="content_title">프로필</h1>
 
+        <div class="profile_img_container">
+            <div class="profile_thumbnail">
+                <div class="thumbnail_img">
+                    <img src="" alt="" class="thumbnail">
+                    <span class="icon_btn">edit</span>
+                </div>
+                <p class="account">test@test.test</p>
+            </div>
+        </div>
+
         <form method="post"
               th:action="@{/register/profile}"
+              th:object="${userUpdateForm}"
               class="form_wrap container bg_light_gray"
-              id="register-form">
-
-            <div class="input_description">
-                <p class="description">원활한 서비스 이용을 위해 이름, 생년월일 8자, 성별을 입력해 주세요.</p>
-            </div>
+              id="register-form"
+              th:authorize="isAuthenticated()"
+              th:with="user=${#authentication.principal.user}">
 
             <div class="form_input_list">
                 <div class="input_info">
@@ -19,6 +28,7 @@
                            th:field="*{name}"
                            id="name"
                            autocomplete="name"
+                           th:value="${user.name}"
                            placeholder=" ">
 
                     <label for="name" class="input_title"
