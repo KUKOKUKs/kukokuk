@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,24 +32,26 @@ import org.springframework.web.bind.support.SessionStatus;
 public class UserController {
 
     private final UserService userService;
+    private final ModelMapper modelMapper;
 
     // 세션에 바인딩할 폼 객체 초기화
     @ModelAttribute("userUpdateForm")
-    public UserForm form() {
-        log.info("userUpdateForm 객체 초기화");
-        return new UserForm();
+    public UserForm form(@AuthenticationPrincipal SecurityUser securityUser) {
+        log.info("userUpdateForm 객체 초기화(로그인 사용자)");
+        return modelMapper.map(securityUser.getUser(), UserForm.class);
     }
     
     // 프로필 수정 폼
     @GetMapping("/profile")
     public String profileForm(@RequestParam(required = false) Boolean reset
-        , SessionStatus sessionStatus) {
+        , SessionStatus sessionStatus
+        , @AuthenticationPrincipal SecurityUser securityUser) {
         log.info("profileForm() 컨트롤러 실행");
 
         if (Boolean.TRUE.equals(reset)) {
-            log.info("emailForm() reset=true으로 세션 초기화");
+            log.info("profileForm() reset=true으로 세션 초기화");
             sessionStatus.setComplete(); // 세션 초기화
-            return "redirect:/profile";
+            return "redirect:/user/profile";
         }
 
         return "user/profile/form";
