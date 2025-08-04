@@ -16,15 +16,10 @@ public class MainStudyViewDto {
   // 학습 히스토리
   private List<DailyStudyLog> dailyStudyLogs;
 
-  // 유저
-  private User user;
   // 학습의 일일 도전과제
   private List<DailyQuest> dailyQuests;
 
   // 사용자가 일일 도전과제 성공 관련 정보
   private List<DailyQuestUser> dailyQuestUsers;
-
-  // 일일학습 목록
-  private List<DailyStudy> dailyStudies;
 
 }

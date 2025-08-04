@@ -37,30 +37,44 @@
             </form>
         </div>
 
-        <div class="level_info">
+        <div class="level_info"
+             th:with="rawPercent=${(user.experiencePoints * 100.0) / user.maxExp},
+                        percent=${rawPercent % 1 == 0} ?
+                            ${#numbers.formatDecimal(rawPercent, 0, 0)} + '%' :
+                            ${#numbers.formatDecimal(rawPercent, 1, 1)} + '%'">
             <div class="level_top_info">
                 <div class="level_icon_info">
                     <div class="level_icon">
-                        <span class="level" th:text="'Lv. ' + ${user.level}">Lv. 1</span>
+                        <span class="level" th:text="|Lv.${user.level}|">Lv.1</span>
                     </div>
-                    <span class="level_detail">(2345/6455)</span>
+                    <div class="hints_info">
+                        <div class="hint_icon">
+                            <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
+                        </div>
+                        <span class="hint_count" th:text="|x ${user.hintCount}|">x 0</span>
+                    </div>
                 </div>
-                <span class="percent">62%</span>
+                <div class="percent_info">
+                    <span class="experience_points_info" th:text="|(${user.experiencePoints}/${user.maxExp})|">(0/100)</span>
+                    <span class="percent" th:text="${percent}">0%</span>
+                </div>
             </div>
 
             <div class="level_bar">
-                <div class="experience_point" style="width: 62%;"></div>
+                <div class="experience_point" th:style="|width: ${percent};|"></div>
             </div>
         </div>
 
-        <th:block th:if="${menu == 'home'}">
-            <div class="learning_level_info">
-                <div class="learning_info">
-                    <p class="learning_level">중등 2학년 / 3단계</p>
-                    <div class="btn small white">변경</div>
-                </div>
+        <div class="learning_level_info">
+            <div class="learning_info">
+                <p class="learning_level" th:if="${user.currentSchool != null}"
+                   th:text="|${user.currentSchool} ${user.currentGrade}학년 / ${user.studyDifficulty}단계|">초등 1학년 / 1단계</p>
+                <p class="learning_level" th:if="${user.currentSchool == null}">시작할 진도와 단계를 선택해 주세요</p>
+                <button type="button" id="modal-study-level-btn" class="btn small white">설정</button>
             </div>
-        </th:block>
+        </div>
+
+        <div th:replace="~{fragments/modal/modal-study-level :: modal-study-level-fragment(user=${user})}"></div>
     </th:block>
 </div>
 </html>

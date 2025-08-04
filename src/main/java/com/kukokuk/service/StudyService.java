@@ -1,8 +1,6 @@
 package com.kukokuk.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kukokuk.ai.GeminiClient;
 import com.kukokuk.ai.GeminiStudyPromptBuilder;
@@ -11,17 +9,25 @@ import com.kukokuk.ai.GeminiStudyResponse.Card;
 import com.kukokuk.ai.GeminiStudyResponse.EssayQuiz;
 import com.kukokuk.ai.GeminiStudyResponse.Quiz;
 import com.kukokuk.dto.MainStudyViewDto;
+import com.kukokuk.dto.StudyProgressViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
+import com.kukokuk.exception.AppException;
 import com.kukokuk.mapper.DailyQuestMapper;
+import com.kukokuk.mapper.DailyQuestUserMapper;
 import com.kukokuk.mapper.DailyStudyCardMapper;
 import com.kukokuk.mapper.DailyStudyEssayQuizMapper;
+import com.kukokuk.mapper.DailyStudyLogMapper;
 import com.kukokuk.mapper.DailyStudyMapper;
 import com.kukokuk.mapper.DailyStudyMaterialMapper;
+import com.kukokuk.mapper.DailyStudyQuizLogMapper;
 import com.kukokuk.mapper.DailyStudyQuizMapper;
 import com.kukokuk.mapper.MaterialParseJobMapper;
 import com.kukokuk.mapper.StudyDifficultyMapper;
 import com.kukokuk.request.ParseMaterialRequest;
+import com.kukokuk.request.StudyQuizLogRequest;
+import com.kukokuk.request.UpdateStudyLogRequest;
 import com.kukokuk.response.ParseMaterialResponse;
+import com.kukokuk.security.SecurityUser;
 import com.kukokuk.util.SchoolGradeUtils;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
@@ -31,6 +37,7 @@ import com.kukokuk.vo.DailyStudyEssayQuiz;
 import com.kukokuk.vo.DailyStudyLog;
 import com.kukokuk.vo.DailyStudyMaterial;
 import com.kukokuk.vo.DailyStudyQuiz;
+import com.kukokuk.vo.DailyStudyQuizLog;
 import com.kukokuk.vo.MaterialParseJob;
 import com.kukokuk.vo.StudyDifficulty;
 import com.kukokuk.vo.User;
@@ -39,14 +46,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.juli.logging.Log;
+import org.modelmapper.ModelMapper;
 import org.modelmapper.internal.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,11 +61,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudyService {
 
     private final  DailyStudyMapper dailyStudyMapper;
+    private final DailyStudyLogMapper dailyStudyLogMapper;
     private final DailyQuestMapper dailyQuestMapper;
+    private final DailyQuestUserMapper dailyQuestUserMapper;
     private final DailyStudyMaterialMapper dailyStudyMaterialMapper;
     private final StudyDifficultyMapper studyDifficultyMapper;
     private final DailyStudyCardMapper dailyStudyCardMapper;
     private final DailyStudyQuizMapper dailyStudyQuizMapper;
+    private final DailyStudyQuizLogMapper dailyStudyQuizLogMapper;
     private final DailyStudyEssayQuizMapper dailyStudyEssayQuizMapper;
     private final MaterialParseJobMapper materialParseJobMapper;
 
@@ -69,17 +77,16 @@ public class StudyService {
     private final GeminiClient geminiClient;
 
     private final ObjectMapper objectMapper;
+    private final ModelMapper modelMapper;
 
-    /*
+    /**
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
       <MainStudyViewDto 에 포함되는 데이터>
         1. 학습탭의 일일 도전과제 목록
-        2. 유저 정보
-        3. 유저의 수준에 맞는 일일학습 목록
-        4. 사용자의 이전 학습 이력 목록
-        5. 사용자_일일 도전과제 목록 (아이템 획득 여부)
+        2. 사용자의 이전 학습 이력 목록
+        3. 사용자_일일 도전과제 목록 (아이템 획득 여부)
      */
-    public MainStudyViewDto getMainStudyView(UserDetails userDetails) {
+    public MainStudyViewDto getMainStudyView(SecurityUser securityUser) {
         MainStudyViewDto dto = new MainStudyViewDto();
 
         // 1. 학습탭의 일일 도전과제 정보 조회 (인증된 유저와 관련 X)
@@ -87,28 +94,9 @@ public class StudyService {
         dto.setDailyQuests(dailyQuests);
 
         // 인증된 사용자일때 (인증되지 않은 사용자는 미리 설정한 일일학습 자료 제공 예정)
-        if (userDetails == null) { // 수정필요
+        if (securityUser != null) { // 수정필요
 
-      /*
-        테스트를 위한 유저 객체 생성
-        ------------------------------
-       */
-            User user = new User();
-            user.setUserNo(1);
-            user.setStudyDifficulty(4);
-      /*
-        ------------------------------
-      */
-            // User user = userDetails.getUser();
-
-            // 2. 사용자 정보 추가
-            dto.setUser(user);
-
-            // 3. 유저의 수준에 맞고, 유저가 아직 학습하지 않았거나 학습중인 일일학습 5개 조회
-            // ++++ 유저의 수준이 아직 존재하지 않을 때 고려
-            int recommendStudyCount = 5;
-            List<DailyStudy> dailyStudies = getUserDailyStudies(user, recommendStudyCount);
-            dto.setDailyStudies(dailyStudies);
+            User user = securityUser.getUser();
 
             // 4. 사용자의 이전 학습이력 목록 5개 조회
       /*
@@ -119,7 +107,7 @@ public class StudyService {
             Map<String, Object> dailyStudyLogCondition = new HashMap<>();
             dailyStudyLogCondition.put("rows", 5);
             dailyStudyLogCondition.put("order", "updatedDate");
-            List<DailyStudyLog> dailyStudyLogs = dailyStudyMapper.getDailyStudyLogsByUserNo(
+            List<DailyStudyLog> dailyStudyLogs = dailyStudyLogMapper.getStudyLogsByUserNo(
                 user.getUserNo(), dailyStudyLogCondition);
             dto.setDailyStudyLogs(dailyStudyLogs);
 
@@ -131,7 +119,7 @@ public class StudyService {
             Map<String, Object> dailyQuestUserCondition = new HashMap<>();
             dailyQuestUserCondition.put("completedDate", new Date());
             dailyQuestUserCondition.put("contentType", "STUDY");
-            List<DailyQuestUser> dailyQuestUsers = dailyQuestMapper.getDailyQuestUserByUserNo(
+            List<DailyQuestUser> dailyQuestUsers = dailyQuestUserMapper.getDailyQuestUsersByUserNo(
                 user.getUserNo(), dailyQuestUserCondition);
             dto.setDailyQuestUsers(dailyQuestUsers);
         }
@@ -160,7 +148,7 @@ public class StudyService {
      * @param recommendStudyCount recommendStudyCount 반환할 학습자료 수
      * @return 학습자료 목록 (DailyStudy)
      */
-    private List<DailyStudy> getUserDailyStudies(User user, int recommendStudyCount) {
+    public List<UserStudyRecommendationDto> getUserDailyStudies(User user, int recommendStudyCount) {
         // 1단계 : 현재 사용자 수준/진도 기준으로 학습원본데이터_학습자료_학습이력DTO 목록 조회
       /*
         조회 조건
@@ -186,6 +174,9 @@ public class StudyService {
             dailyStudyCondition
         );
 
+        // 생성되는 DTO 확인 로그
+        userStudyRecommendationDtos.forEach(dto -> log.info(dto.toString()));
+
         // 2단계 : 만약 학습원본데이터_학습자료_학습이력DTO가 5개 미만일 경우, 다음 학년에서 추가조회하여 채워넣기
         if (userStudyRecommendationDtos.size() < 5) {
 
@@ -199,7 +190,7 @@ public class StudyService {
 
             // 다음 학년이 null이 아닐때만 추가 조회
             if (nextGrade != null) {
-
+                log.info("다음학년 추가 조회");
                 // 더 조회해야할 학습자료 개수 조건 갱신
                 int remainingRowCount = recommendStudyCount - userStudyRecommendationDtos.size();
                 dailyStudyCondition.put("rows", remainingRowCount);
@@ -217,6 +208,8 @@ public class StudyService {
 
                 // 기존의 학습원본데이터_학습자료_학습이력DTO 리스트에 추가조회한 DTO 추가
                 userStudyRecommendationDtos.addAll(addUserStudyRecommendationDtos);
+
+                // 다음학년을 조회했음에도 채우지못했으면, 5개가 채워질때까지 학년을 변경하도록 설정
             } else {
                 // 다음학년이 null이면 화면에 이를 식별하는 값을 전달하고,
                 // 화면에서 마지막 학년 학습자료라는 표시되고 다른 수준 선택하는 등의 로직 처리
@@ -233,12 +226,9 @@ public class StudyService {
             }
         }
 
-        // 4단게 : 최종 학습원본데이터_학습자료_학습이력DTO 에서 학습자료만 컨트롤러에 전달할 DTO에 담기
-        List<DailyStudy> dailyStudies = userStudyRecommendationDtos.stream()
-            .map(userStudyRecommendationDto -> userStudyRecommendationDto.getDailyStudy())
-            .toList();
+        // 4단게 : 최종 학습원본데이터_학습자료_학습이력DTO 를 컨트롤러에 전달
 
-        return dailyStudies;
+        return userStudyRecommendationDtos;
     }
 
     /**
@@ -432,4 +422,152 @@ public class StudyService {
         return jobs;
     }
 
+    /**
+     * 학습 진행 화면에 필요한 데이터를 담은 StudyProgressViewDto 반환한다
+     *       <StudyProgressViewDto 에 포함되는 데이터>
+     *         1. dailyStudyNo에 해당하는 일일학습 정보
+     *         2. 일일학습 카드 목록
+     *         3. 사용자의 일일학습 이력
+     *         4. 일일학습 퀴즈 목록
+     *         5. 사용자의 일일학습 퀴즈 이력 목록
+     */
+    public StudyProgressViewDto getStudyProgressView(int dailyStudyNo, int userNo) {
+      StudyProgressViewDto dto = new StudyProgressViewDto();
+    
+      // 1. dailyStudyNo에 해당하는 일일학습 정보 조회
+      DailyStudy dailyStudy = dailyStudyMapper.getDailyStudyByNo(dailyStudyNo);
+    
+      dto.setDailyStudy(dailyStudy);
+    
+      // 2. 해당 일일학습에 속한 일일학습 카드 목록 조회
+      List<DailyStudyCard> studyCards = dailyStudyCardMapper.getCardsByDailyStudyNo(dailyStudyNo);
+    
+      dto.setCards(studyCards);
+    
+      // 3. 사용자의 일일학습 이력 조회
+      DailyStudyLog studyLog = dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
+    
+      dto.setLog(studyLog);
+    
+      // 4. 일일학습 퀴즈 목록 조회
+      List<DailyStudyQuiz> studyQuizzes = dailyStudyQuizMapper.getStudyQuizzesByDailyStudyNo(dailyStudyNo);
+    
+      dto.setQuizzes(studyQuizzes);
+    
+      // 5. 사용자의 일일학습 퀴즈 이력 목록
+      List<DailyStudyQuizLog> studyQuizLogs = dailyStudyQuizLogMapper.getStudyQuizLogsByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
+    
+      dto.setQuizLogs(studyQuizLogs);
+    
+      return dto;
+    }
+    
+    /**
+     * 해당 사용자의 해당 학습자료에 대한 이력 생성
+     * @param dailyStudyNo
+     * @param userNo
+     * @return
+     */
+    public DailyStudyLog createDailyStudyLog(int dailyStudyNo, int userNo) {
+    
+      // 이미 존재하는 학습이력이 있는지 확인
+      DailyStudyLog existLog =  dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
+    
+      // 이미 존재하는 학습이력이면 에러 발생
+      if (existLog != null) {
+          throw new AppException("이미 해당 학습자료에대한 사용자의 이력이 존재합니다");
+      }
+    
+      // 학습이력 생성
+      DailyStudyLog log = new DailyStudyLog();
+      log.setDailyStudyNo(dailyStudyNo);
+      log.setUserNo(userNo);
+    
+      dailyStudyLogMapper.createStudyLog(log);
+    
+      return log;
+    }
+
+  
+    public DailyStudyLog updateDailyStudyLog(int dailyStudyLogNo, UpdateStudyLogRequest updateStudyLogRequest, int userNo) {
+        log.info("updateStudyLogRequest 서비스 실행");
+
+        // 학습이력의 사용자와 현재사용자가 일치하지않으면 권한 에러 발생
+        DailyStudyLog log = dailyStudyLogMapper.getStudyLogByNo(dailyStudyLogNo);
+        if(log.getUserNo() != userNo){
+            throw new AccessDeniedException("본인의 학습이력만 수정할 수 있습니다");
+        }
+
+        // 수정할 컬럼만 담은 VO객체로 수정 mapper 호출
+        DailyStudyLog updateLog = modelMapper.map(updateStudyLogRequest, DailyStudyLog.class);
+        updateLog.setDailyStudyLogNo(dailyStudyLogNo);
+
+        dailyStudyLogMapper.updateStudyLog(updateLog);
+
+        // 수정된 학습이력 조회
+        return dailyStudyLogMapper.getStudyLogByNo(dailyStudyLogNo);
+     }
+
+    /**
+     * 학습퀴즈이력 생성 
+     * ㄴ 이미 존재하는 학습이력이 있으면, 수정 로직 호출
+     * @param studyQuizLogRequest
+     * @param userNo
+     * @return
+     */
+    public DailyStudyQuizLog createStudyQuizLog(StudyQuizLogRequest studyQuizLogRequest, int userNo) {
+        log.info("createStudyQuizLog 서비스 실행");
+
+        int studyQuizNo = studyQuizLogRequest.getDailyStudyQuizNo();
+        int selectedChoice = studyQuizLogRequest.getSelectedChoice();
+
+        // 사용자번호와 학습퀴즈번호로 이미 존재하는 퀴즈 이력이 있는지 확인
+        DailyStudyQuizLog existLog
+            = dailyStudyQuizLogMapper.getStudyQuizLogsByUserNoAndStudyQuizNo(userNo, studyQuizNo);
+
+        // 만약 이미 존재하는 퀴즈면 에러 발생 - 프론트에서 수정호출하도록 처리
+        if (existLog != null) {
+            log.info("이미 학습퀴즈이력이 존재하므로 update로직 호출");
+            return updateStudyQuizLog(existLog.getDailyStudyQuizLogNo(), studyQuizLogRequest, userNo);
+        }
+
+        // studyQuizNo로 해당 퀴즈 조회후, 사용자 선택보기와 비교해서 정답여부 설정
+        DailyStudyQuiz quiz = dailyStudyQuizMapper.getStudyQuizByNo(studyQuizNo);
+
+        String isSuccess = quiz.getSuccessAnswer() == selectedChoice ? "Y" : "N";
+
+        // 학습퀴즈이력 생성
+        DailyStudyQuizLog dailyStudyQuizLog = new DailyStudyQuizLog();
+        dailyStudyQuizLog.setDailyStudyQuizNo(studyQuizNo);
+        dailyStudyQuizLog.setUserNo(userNo);
+        dailyStudyQuizLog.setSelectedChoice(studyQuizLogRequest.getSelectedChoice());
+        dailyStudyQuizLog.setIsSuccess(isSuccess);
+
+        dailyStudyQuizLogMapper.createStudyQuizLog(dailyStudyQuizLog);
+
+        return dailyStudyQuizLogMapper.getStudyQuizLogsByNo(dailyStudyQuizLog.getDailyStudyQuizLogNo());
+    }
+
+    public DailyStudyQuizLog updateStudyQuizLog(int studyQuizLogNo, StudyQuizLogRequest studyQuizLogRequest, int userNo) {
+        log.info("updateStudyQuizLog 서비스 실행");
+
+        // 학습퀴즈이력의 사용자와 현재사용자가 일치하지않으면 권한 에러 발생
+        DailyStudyQuizLog log = dailyStudyQuizLogMapper.getStudyQuizLogsByNo(studyQuizLogNo);
+        if (log.getUserNo() != userNo) {
+            throw new AccessDeniedException("본인의 학습퀴즈이력만 수정할 수 있습니다");
+        }
+
+        // studyQuizNo로 해당 퀴즈 조회후, 사용자 선택보기와 비교해서 정답여부 설정
+        DailyStudyQuiz quiz = dailyStudyQuizMapper.getStudyQuizByNo(log.getDailyStudyQuizNo());
+
+        int selectedChoice = studyQuizLogRequest.getSelectedChoice();
+        String isSuccess = quiz.getSuccessAnswer() == selectedChoice ? "Y" : "N";
+
+        // 조회했던 학습퀴즈이력에서 수정 필드만 변경후 수정 매퍼 호출
+        log.setSelectedChoice(selectedChoice);
+        log.setIsSuccess(isSuccess);
+        dailyStudyQuizLogMapper.updateStudyQuizLog(log);
+
+        return log;
+    }
 }
