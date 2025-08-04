@@ -13,17 +13,17 @@
   <div class="padding"></div>
   <!-- 작업 현황 목록 -->
   <div class="component">
-    <p class="bold color_primary list-info">작업 진행중</p>
+    <p class="bold color_primary list_info">작업 진행중</p>
     <div class="component" id="enqueued-url-list">
     </div>
-    <p class="bold color_primary list-info">스킵된 작업</p>
+    <p class="bold color_primary list_info">스킵된 작업</p>
     <div class="component"  id="skipped-url-list">
     </div>
   </div>
   <div class="padding "></div>
   <!-- 작업 목록 -->
   <div class="d_flex justify_content_between padding">
-    <p class="title bold color_primary list-info large_font"> 전체 작업 목록 </p>
+    <p class="title bold color_primary list_info large_font"> 전체 작업 목록 </p>
     <!-- 새로고침 버튼 -->
     <button type="button" class="btn white small" id="refresh-btn"><iconify-icon icon="subway:round-arrow-2"></iconify-icon></button>
   </div>
@@ -77,7 +77,7 @@
             // 스킵된 url을 스킵된작업 목록에 표시
             for(const url of res.data.skippedUrls) {
               const skippedContent = `
-                <div class="text-background small_font">
+                <div class="text_background small_font">
                   ${url}
                 </div>
               `;
@@ -86,7 +86,7 @@
             // 작업 진행중인 url을 진행중인 작업 목록에 표시
             for(const url of res.data.enqueuedUrls) {
               const enqueuedContent = `
-                <div class="text-background small_font">
+                <div class="text_background small_font">
                   ${url}
                 </div>
               `;

@@ -97,6 +97,16 @@
             border-radius: var(--bdrs);
         }
     }
+
+    &.study_progress {
+        .level_bar {
+            height: 10px;
+
+            .experience_point {
+                background-color: var(--primaryColor);
+            }
+        }
+    }
 }
 
 .learning_level_info {

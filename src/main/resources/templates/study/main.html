@@ -6,13 +6,145 @@
 
 -->
 <div layout:fragment="content">
-<!--  <th:block th:each="study : ${data.getDailyStudies()}">-->
-<!--    <p th:text="${study.getDailyStudyNo()}">냠냠</p>-->
-<!--  </th:block>-->
-<!--  <p>냠냠</p>-->
-<!--  <p th:text="${data.getDailyQuests().get(0).getContentText()}">냠냠</p>-->
-<!--  <p th:text="${data.getDailyQuestUsers().get(0).getDailyQuestUserNo()}">냠냠</p>-->
-  <button type="button" id="hint-item-btn" data-daily-quest-user-no="${}">힌트 획득</button>
+<!--  <button type="button" id="hint-item-btn" data-daily-quest-user-no="${}">힌트 획득</button>-->
+
+  <div id="main-content" class="main_container">
+    <div class="page_title "> 일일학습 목록 </div>
+    <div class="study_list_container">
+      <div class="daily_study_card">
+        <div class="study_info">
+          <div class="study_title">학습자료제목</div>
+          <div class="study_content">학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명</div>
+        </div>
+        <div class="level_info study_progress">
+          <div class="level_bar">
+            <div class="experience_point" th:style="|width: 30%;|"></div>
+          </div>
+        </div>
+        <div class="study_btn_list">
+          <button class="btn dark">오늘의 학습 시작하기</button>
+          <button class="btn white">AI 피드백 기반 논술형 퀴즈 풀기</button>
+        </div>
+      </div>
+      <div class="daily_study_card">
+        <div class="study_info">
+          <div class="study_title">학습자료제목</div>
+          <div class="study_content">학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명</div>
+        </div>
+        <div class="level_info study_progress">
+          <div class="level_bar">
+            <div class="experience_point" th:style="|width: 30%;|"></div>
+          </div>
+        </div>
+      </div>
+      <div class="daily_study_card">
+        <div class="study_info">
+          <div class="study_title">학습자료제목</div>
+          <div class="study_content">학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명</div>
+        </div>
+        <div class="level_info study_progress">
+          <div class="level_bar">
+            <div class="experience_point" th:style="|width: 30%;|"></div>
+          </div>
+        </div>
+      </div>
+      <div class="daily_study_card">
+        <div class="study_info">
+          <div class="study_title">학습자료제목</div>
+          <div class="study_content">학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명</div>
+        </div>
+        <div class="level_info study_progress">
+          <div class="level_bar">
+            <div class="experience_point" th:style="|width: 30%;|"></div>
+          </div>
+        </div>
+      </div>
+      <div class="daily_study_card">
+        <div class="study_info">
+          <div class="study_title">학습자료제목</div>
+          <div class="study_content">학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명</div>
+        </div>
+        <div class="level_info study_progress">
+          <div class="level_bar">
+            <div class="experience_point" th:style="|width: 30%;|"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 서브콘텐츠 -->
+  <div id="sub-content" class="main_container">
+    <!-- 사용자 프로필 컴포넌트 -->
+    <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
+
+    <!-- 도전과제 리스트 컴포넌트 -->
+    <div class="component" id="daily-quest-list">
+      <div class="component_list_container">
+        <div class="component_title">
+          도전과제
+        </div>
+        <div class="component_list">
+          <div class="daily_quest_item" th:each="quest : ${data.dailyQuestDtos}">
+            <span th:text="${quest.getContentText()}">오늘의 일일학습 완료하기</span>
+            <!-- 사용자의 도전과제 수행 이력이 존재하지 않는 경우  -->
+            <th:block th:if="${!quest.isSuccessed()}">
+              <button class="hint_icon_btn deactive disabled">
+                <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
+              </button>
+            </th:block>
+            <!-- 사용자의 도전과제 수행 이력이 존재하는 경우  -->
+            <th:block th:if="${quest.isSuccessed()}">
+              <!-- 사용자가 아이템을 획득하기 전일 경우 -->
+              <th:block th:if="${!quest.getDailyQuestUser().getIsObtained()}">
+                <button class="hint_icon_btn active">
+                  <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
+                </button>
+              </th:block>
+              <!-- 사용자가 아이템을 획득한 후일 경우 -->
+              <th:block th:if="${quest.getDailyQuestUser().getIsObtained()}">
+                <div class="hint_obtained_icon">
+                  <!-- 획득완료 아이콘으로 변경 -->
+                  <iconify-icon icon="mingcute:check-fill"></iconify-icon>
+                </div>
+              </th:block>
+            </th:block>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 학습이력 리스트 컴포넌트 -->
+    <div class="component" id="study-history-list">
+      <div class="component_list_container">
+        <div class="component_title">
+          학습 히스토리
+        </div>
+        <div class="component_list">
+          <div class="study_history_item" th:each="log : ${data.getDailyStudyLogs()}">
+            <div th:text="${log.dailyStudy.title}">일일학습 제목</div>
+            <div class="history_info"
+              th:classappend="${log.status == 'COMPLETED'} ? 'completed' : 'in_progress'"> <!-- in_progress, completed -->
+              <span th:text="${log.status == 'COMPLETED'} ? '학습완료' : '학습중'" >학습 상태</span>
+              <!-- COMPLETED 상태일 경우 -->
+              <span th:if="${log.status == 'COMPLETED'}"
+                    th:text="'(' + ${#dates.format(log.updatedDate, 'yyyy/MM/dd')} + ')'">
+              </span>
+              <!-- IN_PROGRESS 상태 -->
+              <span th:if="${log.status == 'IN_PROGRESS'}"
+                    th:text="'(' + ${#dates.format(log.updatedDate, 'yyyy/MM/dd')} + ' ~)'">
+              </span>
+              <span class="icon_btn tiny">
+                <iconify-icon icon="ep:arrow-right-bold"></iconify-icon>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 
   <th:block layout:fragment="script">
     <!-- 인증된 사용자일떄만 학습자료 목록 조회 ajax 실행 -->
@@ -43,7 +175,23 @@
           dataType: 'json',
           success: function (res) {
             console.log(res);
-            // 화면 표현
+            const studyContent = `
+              <div class="daily_study_card">
+                <div class="study_info">
+                  <div class="study_title"></div>
+                  <div class="study_content">학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명학습내용설명</div>
+                </div>
+                <div class="level_info study_progress">
+                  <div class="level_bar">
+                    <div class="experience_point" th:style="|width: 30%;|"></div>
+                  </div>
+                </div>
+                <div class="study_btn_list">
+                  <button class="btn dark">오늘의 학습 시작하기</button>
+                  <button class="btn white">AI 피드백 기반 논술형 퀴즈 풀기</button>
+                </div>
+              </div>
+            `;
           },
           error: function (err) {
             console.log(err);
