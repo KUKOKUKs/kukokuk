@@ -125,3 +125,122 @@
   }
 }
 
+.study_progress_card {
+  height: 800px;
+  width: 800px;
+  padding: var(--basePadding) 0;
+
+  .title {
+    font-size: var(--pageTitleFontSize);
+    font-weight: 600;
+    color: var(--darkGreenColor);
+    padding: var(--smallPadding);
+  }
+
+  .paragraph {
+    font-size: 20px;
+    font-weight: 400;
+
+  }
+
+  .example {
+
+  }
+
+  .definition {
+
+  }
+
+  .quote {
+
+  }
+
+  .list {
+
+  }
+}
+
+.study_quiz_wrapper {
+  width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--baseGap);
+}
+
+.study_quiz_info {
+  width: 100%;
+  display: flex;
+  gap: var(--smallGap);
+  align-items: center;
+
+  .study_quiz_number {
+    background-color: #eee;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    margin-right: 8px;
+    font-weight: 600;
+  }
+
+  .study_quiz_text {
+    font-weight: 500;
+  }
+}
+
+.study_quiz_question_box {
+  border: 4px solid var(--primaryColor);
+  border-radius: var(--bdrs);
+  padding: var(--basePadding);
+  color: var(--darkGreenColor);
+  font-size: var(--largeFontSize);
+  font-weight: 700;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.study_quiz_option_list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--smallGap);
+
+  .study_quiz_option {
+    padding: 24px;
+    cursor: pointer;
+    font-size: var(--baseFontSize);
+
+    &:hover {
+      background-color: var(--lightGrayColor);
+    }
+
+    &.selected {
+      background-color: var(--subColor);
+    }
+
+    &:active {
+      transform: scale(0.96); // 살짝 줄어듦
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); // 그림자 줄어듦
+    }
+
+    &.correct {
+      border: 3px solid var(--primaryColor);
+      color: var(--primaryColor);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); // 그림자 줄어듦
+
+    }
+
+    &.wrong {
+      border: 3px solid var(--redColor);
+      color: var(--redColor);
+      background-color: var(--lightRedColor);
+    }
+  }
+}
+
+.study_quiz_submit_btn {
+
+}

@@ -512,8 +512,9 @@ public class StudyService {
       log.setUserNo(userNo);
     
       dailyStudyLogMapper.createStudyLog(log);
-    
-      return log;
+
+      // 학습이력 번호로 조회해서 반환
+      return dailyStudyLogMapper.getStudyLogByNo(log.getDailyStudyLogNo());
     }
 
   

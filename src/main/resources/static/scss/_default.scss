@@ -472,6 +472,15 @@
     &.column {
         flex-direction: column; /* 수직 정렬 */
     }
+
+    &.daily_study {
+        margin: var(--baseGap) 0;
+        justify-content: space-between;
+
+        .btn {
+            width: 25%;
+        }
+    }
 }
 
 .btn {
@@ -523,6 +532,22 @@
 
     &.compact {
         width: max-content;
+    }
+
+    &.blink {
+        animation: blink-color 2s infinite;
+    }
+}
+
+@keyframes blink-color {
+    0%, 100% {
+        border-color: var(--borderColor);
+        background-color: #fff;
+    }
+    50% {
+        border-color: var(--primaryColor);
+        background-color: var(--primaryColor);
+        color: #fff;
     }
 }
 
