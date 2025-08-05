@@ -79,4 +79,30 @@
           AND USER_NO = #{userNo}
     </select>
 
+    <!--
+     * 같은 정답 수(correctAnswers)를 가진 세션 수를 조회한다.
+     *
+     * @param correctAnswers 정답 개수
+     * @return 해당 정답 수를 가진 세션 수
+    -->
+    <select id="getCountSameSessions" resultType="int">
+        SELECT COUNT(*)
+        FROM KUKOKUK_QUIZ_SESSION_SUMMARIES
+        WHERE CORRECT_ANSWERS = #{correctAnswers}
+    </select>
+
+    <!--
+     * 같은 정답 수이면서 평균 시간이 나보다 긴 세션 수를 조회한다.
+     *
+     * @param correctAnswers 정답 개수
+     * @param averageTime 평균 소요 시간
+     * @return 나보다 느린 세션 수
+    -->
+    <select id="getCountSlowerSessions" resultType="int">
+        SELECT COUNT(*)
+        FROM KUKOKUK_QUIZ_SESSION_SUMMARIES
+        WHERE CORRECT_ANSWERS = #{correctAnswers}
+          AND AVERAGE_TIME_PER_QUESTION > #{averageTime}
+    </select>
+
 </mapper>

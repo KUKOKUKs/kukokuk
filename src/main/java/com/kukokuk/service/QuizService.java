@@ -146,7 +146,6 @@ public class QuizService {
 
     }
 
-    // 위치: com.kukokuk.service.QuizService
 
     /**
      * 스피드 퀴즈용 문제 10개 조회
