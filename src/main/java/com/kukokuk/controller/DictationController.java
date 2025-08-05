@@ -1,14 +1,13 @@
 package com.kukokuk.controller;
 
 
-import com.kukokuk.response.DictationSessionResultResponse;
+import com.kukokuk.dto.DictationQuestionLogDto;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.DictationService;
 import com.kukokuk.vo.DictationQuestion;
 import com.kukokuk.vo.DictationSession;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 @Log4j2
 @Controller
-@SessionAttributes({"dictationQuestions", "answerMap", "tryCountMap", "isSuccessMap", "startDate"})
+@SessionAttributes({"dictationQuestions", "dictationQuestionLogDto", "startDate"})
 @RequiredArgsConstructor
 @RequestMapping("/dictation")
 public class DictationController {
@@ -39,71 +38,38 @@ public class DictationController {
     return new ArrayList<>();
   }
 
-  @ModelAttribute("answerMap")
-  public Map<Integer, String> initAnswerMap() {
-    return new HashMap<>();
+  @ModelAttribute("dictationQuestionLogDto")
+  public List<DictationQuestionLogDto> initQuestionLogs() {
+    return new ArrayList<>();
   }
 
-  @ModelAttribute("tryCountMap")
-  public Map<Integer, Integer> initTryCountMap() {
-    return new HashMap<>();
-  }
-
-  @ModelAttribute("isSuccessMap")
-  public Map<Integer, Boolean> initIsSuccessMap() {
-    return new HashMap<>();
+  @ModelAttribute("startDate")
+  public Date initStartDate() {
+    return new Date();
   }
 
   /**
-   * 받아쓰기 시작 요청을 처리하는 메서드
-   * 현재 로그인한 사용자의 번호를 바탕으로, 아직 풀지 않은 받아쓰기 문제 10개를 랜덤으로 가져와
-   * 세션에 저장하고, 첫 번째 문제부터 풀 수 있도록 문제 풀이 페이지로 이동
+   * 받아쓰기 시작 요청을 처리하는 메서드 현재 로그인한 사용자의 번호를 바탕으로, 아직 풀지 않은 받아쓰기 문제 10개를 랜덤으로 가져와 세션에 저장하고, 첫 번째
+   * 문제부터 풀 수 있도록 문제 풀이 페이지로 이동
    *
    * @param securityUser 현재 로그인한 사용자 정보
    * @param questionList 세션에 저장되는 받아쓰기 문제 목록
-   * @param model View로 전달할 데이터 저장 객체
    * @return 문제 풀이 페이지("dictation/solve")로 이동
    */
   @GetMapping("/start")
   public String startDictation(@AuthenticationPrincipal SecurityUser securityUser,
       @ModelAttribute("dictationQuestions") List<DictationQuestion> questionList,
-      Model model) {
+      SessionStatus sessionStatus) {
 
-    log.info("startDictation(/start) 실행");
+    log.info("@GetMapping(/start) startDictation() 실행");
 
     // 1. 현재 로그인한 사용자의 번호 조회
     int userNo = securityUser.getUser().getUserNo();
-    log.info("userNo: {}", userNo);
+    log.info("startDictation() userNo: {}", userNo);
 
-    // 2. 사용자가 아직 풀지 않은 문제 중에서 랜덤으로 10개 가져오기
-    List<DictationQuestion> questions = dictationService.getDictationQuestionsByUserNo(
-        userNo, 10);
-
-    // 3. 기존 문제 리스트 초기화하고 새 문제 10개 추가
-    questionList.clear();
-    questionList.addAll(questions);
-
-    // 4. 시도 횟수 맵 초기화 및 모든 index에 전부 0으로설정
-    log.info("랜덤 문제 10개 설정 완료");
-    Map<Integer, Integer> tryCountMap = new HashMap<>();
-    for (int i = 0; i < questions.size(); i++) {
-      tryCountMap.put(i + 1, 0);
-      log.info("[start] 문제 {}: {}, tryCount 초기값: {}", i + 1, questions.get(i).getCorrectAnswer(), tryCountMap.get(i + 1));
-    }
-    model.addAttribute("tryCountMap", tryCountMap);
-
-    // 5. 정답 여부 맵(isSuccessMap)도 초기화 및 세팅 (프론트에서 조건 처리 하게 쉽게 boolean으로 설정)
-    Map<Integer, Boolean> isSuccessMap = new HashMap<>();
-    model.addAttribute("isSuccessMap", isSuccessMap);
-
-    // 6. 시작 시각 설정
-    Date startDate = new Date();
-    model.addAttribute("startDate", startDate);
-    log.info("시작 시각 startDate: {}", startDate);
-
-    // 7. index(현재 문제)는 1부터 시작하도록 설정
-    model.addAttribute("currentIndex", 1);
-    log.info("현재 문제 인덱스: {}", 1);
+    // 2. 기존 문제 리스트 초기화하고 새 문제 10개 추가
+    sessionStatus.setComplete();
+    questionList.addAll(dictationService.getDictationQuestionsByUserNo(userNo, 10));
 
     return "dictation/solve";
   }

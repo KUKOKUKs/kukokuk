@@ -1,14 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
-<head th:replace="~{fragments/common/head :: head-fragment}"></head>
-
-<body>
-<main class="main">
+<html layout:decorate="~{/layout/center}" th:with="title='받아쓰기'">
+<div layout:fragment="content">
     <div class="content center base_gap" style="display: flex; flex-direction: column; align-items: center; gap: 2rem; min-height: 100vh; padding: 2rem;">
+        div.
 
         <!-- 문제+버튼 박스 -->
         <div class="component box_shadow large_font"
@@ -57,10 +51,8 @@
                 </div>
             </div>
         </form>
-
     </div>
-</main>
-
+</div>
 
 <!-- 📢 음성 스크립트 -->
 <th:block layout:fragment="script">
