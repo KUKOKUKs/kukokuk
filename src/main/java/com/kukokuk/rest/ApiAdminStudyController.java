@@ -1,4 +1,4 @@
-package com.kukokuk.controller;
+package com.kukokuk.rest;
 
 import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.response.ApiResponse;

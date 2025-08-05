@@ -13,7 +13,7 @@ import {
 } from '/js/modules/sign/sign-api.js';
 
 $(document).ready(() => {
-    let isValid = false; // 인풋 유효성 검증 플래그
+    let isValid = false; // 폼 내부 인풋 유효성 검증 플래그
     const regExEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z.]{2,5}$/; // 이메일 정규표현식
     const regExPassword = /^(?=.*[a-zA-Z])(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,16}$/; // 비밀번호 정규표현식
     const regExNickname = /^[a-zA-Z0-9가-힣_]{4,16}$/; // 닉네임 정규표현식
@@ -32,42 +32,55 @@ $(document).ready(() => {
     let isValidName = false; // 이름 유효성 검사 여부
     let isValidBirthDate = false; // 생년월일 유효성 검사 여부
 
+    // 회원가입 폼 제출 이벤트 발생 시 유효성 검사 후 제출
+    $registerForm.submit(function (e) {
+        e.preventDefault();
+        if (!isValid) return false;
+
+        // 유효성 검사 통화 시 제출
+        this.submit();
+    });
+
     // username(email) 중복 체크
     async function handleEmailInput(username) {
         clearInputErrorMessage($registerEmail); // 에러 메세지 초기화
-        isValid = await checkUsernameDuplicate(username);
-        console.log("handleEmailInput 실행 결과: ", isValid);
+        const isDuplicated = await checkUsernameDuplicate(username);
+        console.log("handleEmailInput 실행 결과: ", isDuplicated);
 
-        if (isValid) {
+        isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
+
+        if (!isValid) {
             addInputErrorMessage($registerEmail, "사용중인 이메일입니다");
         }
 
         // 제출 버튼 활성화/비활성화 설정
-        handleSubmitBtn(!isValid); // true=중복, false=중복이 아니므로 !로 적용
+        handleSubmitBtn(isValid);
     }
 
     // nickname 중복 체크
     async function handleNicknameInput(nickname) {
         clearInputErrorMessage($registerNickname); // 에러 메세지 초기화
-        isValid = await checkNicknameDuplicate(nickname);
-        console.log("handleNicknameInput 실행 결과: ", isValid);
+        const isDuplicated = await checkNicknameDuplicate(nickname);
+        console.log("handleNicknameInput 실행 결과: ", isDuplicated);
 
-        if (isValid) {
+        isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
+
+        if (!isValid) {
             addInputErrorMessage($registerNickname, "사용중인 닉네임입니다");
         }
 
         // 제출 버튼 활성화/비활성화 설정
-        handleSubmitBtn(!isValid); // true=중복, false=중복이 아니므로 !로 적용
+        handleSubmitBtn(isValid);
     }
 
     // 중복 체크 요청
-    const emailCheckDebounce = debounce(handleEmailInput, 300); // email
-    const nicknameCheckDebounce = debounce(handleNicknameInput, 300); // nickname
+    const emailCheckDebounce = debounce(handleEmailInput, 500); // email
+    const nicknameCheckDebounce = debounce(handleNicknameInput, 500); // nickname
 
     // 회원가입 이메일 유효성 검증 처리
     $registerEmail.on("input blur", function () {
         clearInputErrorMessage($registerEmail); // 에러 메세지 초기화
-        isValid = false; // 인풋 유효성 검증 플래그
+        isValid = false; // 폼 내부 인풋 유효성 검증 플래그
         const val = $(this).val();
 
         if (val === "") {
@@ -92,7 +105,7 @@ $(document).ready(() => {
     // 회원가입 비밀번호 유효성 검증 처리
     $registerPassword.on("input blur", function () {
         clearInputErrorMessage($registerPassword); // 에러 메세지 초기화
-        isValid = false; // 인풋 유효성 검증 플래그
+        isValid = false; // 폼 내부 인풋 유효성 검증 플래그
         const val = $(this).val();
 
         if (val === "") {
@@ -115,7 +128,7 @@ $(document).ready(() => {
     // 회원가입 비밀번호 확인 유효성 검증 처리
     $registerPasswordConfirm.on("input blur", function () {
         clearInputErrorMessage($registerPasswordConfirm); // 에러 메세지 초기화
-        isValid = false; // 인풋 유효성 검증 플래그
+        isValid = false; // 폼 내부 인풋 유효성 검증 플래그
         const val = $(this).val();
 
         if (val === "") {
@@ -135,6 +148,7 @@ $(document).ready(() => {
     // 회원가입 이름 유효성 검증 처리
     $registerName.on("input blur", function () {
         clearInputErrorMessage($registerName); // 에러 메세지 초기화
+        isValid = false; // 폼 내부 인풋 유효성 검증 플래그
         isValidName = false; // 인풋 유효성 검증 플래그
         const val = $(this).val();
         
@@ -142,15 +156,17 @@ $(document).ready(() => {
             addInputErrorMessage($registerName, "이름을 입력해 주세요");
         }  else {
             isValidName = true;
+            isValid = isValidBirthDate;
         }
 
         // 제출 버튼 활성화/비활성화 설정
-        handleSubmitBtn(isValidName && isValidBirthDate);
+        handleSubmitBtn(isValid);
     });
 
     // 회원가입 생년월일 유효성 검증 처리
     $registerBirthDate.on("input blur", function () {
         clearInputErrorMessage($registerBirthDate); // 에러 메세지 초기화
+        isValid = false; // 폼 내부 인풋 유효성 검증 플래그
         isValidBirthDate = false; // 인풋 유효성 검증 플래그
 
         // 숫자가 아닌 값이 입력될 경우 실시간 제거
@@ -185,6 +201,7 @@ $(document).ready(() => {
                     const formattedDate = `${y}-${m}-${d}`;
                     $(this).val(formattedDate);
                     isValidBirthDate = true;
+                    isValid = isValidName;
                 }
             } else {
                 addInputErrorMessage($registerBirthDate, "유효한 생년월일이 아닙니다");
@@ -192,13 +209,13 @@ $(document).ready(() => {
         }
 
         // 제출 버튼 활성화/비활성화 설정
-        handleSubmitBtn(isValidName && isValidBirthDate);
+        handleSubmitBtn(isValid);
     });
 
     // 회원가입 닉네임 유효성 검증 처리
     $registerNickname.on("input blur", function () {
         clearInputErrorMessage($registerNickname); // 에러 메세지 초기화
-        isValid = false; // 인풋 유효성 검증 플래그
+        isValid = false; // 폼 내부 인풋 유효성 검증 플래그
         const val = $(this).val();
 
         if (val === "") {
@@ -207,7 +224,7 @@ $(document).ready(() => {
             // 정규표현식을 통과하지 못한 경우
             addInputErrorMessage($registerNickname, "유효한 닉네임 형식이 아닙니다");
         } else {
-            isValid = true; // 인풋 유효성 검증 플래그
+            isValid = true;
         }
 
         if (isValid) {
@@ -224,7 +241,7 @@ $(document).ready(() => {
     const $loginEmail = $loginForm.find("input[name='username']"); // username input
     const $loginPassword = $loginForm.find("input[name='password']"); // password input
 
-    // 폼 제출 이벤트 발생 시 유효성 검사 후 제출
+    // 로그인 폼 제출 이벤트 발생 시 유효성 검사 후 제출
     $loginForm.submit(function (e) {
         e.preventDefault();
         const $form = $(this);

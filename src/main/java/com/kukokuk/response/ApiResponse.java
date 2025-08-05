@@ -46,4 +46,5 @@ public class ApiResponse<T> {
     public static ApiResponse<Void> fail(int status, String message) {
         return new ApiResponse<Void>(false, status, message, null);
     }
+
 }
