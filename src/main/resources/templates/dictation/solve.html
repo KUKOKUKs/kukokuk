@@ -1,15 +1,99 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>받아쓰기 문제</title>
-</head>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/common/head :: head-fragment}"></head>
+
 <body>
-<h1>받아쓰기 문제</h1>
-<p th:text="'문제 내용: ' + ${question.correctAnswer}"></p>
-<form th:action="@{/dictation/submit-answer}" method="post">
-    <input type="hidden" th:name="index" th:value="${index}" />
-    <input type="text" name="userAnswer" th:value="${answer}" />
-    <button type="submit">제출</button>
-</form>
+<main class="main">
+    <div class="content center base_gap" style="display: flex; flex-direction: column; align-items: center; gap: 2rem; min-height: 100vh; padding: 2rem;">
+
+        <!-- 문제+버튼 박스 -->
+        <div class="component box_shadow large_font"
+             style="width: 100%; max-width: 600px; padding: 2rem; position: relative; display: flex; flex-direction: column;">
+
+            <!-- 상단 바: 문제 번호 + 버튼 2개 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <span style="font-size: var(--smallFontSize); color: var(--grayColor);">
+          문제 번호: <span th:text="${index}">1</span>
+        </span>
+
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="button"
+                            class="btn small white"
+                            th:attr="data-text=${question.correctAnswer}"
+                            onclick="speakFromData(this)">
+                        🔊 듣기
+                    </button>
+
+                    <button type="button" id="toggleAnswerBtn" class="btn small white" onclick="toggleAnswer()">
+                        정답 보기
+                    </button>
+                </div>
+            </div>
+
+            <!-- 문제 내용 (숨김 상태) -->
+            <p id="answerText" th:text="'정답: ' + ${question.correctAnswer}" style="display: none; text-align: center; margin-top: 1rem;"></p>
+        </div>
+
+        <!-- 정답 입력 폼 박스 -->
+        <form th:action="@{/dictation/submit-answer}" method="post" class="component box_shadow"
+              style="width: 100%; max-width: 600px; padding: 2rem;">
+            <input type="hidden" th:name="index" th:value="${index}" />
+
+            <div class="d_flex justify_content_between align_end" style="gap: 1rem;">
+                <div style="flex: 1;">
+                    <input type="text"
+                           name="userAnswer"
+                           placeholder="정답을 입력하세요"
+                           th:value="${answer}"
+                           class="input_info one_input"
+                           style="font-size: var(--largeFontSize); padding: 1rem; border: var(--thinBorder); border-radius: var(--bdrs);" />
+                </div>
+                <div>
+                    <button type="submit" class="btn primary large_font" style="padding: 0.75rem 1.5rem;">제출</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</main>
+
+
+<!-- 📢 음성 스크립트 -->
+<th:block layout:fragment="script">
+    <script>
+      function speakFromData(btn) {
+        const text = btn.getAttribute("data-text");
+        if (!text) {
+          console.warn("읽을 텍스트가 없습니다.");
+          return;
+        }
+        console.log("음성으로 읽을 문장:", text);
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ko-KR';
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utterance);
+      }
+    </script>
+
+    <script>
+      function toggleAnswer() {
+        const answerElem = document.getElementById("answerText");
+        const btn = document.getElementById("toggleAnswerBtn");
+        if (answerElem.style.display === "none") {
+          answerElem.style.display = "block";
+          btn.textContent = "정답 숨기기";
+        } else {
+          answerElem.style.display = "none";
+          btn.textContent = "정답 보기";
+        }
+      }
+    </script>
+
+</th:block>
+
 </body>
 </html>

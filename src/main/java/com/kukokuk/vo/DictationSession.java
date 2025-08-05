@@ -17,7 +17,7 @@ public class DictationSession {
   private int correctScore;       // 정답 점수
   private int correctCount;       // 맞은 개수
   private int hintUsedCount;      // 사용한 힌트 수
-  private Date createDate;        // 생성일 (NOW())
+  private Date createdDate;        // 생성일 (NOW())
 
 
 }

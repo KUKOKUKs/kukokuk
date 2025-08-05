@@ -10,6 +10,7 @@
     <result property="correctScore" column="CORRECT_SCORE"/>
     <result property="correctCount" column="CORRECT_COUNT"/>
     <result property="hintUsedCount" column="HINT_USED_COUNT"/>
+    <result property="createdDate" column="CREATED_DATE"/>
   </resultMap>
 
   <!-- /**
@@ -73,4 +74,27 @@
        DICTATION_SESSION_NO = #{dictationSessionNo}
   </update>
 
+  <!--
+  /**
+   * 사용자 번호로 그 사용자가 풀었던 받아쓰기 세트 결과 내용을 조회
+   * @param userNo 사용자 번호
+   * @return 받아쓰기 세트 결과 내용
+   */
+  -->
+  <select id="getDictationSessionResultsByUserNo" resultMap="dictationSessionResultMap">
+    SELECT
+       DICTATION_SESSION_NO
+      ,START_DATE
+      ,END_DATE
+      ,CORRECT_SCORE
+      ,CORRECT_COUNT
+      ,HINT_USED_COUNT
+      ,CREATED_DATE
+    FROM
+      KUKOKUK_DICTATION_SESSIONS
+    WHERE
+      USER_NO = #{userNo}
+    ORDER BY
+      CREATED_DATE DESC
+  </select>
 </mapper>

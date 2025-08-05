@@ -1,6 +1,8 @@
 package com.kukokuk.mapper;
 
+import com.kukokuk.response.DictationSessionResultResponse;
 import com.kukokuk.vo.DictationSession;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
@@ -25,4 +27,10 @@ public interface DictationSessionMapper {
    */
   void updateDictationSessionResult(DictationSession session);
 
+  /**
+   * 사용자 번호로 그 사용자가 풀었던 받아쓰기 세트 결과 내용을 조회
+   * @param userNo 사용자 번호
+   * @return 받아쓰기 세트 결과 내용
+   */
+  List<DictationSession> getDictationSessionResultsByUserNo(int userNo);
 }

@@ -1,7 +1,8 @@
 package com.kukokuk.mapper;
 
+import com.kukokuk.response.DictationQuestionLogResponse;
 import com.kukokuk.vo.DictationQuestionLog;
-import java.util.Date;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -63,4 +64,10 @@ public interface DictationQuestionLogMapper {
    */
   DictationQuestionLog getLogBySessionAndQuestion(@Param("dictationSessionNo") int dictationSessionNo, @Param("dictationQuestionNo") int dictationQuestionNo);
 
+  /**
+   * 받아쓰기 세트 번호에 해당하는 받아쓰기 문제 풀이 이력 조회
+   * @param dictationSessionNo 문제 세트 번호
+   * @return 받아쓰기 문제 풀이 이력 내용
+   */
+  List<DictationQuestionLog> getDictationQuestionLogBySessionNo(int dictationSessionNo);
 }

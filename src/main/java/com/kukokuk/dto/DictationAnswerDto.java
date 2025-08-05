@@ -11,5 +11,6 @@ public class DictationAnswerDto {
   private int dictationQuestionNo;
   private String userAnswer;
   private String usedHint;
+  private int tryCount;
 
 }

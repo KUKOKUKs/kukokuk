@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!--suppress XmlUnusedNamespaceDeclaration -->
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/common/head :: head-fragment}"></head>
+
+<body>
+<main class="main">
+    <!-- contents -->
+    <div layout:fragment="content" class="content center">
+
+        <h1>받아쓰기 세트 결과</h1>
+
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>세트 번호</th>
+                <th>시작 시각</th>
+                <th>종료 시각</th>
+                <th>정답 점수</th>
+                <th>맞은 개수</th>
+                <th>힌트 수</th>
+                <th>생성일</th>
+                <th>이력</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="result : ${results}">
+                <td th:text="${result.dictationSessionNo}"></td>
+                <td th:text="${#dates.format(result.startDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${#dates.format(result.endDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${result.correctScore}"></td>
+                <td th:text="${result.correctCount}"></td>
+                <td th:text="${result.hintUsedCount}"></td>
+                <td th:text="${#dates.format(result.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <button class="btn btn-outline-primary btn-sm load-logs-btn"
+                            th:attr="data-sessionno=${result.dictationSessionNo}">
+                        이력 보기
+                    </button>
+                    <div class="logs mt-2"></div> <!-- 로그를 여기에 표시 -->
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</main>
+
+<th:block layout:fragment="script">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).on('click', '.load-logs-btn', function () {
+        const sessionNo = $(this).data('sessionno');  // 소문자 주의
+        loadLogs(sessionNo, this);
+      });
+
+      function loadLogs(sessionNo, btn) {
+        $.get(`/api/dictation/results/${sessionNo}/logs`, function (logs) {
+          console.log("서버 응답 logs:", logs); // 디버깅용
+
+          let html = "";
+          for (let log of logs.data) {
+            html += `
+        <div class="border p-2 mb-2">
+            <p><strong>문제 번호:</strong> ${log.dictationQuestionNo}</p>
+            <p><strong>정답:</strong> ${log.correctAnswer}</p>
+            <p><strong>제출:</strong> ${log.userAnswer}</p>
+            <p><strong>정답 여부:</strong> ${log.isSuccess}</p>
+            <p><strong>힌트 사용:</strong> ${log.usedHint}</p>
+            <p><strong>시도 횟수:</strong> ${log.tryCount}</p>
+            <p><strong>제출 시각:</strong> ${log.createDate}</p>
+        </div>
+      `;
+          }
+
+          $(btn).siblings(".logs").html(html);
+        });
+      }
+    </script>
+</th:block>
+
+</body>
+</html>

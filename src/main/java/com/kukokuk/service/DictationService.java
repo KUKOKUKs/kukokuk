@@ -1,24 +1,21 @@
 package com.kukokuk.service;
 
+import com.kukokuk.ai.GeminiClient;
 import com.kukokuk.mapper.DictationQuestionLogMapper;
 import com.kukokuk.mapper.DictationQuestionMapper;
 import com.kukokuk.mapper.DictationSessionMapper;
-import com.kukokuk.security.SecurityUser;
+import com.kukokuk.response.DictationQuestionLogResponse;
+import com.kukokuk.response.DictationSessionResultResponse;
 import com.kukokuk.vo.DictationQuestion;
 import com.kukokuk.vo.DictationQuestionLog;
 import com.kukokuk.vo.DictationSession;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.support.SessionStatus;
 
 @Log4j2
 @Service
@@ -28,38 +25,96 @@ public class DictationService {
   private final DictationQuestionMapper dictationQuestionMapper;
   private final DictationQuestionLogMapper dictationQuestionLogMapper;
   private final DictationSessionMapper dictationSessionMapper;
-
-
-  /**
-   * 사용자가 아직 풀지 않은 받아쓰기 문제 중에서 무작위로 count 개수를 가져오기
-   * @param userNo 사용자 번호
-   * @param count 문제 수
-   * @return 사용자가 아직 풀지 않은 받아쓰기 문제 리스트
-   */
-  public List<DictationQuestion> getRandomDictationQuestionsExcludeUser(int userNo, int count) {
-    return dictationQuestionMapper.getRandomDictationQuestionsExcludeUser(userNo, count);
-  }
+  private final GeminiClient geminiClient;
 
   /**
-   * 받아쓰기 문제를 count 개수만큼 생성하여 DB에 저장하는 서비스 메서드
-   * @param count 생성할 문제 개수
+   * Gemini를 통해 문장을 받아와서 힌트들을 생성하고 DB에 저장하는 메소드
+   * @param count 생성할 문장 수
    */
-  public void insertDictationRandomEntry(int count) {
-    for (int i = 0; i < count; i++) {
-      // 임시
-      //List<DictationQuestion> newQuestions = getRandomQuestions(count);
+  @Transactional
+  public void generateAiQuestions(int count) {
+    // [1] Gemini에게 받아쓰기용 짧고 쉬운 문장들을 요청하는 프롬프트 생성
+    String prompt = "받아쓰기 문제로 사용할 짧고 쉬운 한국어 문장 " + count + "개를 만들어줘. 각 문장은 줄바꿈(\\n)으로 구분해줘.";
 
-      // 1. 문제 객체 생성 및 값 세팅
-     // DictationQuestion question = new DictationQuestion();
-      //question.setCorrectAnswer(correctAnswer);
-     // question.setHint1(hint1);
-     // question.setHint2(hint2);
-     // question.setHint3(hint3);
+    // [2] Gemini로부터 생성된 문장 결과를 받아옴
+    String response = geminiClient.getGeminiResponse(prompt);
 
-      // 2. DB에 문제 저장
-      //dictationQuestionMapper.insertDictationQuestion(question);
+    // [3] 줄바꿈(\n)을 기준으로 각 문장을 배열로 분리
+    String[] sentences = response.split("\n");
+
+    // 분리된 문장들을 하나씩 처리
+    for (String raw : sentences) {
+      // 앞뒤 공백 제거
+      String sentence = raw.trim();
+
+      // [1] 빈 문자열은 스킵
+      if (sentence.isEmpty()) continue;
+
+      // [2] 설명 문장 필터링
+      if (sentence.contains("준비했습니다") || sentence.matches(".*\\d+개.*")) continue;
+
+      // [3] "1. " 같은 앞번호 제거
+      sentence = sentence.replaceFirst("^\\d+\\.\\s*", "");
+
+      // [4] 문장 끝 마침표 제거
+      sentence = sentence.replaceFirst("\\.$", "");
+
+      // [5] 다시 확인
+      if (sentence.isEmpty()) continue;
+
+      DictationQuestion question = new DictationQuestion();
+      question.setCorrectAnswer(sentence);
+      question.setHint1(getUnderlineHint(sentence));
+      question.setHint2(getInitialConsonantsHint(sentence));
+      question.setHint3(getFirstCharHint(sentence));
+
+      dictationQuestionMapper.insertDictationQuestion(question);
     }
   }
+
+  /**
+   * 띄어쓰기 힌트 생성 ("__ __   __ __ __" 형식)
+   */
+  private String getUnderlineHint(String sentence) {
+    StringBuilder hint = new StringBuilder();
+    for (char c : sentence.toCharArray()) {
+      if (c == ' ') {
+        hint.append("   ");
+      } else {
+        hint.append("__ ");
+      }
+    }
+    return hint.toString().trim();
+  }
+
+  /**
+   * 초성 힌트 생성 ("ㄴㄴㅇㄴㅎㄱㅇㄱㅌ" 형식)
+   */
+  private String getInitialConsonantsHint(String sentence) {
+    StringBuilder result = new StringBuilder();
+    for (char ch : sentence.toCharArray()) {
+      if (ch >= 0xAC00 && ch <= 0xD7A3) {
+        int uniVal = ch - 0xAC00;
+        int initialIndex = uniVal / (21 * 28);
+        char initial = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ".charAt(initialIndex);
+        result.append(initial);
+      } else if (ch != ' ') {
+        result.append(ch);
+      }
+    }
+    return result.toString();
+  }
+
+  /**
+   * 첫 글자 힌트 생성 (첫 번째 단어의 첫 글자)
+   */
+  private String getFirstCharHint(String sentence) {
+    for (String word : sentence.split(" ")) {
+      if (!word.isEmpty()) return word.substring(0, 1);
+    }
+    return "";
+  }
+
 
   /**
    * 사용자에게 제공할 받아쓰기 문제 10개를 가져오기
@@ -67,17 +122,17 @@ public class DictationService {
    * @param userNo 사용자 번호
    * @return 받아쓰기 문제 리스트 (총 10개)
    */
-  public List<DictationQuestion> getDictationQuestionsByUserNo(int userNo) {
+  public List<DictationQuestion> getDictationQuestionsByUserNo(int userNo, int count) {
 
       // 1. 사용자 기준, 푼 문제는 제외하고 10문제 가져오기
       List<DictationQuestion> questions = dictationQuestionMapper.getRandomDictationQuestionsExcludeUser(userNo, 10);
 
       // 2. 10문제 보다 부족한 문제 수세기 (예: 4개 부족)
-      if (questions.size() < 10) {
-        int toCreate = 10 - questions.size();
+      if (questions.size() < count) {
+        int toCreate = count - questions.size();
 
       // 3. 부족한 수 만큼 새로운 문제 생성 (예: 4개 생성)
-      insertDictationRandomEntry(toCreate);
+      this.generateAiQuestions(toCreate);
 
       // 4. 새로 생성한 문제 중에서도 사용자 기준으로 푼 문제는 다시 제외하고 가져오기 (예: 새로 생성된 4개 가져옴)
       List<DictationQuestion> additional = dictationQuestionMapper.getRandomDictationQuestionsExcludeUser(userNo, toCreate);
@@ -95,18 +150,12 @@ public class DictationService {
    * @param userNo 회원 번호
    */
   @Transactional
-  public void saveDictationSessionResult(int dictationSessionNo, int userNo) {
+  public void saveDictationSessionResult(int dictationSessionNo, int userNo, Date startDate, Date endDate) {
     // 1. 정답 개수 조회
     int correctCount = dictationQuestionLogMapper.getCountCorrectAnswers(dictationSessionNo);
 
     // 2. 힌트 사용 횟수 조회
     int hintUsedCount = dictationQuestionLogMapper.getCountHintsUsed(dictationSessionNo);
-
-    // 3. 시작 시간 조회 (가장 이른 문제 풀이 시간)
-    Date startDate = new Date();
-
-    // 4. 종료 시간은 현재 시각
-    Date endDate = new Date();
 
     // 5. 점수 계산
     int correctScore = correctCount * 10;
@@ -131,7 +180,7 @@ public class DictationService {
    * @param userAnswer 제출 문장
    */
   @Transactional
-  public void submitAnswer(int userNo, int dictationSessionNo, int dictationQuestionNo, String userAnswer, String usedHint) {
+  public void submitAnswer(int userNo, int dictationSessionNo, int dictationQuestionNo, String userAnswer, String usedHint, int tryCount) {
 
     // 1. 정답 문장 가져오기
     String correctAnswer = dictationQuestionMapper.getCorrectAnswerByQuestionNo(dictationQuestionNo);
@@ -147,7 +196,7 @@ public class DictationService {
       newLog.setDictationSessionNo(dictationSessionNo);                               // 문제 세트 번호
       newLog.setDictationQuestionNo(dictationQuestionNo);                             // 문제 번호
       newLog.setUserAnswer(userAnswer);                                               // 사용자 제출 답안
-      newLog.setTryCount(1);                                                          // 첫 시도
+      newLog.setTryCount(tryCount);                                                   // 첫 시도
       newLog.setIsSuccess(isCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N");    // 정답 여부
       newLog.setUsedHint(usedHint);                                                   // 힌트 사용 여부
 
@@ -171,7 +220,7 @@ public class DictationService {
    * @param correctAnswer 정답문장
    * @return 두 문장이 같으면 true (정답), 다르면 false (오답)
    */
-  private boolean isCorrectAnswer(String userAnswer, String correctAnswer) {
+  public boolean isCorrectAnswer(String userAnswer, String correctAnswer) {
     // 제출문장, 정답문장 두 문장 모두 NULL이 아니게 예외처리
     if (userAnswer == null || correctAnswer == null) return false;
 
@@ -231,5 +280,22 @@ public class DictationService {
     return session.getDictationSessionNo(); // MyBatis에서 자동 채번되어 들어간다고 가정
   }
 
+  public List<DictationSession> getResultsByUserNo(int userNo) {
+    return dictationSessionMapper.getDictationSessionResultsByUserNo(userNo);
+  }
 
+  public List<DictationQuestionLog> getLogsBySessionNo(int dictationSessionNo) {
+    List<DictationQuestionLog> logs = dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo);
+
+    // 이거 추가하면 됨 (stream도 필요 없음)
+    if (logs == null) return new ArrayList<>();
+
+    // 직접 for문으로 null 제거
+    List<DictationQuestionLog> cleaned = new ArrayList<>();
+    for (DictationQuestionLog log : logs) {
+      if (log != null) cleaned.add(log);
+    }
+
+    return cleaned;
+  }
 }

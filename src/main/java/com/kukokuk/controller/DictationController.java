@@ -1,33 +1,33 @@
 package com.kukokuk.controller;
 
-import com.kukokuk.dto.AnswerRequest;
-import com.kukokuk.dto.DictationAnswerDto;
+
+import com.kukokuk.response.DictationSessionResultResponse;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.DictationService;
 import com.kukokuk.vo.DictationQuestion;
 import com.kukokuk.vo.DictationSession;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
 @Log4j2
 @Controller
-@SessionAttributes({"dictationQuestions", "answerMap"})
+@SessionAttributes({"dictationQuestions", "answerMap", "tryCountMap", "isSuccessMap", "startDate"})
 @RequiredArgsConstructor
 @RequestMapping("/dictation")
 public class DictationController {
@@ -44,24 +44,14 @@ public class DictationController {
     return new HashMap<>();
   }
 
-  /**
-   * 받아쓰기 시작 페이지 요청 시, 사용자가 아직 풀지 않은 문제 10개를 랜덤으로 가져와 View에 전달 (삭제 예정)
-   * @param securityUser 사용자
-   * @param model 문제(view에 전달용)
-   * @return 받아쓰기 시작 페이지
-   */
-  @GetMapping("/start1")
-  public String startDictation(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
-    log.info("startDictation() 컨트롤러 실행");
-    int userNo = securityUser.getUser().getUserNo();
-    log.info("start dictation userNo: {}", userNo);
-    List<DictationQuestion> questions =
-        dictationService.getRandomDictationQuestionsExcludeUser(userNo, 10);
-    model.addAttribute("questions", questions);
-    for (DictationQuestion q : questions) {
-      log.info("questions info: {}", q.getCorrectAnswer());
-    }
-    return "dictation/start1";
+  @ModelAttribute("tryCountMap")
+  public Map<Integer, Integer> initTryCountMap() {
+    return new HashMap<>();
+  }
+
+  @ModelAttribute("isSuccessMap")
+  public Map<Integer, Boolean> initIsSuccessMap() {
+    return new HashMap<>();
   }
 
   /**
@@ -86,20 +76,35 @@ public class DictationController {
     log.info("userNo: {}", userNo);
 
     // 2. 사용자가 아직 풀지 않은 문제 중에서 랜덤으로 10개 가져오기
-    List<DictationQuestion> questions = dictationService.getRandomDictationQuestionsExcludeUser(
+    List<DictationQuestion> questions = dictationService.getDictationQuestionsByUserNo(
         userNo, 10);
 
     // 3. 기존 문제 리스트 초기화하고 새 문제 10개 추가
     questionList.clear();
     questionList.addAll(questions);
 
+    // 4. 시도 횟수 맵 초기화 및 모든 index에 전부 0으로설정
     log.info("랜덤 문제 10개 설정 완료");
+    Map<Integer, Integer> tryCountMap = new HashMap<>();
     for (int i = 0; i < questions.size(); i++) {
-      log.info("문제 {}: {}", i + 1, questions.get(i).getCorrectAnswer());
+      tryCountMap.put(i + 1, 0);
+      log.info("[start] 문제 {}: {}, tryCount 초기값: {}", i + 1, questions.get(i).getCorrectAnswer(), tryCountMap.get(i + 1));
     }
+    model.addAttribute("tryCountMap", tryCountMap);
 
-    // 4. index(현재 문제)는 1부터 시작하도록 설정
+    // 5. 정답 여부 맵(isSuccessMap)도 초기화 및 세팅 (프론트에서 조건 처리 하게 쉽게 boolean으로 설정)
+    Map<Integer, Boolean> isSuccessMap = new HashMap<>();
+    model.addAttribute("isSuccessMap", isSuccessMap);
+
+    // 6. 시작 시각 설정
+    Date startDate = new Date();
+    model.addAttribute("startDate", startDate);
+    log.info("시작 시각 startDate: {}", startDate);
+
+    // 7. index(현재 문제)는 1부터 시작하도록 설정
     model.addAttribute("currentIndex", 1);
+    log.info("현재 문제 인덱스: {}", 1);
+
     return "dictation/solve";
   }
 
@@ -118,6 +123,8 @@ public class DictationController {
   public String showQuestion(@RequestParam("index") int index,
       @ModelAttribute("dictationQuestions") List<DictationQuestion> questionList,
       @ModelAttribute("answerMap") Map<Integer, String> answerMap,
+      @ModelAttribute("tryCountMap") Map<Integer, Integer> tryCountMap,
+      @ModelAttribute("isSuccessMap") Map<Integer, Boolean> isSuccessMap,
       Model model) {
 
     log.info("showProblem 실행 - index: {}", index);
@@ -135,30 +142,49 @@ public class DictationController {
     model.addAttribute("question", currentQuestion);
     model.addAttribute("index", index);
     model.addAttribute("answer", answerMap.getOrDefault(index, "")); // null값이 안 들어가려고 answerMap.getOrDefault(index, "") 사용
+
+    Integer tryCount = tryCountMap.get(index);
+    if (tryCount == null) tryCount = 0;
+    log.info("[solve] tryCount 조회 - 문제 {}, 시도횟수 {}", index, tryCount);
+    model.addAttribute("tryCount", tryCount);
+    model.addAttribute("isSuccessMap", isSuccessMap);
+
     return "dictation/solve";
   }
 
-  /**
-   * 사용자가 입력한 받아쓰기 답안을 세션에 저장한 후, 다음 문제로 이동하도록 리디렉션합니다.
-   * 답안은 세션 내의 answerMap에 문제 번호(index)를 키로 하여 임시 저장
-   * @param index 현재 문제 번호
-   * @param userAnswer 사용자가 입력한 답안
-   * @param answerMap 세션에 저장된 사용자 답안
-   * @return 다음 문제 페이지로 리디렉션("/dictation/solve?index=다음번호")
-   */
   @PostMapping("/submit-answer")
   public String submitAnswer(@RequestParam("index") int index,
       @RequestParam("userAnswer") String userAnswer,
-      @ModelAttribute("answerMap") Map<Integer, String> answerMap) {
+      @ModelAttribute("answerMap") Map<Integer, String> answerMap,
+      @ModelAttribute("tryCountMap") Map<Integer, Integer> tryCountMap,
+      @ModelAttribute("isSuccessMap") Map<Integer, Boolean> isSuccessMap,
+      @ModelAttribute("dictationQuestions") List<DictationQuestion> questionList) {
 
     log.info("submitAnswer 실행 - index: {}, userAnswer: {}", index, userAnswer);
 
-    // 1. 사용자가 입력한 답안을 세션 answerMap에 저장 (세션에 임시 저장)
+    // 1. 답안 세션에 저장
     answerMap.put(index, userAnswer);
     log.info("answerMap 저장됨: {}", answerMap);
 
-    // 2. 다음 문제(index + 1)로 이동하도록 리디렉션
-    return "redirect:/dictation/solve?index=" + (index + 1);
+    // 2. 시도횟수 증가
+    int tryCount = tryCountMap.getOrDefault(index, 0) + 1;
+    tryCountMap.put(index, tryCount);
+    log.info("tryCountMap 업데이트 - 문제 {}, 시도횟수 {}", index, tryCount);
+
+    // 3. 정답 여부 판정
+    String correctAnswer = questionList.get(index - 1).getCorrectAnswer();
+    boolean isCorrect = dictationService.isCorrectAnswer(userAnswer, correctAnswer);
+    isSuccessMap.put(index, isCorrect);
+    log.info("isSuccessMap 업데이트 - 문제 {}, 정답여부 {}", index, isCorrect);
+
+    // 4. 조건 검사 후 리디렉션
+    if (isCorrect || tryCount >= 2) {
+      log.info("문제 {} 다음 문제로 이동 (정답여부: {}, 시도횟수: {})", index, isCorrect, tryCount);
+      return "redirect:/dictation/solve?index=" + (index + 1);
+    } else {
+      log.info("문제 {} 재시도 (정답여부: {}, 시도횟수: {})", index, isCorrect, tryCount);
+      return "redirect:/dictation/solve?index=" + index;
+    }
   }
 
   /**
@@ -172,9 +198,11 @@ public class DictationController {
    * @return 결과 페이지로 리디렉션("/dictation/result")
    */
   @GetMapping("/finish")
-  public String finish(@AuthenticationPrincipal SecurityUser securityUser,
+  public String finishDictation(@AuthenticationPrincipal SecurityUser securityUser,
       @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestion,
       @ModelAttribute("answerMap") Map<Integer, String> answerMap,
+      @ModelAttribute("tryCountMap") Map<Integer, Integer> tryCountMap,
+      @SessionAttribute("startDate") Date startDate,
       SessionStatus sessionStatus) {
 
     log.info("finish 실행");
@@ -192,21 +220,31 @@ public class DictationController {
       DictationQuestion q = dictationQuestion.get(i);
       int index = i + 1; // answerMap에 저장된 key는 1부터 시작하는 indexd이다
       String userAnswer = answerMap.get(index);  // index로 꺼내기
+      log.info("[finish] 문제 {} - 사용자 답안: {}", index, userAnswer);
 
       String usedHint = "N"; // 힌트 사용 여부(일단 "N" 수정필요)
+
+      // tryCountMap에서 index에 해당하는 시도 횟수를 가져오기
+      // 만약 index가 없으면 기본값 0을 반환
+      Integer tryCount = tryCountMap.getOrDefault(index, 0);
+      log.info("[finish] 문제 {} - tryCount: {}", index, tryCount);
 
       // 로그 출력: 세트 번호는 항상 동일하게 sessionNo 사용
       log.info("문제세트번호 {} 저장 - 문제번호: {}, 사용자 입력: {}", sessionNo, q.getDictationQuestionNo(), userAnswer);
 
-      // 제출 서비스 호출 (사용자 번호, 세트번호, 문제번호, 사용자답안, 힌트 사용)
-      dictationService.submitAnswer(userNo, sessionNo, q.getDictationQuestionNo(), userAnswer, usedHint);
+      // 제출 서비스 호출 (사용자 번호, 세트번호, 문제번호, 사용자답안, 힌트 사용, 시도 횟수)
+      dictationService.submitAnswer(userNo, sessionNo, q.getDictationQuestionNo(), userAnswer, usedHint, tryCount);
     }
 
-    // 4. 받아쓰기 세트 결과 저장(맞춘 개수, 점수 계산, 힌트 사용 여부 등)
-    dictationService.saveDictationSessionResult(sessionNo, userNo);
+    // 4. 종료 시각 기록
+    Date endDate = new Date();
+    log.info("종료 시각 endDate: {}", endDate);
+
+    // 5. 받아쓰기 세트 결과 저장(맞춘 개수, 점수 계산, 힌트 사용 여부 등)
+    dictationService.saveDictationSessionResult(sessionNo, userNo, startDate, endDate);
     log.info("세션 결과 반영 완료 - sessionNo: {}", sessionNo);
 
-    // 5. 세션 초기화
+    // 6. 세션 초기화
     sessionStatus.setComplete();
     log.info("세션 상태 초기화 완료");
 
@@ -217,5 +255,23 @@ public class DictationController {
   public String resultPage() {
     log.info("받아쓰기 결과 페이지 이동");
     return "dictation/result";
+  }
+
+  /**
+   * 로그인한 사용자의 전체 받아쓰기 세트 결과 목록을 조회하여 뷰에 전달
+   * @param securityUser 현재 로그인한 사용자 정보
+   * @param model 결과 목록이 담길 모델
+   * @return 결과 목록을 보여주는 HTML (result-list.html)
+   */
+  @GetMapping("/results")
+  public String showAllResults(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
+    int userNo = securityUser.getUser().getUserNo();
+    log.info("사용자 번호: {}", userNo);
+    List<DictationSession> results = dictationService.getResultsByUserNo(userNo);
+    if (results == null) results = new ArrayList<>();
+    log.info("받아쓰기 결과 조회 완료 - 총 {}개 세트 반환", results.size());
+    model.addAttribute("results", results);
+    log.info("results: {}", results);
+    return "dictation/result-list";
   }
 }
