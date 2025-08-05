@@ -1,5 +1,5 @@
 /* 퀴즈 선택지 스타일 */
-button.selected {
+.quiz_btn_selected {
   border-color: var(--primaryColor);
   background-color: var(--primaryColor);
   color: #009b90;
@@ -8,12 +8,12 @@ button.selected {
 
 /* 정답/오답 확인용 */
 button.correct {
-  background-color: #4caf50 !important;
+  background-color: #4caf50;
   color: white;
 }
 
 button.wrong {
-  background-color: #f44336 !important;
+  background-color: #f44336;
   color: white;
 }
 
@@ -34,7 +34,7 @@ button.wrong {
   }
 }
 // 보기 앞 번호 스타일
-.choice-no {
+.speed_quiz_no {
   font-weight: bold;
   margin-right: 6px;
   color: #666;

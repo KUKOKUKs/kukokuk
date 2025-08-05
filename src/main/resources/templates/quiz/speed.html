@@ -17,15 +17,17 @@
     </div>
 
     <div id="quiz-question" style="margin-bottom: 20px; font-size: 18px; font-weight: bold; text-align: center;"></div>
-
     <div id="quiz-options" style="display: flex; flex-direction: column; gap: 10px;"></div>
 </div>
 
 <form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- 퀴즈 리스트 Thymeleaf로 JSON 주입 -->
+<script th:inline="javascript">
+  let quizzes = /*[[${quizList}]]*/ [];
+</script>
 
-<!-- speed.js 모듈 연결 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script type="module" src="/js/modules/quiz/speed.js"></script>
 </body>
 </html>

@@ -1,7 +1,4 @@
-import { getSpeedQuizList } from "/js/modules/quiz/speed-api.js";
-
-$(document).ready(async function () {
-  let quizzes = [];
+$(document).ready(function () {
   let currentQuizIndex = 0;
   let selectedAnswers = [];
   let timerInterval = null;
@@ -14,20 +11,15 @@ $(document).ready(async function () {
   const $quizOptions = $("#quiz-options");
   const $quizTimer = $("#quiz-timer");
 
-  try {
-    quizzes = await getSpeedQuizList();
-    if (!Array.isArray(quizzes) || quizzes.length === 0) {
-      alert("퀴즈를 불러오지 못했습니다.");
-      return;
-    }
-
-    selectedAnswers = new Array(quizzes.length).fill(null);
-    $quizTotal.text(quizzes.length);
-    currentQuizIndex = 0;
-    renderCurrentQuiz();
-  } catch (e) {
-    console.error("퀴즈 불러오기 실패:", e);
+  if (!Array.isArray(quizzes) || quizzes.length === 0) {
+    alert("퀴즈를 불러오지 못했습니다.");
+    return;
   }
+
+  selectedAnswers = new Array(quizzes.length).fill(null);
+  $quizTotal.text(quizzes.length);
+  currentQuizIndex = 0;
+  renderCurrentQuiz();
 
   function renderCurrentQuiz() {
     const quiz = quizzes[currentQuizIndex];
@@ -76,7 +68,7 @@ $(document).ready(async function () {
     goToNextQuestion();
   }
 
-  async function goToNextQuestion() {
+  function goToNextQuestion() {
     currentQuizIndex++;
     $quizTimer.removeClass("low-time");
 
@@ -86,7 +78,6 @@ $(document).ready(async function () {
       console.log("퀴즈 완료! 결과 폼 제출");
 
       const totalTimeSec = Math.floor((Date.now() - quizStartTime) / 1000);
-
       const $form = $("#quiz-result-form");
 
       $form.append($("<input>", {

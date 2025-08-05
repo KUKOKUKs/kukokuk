@@ -124,7 +124,7 @@ public class QuizService {
 
         }
     }
-
+    //원하는 퀴즈 유형을 임의로 생성하고 싶을 때 사용하는 함수
     public void insertRandomTypeQuizBulk(int usageCount) {
         final int targetCount = 100;
 

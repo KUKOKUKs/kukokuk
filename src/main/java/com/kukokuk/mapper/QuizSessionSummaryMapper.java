@@ -44,7 +44,7 @@ public interface QuizSessionSummaryMapper {
      * @param correctAnswers 정답 개수
      * @return 해당 정답 수를 가진 세션 수
      */
-    int getCountSameSessions(@Param("correctAnswers") int correctAnswers);
+    int getCountSameSessions(int correctAnswers);
 
     /**
      * 같은 정답 수이면서 평균 시간이 나보다 긴 세션 수를 조회한다.

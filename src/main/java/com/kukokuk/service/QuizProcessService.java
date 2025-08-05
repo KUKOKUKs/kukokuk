@@ -21,6 +21,7 @@ public class QuizProcessService {
     private final QuizResultMapper quizResultMapper;
     private final QuizMasterMapper quizMasterMapper;
     private final QuizService quizService;
+    private final QuizSessionSummaryService quizSessionSummaryService;
 
     /**
      * 퀴즈 세션 요약과 결과 저장 + 퀴즈 자동 보충 처리
@@ -32,7 +33,7 @@ public class QuizProcessService {
     public int insertQuizSessionAndResults(QuizSessionSummary summary, List<QuizResult> results) {
         log.info("[시작] insertQuizSessionAndResults() - userNo={}, 문제 수={}", summary.getUserNo(), results.size());
 
-        // [1] 세션 요약 필드 계산 및 설정z
+        // [1] 세션 요약 필드 계산 및 설정
         int totalQuestion = results.size();
         int correctAnswers = 0;
 
@@ -44,8 +45,7 @@ public class QuizProcessService {
         log.info("[summary 설정 완료] {}", summary);
 
         // [2] 세션 저장
-        int inserted = quizSessionSummaryMapper.insertQuizSessionSummary(summary);
-        if (inserted != 1) throw new RuntimeException("세션 저장 실패");
+        quizSessionSummaryService.insertQuizSessionSummary(summary);
 
         int sessionNo = summary.getSessionNo(); // keyProperty 로 전달된 sessionNo
         log.info("[세션 저장 완료] sessionNo={}", sessionNo);

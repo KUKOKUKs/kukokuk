@@ -2,10 +2,12 @@ package com.kukokuk.controller;
 
 import com.kukokuk.request.QuizSubmitRequest;
 import com.kukokuk.request.QuizSubmitResultRequest;
+import com.kukokuk.response.QuizMasterResponse;
 import com.kukokuk.response.QuizResultResponse;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.QuizProcessService;
 import com.kukokuk.service.QuizResultService;
+import com.kukokuk.service.QuizService;
 import com.kukokuk.service.QuizSessionSummaryService;
 import com.kukokuk.vo.QuizResult;
 import com.kukokuk.vo.QuizSessionSummary;
@@ -27,7 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
 public class SpeedQuizResultController {
-
+    private final QuizService quizService;
     private final QuizProcessService quizProcessService;
     private final QuizSessionSummaryService quizSessionSummaryService;
     private final QuizResultService quizResultService;
@@ -60,13 +62,13 @@ public class SpeedQuizResultController {
         int sessionNo = quizProcessService.insertQuizSessionAndResults(summary, quizResults);
 
 
-        return "redirect:/quiz/speed-summary?sessionNo=" + sessionNo;
+        return "redirect:/quiz/result?sessionNo=" + sessionNo;
     }
 
     /**
      * 퀴즈 결과 요약 페이지 렌더링 (speed-result1)
      */
-    @GetMapping("/speed-summary")
+    @GetMapping("/result")
     public String viewSpeedQuizSummary(@RequestParam int sessionNo,
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
@@ -93,4 +95,25 @@ public class SpeedQuizResultController {
         model.addAttribute("results", results);
         return "quiz/speed-result2";
     }
+
+    /**
+     * 풀이횟수가 20회 이하인 스피드 퀴즈 10개를 조회하여 반환한다.
+     *
+     * @return QuizMasterResponse 리스트
+     */
+    @GetMapping("/speed")
+    public String viewSpeedQuizList(Model model) {
+        int usageThreshold = 20;
+        int limit = 10;
+        List<QuizMasterResponse> quizList = quizService.getSpeedQuizList(usageThreshold, limit)
+            .stream()
+            .map(QuizMasterResponse::from)
+            .toList();
+
+        model.addAttribute("quizList", quizList);
+        return "quiz/speed"; // templates/quiz/speed.html
+    }
+
+
+
 }
