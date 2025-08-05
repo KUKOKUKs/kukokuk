@@ -1,6 +1,7 @@
 package com.kukokuk.mapper;
 
 import com.kukokuk.vo.QuizMaster;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -31,5 +32,20 @@ public interface QuizMasterMapper {
    */
   void insertQuiz(QuizMaster quiz);
 
+  /**
+   * usage_count가 지정된 값 이하인 퀴즈 중 랜덤하게 limit 개 조회
+   * @param usageCount 풀린횟수
+   * @param limit 기준값
+   * @return 퀴즈
+   */
+  List<QuizMaster> getQuizMastersForSpeed(@Param("usageCount") int usageCount, @Param("limit") int limit);
+
+
+  /**
+   * 특정 퀴즈 번호의 정답 번호를 조회한다.
+   * @param quizNo 퀴즈 번호
+   * @return 정답 선택 번호
+   */
+  Integer getCorrectChoiceByQuizNo(int quizNo);
 }
 

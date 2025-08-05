@@ -10,11 +10,11 @@
         <result property="option2" column="OPTION2"/>
         <result property="option3" column="OPTION3"/>
         <result property="option4" column="OPTION4"/>
-        <result property="success_answer" column="SUCCESS_ANSWER"/>
-        <result property="question_type" column="QUESTION_TYPE"/>
+        <result property="successAnswer" column="SUCCESS_ANSWER"/>
+        <result property="questionType" column="QUESTION_TYPE"/>
         <result property="difficulty" column="DIFFICULTY"/>
-        <result property="usage_count" column="USAGE_COUNT"/>
-        <result property="success_count" column="SUCCESS_COUNT"/>
+        <result property="usageCount" column="USAGE_COUNT"/>
+        <result property="successCount" column="SUCCESS_COUNT"/>
     </resultMap>
     <!--
         * 퀴즈의 갯수를 조회한다.
@@ -69,6 +69,37 @@
         FROM KUKOKUK_QUIZ_MASTERS
         WHERE QUESTION_TYPE = #{questionType}
           AND USAGE_COUNT &lt; #{usageCount}
+    </select>
+
+    <!-- QuizMasterMapper.xml -->
+    <select id="getQuizMastersForSpeed" resultMap="QuizMasterMap">
+        SELECT
+            quiz_no,
+            question,
+            option1,
+            option2,
+            option3,
+            option4,
+            success_answer,
+            question_type,
+            entry_no,
+            usage_count
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE usage_count &lt; #{usageCount}
+        ORDER BY RAND()
+        LIMIT #{limit}
+    </select>
+
+ <!--
+    * 특정 퀴즈 번호의 정답 번호를 조회한다.
+    * @param quizNo 퀴즈 번호
+    * @return 정답 선택 번호
+    int getCorrectChoiceByQuizNo(int quizNo);
+ -->
+    <select id="getCorrectChoiceByQuizNo" resultType="java.lang.Integer">
+        SELECT success_answer
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE quiz_no = #{quizNo}
     </select>
 
 </mapper>
