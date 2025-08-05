@@ -14,6 +14,7 @@ import lombok.Setter;
 public class DailyStudySummaryResponse {
   private int dailyStudyNo;           // 일일학습 고유 번호
   private String title;               // 학습자료 제목
+  private String explanation;         // 학습자료 설명
   private int cardCount;              // 전체 카드 개수
   private String status;              // "NOT_STARTED", "IN_PROGRESS", "COMPLETED"
   private int studiedCardCount;       // 사용자가 학습한 카드 개수

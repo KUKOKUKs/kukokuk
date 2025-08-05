@@ -8,6 +8,7 @@ import com.kukokuk.ai.GeminiStudyResponse;
 import com.kukokuk.ai.GeminiStudyResponse.Card;
 import com.kukokuk.ai.GeminiStudyResponse.EssayQuiz;
 import com.kukokuk.ai.GeminiStudyResponse.Quiz;
+import com.kukokuk.dto.DailyQuestDto;
 import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.StudyProgressViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
@@ -45,6 +46,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -82,47 +85,69 @@ public class StudyService {
     /**
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
       <MainStudyViewDto 에 포함되는 데이터>
-        1. 학습탭의 일일 도전과제 목록
-        2. 사용자의 이전 학습 이력 목록
-        3. 사용자_일일 도전과제 목록 (아이템 획득 여부)
+        1. 사용자의 이전 학습 이력 목록
+        2. 학습탭의 일일 도전과제 목록 + 사용자의 일일 도전과제 수행 정보 (아이템 획득 여부)
      */
     public MainStudyViewDto getMainStudyView(SecurityUser securityUser) {
         MainStudyViewDto dto = new MainStudyViewDto();
 
-        // 1. 학습탭의 일일 도전과제 정보 조회 (인증된 유저와 관련 X)
+        // 1. 학습탭의 일일 도전과제 정보 조회 (로그인 여부와 무관)
         List<DailyQuest> dailyQuests = dailyQuestMapper.getDailyQuestByContentType("STUDY");
-        dto.setDailyQuests(dailyQuests);
+        // 2. 조회한 일일도전과제 목록을 DailyQuestDto로 변환 (사용자의 획득여부를 함께 표시하기 위한 DTO)
+        // → 로그인되지 않은 경우 dailyQuestUser는 null, isSuccessed는 false 상태로 유지됨
+        List<DailyQuestDto> dailyQuestDtos  = dailyQuests.stream()
+            .map( quest -> modelMapper.map(quest, DailyQuestDto.class))
+            .toList();
 
-        // 인증된 사용자일때 (인증되지 않은 사용자는 미리 설정한 일일학습 자료 제공 예정)
+        //  3. 로그인된 사용자인 경우에만 사용자별 학습 이력 및 도전과제 수행 여부를 함께 조회
+        //  (인증되지 않은 사용자는 미리 설정한 일일학습 자료 제공 예정)
         if (securityUser != null) { // 수정필요
 
             User user = securityUser.getUser();
 
-            // 4. 사용자의 이전 학습이력 목록 5개 조회
-      /*
-      고려할 사항
-        1. updatedDate로 정렬
-        2. 조회 조건 전달 (개수)
-      */
+            // 3-1. 사용자의 이전 학습이력 목록 5개 조회
+            // → updatedDate 기준 정렬, 최대 5개
             Map<String, Object> dailyStudyLogCondition = new HashMap<>();
             dailyStudyLogCondition.put("rows", 5);
             dailyStudyLogCondition.put("order", "updatedDate");
-            List<DailyStudyLog> dailyStudyLogs = dailyStudyLogMapper.getStudyLogsByUserNo(
+            List<DailyStudyLog> dailyStudyLogs = dailyStudyLogMapper.getStudyLogsWithStudyByUserNo(
                 user.getUserNo(), dailyStudyLogCondition);
             dto.setDailyStudyLogs(dailyStudyLogs);
 
-            // 5. 사용자의 일일 도전과제 정보 조회
-      /*
-       고려할 사항
-        1. 오늘 날짜와 컨텐츠타입 전달
-       */
+            // 3-2. 사용자의 일일 도전과제 정보 조회
+            // → 오늘 날짜 + STUDY 타입 기준
             Map<String, Object> dailyQuestUserCondition = new HashMap<>();
             dailyQuestUserCondition.put("completedDate", new Date());
             dailyQuestUserCondition.put("contentType", "STUDY");
             List<DailyQuestUser> dailyQuestUsers = dailyQuestUserMapper.getDailyQuestUsersByUserNo(
                 user.getUserNo(), dailyQuestUserCondition);
-            dto.setDailyQuestUsers(dailyQuestUsers);
+
+            // 3-3. 조회한 사용자의 도전과제 수행 정보를 Map형태로 저장
+            // key는 dailyQusetNo, value는 DailyQuestUser 객체 자체
+            // dailyQusetNo를 앞서 조회한 dailyQuest와 비교하기 위함
+            Map<Integer, DailyQuestUser> userQuestMap = dailyQuestUsers.stream()
+                .collect(Collectors.toMap(
+                     dailyQuestUser -> dailyQuestUser.getDailyQuestNo(),
+                    Function.identity()  // 입력값(dailyQuestUser)을 그대로 사용
+                ));
+
+            // 3-4. 도전과제 목록을 순회하며 사용자의 도전과제 수행 정보와 매칭
+            for (DailyQuestDto questDto : dailyQuestDtos){
+                // 그 dailyQuest의 no를 가진 DailyQuestUser를 matchedUser에 저장 
+                DailyQuestUser matchedUser = userQuestMap.get(questDto.getDailyQuestNo());
+
+                // 해당 도전과제를 수행한 사용자의 이력이 있을 경우
+                if (matchedUser != null) {
+                    // View로 넘길 dailyQuestDto의 dailyQuestUser필드 업데이트
+                    questDto.setDailyQuestUser(matchedUser);
+                    // View로 넘길 dailyQuestDto의 isSuccessed
+                    questDto.setSuccessed(true);
+                }
+            }
         }
+
+        // 4. 도전과제 - 사용자 도전과제 이력 DTO를 view에 넘길 dto에 저장
+        dto.setDailyQuestDtos(dailyQuestDtos);
 
         return dto;
     }
@@ -263,6 +288,8 @@ public class StudyService {
             // Json응답데이터를 객체로 매핑
             GeminiStudyResponse geminiStudyResponse = objectMapper.readValue(contentJsonOnly, GeminiStudyResponse.class);
 
+            log.info("geminiStudyResponse : " + geminiStudyResponse.getMainExplanation());
+
             // 학습자료, 학습자료카드, 학습퀴즈, 학습 서술형퀴즈를 DB에 저장하는 메소드 호출
             dailyStudy = insertDailyStudyWithOtherComponents(geminiStudyResponse, dailyStudyMaterialNo, studyDifficultyNo);
         } catch (JsonProcessingException e){
@@ -304,6 +331,7 @@ public class StudyService {
         DailyStudy dailyStudy = new DailyStudy();
         dailyStudy.setStudyDifficulty(studyDifficultyNo);
         dailyStudy.setTitle(response.getMainTitle());
+        dailyStudy.setExplanation(response.getMainExplanation());
         dailyStudy.setDailyStudyMaterialNo(dailyStudyMaterialNo);
         dailyStudy.setCardCount(response.getCards().size());
 
@@ -484,8 +512,9 @@ public class StudyService {
       log.setUserNo(userNo);
     
       dailyStudyLogMapper.createStudyLog(log);
-    
-      return log;
+
+      // 학습이력 번호로 조회해서 반환
+      return dailyStudyLogMapper.getStudyLogByNo(log.getDailyStudyLogNo());
     }
 
   

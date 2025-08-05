@@ -36,6 +36,7 @@ public class GeminiStudyPromptBuilder {
         
         {
           "mainTitle" : "학습의 메인 제목",
+          "mainExplanation" : "학습의 메인 설명",
           "cards": [
             {
               "title": "카드 제목",
