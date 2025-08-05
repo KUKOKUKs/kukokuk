@@ -17,8 +17,7 @@ public class QuizResult {
     private int userNo;              // 사용자 번호 (FK)
 
     private int selectedChoice;      // 사용자가 선택한 보기 번호
-    private String isSuccess;        // 정답 여부 ("Y" / "N")
-    private String isBookmarked;     // 북마크 여부 ("Y" / "N")
+    private String isSuccess;        // 정답 여부 (Y / N)
 
     private Date createdDate;        // 생성일
     private Date updatedDate;        // 수정일

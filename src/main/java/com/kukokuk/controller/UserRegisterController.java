@@ -1,7 +1,7 @@
 package com.kukokuk.controller;
 
-import com.kukokuk.dto.UserRegisterForm;
-import com.kukokuk.exception.UserRegisterException;
+import com.kukokuk.dto.UserForm;
+import com.kukokuk.exception.UserFormException;
 import com.kukokuk.service.UserService;
 import com.kukokuk.validation.EmailCheck;
 import com.kukokuk.validation.NicknameCheck;
@@ -33,9 +33,9 @@ public class UserRegisterController {
 
     // 세션에 바인딩할 폼 객체 초기화
     @ModelAttribute("userRegisterForm")
-    public UserRegisterForm form() {
+    public UserForm form() {
         log.info("UserRegisterForm 객체 초기화");
-        return new UserRegisterForm();
+        return new UserForm();
     }
 
     // 1단계: 이메일 입력 폼
@@ -55,7 +55,7 @@ public class UserRegisterController {
 
     // 1단계: 이메일 처리 후 → 비밀번호 단계로 이동
     @PostMapping("/email")
-    public String processEmail(@Validated(EmailCheck.class) @ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processEmail(@Validated(EmailCheck.class) @ModelAttribute("userRegisterForm") UserForm form
         , BindingResult errors
         , Model model) {
         log.info("processEmail() 컨트롤러 실행");
@@ -71,7 +71,7 @@ public class UserRegisterController {
         // username 중복 체크
         try {
             userService.duplicateUserByUsername(form.getUsername());
-        } catch (UserRegisterException e) {
+        } catch (UserFormException e) {
             log.info("processEmail() duplicateUserByUsername UserRegisterException {}", e.getMessage());
             errors.rejectValue(e.getField(), "duplicated", e.getMessage());
             model.addAttribute("hasError", true); // 에러 플래그 전달
@@ -90,7 +90,7 @@ public class UserRegisterController {
 
     // 2단계: 비밀번호 처리 후 → 이름/생년월일/성별 단계로 이동
     @PostMapping("/password")
-    public String processPassword(@Validated(PasswordCheck.class) @ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processPassword(@Validated(PasswordCheck.class) @ModelAttribute("userRegisterForm") UserForm form
         , BindingResult errors
         , Model model) {
         log.info("processPassword() 컨트롤러 실행");
@@ -122,7 +122,7 @@ public class UserRegisterController {
 
     // 3단계: 이름/생년월일/성별 입력 폼
     @GetMapping("/profile")
-    public String profileForm(@ModelAttribute("userRegisterForm") UserRegisterForm form) {
+    public String profileForm(@ModelAttribute("userRegisterForm") UserForm form) {
         log.info("profileForm() 컨트롤러 실행");
         form.setGender("M"); // 성별 기본값 설정
         return "user/register/profile";
@@ -130,7 +130,7 @@ public class UserRegisterController {
 
     // 3단계: 이름/생년월일/성별 처리 후 → 닉네임 단계로 이동
     @PostMapping("/profile")
-    public String processProfile(@Validated(ProfileCheck.class) @ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processProfile(@Validated(ProfileCheck.class) @ModelAttribute("userRegisterForm") UserForm form
         , BindingResult errors
         , Model model) {
         log.info("processProfile() 컨트롤러 실행");
@@ -162,7 +162,7 @@ public class UserRegisterController {
 
     // 4단계: 닉네임 처리 후 → 회원가입 처리 후 -> 회원가입 완료 페이지 이동
     @PostMapping("/nickname")
-    public String processNickname(@Validated(NicknameCheck.class) @ModelAttribute("userRegisterForm") UserRegisterForm form
+    public String processNickname(@Validated(NicknameCheck.class) @ModelAttribute("userRegisterForm") UserForm form
         , BindingResult errors
         , Model model) {
         log.info("processNickname() 컨트롤러 실행");
@@ -178,7 +178,7 @@ public class UserRegisterController {
         // nickname 중복 체크
         try {
             userService.duplicateUserByNickname(form.getNickname());
-        } catch (UserRegisterException e) {
+        } catch (UserFormException e) {
             log.info("processNickname() duplicateUserByNickname UserRegisterException {}", e.getMessage());
             errors.rejectValue(e.getField(), "duplicated", e.getMessage());
             return "user/register/nickname";
@@ -187,8 +187,8 @@ public class UserRegisterController {
         // username, nickname 중복 체크 후 사용자, 사용자 권한 등록 요청
         try {
             userService.registerUser(form);
-        } catch (UserRegisterException e) {
-            log.info("processProfile() UserRegisterException {}", e.getMessage());
+        } catch (UserFormException e) {
+            log.info("processProfile() UserFormException {}", e.getMessage());
             errors.rejectValue(e.getField(), "duplicated", e.getMessage());
 
             // 각 오류 필드로 이동

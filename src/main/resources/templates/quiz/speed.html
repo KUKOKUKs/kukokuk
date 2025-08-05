@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>스피드 퀴즈</title>
+    <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+<div class="quiz-container">
+    <h1 style="text-align: center;">스피드 퀴즈</h1>
+
+    <div id="quiz-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+        <div>
+            <span id="quiz-current">1</span> / <span id="quiz-total">10</span>
+        </div>
+        <div id="quiz-timer" style="font-weight: bold;">00:10</div>
+    </div>
+
+    <div id="quiz-question" style="margin-bottom: 20px; font-size: 18px; font-weight: bold; text-align: center;"></div>
+    <div id="quiz-options" style="display: flex; flex-direction: column; gap: 10px;"></div>
+</div>
+
+<form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
+
+<!-- 퀴즈 리스트 Thymeleaf로 JSON 주입 -->
+<script th:inline="javascript">
+  let quizzes = /*[[${quizList}]]*/ [];
+</script>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script type="module" src="/js/modules/quiz/speed.js"></script>
+</body>
+</html>

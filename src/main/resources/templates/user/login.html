@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/center}" th:with="title='로그인'">
 <div layout:fragment="content">
-    <div class="sign_wrap">
+    <div class="form_component">
         <div class="sign_top">
             <a href="/" class="back_btn">
                 <span class="back_icon">
@@ -16,7 +16,7 @@
 
         <form method="post"
               th:action="@{/login}"
-              class="wrap_form container"
+              class="form_wrap container bg_light_gray"
               id="login-form">
 
             <div class="form_input_list">
@@ -62,6 +62,6 @@
 </div>
 
 <th:block layout:fragment="script">
-    <script type="module" th:src="@{/js/modules/sign/sign-form.js}"></script>
+    <script type="module" th:src="@{/js/modules/sign/sign.js}"></script>
 </th:block>
 </html>

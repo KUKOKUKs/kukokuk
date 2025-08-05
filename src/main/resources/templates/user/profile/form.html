@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html layout:decorate="~{/layout/base}" th:with="title='프로필', menu='profile'">
+<div layout:fragment="content">
+    <div class="form_component">
+        <h1 class="content_title">프로필</h1>
+
+        <div class="profile_img_container">
+            <div class="profile_thumbnail">
+                <div class="thumbnail_img">
+                    <img src="" alt="" class="thumbnail">
+                    <span class="icon_btn">edit</span>
+                </div>
+                <p class="account">test@test.test</p>
+            </div>
+        </div>
+
+        <form method="post"
+              th:action="@{/register/profile}"
+              th:object="${userUpdateForm}"
+              class="form_wrap container pd_0"
+              id="user-update-form">
+
+            <div class="form_input_list">
+                <div class="input_info">
+                    <input type="text"
+                           th:field="*{name}"
+                           id="name"
+                           autocomplete="name"
+                           placeholder=" ">
+
+                    <label for="name" class="input_title"
+                           th:classappend="${#fields.hasErrors('name')} ? 'disabled'">이름</label>
+
+                    <span class="input_error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                </div>
+
+                <div class="input_info">
+                    <input type="text"
+                           th:field="*{nickname}"
+                           id="nickname"
+                           maxlength="16"
+                           autocomplete="nickname"
+                           placeholder=" ">
+
+                    <label for="nickname" class="input_title"
+                           th:classappend="${#fields.hasErrors('nickname')} ? 'disabled'">닉네임</label>
+
+                    <span class="input_error" th:if="${#fields.hasErrors('nickname')}" th:text="${#fields.errors('nickname')[0]}"></span>
+                </div>
+
+                <div class="input_info" id="date-picker-input">
+                    <input type="text"
+                           th:field="*{birthDate}"
+                           id="birth-date"
+                           maxlength="8"
+                           placeholder=" ">
+
+                    <label for="birth-date" class="input_title"
+                           th:classappend="${#fields.hasErrors('birthDate')} ? 'disabled'">생년월일 8자(YYYYMMDD)</label>
+
+                    <span class="input_error" th:if="${#fields.hasErrors('birthDate')}" th:text="${#fields.errors('birthDate')[0]}"></span>
+                </div>
+
+                <div class="input_info radio_info">
+                    <div class="radio_input">
+                        <label for="gender-m" class="text">남</label>
+                        <input type="radio" th:field="*{gender}" id="gender-m" value="M">
+                    </div>
+                    <div class="radio_input">
+                        <label for="gender-f" class="text">여</label>
+                        <input type="radio" th:field="*{gender}" id="gender-f" value="F">
+                    </div>
+                </div>
+
+                <div class="input_info select_info">
+                    <p class="select_title">진도</p>
+                    <select th:field="*{currentSchool}" class="form_select">
+                        <option th:if="${currentSchool == null}" value="" selected disabled>선택</option>
+                        <option value="초등">초등</option>
+                        <option value="중등">중등</option>
+                    </select>
+                </div>
+
+                <div class="input_info select_info">
+                    <p class="select_title">학년</p>
+                    <select th:if="${currentSchool == '초등'}" th:field="*{currentGrade}" class="form_select">
+                        <option value="1">1학년</option>
+                        <option value="2">2학년</option>
+                        <option value="3">3학년</option>
+                        <option value="4">4학년</option>
+                        <option value="5">5학년</option>
+                        <option value="6">6학년</option>
+                    </select>
+
+                    <select th:if="${currentSchool == '중등'}" th:field="*{currentGrade}" class="form_select">
+                        <option value="1">1학년</option>
+                        <option value="2">2학년</option>
+                        <option value="3">3학년</option>
+                    </select>
+
+                    <select th:if="${currentSchool == null}" th:field="*{currentGrade}" class="form_select">
+                        <option value="" selected disabled>선택</option>
+                    </select>
+                </div>
+
+                <div class="input_info select_info">
+                    <p class="select_title">단계</p>
+                    <select th:field="*{studyDifficulty}" class="form_select">
+                        <option th:if="${studyDifficulty == null}" value="" selected disabled>선택</option>
+                        <option value="1">1단계</option>
+                        <option value="2">2단계</option>
+                        <option value="3">3단계</option>
+                        <option value="4">4단계</option>
+                        <option value="5">5단계</option>
+                        <option value="6">6단계</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn_list">
+                <button type="submit" id="submit-btn" class="btn primary">수정</button>
+            </div>
+        </form>
+    </div>
+</div>
+</html>

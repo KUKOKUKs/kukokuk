@@ -25,21 +25,22 @@ public class QuizResultService {
         //퀴즈 결과 저장
         int insertedRows = quizResultMapper.insertQuizResult(result);
         if (insertedRows != 1) {
-            throw new RuntimeException("퀴즈 결과 저장 실패: quizNo=" + result.getQuizNo());
+            log.info("퀴즈 결과 저장 실패: quizNo={}", result.getQuizNo());
         }
         log.info("퀴즈 결과 저장 성공");
 
         // 문제 풀이 횟수 업데이트
         int usageUpdated = quizResultMapper.updateUsageCount(result.getQuizNo());
         if (usageUpdated != 1) {
-            throw new RuntimeException("문제 풀이 횟수 업데이트 실패: quizNo=" + result.getQuizNo());
+            log.info("문제 풀이 횟수 업데이트 실패: quizNo={}", result.getQuizNo());
         }
         log.info("문제 풀이 횟수 업데이트");
+
         //정답인 경우 성공 횟수 업데이트
         if ("Y".equals(result.getIsSuccess())) {
             int successUpdated = quizResultMapper.updateSuccessCount(result.getQuizNo());
             if (successUpdated != 1) {
-                throw new RuntimeException("문제 성공 횟수 업데이트 실패: quizNo=" + result.getQuizNo());
+                log.info("문제 성공 횟수 업데이트 실패: quizNo={}", result.getQuizNo());
             }
             log.info("문제 풀이 정답 횟수 업데이트");
         }
