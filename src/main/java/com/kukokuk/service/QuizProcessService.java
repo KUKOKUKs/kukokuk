@@ -32,7 +32,7 @@ public class QuizProcessService {
     public int insertQuizSessionAndResults(QuizSessionSummary summary, List<QuizResult> results) {
         log.info("[시작] insertQuizSessionAndResults() - userNo={}, 문제 수={}", summary.getUserNo(), results.size());
 
-        // === [1] 세션 요약 필드 계산 및 설정 ===
+        // [1] 세션 요약 필드 계산 및 설정z
         int totalQuestion = results.size();
         int correctAnswers = 0;
 
@@ -43,14 +43,14 @@ public class QuizProcessService {
 
         log.info("[summary 설정 완료] {}", summary);
 
-        // === [2] 세션 저장 ===
+        // [2] 세션 저장
         int inserted = quizSessionSummaryMapper.insertQuizSessionSummary(summary);
         if (inserted != 1) throw new RuntimeException("세션 저장 실패");
 
         int sessionNo = summary.getSessionNo(); // keyProperty 로 전달된 sessionNo
         log.info("[세션 저장 완료] sessionNo={}", sessionNo);
 
-        // === [3] 결과 저장 및 통계 처리 ===
+        // [3] 결과 저장 및 통계 처리
         for (QuizResult result : results) {
             result.setSessionNo(sessionNo);
 
@@ -74,14 +74,24 @@ public class QuizProcessService {
             }
         }
 
-        // === [4] 세션 요약 정답 수 갱신 ===
+        // [4] 세션 요약 정답 수 갱신
         summary.setCorrectAnswers(correctAnswers);
         summary.setAverageTimePerQuestion(totalQuestion == 0 ? 0f : summary.getTotalTimeSec() / totalQuestion);
-        quizSessionSummaryMapper.updateQuizSessionSummary(summary);
 
-        log.info("[전체 처리 완료] 세션 {}, 정답 수: {}", sessionNo, correctAnswers);
+        // 상위 퍼센트 계산
+        int sameGroupTotal = quizSessionSummaryMapper.getCountSameSessions(correctAnswers);
+        int slowerCount = quizSessionSummaryMapper.getCountSlowerSessions(correctAnswers, summary.getAverageTimePerQuestion());
 
-        // === [5] 퀴즈 자동 보충 ===
+        int percentile = (sameGroupTotal == 0) ? 0 :
+            (int) (((sameGroupTotal - slowerCount) / (float) sameGroupTotal) * 100);
+
+        summary.setPercentile(percentile);
+        quizSessionSummaryMapper.updateQuizSessionSummary(summary); // 최종 update
+
+        log.info("[전체 처리 완료] 세션 {}, 정답 수: {}, 상위 퍼센트: {}",
+            sessionNo, correctAnswers, percentile);
+
+        // [5] 퀴즈 자동 보충
         maintainSpeedQuizPool();
 
         return sessionNo;

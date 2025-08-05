@@ -59,9 +59,11 @@
     <update id="updateQuizSessionSummary" parameterType="QuizSessionSummary">
         UPDATE KUKOKUK_QUIZ_SESSION_SUMMARIES
         SET CORRECT_ANSWERS = #{correctAnswers},
-            AVERAGE_TIME_PER_QUESTION = #{averageTimePerQuestion}
+            AVERAGE_TIME_PER_QUESTION = #{averageTimePerQuestion},
+            PERCENTILE = #{percentile}
         WHERE SESSION_NO = #{sessionNo}
     </update>
+
 
     <!--
         세션 번호와 유저 번호로 퀴즈 세션 요약 정보를 조회한다.
