@@ -12,6 +12,7 @@ public class DailyStudy {
   private int dailyStudyNo;
   private int dailyStudyMaterialNo;
   private String title;
+  private String explanation;
   private int studyDifficulty;
   private int cardCount;
   private Date createdDate;

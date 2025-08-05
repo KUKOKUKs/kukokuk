@@ -80,6 +80,7 @@ public class ApiStudyController {
    * 응답 바디 : {
    * 			"dailyStudyNo": 1,
    * 		  "title": "문단 배우기: 중심 문장과 뒷받침 문장",
+   * 		  "explanation" : "학습 메인설명",
    * 		  "cardCount" : 3, // 일일학습의 총 카드 개수
    * 		  "status" : "NOT_STARTED", // "NOT_STARTED", "IN_PROGRESS", "COMPLETED"
    * 		  "studiedCardCount" : 2, // 해당 사용자가 이 일일학습에서 학습한 카드 개수
@@ -116,6 +117,7 @@ public class ApiStudyController {
           return DailyStudySummaryResponse.builder()
               .dailyStudyNo(study.getDailyStudyNo())
               .title(study.getTitle())
+              .explanation((study.getExplanation()))
               .cardCount(totalCardCount)
               .status(status)
               .studiedCardCount(studiedCardCount)

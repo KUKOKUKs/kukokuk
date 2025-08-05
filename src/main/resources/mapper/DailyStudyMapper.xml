@@ -5,6 +5,7 @@
     <resultMap id="DailyStudyResultMap" type="DailyStudy">
         <id column="DAILY_STUDY_NO" property="dailyStudyNo"/>
         <result column="TITLE" property="title"/>
+        <result column="EXPLANATION" property="explanation"/>
         <result column="STUDY_DIFFICULTY" property="studyDifficulty"/>
         <result column="CARD_COUNT" property="cardCount"/>
         <result column="CREATED_DATE" property="createdDate"/>
@@ -35,6 +36,7 @@
         <association property="dailyStudy" javaType="DailyStudy">
             <result column="DAILY_STUDY_NO" property="dailyStudyNo"/>
             <result column="TITLE" property="title"/>
+            <result column="EXPLANATION" property="explanation"/>
             <result column="STUDY_DIFFICULTY" property="studyDifficulty"/>
             <result column="CARD_COUNT" property="cardCount"/>
             <result column="CREATED_DATE" property="createdDate"/>
@@ -64,6 +66,7 @@
         SELECT
             S.DAILY_STUDY_NO,
             S.TITLE,
+            S.EXPLANATION,
             S.STUDY_DIFFICULTY,
             S.CARD_COUNT,
             S.CREATED_DATE AS STUDY_CREATED_DATE,
@@ -133,6 +136,7 @@
         SELECT
             DAILY_STUDY_NO,
             TITLE,
+            EXPLANATION,
             STUDY_DIFFICULTY,
             CARD_COUNT,
             CREATED_DATE,

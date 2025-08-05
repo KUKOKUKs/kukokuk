@@ -71,6 +71,28 @@
     padding: var(--basePadding);
     border-radius: var(--bdrs);
     border: var(--baseBorder);
+
+    .component_list_container {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+
+        /* 컴포넌트의 좌상단에 위치할 컴포넌트 title */
+        .component_title {
+            align-content: center;
+            font-size: var(--largeFontSize);
+            font-weight: 700;
+            
+        }
+
+        /* 리스트 컴포넌트의 리스트 부분 */
+        .component_list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            border-top: var(--baseBorder);
+        }
+    }
 }
 
 .form_component {
@@ -450,6 +472,15 @@
     &.column {
         flex-direction: column; /* 수직 정렬 */
     }
+
+    &.daily_study {
+        margin: var(--baseGap) 0;
+        justify-content: space-between;
+
+        .btn {
+            width: 25%;
+        }
+    }
 }
 
 .btn {
@@ -487,6 +518,12 @@
         background-color: #fff;
     }
 
+    &.dark {
+        border-color: var(--darkGreenColor);
+        background-color: var(--darkGreenColor);
+        color: #fff;
+    }
+
     &:hover {
         border-color: var(--primaryColor);
         color: var(--primaryColor);
@@ -495,6 +532,22 @@
 
     &.compact {
         width: max-content;
+    }
+
+    &.blink {
+        animation: blink-color 2s infinite;
+    }
+}
+
+@keyframes blink-color {
+    0%, 100% {
+        border-color: var(--borderColor);
+        background-color: #fff;
+    }
+    50% {
+        border-color: var(--primaryColor);
+        background-color: var(--primaryColor);
+        color: #fff;
     }
 }
 
@@ -514,6 +567,11 @@
         height: var(--smallIcon);
         font-size: var(--smallIcon);
     }
+
+    &.tiny {
+        font-size: var(--tinyIcon);
+    }
+
 }
 
 .hints_info {
@@ -664,3 +722,64 @@
     color: #fff;
 }
 
+/* 페이지 content 상단부  */
+.page_title {
+    min-height: 50px;
+    width: 100%;
+    align-content: center;
+    font-size: var(--pageTitleFontSize);
+    font-weight: 700;
+    color: var(--darkGreenColor);
+}
+
+/* base.html의 자식요소 (content) 컨테이너 */
+.main_container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
+}
+
+/* 도전과제에서 힌트아이템 획득시 표현할 버튼 */
+.hint_icon_btn {
+    border: 2px solid var(--borderColor);
+    border-radius: var(--bdrs);
+    height: 100%;
+    padding: 4px;
+    font-size: var(--baseIcon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.deactive {
+        cursor: default;
+        img {
+            filter: grayscale(100%);
+        }
+    }
+
+    &.active {
+        cursor: pointer;
+        box-shadow: var(--insetBxsh);
+        img {
+            filter: none;
+        }
+    }
+
+    &.small {
+        width: var(--smallIcon);
+        min-width: var(--smallIcon);
+        height: var(--smallIcon);
+        font-size: var(--smallIcon);
+    }
+}
+
+/* 힌트를 획득한 후 보여줄 이이콘 스타일 */
+.hint_obtained_icon {
+    color: var(--redColor);
+    height: 100%;
+    padding: 4px;
+    font-size: var(--baseIcon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
