@@ -9,11 +9,12 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @Alias("DailyStudyEssayQuiz")
 public class DailyStudyEssayQuiz {
-  private int dailyStudyEssayQuizNo;
-  private String question;
-  private Date createdDate;
-  private Date updatedDate;
-  private int dailyStudyNo;
 
-  private DailyStudy dailyStudy;
+    private int dailyStudyEssayQuizNo;
+    private String question;
+    private Date createdDate;
+    private Date updatedDate;
+    private int dailyStudyNo;
+
+    private DailyStudy dailyStudy;
 }

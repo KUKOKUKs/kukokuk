@@ -1,94 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DictationQuestionMapper">
 
-  <resultMap id="dictationQuestionResultMap" type="DictationQuestion">
-    <id property="dictationQuestionNo" column="DICTATION_QUESTION_NO"/>
-    <result property="dictationSessionNo" column="DICTATION_SESSION_NO"/>
-    <result property="correctAnswer" column="CORRECT_ANSWER"/>
-    <result property="hint1" column="HINT1"/>
-    <result property="hint2" column="HINT2"/>
-    <result property="hint3" column="HINT3"/>
-  </resultMap>
+    <resultMap id="dictationQuestionResultMap" type="DictationQuestion">
+        <id property="dictationQuestionNo" column="DICTATION_QUESTION_NO"/>
+        <result property="dictationSessionNo" column="DICTATION_SESSION_NO"/>
+        <result property="correctAnswer" column="CORRECT_ANSWER"/>
+        <result property="hint1" column="HINT1"/>
+        <result property="hint2" column="HINT2"/>
+        <result property="hint3" column="HINT3"/>
+    </resultMap>
 
-  <!--
-  /**
-   * 세트 번호로 문제 전체 가져오기
-   * @param dictationSessionNo 세트 번호
-   * @return 문제 리스트
-   */
-   List<DictationQuestion> getQuestionsBySessionNo(int dictationSessionNo)
-   -->
-  <select id="getQuestionsBySessionNo" resultMap="dictationQuestionResultMap">
-    SELECT
-       DICTATION_QUESTION_NO
-      ,DICTATION_SESSION_NO
-      ,CORRECT_ANSWER
-      ,HINT1
-      ,HINT2
-      ,HINT3
-    FROM
-       KUKOKUK_DICTATION_QUESTIONS
-    WHERE
-       DICTATION_SESSION_NO = #{dictationSessionNo}
-    ORDER BY
-       DICTATION_QUESTION_NO
-  </select>
+    <!--
+    /**
+     * 세트 번호로 문제 전체 가져오기
+     * @param dictationSessionNo 세트 번호
+     * @return 문제 리스트
+     */
+     List<DictationQuestion> getQuestionsBySessionNo(int dictationSessionNo)
+     -->
+    <select id="getQuestionsBySessionNo" resultMap="dictationQuestionResultMap">
+        SELECT DICTATION_QUESTION_NO
+             , DICTATION_SESSION_NO
+             , CORRECT_ANSWER
+             , HINT1
+             , HINT2
+             , HINT3
+        FROM KUKOKUK_DICTATION_QUESTIONS
+        WHERE DICTATION_SESSION_NO = #{dictationSessionNo}
+        ORDER BY DICTATION_QUESTION_NO
+    </select>
 
-  <!--
-  /**
-   * 랜덤 문제 가져오기
-   * @param limit 문제 가져올 개수
-   * @return 문제 가져오기
-   */
-   List<DictationQuestion> getRandomQuestions(int limit)
-   -->
-  <select id="getRandomQuestions" resultMap="dictationQuestionResultMap">
-    SELECT
-       DICTATION_QUESTION_NO
-      ,DICTATION_SESSION_NO
-      ,CORRECT_ANSWER
-      ,HINT1
-      ,HINT2
-      ,HINT3
-    FROM
-      KUKOKUK_DICTATION_QUESTIONS
-    ORDER BY RAND()
-      LIMIT #{limit}
-  </select>
+    <!--
+    /**
+     * 랜덤 문제 가져오기
+     * @param limit 문제 가져올 개수
+     * @return 문제 가져오기
+     */
+     List<DictationQuestion> getRandomQuestions(int limit)
+     -->
+    <select id="getRandomQuestions" resultMap="dictationQuestionResultMap">
+        SELECT DICTATION_QUESTION_NO
+             , DICTATION_SESSION_NO
+             , CORRECT_ANSWER
+             , HINT1
+             , HINT2
+             , HINT3
+        FROM KUKOKUK_DICTATION_QUESTIONS
+        ORDER BY RAND()
+            LIMIT #{limit}
+    </select>
 
-  <!--
-   /**
-   * 받아쓰기 문제 수정
-   * @param dictationQuestion 받아쓰기 문제
-   */
-  updateDictationQuestion(DictationQuestion dictationQuestion)
-  -->
-  <update id="updateDictationQuestion" parameterType="DictationQuestion">
-    UPDATE
-       KUKOKUK_DICTATION_QUESTIONS
-    SET
-       CORRECT_ANSWER = #{correctAnswer}
-      ,HINT1 = #{hint1}
-      ,HINT2 = #{hint2}
-      ,HINT3 = #{hint3}
-    WHERE
-      DICTATION_QUESTION_NO = #{dictationQuestionNo}
-  </update>
+    <!--
+     /**
+     * 받아쓰기 문제 수정
+     * @param dictationQuestion 받아쓰기 문제
+     */
+    updateDictationQuestion(DictationQuestion dictationQuestion)
+    -->
+    <update id="updateDictationQuestion" parameterType="DictationQuestion">
+        UPDATE
+            KUKOKUK_DICTATION_QUESTIONS
+        SET CORRECT_ANSWER = #{correctAnswer}
+          , HINT1          = #{hint1}
+          , HINT2          = #{hint2}
+          , HINT3          = #{hint3}
+        WHERE DICTATION_QUESTION_NO = #{dictationQuestionNo}
+    </update>
 
-  <!--
-  /**
-   * 받아쓰기 문제 삭제
-   * @param dictationQuestionNo 문제 번호
-   */
-  deleteDictationQuestion(int dictationQuestionNo)
-  -->
-  <delete id="deleteDictationQuestion" parameterType="int">
-    DELETE
-    FROM
-        KUKOKUK_DICTATION_QUESTIONS
-    WHERE
-        DICTATION_QUESTION_NO = #{dictationQuestionNo}
-  </delete>
+    <!--
+    /**
+     * 받아쓰기 문제 삭제
+     * @param dictationQuestionNo 문제 번호
+     */
+    deleteDictationQuestion(int dictationQuestionNo)
+    -->
+    <delete id="deleteDictationQuestion" parameterType="int">
+        DELETE
+        FROM KUKOKUK_DICTATION_QUESTIONS
+        WHERE DICTATION_QUESTION_NO = #{dictationQuestionNo}
+    </delete>
 
 </mapper>

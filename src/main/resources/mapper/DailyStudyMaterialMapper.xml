@@ -1,57 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DailyStudyMaterialMapper">
 
-  <!--
-   void insertStudyMaterial(DailyStudyMaterial dailyStudyMaterial);
-  -->
-  <insert id="insertStudyMaterial" parameterType="DailyStudyMaterial" useGeneratedKeys="true" keyProperty="dailyStudyMaterialNo" keyColumn="DAILY_STUDY_MATERIAL_NO">
-    INSERT INTO
-        KUKOKUK_DAILY_STUDY_MATERIALS
+    <!--
+     void insertStudyMaterial(DailyStudyMaterial dailyStudyMaterial);
+    -->
+    <insert id="insertStudyMaterial" parameterType="DailyStudyMaterial" useGeneratedKeys="true"
+      keyProperty="dailyStudyMaterialNo" keyColumn="DAILY_STUDY_MATERIAL_NO">
+        INSERT INTO KUKOKUK_DAILY_STUDY_MATERIALS
         (SCHOOL, GRADE, MATERIAL_TITLE, KEYWORDS, CONTENT, SOURCE_FILENAME, SEQUENCE)
-    VALUES
-      (
-       #{school},
-       #{grade},
-       #{materialTitle},
-       #{keywords},
-       #{content},
-       #{sourceFilename},
-       #{sequence}
-      )
-  </insert>
-  
-  <!-- 
-  int getMaxSequenceBySchoolAndGrade(String school, int grade);
-  -->
-  <select id="getMaxSequenceBySchoolAndGrade" resultType="int">
-    SELECT
-      IFNULL(MAX(SEQUENCE), 0)
-    FROM
-      KUKOKUK_DAILY_STUDY_MATERIALS
-    WHERE
-        SCHOOL = #{school}
-        AND GRADE = #{grade}
-  </select>
+        VALUES (#{school},
+                #{grade},
+                #{materialTitle},
+                #{keywords},
+                #{content},
+                #{sourceFilename},
+                #{sequence})
+    </insert>
 
-  <!--
-    DailyStudyMaterial getStudyMaterialByNo(int dailyStudyMaterialNo);
-  -->
-  <select id="getStudyMaterialByNo" resultType="DailyStudyMaterial">
-    SELECT
-        DAILY_STUDY_MATERIAL_NO AS dailyStudyMaterialNo,
-        SCHOOL,
-        GRADE,
-        MATERIAL_TITLE AS materialTitle,
-        KEYWORDS,
-        CONTENT,
-        SOURCE_FILENAME AS sourceFilename,
-        SEQUENCE,
-        CREATED_DATE AS createdDate,
-        UPDATED_DATE AS updatedDate
-    FROM
-        KUKOKUK_DAILY_STUDY_MATERIALS
-    WHERE
-        DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo}
-  </select>
+    <!--
+    int getMaxSequenceBySchoolAndGrade(String school, int grade);
+    -->
+    <select id="getMaxSequenceBySchoolAndGrade" resultType="int">
+        SELECT IFNULL(MAX(SEQUENCE), 0)
+        FROM KUKOKUK_DAILY_STUDY_MATERIALS
+        WHERE SCHOOL = #{school}
+          AND GRADE = #{grade}
+    </select>
+
+    <!--
+      DailyStudyMaterial getStudyMaterialByNo(int dailyStudyMaterialNo);
+    -->
+    <select id="getStudyMaterialByNo" resultType="DailyStudyMaterial">
+        SELECT DAILY_STUDY_MATERIAL_NO AS dailyStudyMaterialNo,
+               SCHOOL,
+               GRADE,
+               MATERIAL_TITLE          AS materialTitle,
+               KEYWORDS,
+               CONTENT,
+               SOURCE_FILENAME         AS sourceFilename,
+               SEQUENCE,
+               CREATED_DATE            AS createdDate,
+               UPDATED_DATE            AS updatedDate
+        FROM KUKOKUK_DAILY_STUDY_MATERIALS
+        WHERE DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo}
+    </select>
 </mapper>

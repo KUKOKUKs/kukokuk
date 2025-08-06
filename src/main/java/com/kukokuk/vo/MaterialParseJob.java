@@ -11,13 +11,14 @@ import org.apache.ibatis.type.Alias;
 @NoArgsConstructor
 @Alias("MaterialParseJob")
 public class MaterialParseJob {
-  private int materialParseJobNo;
-  private String url;
-  private String status;
-  private String message;
-  private int dailyStudyMaterialNo;
-  private Date createdDate;
-  private Date updatedDate;
 
-  private DailyStudyMaterial dailyStudyMaterial;
+    private int materialParseJobNo;
+    private String url;
+    private String status;
+    private String message;
+    private int dailyStudyMaterialNo;
+    private Date createdDate;
+    private Date updatedDate;
+
+    private DailyStudyMaterial dailyStudyMaterial;
 }

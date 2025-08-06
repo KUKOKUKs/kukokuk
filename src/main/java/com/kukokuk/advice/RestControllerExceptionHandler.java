@@ -17,5 +17,4 @@ public class RestControllerExceptionHandler {
             .status(500)
             .body(apiResponse);
     }
-
 }
