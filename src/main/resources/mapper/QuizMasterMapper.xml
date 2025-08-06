@@ -101,4 +101,24 @@
         WHERE quiz_no = #{quizNo}
     </select>
 
+    <select id="getQuizListByDifficultyAndType" resultMap="QuizMasterMap">
+        SELECT *
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE USAGE_COUNT &gt;= 20
+        AND QUESTION_TYPE = #{questionType}
+        <choose>
+            <when test="difficulty == '상'">
+                AND ACCURACY_RATE &lt;= 30
+            </when>
+            <when test="difficulty == '중'">
+                AND ACCURACY_RATE &gt; 30 AND ACCURACY_RATE &lt;= 60
+            </when>
+            <when test="difficulty == '하'">
+                AND ACCURACY_RATE &gt; 60
+            </when>
+        </choose>
+        ORDER BY RAND()
+        LIMIT 10
+    </select>
+
 </mapper>

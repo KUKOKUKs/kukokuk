@@ -1,119 +1,136 @@
 package com.kukokuk.controller;
 
-import com.kukokuk.request.QuizSubmitRequest;
-import com.kukokuk.request.QuizSubmitResultRequest;
-import com.kukokuk.response.QuizMasterResponse;
-import com.kukokuk.response.QuizResultResponse;
+import com.kukokuk.dto.QuizMasterDto;
+import com.kukokuk.dto.QuizResultDto;
+import com.kukokuk.dto.QuizSubmitDto;
+import com.kukokuk.dto.QuizSubmitResultDto;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.QuizProcessService;
 import com.kukokuk.service.QuizResultService;
 import com.kukokuk.service.QuizService;
 import com.kukokuk.service.QuizSessionSummaryService;
+import com.kukokuk.vo.QuizMaster;
 import com.kukokuk.vo.QuizResult;
 import com.kukokuk.vo.QuizSessionSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 스피드 퀴즈 결과 저장 및 결과 페이지 렌더링 컨트롤러
- */
 @Log4j2
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
-public class SpeedQuizResultController {
+public class QuizController {
+
     private final QuizService quizService;
     private final QuizProcessService quizProcessService;
     private final QuizSessionSummaryService quizSessionSummaryService;
     private final QuizResultService quizResultService;
 
     /**
-     * 퀴즈 결과 저장 처리 및 요약 결과 페이지 리다이렉트
+     * [공통] 퀴즈 결과 저장 처리
      */
     @PostMapping("/result")
-    public String submitQuizResults(@ModelAttribute QuizSubmitRequest request,
-        @AuthenticationPrincipal SecurityUser securityUser,
-        Model model) {
+    public String submitQuizResults(@ModelAttribute QuizSubmitDto request,
+        @AuthenticationPrincipal SecurityUser securityUser) {
         int userNo = securityUser.getUser().getUserNo();
-        log.info("폼 제출 - userNo: {}, totalTimeSec: {}", userNo, request.getTotalTimeSec());
 
-        // 세션 요약 객체 초기화
         QuizSessionSummary summary = new QuizSessionSummary();
         summary.setUserNo(userNo);
         summary.setTotalTimeSec(request.getTotalTimeSec());
 
-        List<QuizResult> quizResults = new ArrayList<>();
-        for (QuizSubmitResultRequest r : request.getResults()) {
+        // 사용자가 어떤 모드에서 푼 것인지 명시
+        if ("level".equals(request.getQuizMode())) {
+            summary.setQuizMode("level");
+        } else {
+            summary.setQuizMode("speed");
+        }
+
+        List<QuizResult> results = new ArrayList<>();
+        for (QuizSubmitResultDto r : request.getResults()) {
             QuizResult qr = new QuizResult();
             qr.setUserNo(userNo);
             qr.setQuizNo(r.getQuizNo());
             qr.setSelectedChoice(r.getSelectedChoice());
-            quizResults.add(qr);
+            results.add(qr);
         }
 
-        // 세션 저장 및 결과 저장 → sessionNo 반환받음
-        int sessionNo = quizProcessService.insertQuizSessionAndResults(summary, quizResults);
-
-
+        int sessionNo = quizProcessService.insertQuizSessionAndResults(summary, results);
         return "redirect:/quiz/result?sessionNo=" + sessionNo;
     }
 
     /**
-     * 퀴즈 결과 요약 페이지 렌더링 (speed-result1)
+     * [공통] 퀴즈 결과 요약 페이지 렌더링
      */
     @GetMapping("/result")
-    public String viewSpeedQuizSummary(@RequestParam int sessionNo,
+    public String viewQuizSummary(@RequestParam int sessionNo,
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
         int userNo = securityUser.getUser().getUserNo();
-        log.info("결과 요약 페이지 요청 - sessionNo: {}, userNo: {}", sessionNo, userNo);
-
         QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
         model.addAttribute("summary", summary);
+
+        if ("level".equals(summary.getQuizMode())) {
+            return "quiz/level-result1";
+        }
         return "quiz/speed-result1";
     }
 
     /**
-     * 상세 결과 페이지 렌더링 (speed-result2)
+     * [공통] 퀴즈 결과 상세 페이지 렌더링
      */
     @GetMapping("/result/detail")
-    public String viewSpeedResultDetail(@RequestParam int sessionNo,
+    public String viewQuizResultDetail(@RequestParam int sessionNo,
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
         int userNo = securityUser.getUser().getUserNo();
         QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
-        List<QuizResultResponse> results = quizResultService.getQuizResultsBySession(sessionNo, userNo);
+        List<QuizResultDto> results = quizResultService.getQuizResultsBySession(sessionNo, userNo);
 
         model.addAttribute("summary", summary);
         model.addAttribute("results", results);
+
+        if ("level".equals(summary.getQuizMode())) {
+            return "quiz/level-result2";
+        }
         return "quiz/speed-result2";
     }
 
     /**
-     * 풀이횟수가 20회 이하인 스피드 퀴즈 10개를 조회하여 반환한다.
-     *
-     * @return QuizMasterResponse 리스트
+     * [스피드 퀴즈] 문제 10개 조회
      */
     @GetMapping("/speed")
     public String viewSpeedQuizList(Model model) {
         int usageThreshold = 20;
         int limit = 10;
-        List<QuizMasterResponse> quizList = quizService.getSpeedQuizList(usageThreshold, limit)
+
+        List<QuizMasterDto> quizList = quizService.getSpeedQuizList(usageThreshold, limit)
             .stream()
-            .map(QuizMasterResponse::from)
+            .map(QuizMasterDto::from)
             .toList();
 
         model.addAttribute("quizList", quizList);
-        return "quiz/speed"; // templates/quiz/speed.html
+        return "quiz/speed";
     }
 
+    /**
+     * [단계별 퀴즈] 난이도 선택 후 문제 10개 조회
+     */
+    @GetMapping("/level")
+    public String viewLevelQuizList(@RequestParam String difficulty,
+        @RequestParam String questionType,
+        Model model) {
+        List<QuizMaster> quizList = quizService.getLevelQuizList(difficulty, questionType);
 
-
+        model.addAttribute("quizList", quizList);
+        model.addAttribute("difficulty", difficulty);
+        model.addAttribute("questionType", questionType);
+        return "quiz/level";
+    }
 }

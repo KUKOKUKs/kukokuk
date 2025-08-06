@@ -1,6 +1,6 @@
 package com.kukokuk.service;
 
-import com.kukokuk.response.QuizResultResponse;
+import com.kukokuk.dto.QuizResultDto;
 import com.kukokuk.mapper.QuizResultMapper;
 import com.kukokuk.vo.QuizResult;
 import java.util.List;
@@ -52,7 +52,7 @@ public class QuizResultService {
      * @param userNo 사용자 번호
      * @return 퀴즈 결과 응답 리스트
      */
-    public List<QuizResultResponse> getQuizResultsBySession(int sessionNo, int userNo) {
+    public List<QuizResultDto> getQuizResultsBySession(int sessionNo, int userNo) {
         return quizResultMapper.getQuizResultsBySession(sessionNo, userNo);
     }
 }
