@@ -108,17 +108,17 @@ public class QuizService {
 
 
     /**
-     * 최초 1회만 실행되는 함수 사전 데이터의 랜덤한 단어를 기반으로 서로 다른 유형의 퀴즈를 100개씩 생성한다. 생성하려는 퀴즈 count의 수를 기반으로 퀴즈의 수가
-     * 모자란 만큼만 생성
-     *
+     * 최초 1회만 실행되는 함수
+     * 사전 데이터의 랜덤한 단어를 기반으로 서로 다른 유형의 퀴즈를 100개씩 생성한다.
+     * 생성하려는 퀴즈 count의 수를 기반으로 퀴즈의 수가 모자란 만큼만 생성
      * @param count 생성할 퀴즈 수
      */
     public void insertRandomQuizBulk(int count) {
         int quizcount = quizMasterMapper.getQuizCount();
         if (quizcount < count) {
 
-            insertQuizByWordRandomEntry(count - quizcount);
-            insertQuizByDefRandomEntry(count - quizcount);
+            insertQuizByWordRandomEntry(count-quizcount);
+            insertQuizByDefRandomEntry(count-quizcount);
         } else {
             log.info("퀴즈 생성 도중 실패 ");
 

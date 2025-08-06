@@ -1,4 +1,3 @@
-// 📁 com.kukokuk.request.QuizSubmitResult.java
 package com.kukokuk.request;
 
 import lombok.Getter;

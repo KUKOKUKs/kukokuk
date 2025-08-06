@@ -60,12 +60,12 @@ public class GeminiResponse {
         private Content content;
     }
 
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class Content {
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Content {
     private List<Part> parts;
-  }
+    }
 
     @Getter
     @NoArgsConstructor

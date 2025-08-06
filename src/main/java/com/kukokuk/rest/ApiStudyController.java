@@ -38,9 +38,10 @@ public class ApiStudyController {
     private final StudyService studyService;
 
     /**
-     * POST /api/studies/parse-materials 에듀넷 경로를 전달하면 비동기 큐로 파싱작업을 수행한 후 원본데이터를 DB에 저장하는 API 요청 바디 :
-     * { urls : [에듀넷 url 경로 리스트]} 응답 바디 : { skippedUrls : 스킵된 작업(중복 url) , enqueuedUrls : 큐에 저장되어
-     * 진행예정인 작업}
+     * POST /api/studies/parse-materials
+     * 에듀넷 경로를 전달하면 비동기 큐로 파싱작업을 수행한 후 원본데이터를 DB에 저장하는 API
+     * 요청 바디 : { urls : [에듀넷 url 경로 리스트]}
+     * 응답 바디 : { skippedUrls : 스킵된 작업(중복 url) , enqueuedUrls : 큐에 저장되어 진행예정인 작업}
      */
     @PostMapping("/parse-materials")
     public ResponseEntity<ApiResponse<ParseMaterialResponse>> parseMaterialByEdunetUrl(@RequestBody
@@ -71,11 +72,19 @@ public class ApiStudyController {
     }
 
     /**
-     * GET /api/studies?rows= 사용자의 수준, 진도에 맞는 학습자료 목록을 제공하는 API 응답 바디 : { "dailyStudyNo": 1,
-     * "title": "문단 배우기: 중심 문장과 뒷받침 문장", "cardCount" : 3, // 일일학습의 총 카드 개수 "status" : "NOT_STARTED",
-     * // "NOT_STARTED", "IN_PROGRESS", "COMPLETED" "studiedCardCount" : 2, // 해당 사용자가 이 일일학습에서 학습한
-     * 카드 개수 "progressRate" : 66, "school" : "초등", // "초등", "중등", "grade" : 1, "sequence" : 3 // 학년
-     * 내 자료의 순서 }
+     * GET /api/studies?rows=
+     * 사용자의 수준, 진도에 맞는 학습자료 목록을 제공하는 API
+     * 응답 바디 : { "dailyStudyNo": 1,
+     *              "title": "문단 배우기: 중심 문장과 뒷받침 문장",
+     *              "explanation" : "학습 메인설명",
+     *              "cardCount" : 3, // 일일학습의 총 카드개수
+     *              "status" : "NOT_STARTED", // "NOT_STARTED", "IN_PROGRESS", "COMPLETED"
+     *              "studiedCardCount": 2, // 해당 사용자가 이 일일학습에서 학습한 카드 개수
+     *              "progressRate" : 66,
+     *              "school" : "초등", // "초등", "중등",
+     *              grade" : 1,
+     *              "sequence" : 3 // 학년 내 자료의 순서
+     *          }
      */
     @GetMapping
     public ResponseEntity<ApiResponse<List<DailyStudySummaryResponse>>> getStudiesBUser(
@@ -106,6 +115,7 @@ public class ApiStudyController {
                 return DailyStudySummaryResponse.builder()
                     .dailyStudyNo(study.getDailyStudyNo())
                     .title(study.getTitle())
+                    .explanation((study.getExplanation()))
                     .cardCount(totalCardCount)
                     .status(status)
                     .studiedCardCount(studiedCardCount)
@@ -121,7 +131,9 @@ public class ApiStudyController {
     }
 
     /**
-     * POST /api/studies/logs 사용자의 학습자료에 대한 학습이력 생성 요청 바디 : { dailyStudyNo : 학습자료번호 }
+     * POST /api/studies/logs
+     * 사용자의 학습자료에 대한 학습이력 생성
+     * 요청 바디 : { dailyStudyNo : 학습자료번호 }
      */
     @PostMapping("/logs")
     public ResponseEntity<ApiResponse<DailyStudyLog>> createDailyStudyLog(
@@ -136,8 +148,9 @@ public class ApiStudyController {
     }
 
     /**
-     * PUT /api/studies/logs/{dailyStudyLogNo} 학습 이력 수정 요청 바디 : { studiedCardCount : 학습카드개수, status
-     * : 학습 상태 }
+     * PUT /api/studies/logs/{dailyStudyLogNo}
+     * 학습 이력 수정
+     * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
      */
     @PutMapping("/logs/{dailyStudyLogNo}")
     public ResponseEntity<ApiResponse<DailyStudyLog>> updateDailyStudyLog(
@@ -154,8 +167,9 @@ public class ApiStudyController {
     }
 
     /**
-     * POST /api/studies/quizzes/logs 사용자의 학습퀴즈 이력 생성 요청 바디 : { dailyStudyQuizNo : 학습퀴즈번호,
-     * selectedChoice : 사용자가 선택한 보기 }
+     * POST /api/studies/quizzes/logs
+     * 사용자의 학습퀴즈 이력 생성
+     * 요청 바디 : { dailyStudyQuizNo : 학습퀴즈번호. selectedChoice : 사용자가 선택한 보기 }
      */
     @PostMapping("/quizzes/logs")
     public ResponseEntity<ApiResponse<DailyStudyQuizLog>> createStudyQuizLog(
@@ -170,8 +184,9 @@ public class ApiStudyController {
     }
 
     /**
-     * PUT /api/studies/logs/{dailyStudyLogNo} 학습 이력 수정 요청 바디 : { studiedCardCount : 학습카드개수, status
-     * : 학습 상태 }
+     * PUT /api/studies/logs/{dailyStudyLogNo}
+     * 학습 이력 수정
+     * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
      */
     @PutMapping("/quizzes/logs/{studyQuizLogNo}")
     public ResponseEntity<ApiResponse<DailyStudyQuizLog>> updateStudyQuizLog(

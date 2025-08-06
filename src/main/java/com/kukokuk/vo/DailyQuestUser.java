@@ -11,7 +11,6 @@ import org.apache.ibatis.type.Alias;
 @Alias("DailyQuestUser")
 @NoArgsConstructor
 public class DailyQuestUser {
-
     private int dailyQuestUserNo;
     private int dailyQuestNo;
     private int userNo;

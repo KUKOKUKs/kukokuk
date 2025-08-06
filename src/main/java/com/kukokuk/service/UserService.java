@@ -60,7 +60,6 @@ public class UserService {
 
     /**
      * 사용자 프로필 이미지 파일 저장 및 profileFilename 업데이트
-     *
      * @param file   이미지 파일
      * @param userNo 사용자 번호
      */
@@ -124,7 +123,6 @@ public class UserService {
 
     /**
      * 사용자 정보 업데이트
-     *
      * @param form   사용자 정보가 담긴 폼
      * @param userNo 사용자 번호
      */
@@ -160,7 +158,6 @@ public class UserService {
 
     /**
      * 사용자 번호로 사용자 정보, 권한 정보 조회
-     *
      * @param userNo 사용자 번호
      * @return 사용자 정보, 권한 정보
      */
@@ -171,7 +168,6 @@ public class UserService {
 
     /**
      * username으로 사용자 정보, 권한 정보 조회
-     *
      * @param username username
      * @return 사용자 정보, 권한 정보
      */
@@ -182,7 +178,6 @@ public class UserService {
 
     /**
      * 사용자 번호로 사용자 정보 조회
-     *
      * @param userNo 사용자 번호
      * @return 사용자 정보
      */
@@ -193,7 +188,6 @@ public class UserService {
 
     /**
      * username을 전달받아 사용자 정보 조회
-     *
      * @param username username
      * @return 사용자 정보
      */
@@ -204,7 +198,6 @@ public class UserService {
 
     /**
      * nickname을 전달받아 사용자 정보 조회
-     *
      * @param nickname nickname
      * @return 사용자 정보
      */
@@ -215,7 +208,6 @@ public class UserService {
 
     /**
      * 회원가입 처리
-     *
      * @param form 신규 사용자 회원가입 정보
      */
     public void registerUser(UserForm form) {
@@ -243,7 +235,6 @@ public class UserService {
 
     /**
      * 회원가입 이메일 중복 확인
-     *
      * @param username 이메일
      */
     public void duplicateUserByUsername(String username) {
@@ -256,7 +247,6 @@ public class UserService {
 
     /**
      * 회원가입 닉네임 중복 확인
-     *
      * @param nickname 닉네임
      */
     public void duplicateUserByNickname(String nickname) {
