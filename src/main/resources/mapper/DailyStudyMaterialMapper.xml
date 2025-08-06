@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DailyStudyMaterialMapper">
 
     <!--
      void insertStudyMaterial(DailyStudyMaterial dailyStudyMaterial);
     -->
     <insert id="insertStudyMaterial" parameterType="DailyStudyMaterial" useGeneratedKeys="true"
-        keyProperty="dailyStudyMaterialNo" keyColumn="DAILY_STUDY_MATERIAL_NO">
+      keyProperty="dailyStudyMaterialNo" keyColumn="DAILY_STUDY_MATERIAL_NO">
         INSERT INTO KUKOKUK_DAILY_STUDY_MATERIALS
         (SCHOOL, GRADE, MATERIAL_TITLE, KEYWORDS, CONTENT, SOURCE_FILENAME, SEQUENCE)
         VALUES (#{school},

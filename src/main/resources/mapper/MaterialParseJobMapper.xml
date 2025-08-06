@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.MaterialParseJobMapper">
     <!--
       void insertParseJob(MaterialParseJob materialParseJob);
@@ -28,7 +28,7 @@
         KUKOKUK_MATERIAL_PARSE_JOBS
         WHERE URL IN
         <foreach collection="list" item="url"
-            open="(" separator="," close=")" nullable="true">
+          open="(" separator="," close=")" nullable="true">
             #{url}
         </foreach>
     </select>
@@ -104,7 +104,7 @@
              ON
                  J.DAILY_STUDY_MATERIAL_NO = M.DAILY_STUDY_MATERIAL_NO
         ORDER BY MATERIAL_PARSE_JOB_NO
-        LIMIT #{rows}
+            LIMIT #{rows}
     </select>
 
 </mapper>

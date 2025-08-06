@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.kukokuk.mapper.QuizResultMapper">
 
@@ -9,7 +9,6 @@
         <result property="sessionNo" column="SESSION_NO"/>
         <result property="selectedChoice" column="SELECTED_CHOICE"/>
         <result property="isSuccess" column="IS_SUCCESS"/>
-        <result property="isBookmarked" column="IS_BOOKMARKED"/>
         <result property="createdDate" column="CREATED_DATE"/>
         <result property="updatedDate" column="UPDATED_DATE"/>
         <result property="userNo" column="USER_NO"/>
@@ -25,18 +24,20 @@
      int insertQuizResult(QuizResult result);
      -->
     <insert id="insertQuizResult" parameterType="QuizResult">
-        INSERT INTO KUKOKUK_QUIZ_RESULTS
-        (SESSION_NO,
-         SELECTED_CHOICE,
-         IS_SUCCESS,
-         IS_BOOKMARKED,
-         USER_NO, QUIZ_NO)
-        VALUES (#{sessionNo},
-                #{selectedChoice},
-                #{isSuccess},
-                #{isBookmarked},
-                #{userNo},
-                #{quizNo})
+        INSERT INTO KUKOKUK_QUIZ_RESULTS (
+        SESSION_NO,
+        SELECTED_CHOICE,
+        IS_SUCCESS,
+        USER_NO,
+        QUIZ_NO
+        )
+        VALUES (
+        #{sessionNo},
+        #{selectedChoice},
+        #{isSuccess},
+        #{userNo},
+        #{quizNo}
+        )
     </insert>
 
     <!--
@@ -74,24 +75,25 @@
         @Param("userNo") int userNo);
     -->
 
-    <select id="getQuizResultsBySessionNoAndUserNo"
-        parameterType="map"
-        resultType="com.kukokuk.response.QuizResultResponse">
-        SELECT qm.QUIZ_NO          AS quizNo,
-               qm.QUESTION         AS question,
-               qm.OPTION1          AS option1,
-               qm.OPTION2          AS option2,
-               qm.OPTION3          AS option3,
-               qm.OPTION4          AS option4,
-               qr.SELECTED_CHOICE  AS selectedChoice,
-               qm.SUCCESS_ANSWER   AS correctAnswer,
-               qr.IS_SUCCESS = 'Y' AS isCorrect,
-               qm.QUESTION_TYPE    AS questionType
+    <select id="getQuizResultsBySession"
+      parameterType="map"
+      resultType="com.kukokuk.response.QuizResultResponse">
+        SELECT qm.QUIZ_NO         AS quizNo,
+               qm.QUESTION        AS question,
+               qm.OPTION1         AS option1,
+               qm.OPTION2         AS option2,
+               qm.OPTION3         AS option3,
+               qm.OPTION4         AS option4,
+               qr.SELECTED_CHOICE AS selectedChoice,
+               qm.SUCCESS_ANSWER  AS successAnswer,
+               qr.IS_SUCCESS      AS isSuccess,
+               qm.QUESTION_TYPE   AS questionType
         FROM KUKOKUK_QUIZ_RESULTS qr
                  JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
         WHERE qr.SESSION_NO = #{sessionNo}
           AND qr.USER_NO = #{userNo}
         ORDER BY qr.RESULT_NO ASC
     </select>
+
 
 </mapper>

@@ -1,6 +1,7 @@
 package com.kukokuk.service;
 
 import com.kukokuk.exception.AppException;
+import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyQuestUserMapper;
 import com.kukokuk.vo.DailyQuestUser;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,11 @@ public class DailyQuestService {
     private final DailyQuestUserMapper dailyQuestUserMapper;
 
     /**
-     * 해당 일일도전과제 수행 정보의 IS_OBTAINED 컬럼을 "Y"로 변경 - 로그인한 사용자와 해당 도일일도전과제 수행 정본의 소유자가 일치하는지 확인 - 이미
-     * "Y"인 경우 예외 처리
-     *
+     * 해당 일일도전과제 수행 정보의 IS_OBTAINED 컬럼을 "Y"로 변경
+     * - 로그인한 사용자와 해당 도일일도전과제 수행 정본의 소유자가 일치하는지 확인
+     * - 이미 "Y"인 경우 예외 처리
      * @param dailyQuestUserNo 일일도전과제 수행 정보 식별자
-     * @param userNo           현재 로그인한 사용자 식별자
+     * @param userNo 현재 로그인한 사용자 식별자
      */
     public void updateDailyQuestUser(int dailyQuestUserNo, int userNo) {
 

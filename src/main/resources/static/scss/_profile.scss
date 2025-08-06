@@ -93,6 +93,49 @@
             border-radius: var(--bdrs);
         }
     }
+
+    &.study_list {
+        .level_bar {
+            height: 10px;
+
+            .experience_point {
+                background-color: var(--primaryColor);
+            }
+        }
+    }
+
+    &.study_progress {
+        margin: 32px 0;
+        width: 100%;
+
+        .level_bar {
+            height: 20px;
+            position: relative; // 자식이 absolute일 때 위치 기준
+
+        }
+
+        .quiz_marker {
+            position: absolute;
+            top: -2px; // 기본 위치가 level_bar아래이므로
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .line {
+                width: 3px;
+                height: 24px;
+                background-color: var(--darkGreenColor);
+                border-radius: var(--bdrs);
+            }
+
+            .label {
+                font-size: var(--baseFontSize);
+                margin-top: 2px;
+                font-weight: 600;
+            }
+        }
+
+}
 }
 
 .learning_level_info {

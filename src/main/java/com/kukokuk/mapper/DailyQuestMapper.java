@@ -14,4 +14,5 @@ public interface DailyQuestMapper {
      * @return 조회된 일일 도전과제(DailyQuest) 리스트
      */
     List<DailyQuest> getDailyQuestByContentType(String contentType);
+    
 }

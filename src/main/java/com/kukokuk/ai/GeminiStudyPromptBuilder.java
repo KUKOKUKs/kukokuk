@@ -8,12 +8,12 @@ public class GeminiStudyPromptBuilder {
      */
     private static final String STUDY_PROMPT_TEMPLATE = """
           다음은 학생을 위한 학습자료입니다. 사용자의 학습 수준 설명은 다음과 같습니다:
-        
+          
           [학습 수준 설명]
           %s
-        
+          
           이 수준에 맞게 학습자료를 다음과 같은 구조로 재구성해 주세요.
-        
+          
           1. 전체 학습 자료를 이해하기 쉬운 카드(card) 형식으로 3~6개로 나눠 요약해 주세요.
           2. 각 카드는 다음과 같은 구조를 따릅니다:
              - title: 카드 제목
@@ -31,11 +31,12 @@ public class GeminiStudyPromptBuilder {
           5. 마지막으로 서술형 퀴즈 1개를 생성해주세요:
              - question: 서술형 질문
              - evaluation_points: 채점 기준 목록
-        
+          
           **전체 응답은 반드시 아래 JSON 구조를 따라야 합니다.**
-        
+          
           {
             "mainTitle" : "학습의 메인 제목",
+            "mainExplanation" : "학습의 메인 설명",
             "cards": [
               {
                 "title": "카드 제목",
@@ -72,9 +73,9 @@ public class GeminiStudyPromptBuilder {
             }
           }
           }
-        
+          
         이제 아래의 학습자료를 참고하여 위 구조에 맞춰 응답을 작성해 주세요.
-        
+          
         [학습자료]
         %s
         """;

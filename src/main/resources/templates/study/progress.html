@@ -3,15 +3,439 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/center}">
 <div layout:fragment="content">
-    <th:block th:each="card : ${data.cards}">
-        <p th:text="${card.cardIndex}"></p>
-        <p th:text="${card.content}"></p>
-        <p th:text="${card.dailyStudyCardNo}"></p>
-    </th:block>
+
+    <!-- 학습진행바 -->
+    <div class="level_info study_progress">
+        <div class="level_bar">
+            <div class="experience_point" th:style="|width: 10%;|"></div>
+            <div class="quiz_marker" th:style="|left: 60%;|">
+                <div class="line"></div>
+                <div class="label">퀴즈</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 학습 카드 -->
+    <div id="main-study-content">
+        <div class="component study_progress_card">
+            <div class="title">학습제목</div>
+            <div class="paragraph">학습내용 paragraph</div>
+            <div class="example">학습내용예시 example</div>
+            <div class="definition">학습내용정의 definition</div>
+            <div class="quote">학습내용인용 quote</div>
+            <div class="list">학습내용리스트 list</div>
+        </div>
+        <!--    <th:block th:each="card : ${data.cards}">-->
+        <!--      <p th:text="${card.cardIndex}"></p>-->
+        <!--      <p th:text="${card.content}"></p>-->
+        <!--      <p th:text="${card.dailyStudyCardNo}"></p>-->
+        <!--    </th:block>-->
+    </div>
+
+    <!-- 카드 넘기는 버튼 -->
+    <div class="btn_list daily_study">
+        <button class="btn white" id="prev-btn">이전</button>
+        <button class="btn white" id="next-btn">다음</button>
+    </div>
 
 </div>
 
-<script layout:fragment="script">
+<script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
 
+    // 백엔드 서버에서 전달된 data.cards 객체 리스트를 자바스크립트 변수로 바인딩
+    // 자동으로 JSON.stringify()되어 들어간다
+    let cards = /*[[${data.cards}]]*/ [];
+    let dailyStudy = /*[[${data.dailyStudy}]]*/ {};
+    let studyLog = /*[[${data.log}]]*/ {};
+    let studyLogNo = studyLog && studyLog.dailyStudyLogNo ? studyLog.dailyStudyLogNo : '';
+    let quizzes = /*[[${data.quizzes}]]*/ [];
+    let quizLogs = /*[[${data.quizLogs}]]*/ [];
+    console.log(cards);
+    let currentIndex = 0;
+    const cardCount = cards.length;
+    const quizCount = quizzes.length;
+    const totalCount = cardCount + quizCount;
+    console.log(totalCount);
+    console.log('studyLog : ' + studyLog);
+    console.log(quizzes);
+
+    const $prevBtn = $('#prev-btn');
+    const $nextBtn = $('#next-btn');
+    // 전체 카드 콘텐츠를 담을 컨테이너
+    const $mainContentContainer = $('#main-study-content');
+
+    // 화면이 렌더링될 때 한 번 실행할 함수들
+    renderCard();
+    updateOrCreateLog();
+
+    /**
+     *
+     */
+    function updateOrCreateLog() {
+        // SSR로 넘겨받은 이력정보가 없으면, 이력 생성요청
+        if (!studyLog) {
+            $.ajax({
+                url: `/api/studies/logs`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "dailyStudyNo": dailyStudy.dailyStudyNo
+                }),
+                dataType: 'json',
+                success: function (res) {
+                    console.log('학습 이력 생성 성공:', res);
+                    studyLog = res.data; // 전역 변수 갱신
+                    studyLogNo = res.data.dailyStudyLogNo; // 전역 변수 갱신
+                },
+                error: function (err) {
+                    console.error('학습 이력 생성 실패:', err);
+                }
+            })
+        }
+            // 학습이력이 이미 존재하면, 이력 수정요청
+        // request body 없이 전달해서 updatedDate만 수정
+        else {
+            $.ajax({
+                url: `/api/studies/logs/${studyLogNo}`,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({}),
+                dataType: 'json',
+                success: function (res) {
+                    console.log('학습 이력 업데이트 성공:', res);
+                    studyLog = res.data; // 전역 변수 갱신
+                    studyLogNo = res.data.dailyStudyLogNo; // 전역 변수 갱신
+                },
+                error: function (err) {
+                    console.error('학습 이력 업데이트 실패:', err);
+                }
+            });
+        }
+    }
+
+    /**
+     * 현재 인덱스에 해당하는 학습 카드를 화면에 렌더링하는 함수
+     */
+    function renderCard() {
+        // 전체 카드 콘텐츠를 담을 컨테이너의 기존 내용 초기화
+        $mainContentContainer.empty();
+        // 카드 제목, 내용등의 텍스트를 담을 최상위 div
+        const $studyCardDiv = $('<div>').addClass('component study_progress_card');
+
+        // 현재 인덱스의 카드 데이터 추출
+        const card = cards[currentIndex];
+        const content = JSON.parse(card.content); // JSON 문자열형식의 content를 JSON으로 파싱
+        console.log(content);
+
+        // 현재 카드의 제목을 title 스타일을 가진 div 태그로 렌더링
+        const $titleDiv = $('<div>').addClass('title');
+        $titleDiv.text(card.title);
+        $studyCardDiv.append($titleDiv);
+
+        // 현재 카드의 내용 (JSON 리스트)를 순회하면서 타입에 따라 다른 태그로 렌더링
+        content.forEach(item => {
+            const $div = $('<div>').addClass(item.type); // div태그를 하나 만들고, 타입에 맞는 클래스 부여
+
+            // **텍스트**를 strong 태그로 변환
+            const rawContent = typeof item.content === 'string' ? item.content : '';
+            const parsedContent = rawContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            // paragraph, quote 타입이면 기본 p태그 삽입
+            if (item.type === 'paragraph' || item.type === 'quote') {
+                $div.html(`<p>${parsedContent}</p>`);
+            }
+            // list 타입이면 content가 리스트 형식이므로 순회하면서 ul태그내에 li로 삽입
+            else if (item.type === 'list') {
+                const $ul = $('<ul>');
+                item.content.forEach(text => {
+                    // item.content가 list형식이므로 parsedContent 사용 불가. 추가적으로 변환 작업
+                    const parsed = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    $ul.append($('<li>').html(parsed));
+                });
+                $div.append($ul);
+            }
+            // definition 타입이면 : 기준으로 정의와 설명을 구분
+            else if (item.type === 'definition') {
+                const parts = parsedContent.split(':');
+                // 만약 definition 타입의 content에 :가 없는 경우
+                if (parts.length < 2) {
+                    $div.html(`<p>${parsedContent}</p>`);
+                } else {
+                    $div.html(
+                        `<p><strong class="definition_term">${parts[0]}</strong>: ${parts[1]}</p>`);
+                }
+            }
+            // example 타입이면 텍스트앞에 '예시' 문구 추가
+            else if (item.type === 'example') {
+                $div.html(`<p><strong class="example_label">예시</strong>: ${parsedContent}</p>`)
+            }
+            // table 타입이면 표 추가구현
+            else if (item.type === 'table') {
+                $div.html(`<p>표</p>`);
+            }
+
+            // 적절한 HTML가 적용된 div를 allContentDiv(텍스트용 컨테이너)에 append
+            $studyCardDiv.append($div);
+        });
+
+        // allContentDiv를 카드 전체 컨테이너에 append
+        $mainContentContainer.append($studyCardDiv);
+    }
+
+    /**
+     * 현재 인덱스에 맞는 퀴즈를 렌더링하는 함수
+     * 현재 퀴즈에 대한 사용자의 학습 이력이 존재하면, 그것도 고려
+     */
+    function renderQuiz() {
+        // 컨테이너 초기화
+        $mainContentContainer.empty();
+
+        let currentCardIndex = currentIndex - cardCount;
+
+        const quiz = quizzes[currentCardIndex];
+        let quizLog = null;
+        let studyQuizLogNo = null;
+
+        // 해당 퀴즈에 대한 퀴즈 이력이 있는지 확인 및 추출
+        quizLogs.forEach(log => {
+            if (log.dailyStudyQuizNo === quiz.dailyStudyQuizNo) {
+                quizLog = log;
+            }
+        });
+        console.log('quiz : ' + quiz);
+        console.log('quizLog : ' + quizLog);
+
+        // 보기목록 컨텐츠 구성
+        let optionHtml = '';
+        for (let i = 1; i <= 4; i++) {
+            const optionNumber = quiz[`option${i}`];
+            let isLogSelected = false;
+            if (quizLog) {
+                isLogSelected = (quizLog.selectedChoice === i);
+                studyQuizLogNo = quizLog.dailyStudyQuizLogNo;
+            }
+            optionHtml += `
+        <div class="component study_quiz_option ${isLogSelected ? 'selected' : ''}"
+        data-option-number="${i}">
+          ${i}. ${optionNumber}
+        </div>
+      `;
+        }
+
+        let quizHtml = `
+      <div class="study_quiz_wrapper" id="quiz-container"
+        data-study-quiz-no="${quiz.dailyStudyQuizNo}"
+        data-study-quiz-log-no="${studyQuizLogNo !== null ? studyQuizLogNo : ''}">
+      <!-- 퀴즈 번호 및 제목 -->
+      <div class="study_quiz_info">
+        <span class="study_quiz_number">${currentIndex + 1}</span>
+        <span class="study_quiz_text">문제</span>
+      </div>
+
+      <!-- 문제 박스 -->
+      <div class="study_quiz_question_box">
+        ${quiz.question}
+      </div>
+
+      <!-- 보기 리스트 -->
+      <div class="study_quiz_option_wrapper">
+        <div class="study_quiz_info">
+          <div class="icon_btn">
+            <iconify-icon icon="icon-park:check-one"></iconify-icon>
+          </div>
+          <span class="study_quiz_text">보기</span>
+        </div>
+      </div>
+      <div class="study_quiz_option_list">
+        ${optionHtml}
+      </div>
+
+      <!-- 정답 제출 버튼 -->
+      <button type="button" class="btn primary study_quiz_submit_btn disabled" id="quiz-submit-btn">정답 제출</button>
+    </div>
+    `;
+
+        $mainContentContainer.append(quizHtml);
+    }
+
+    /**
+     *
+     */
+    $prevBtn.click(() => {
+        $nextBtn.removeClass('blink');
+
+        if (currentIndex > 0) {
+            currentIndex -= 1;
+            console.log(currentIndex);
+            renderContent();
+        }
+    })
+
+    /**
+     *
+     */
+    $nextBtn.click(() => {
+        $nextBtn.removeClass('blink');
+
+        // 마지막 인덱스 전까지
+        if (currentIndex < totalCount - 1) {
+            currentIndex += 1;
+            console.log(currentIndex);
+            renderContent();
+        }
+    })
+
+    /**
+     * currentIndex에 맞는 콘텐츠를 렌더링
+     */
+    function renderContent() {
+        // 현재 인덱스가 카드 마지막 인덱스 이하라면, 카드 렌더링
+        if (currentIndex <= cardCount - 1) {
+            renderCard();
+        }
+        // 현재 인덱스가 카드 마지막 인덱스를 초과하면, 퀴즈 렌더링
+        else {
+            renderQuiz();
+        }
+        renderBtn();
+    }
+
+    function renderBtn() {
+        if (currentIndex === cardCount - 1) {
+            $nextBtn.removeClass("white");
+            $nextBtn.addClass("primary");
+            $nextBtn.text("퀴즈 풀러가기");
+        } else if (currentIndex === totalCount - 1) {
+            $nextBtn.removeClass("white");
+            $nextBtn.addClass("primary");
+            $nextBtn.addClass("study_end_btn");
+            $nextBtn.text("학습 끝내기");
+        } else {
+            $nextBtn.removeClass("primary");
+            $nextBtn.addClass("white");
+            $nextBtn.text("다음");
+        }
+    }
+
+    /**
+     * 퀴즈 제출 버튼 클릭시 발생하는 이벤트
+     */
+    $(document).on('click', '#quiz-submit-btn', function () {
+        const $quizContainer = $('#quiz-container');
+        const studyQuizNo = $quizContainer.attr('data-study-quiz-no');
+        const studyQuizLogNo = $quizContainer.attr('data-study-quiz-log-no');
+        const selectedChoice = $('.study_quiz_option.selected').attr('data-option-number');
+        console.log(studyQuizNo, selectedChoice);
+
+        // 이미 퀴즈 이력이 존재하면 수정요청
+        if (studyQuizLogNo && studyQuizLogNo !== '') {
+            $.ajax({
+                url: `/api/studies/quizzes/logs/${studyQuizLogNo}`,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "selectedChoice": selectedChoice
+                }),
+                dataType: 'json',
+                success: function (res) {
+                    console.log('퀴즈 수정 성공:', res);
+                    const updatedLog = res.data;
+
+                    // quizLogs에서 해당 로그를 찾아 업데이트
+                    const indexToUpdate = quizLogs.findIndex(
+                        log => log.dailyStudyQuizLogNo === updatedLog.dailyStudyQuizLogNo);
+                    if (indexToUpdate !== -1) {
+                        quizLogs[indexToUpdate] = updatedLog;
+                    }
+
+                    // 사용자의 정답/오답 여부에 따라 selected된 보기에 스타일 추가
+                    markQuizResult(updatedLog.isSuccess);
+                },
+                error: function (err) {
+                    console.error('퀴즈 수정 실패:', err);
+                }
+            });
+        }
+        // 퀴즈 이력이 없으면 생성요청 및 quizLogs에 생성된 퀴즈 이력 추가
+        else {
+            $.ajax({
+                url: '/api/studies/quizzes/logs',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "dailyStudyQuizNo": studyQuizNo,
+                    "selectedChoice": selectedChoice
+                }),
+                dataType: 'json',
+                success: function (res) {
+                    const newLog = res.data;
+                    console.log(res.data);
+                    // quizLogs에 넣어야 이 퀴즈화면이 다시 렌더링될 때 이력을 표시할 수 있음
+                    quizLogs.push(newLog);
+                    // 퀴즈컨테이너의 이력번호 속성도 변경해야 다시 요청보냈을 때 생성대신 수정 요청 전달 가능
+                    $quizContainer.attr('data-study-quiz-log-no', newLog.dailyStudyQuizLogNo);
+
+                    // 사용자의 정답/오답 여부에 따라 selected된 보기에 스타일 추가
+                    markQuizResult(newLog.isSuccess);
+                },
+                error: function (err) {
+                    console.error('퀴즈 생성 실패:', err);
+                }
+            });
+        }
+    });
+
+    /**
+     * 퀴즈 렌더링 화면에서 option 버튼 클릭시 selected 되도록
+     */
+    $(document).on('click', '.study_quiz_option', function () {
+        console.log('study_quiz_option 선택');
+        $(this).siblings().removeClass('selected');
+        $(this).addClass('selected');
+        $('#quiz-submit-btn').removeClass('disabled');
+    });
+
+    /**
+     * isSuccess 여부로 현재 selected된 보기에 오답/정답 스타일 추가하는 함수
+     */
+    function markQuizResult(isSuccess) {
+        // 모든 보기에서 기존 정답/오답 스타일 제거
+        $('.study_quiz_option').removeClass('wrong correct');
+
+        // 사용자가 선택한 보기가 정답이면
+        if (isSuccess === 'Y') {
+            $('.study_quiz_option.selected').addClass('correct');
+            $nextBtn.addClass('blink');
+
+        } else if (isSuccess === 'N') {
+            $('.study_quiz_option.selected').addClass('wrong');
+        }
+    }
+
+    /**
+     * 학습 끝내기 버튼을 클릭했을 때의 이벤트 핸들러
+     */
+    $(document).on('click', '.study_end_btn', function () {
+        $.ajax({
+            url: `/api/studies/logs/${studyLogNo}`,
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                "studiedCardCount": cardCount,
+                "status": "COMPLETED"
+            }),
+            dataType: 'json',
+            success: function (res) {
+                console.log('학습 이력 업데이트 성공: ', res);
+
+                // 학습 완료 페이지로 이동
+                window.location.href = `/study/${dailyStudy.dailyStudyNo}/complete`;
+            }
+
+        });
+    })
+    /*]]>*/
 </script>
+
 </html>

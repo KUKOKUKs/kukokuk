@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DailyStudyQuizLogMapper">
 
     <resultMap id="DailyStudyQuizLogResultMap" type="DailyStudyQuizLog">
@@ -52,8 +52,7 @@
       void createStudyQuizLog(DailyStudyQuizLog dailyStudyQuizLog);
     -->
     <insert id="createStudyQuizLog" parameterType="DailyStudyQuizLog"
-        useGeneratedKeys="true" keyColumn="DAILY_STUDY_QUIZ_LOG_NO"
-        keyProperty="dailyStudyQuizLogNo">
+      useGeneratedKeys="true" keyColumn="DAILY_STUDY_QUIZ_LOG_NO" keyProperty="dailyStudyQuizLogNo">
         INSERT INTO KUKOKUK_DAILY_STUDY_QUIZ_LOGS
             (IS_SUCCESS, SELECTED_CHOICE, USER_NO, DAILY_STUDY_QUIZ_NO)
         VALUES (#{isSuccess},

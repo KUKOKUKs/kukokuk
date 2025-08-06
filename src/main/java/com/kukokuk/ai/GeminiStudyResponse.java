@@ -1,5 +1,6 @@
 package com.kukokuk.ai;
 
+import com.kukokuk.ai.GeminiStudyResponse.Card.BodyElement;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.Setter;
 public class GeminiStudyResponse {
 
     private String mainTitle;
+    private String mainExplanation;
     private List<Card> cards;
     private List<Quiz> quizzes;
     private EssayQuiz essay;

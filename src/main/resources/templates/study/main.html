@@ -6,13 +6,92 @@
 
 -->
 <div layout:fragment="content">
-    <!--  <th:block th:each="study : ${data.getDailyStudies()}">-->
-    <!--    <p th:text="${study.getDailyStudyNo()}">냠냠</p>-->
-    <!--  </th:block>-->
-    <!--  <p>냠냠</p>-->
-    <!--  <p th:text="${data.getDailyQuests().get(0).getContentText()}">냠냠</p>-->
-    <!--  <p th:text="${data.getDailyQuestUsers().get(0).getDailyQuestUserNo()}">냠냠</p>-->
-    <button type="button" id="hint-item-btn" data-daily-quest-user-no="${}">힌트 획득</button>
+    <!--  <button type="button" id="hint-item-btn" data-daily-quest-user-no="${}">힌트 획득</button>-->
+
+    <div id="main-content" class="main_container">
+        <div class="page_title "> 일일학습 목록</div>
+        <div class="study_list_container">
+            <!-- 일일학습 카드가 동적으로 추가되는 부분 -->
+        </div>
+    </div>
+
+    <!-- 서브콘텐츠 -->
+    <div id="sub-content" class="main_container">
+        <!-- 사용자 프로필 컴포넌트 -->
+        <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
+
+        <!-- 도전과제 리스트 컴포넌트 -->
+        <div class="component" id="daily-quest-list">
+            <div class="component_list_container">
+                <div class="component_title">
+                    도전과제
+                </div>
+                <div class="component_list">
+                    <div class="daily_quest_item" th:each="quest : ${data.dailyQuestDtos}">
+                        <span th:text="${quest.getContentText()}">오늘의 일일학습 완료하기</span>
+                        <div class="hint-btn-container">
+                            <!-- 사용자의 도전과제 수행 이력이 존재하지 않는 경우  -->
+                            <th:block th:if="${!quest.isSuccessed()}">
+                                <button class="hint_icon_btn deactive disabled">
+                                    <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
+                                </button>
+                            </th:block>
+                            <!-- 사용자의 도전과제 수행 이력이 존재하는 경우  -->
+                            <th:block th:if="${quest.isSuccessed()}">
+                                <!-- 사용자가 아이템을 획득하기 전일 경우 -->
+                                <th:block th:if="${quest.dailyQuestUser.isObtained == 'N'}">
+                                    <button class="hint_icon_btn active"
+                                            th:attr="data-quest-user-no=${quest.dailyQuestUser.dailyQuestUserNo}">
+                                        <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
+                                    </button>
+                                </th:block>
+                                <!-- 사용자가 아이템을 획득한 후일 경우 -->
+                                <th:block th:if="${quest.dailyQuestUser.isObtained == 'Y'}">
+                                    <div class="hint_obtained_icon">
+                                        <!-- 획득완료 아이콘으로 변경 -->
+                                        <iconify-icon icon="mingcute:check-fill"></iconify-icon>
+                                    </div>
+                                </th:block>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 학습이력 리스트 컴포넌트 -->
+        <div class="component" id="study-history-list">
+            <div class="component_list_container">
+                <div class="component_title">
+                    학습 히스토리
+                </div>
+                <div class="component_list">
+                    <div class="study_history_item" th:each="log : ${data.getDailyStudyLogs()}">
+                        <div th:text="${log.dailyStudy.title}">일일학습 제목</div>
+                        <div class="history_info"
+                             th:classappend="${log.status == 'COMPLETED'} ? 'completed' : 'in_progress'">
+                            <!-- in_progress, completed -->
+                            <span
+                                th:text="${log.status == 'COMPLETED'} ? '학습완료' : '학습중'">학습 상태</span>
+                            <!-- COMPLETED 상태일 경우 -->
+                            <span th:if="${log.status == 'COMPLETED'}"
+                                  th:text="'(' + ${#dates.format(log.updatedDate, 'yyyy/MM/dd')} + ')'">
+              </span>
+                            <!-- IN_PROGRESS 상태 -->
+                            <span th:if="${log.status == 'IN_PROGRESS'}"
+                                  th:text="'(' + ${#dates.format(log.updatedDate, 'yyyy/MM/dd')} + ' ~)'">
+              </span>
+                            <span class="icon_btn tiny">
+                <iconify-icon icon="ep:arrow-right-bold"></iconify-icon>
+              </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 
     <th:block layout:fragment="script">
         <!-- 인증된 사용자일떄만 학습자료 목록 조회 ajax 실행 -->
@@ -24,12 +103,7 @@
             </script>
         </th:block>
         <script>
-            /*
-            console.log("getDailyStudies : ", `[[${data.getDailyQuests()}]]`);
-            console.log("getDailyQuestUsers : ", `[[${data.getDailyQuestUsers()}]]`);
-            console.log("getDailyStudyLogs : ", `[[${data.getDailyStudyLogs()}]]`);
-            /*
-             */
+            const studyListContainer = $('.study_list_container');
 
             /**
              * 화면이 렌더링되는 시점에 사용자의 학습자료 목록 조회 및 조회할 학습자료 부족시 추가생성하는 API 요청
@@ -43,7 +117,47 @@
                     dataType: 'json',
                     success: function (res) {
                         console.log(res);
-                        // 화면 표현
+
+                        const studyList = res.data;
+
+                        studyList.forEach((study, index) => {
+                            // 학습 상태에 따라 표현할 텍스트 설정
+                            let statusText = '';
+                            switch (study.status) {
+                                case 'NOT_STARTED':
+                                    statusText = '오늘의 학습 시작하기';
+                                    break;
+                                case 'IN_PROGRESS':
+                                    statusText = '지난 학습 이어하기';
+                                    break;
+                            }
+
+                            // index가 0일때만 표시할 버튼 html구성
+                            const buttons = index === 0 ? `
+                <div class="study_btn_list">
+                  <a href="/study/${study.dailyStudyNo}" class="btn dark">${statusText}</a>
+                  <button class="btn white">AI 피드백 기반 논술형 퀴즈 풀기</button>
+                </div>
+              ` : ``;
+
+                            const studyContent = `
+                <div class="daily_study_card ${index === 0 ? 'no_cursor'
+                                : ''}" data-study-no="${study.dailyStudyNo}" data-study-status="${statusText}">
+                  <div class="study_info">
+                    <div class="study_title">${study.title}</div>
+                    <div class="study_content">${study.explanation}</div>
+                  </div>
+                  <div class="level_info study_list">
+                    <div class="level_bar">
+                      <div class="experience_point" style="width: ${study.progressRate}%"></div>
+                    </div>
+                  </div>
+                  ${buttons}
+                </div>
+              `;
+
+                            studyListContainer.append(studyContent);
+                        });
                     },
                     error: function (err) {
                         console.log(err);
@@ -52,11 +166,40 @@
             }
 
             /**
-             * 힌트아이템 버튼 클릭 시 힌트 획득하는 API 요청
+             * 학습 자료 카드를 클릭했을 때, 안에 study_btn_list가 없다면 동적으로 추가하는 이벤트 핸들러
              */
-            $('#hint-item-btn').click(function () {
-                const dailyQuestUserNo = $(this).attr("data-daily-quest-user-no");
+            $(document).on('click', '.daily_study_card', function () {
 
+                // 이미 버튼이 있으면 추가하지 않음
+                if ($(this).find('.study_btn_list').length === 0) {
+                    // 커스텀 속성에서 상태 텍스트 가져오기
+                    const statusText = $(this).attr('data-study-status');
+                    const dailyStudyNo = $(this).attr('data-study-no');
+
+                    // 버튼 HTML
+                    const buttonsHtml = `
+            <div class="study_btn_list">
+              <a href="/study/${dailyStudyNo}" class="btn dark">${statusText}</a>
+              <button class="btn white">AI 피드백 기반 논술형 퀴즈 풀기</button>
+            </div>
+          `;
+
+                    // 마지막에 append
+                    $(this).append(buttonsHtml);
+
+                    // 현재 카드의 포인터 커서가 동작하지 않도록 함
+                    $(this).addClass('no_cursor');
+                }
+            })
+
+            /**
+             * 활성화된 힌트아이템 버튼 클릭 시 힌트 획득하는 API 요청
+             */
+            $('.hint_icon_btn.active').click(function () {
+                const dailyQuestUserNo = $(this).attr("data-quest-user-no");
+                const $btn = $(this);
+
+                // 힌트 획득상태로 변경하는 API 요청
                 $.ajax({
                     url: `/api/daily-quests/${dailyQuestUserNo}`,
                     type: 'PUT',
@@ -64,16 +207,25 @@
                     dataType: 'json',
                     success: function (res) {
                         console.log(res);
-                        // 화면 표현
+
+                        // 성공하면 해당 버튼을 hint_obtained_icon으로 교체
+                        const obtainedIcon = `
+              <div class="hint_obtained_icon">
+                <iconify-icon icon="mingcute:check-fill"></iconify-icon>
+              </div>
+            `;
+
+                        // AKAX 내부에서는 $(this)의 스코프가 바뀌므로 미리 지정한 변수 사용
+                        $btn.closest('.hint-btn-container').empty().append(obtainedIcon);
+
                     },
                     error: function (err) {
                         console.log(err);
+                        alert('이미 획득한 힌트입니다');
                     }
                 })
             });
         </script>
-
-
 
     </th:block>
 </div>
