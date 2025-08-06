@@ -45,7 +45,6 @@ public interface QuizMasterMapper {
     List<QuizMaster> getQuizMastersForSpeed(@Param("usageCount") int usageCount,
         @Param("limit") int limit);
 
-
     /**
      * 특정 퀴즈 번호의 정답 번호를 조회한다.
      *
@@ -53,5 +52,21 @@ public interface QuizMasterMapper {
      * @return 정답 선택 번호
      */
     Integer getCorrectChoiceByQuizNo(int quizNo);
+
+    /**
+     * 난이도 및 유형에 따라 퀴즈 목록을 조회한다.
+     *
+     * @param difficulty   난이도 ('상', '중', '하')
+     * @param questionType 문제 유형 ('뜻', '단어')
+     * @return 퀴즈 목록
+     */
+    List<QuizMaster> getQuizListByDifficultyAndType(
+        @Param("difficulty") String difficulty,
+        @Param("questionType") String questionType
+    );
+
+    int updatePlusUserHintCount(int userNo);
+
+    int updateMinusUserHintCount(int userNo);
 }
 

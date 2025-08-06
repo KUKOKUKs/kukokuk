@@ -41,6 +41,7 @@ public class QuizProcessService {
         summary.setCorrectAnswers(0);  // 초기값
         summary.setAverageTimePerQuestion(totalQuestion == 0 ? 0f : summary.getTotalTimeSec() / totalQuestion);
         summary.setPercentile(0); // 추후 랭킹 계산용
+        summary.setQuizMode("speed");
 
         log.info("[summary 설정 완료] {}", summary);
 

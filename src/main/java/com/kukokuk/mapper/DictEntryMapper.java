@@ -20,6 +20,7 @@ public interface DictEntryMapper {
 
     /**
      * 특정 ENTRY_NO를 제외하고 랜덤하게 사전 데이터를 조회한다.
+     *
      * @param wordList 제외할 정답 ENTRY_NO
      * @return 무작위로 선택된 단어 리스트
      */

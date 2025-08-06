@@ -157,5 +157,17 @@ public class QuizService {
         return quizMasterMapper.getQuizMastersForSpeed(usageCount, limit);
     }
 
+    /**
+     * 단계별 퀴즈용 문제 10개 조회
+     *
+     * @param difficulty 난이도 ("상", "중", "하")
+     * @param questionType 문제 유형 ("뜻", "단어")
+     * @return QuizMaster 리스트
+     */
+    public List<QuizMaster> getLevelQuizList(String difficulty, String questionType) {
+        log.info("단계별 퀴즈 요청 - 난이도: {}, 유형: {}", difficulty, questionType);
+        return quizMasterMapper.getQuizListByDifficultyAndType(difficulty, questionType);
+    }
+
 
 }

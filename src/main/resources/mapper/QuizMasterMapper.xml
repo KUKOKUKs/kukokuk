@@ -73,33 +73,52 @@
 
     <!-- QuizMasterMapper.xml -->
     <select id="getQuizMastersForSpeed" resultMap="QuizMasterMap">
-        SELECT
-            quiz_no,
-            question,
-            option1,
-            option2,
-            option3,
-            option4,
-            success_answer,
-            question_type,
-            entry_no,
-            usage_count
+        SELECT quiz_no,
+               question,
+               option1,
+               option2,
+               option3,
+               option4,
+               success_answer,
+               question_type,
+               entry_no,
+               usage_count
         FROM KUKOKUK_QUIZ_MASTERS
         WHERE usage_count &lt; #{usageCount}
         ORDER BY RAND()
         LIMIT #{limit}
     </select>
 
- <!--
-    * 특정 퀴즈 번호의 정답 번호를 조회한다.
-    * @param quizNo 퀴즈 번호
-    * @return 정답 선택 번호
-    int getCorrectChoiceByQuizNo(int quizNo);
- -->
+    <!--
+       * 특정 퀴즈 번호의 정답 번호를 조회한다.
+       * @param quizNo 퀴즈 번호
+       * @return 정답 선택 번호
+       int getCorrectChoiceByQuizNo(int quizNo);
+    -->
     <select id="getCorrectChoiceByQuizNo" resultType="java.lang.Integer">
         SELECT success_answer
         FROM KUKOKUK_QUIZ_MASTERS
         WHERE quiz_no = #{quizNo}
+    </select>
+
+    <select id="getQuizListByDifficultyAndType" resultMap="QuizMasterMap">
+        SELECT *
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE USAGE_COUNT &gt;= 20
+        AND QUESTION_TYPE = #{questionType}
+        <choose>
+            <when test="difficulty == '상'">
+                AND ACCURACY_RATE &lt;= 30
+            </when>
+            <when test="difficulty == '중'">
+                AND ACCURACY_RATE &gt; 30 AND ACCURACY_RATE &lt;= 60
+            </when>
+            <when test="difficulty == '하'">
+                AND ACCURACY_RATE &gt; 60
+            </when>
+        </choose>
+        ORDER BY RAND()
+        LIMIT 10
     </select>
 
 </mapper>
