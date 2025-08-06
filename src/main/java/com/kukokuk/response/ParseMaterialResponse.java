@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ParseMaterialResponse {
-  private List<String> skippedUrls;
-  private List<String> enqueuedUrls;
+
+    private List<String> skippedUrls;
+    private List<String> enqueuedUrls;
 }

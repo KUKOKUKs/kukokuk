@@ -9,6 +9,14 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
 
     /**
+     * 사용자 프로필 이미지 정보 업데이트
+     * @param profileFilename 프로필 이미지 파일명
+     * @param userNo 사용자 번호
+     */
+    void updateUserProfileImage(@Param("profileFilename") String profileFilename
+        , @Param("userNo") int userNo);
+
+    /**
      * 사용자 정보 업데이트
      * @param user 사용자 정보
      */
@@ -25,7 +33,7 @@ public interface UserMapper {
      * @param userNo 사용자 번호
      * @param roleName 권한 이름
      */
-    void insertUserRole(@Param(("userNo")) int userNo
+    void insertUserRole(@Param("userNo") int userNo
         , @Param("roleName") String roleName);
 
     /**

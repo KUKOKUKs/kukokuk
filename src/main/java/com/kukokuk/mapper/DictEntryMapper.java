@@ -13,7 +13,6 @@ public interface DictEntryMapper {
 
     /**
      * 특정 ENTRY_NO에 해당하는 사전 데이터를 조회한다.
-     *
      * @param entryNo 단어(표제어)의 고유 번호
      * @return 해당 단어의 사전 정보
      */

@@ -1,11 +1,8 @@
 package com.kukokuk.mapper;
 
 import com.kukokuk.vo.DailyQuest;
-import com.kukokuk.vo.DailyQuestUser;
 import java.util.List;
-import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface DailyQuestMapper {
@@ -16,4 +13,5 @@ public interface DailyQuestMapper {
      * @return 조회된 일일 도전과제(DailyQuest) 리스트
      */
     List<DailyQuest> getDailyQuestByContentType(String contentType);
+    
 }

@@ -15,7 +15,7 @@ export function apiErrorProcessByXhr(responseJSON) {
             alert(message);
         } else {
             alert(`알 수 없는 오류가 발생했습니다.\n에러코드: ${status})\n페이지를 새로고침합니다.`);
-            location.reload();
         }
+        location.reload();
     }
 }

@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class AdminController {
 
-  private final StudyService studyService;
+    private final StudyService studyService;
 
-  @GetMapping("/parse-materials")
-  public String parseMaterialView(Model model){
-    List<MaterialParseJob> jobs = studyService.getMaterialParseJobs();
-    model.addAttribute("parseJobs", jobs);
+    @GetMapping("/parse-materials")
+    public String parseMaterialView(Model model) {
+        List<MaterialParseJob> jobs = studyService.getMaterialParseJobs();
+        model.addAttribute("parseJobs", jobs);
 
-    return "admin/parse-materials";
-  }
+        return "admin/parse-materials";
+    }
 
 }

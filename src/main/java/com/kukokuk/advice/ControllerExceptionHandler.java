@@ -31,21 +31,23 @@ public class ControllerExceptionHandler {
 
     // DB 관련 예외 처리용 (DB 작업 중 SQLException, 무결성 제약 위반, 쿼리 오류 등 발생 시)
     @ExceptionHandler(DataAccessException.class)
-    public String handlerDataAccessException(DataAccessException ex, HttpServletResponse response, Model model) {
+    public String handlerDataAccessException(DataAccessException ex, HttpServletResponse response,
+        Model model) {
         return buildErrorPage(response, model, 500, "Database Error", ex.getMessage());
     }
 
     // 런타임 예외 처리용 (널 포인터, 잘못된 형변환, 배열 인덱스 오류 등)
     // NullPointerException, IllegalArgumentException 등 일반적인 예기치 못한 에러
     @ExceptionHandler(RuntimeException.class)
-    public String handlerRuntimeException(RuntimeException ex, HttpServletResponse response, Model model) {
+    public String handlerRuntimeException(RuntimeException ex, HttpServletResponse response,
+        Model model) {
         return buildErrorPage(response, model, 500, "Runtime Error", ex.getMessage());
     }
 
     // @Valid, @Validated 실패 시 처리 (요청 값에 대해 유효성 검사를 통과하지 못한 경우)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public String handleBadRequest(MethodArgumentNotValidException ex, HttpServletResponse response, Model model) {
+    public String handleBadRequest(MethodArgumentNotValidException ex, HttpServletResponse response,
+        Model model) {
         return buildErrorPage(response, model, 400, "Bad Request", "입력 값이 올바르지 않습니다.");
     }
-
 }

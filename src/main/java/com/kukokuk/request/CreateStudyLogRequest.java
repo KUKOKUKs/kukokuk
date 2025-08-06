@@ -8,5 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class CreateStudyLogRequest {
-  private int dailyStudyNo;
+
+    private int dailyStudyNo;
 }

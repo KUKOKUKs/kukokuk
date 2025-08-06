@@ -3,10 +3,8 @@ package com.kukokuk.response;
 import org.springframework.http.ResponseEntity;
 
 /**
- * HTTP 응답(ResponseEntity)을 조작하는 역할
- * HTTP 상태 코드 설정
- * ResponseEntity를 이용한 HTTP 응답 포장
- * 내부에는 항상 ApiResponse를 넣지만, 포장은 HTTP 컨트롤러의 책임
+ * HTTP 응답(ResponseEntity)을 조작하는 역할 HTTP 상태 코드 설정 ResponseEntity를 이용한 HTTP 응답 포장 내부에는 항상
+ * ApiResponse를 넣지만, 포장은 HTTP 컨트롤러의 책임
  */
 public class ResponseEntityUtils {
 

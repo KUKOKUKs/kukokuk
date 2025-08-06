@@ -1,6 +1,5 @@
 package com.kukokuk.ai;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -27,27 +26,29 @@ import lombok.Setter;
 @Setter
 public class GeminiRequest {
 
-  private List<Content> contents;
+    private List<Content> contents;
 
-  // 전달할 text 필드 값을 받는 생성자
-  public GeminiRequest(String text){
-    Part part = new Part(text);
-    // 요소가 하나인 경우에는 Arrays.asList() 대신 Collections.singletonList()
-    Content content = new Content(Collections.singletonList(part));
+    // 전달할 text 필드 값을 받는 생성자
+    public GeminiRequest(String text) {
+        Part part = new Part(text);
+        // 요소가 하나인 경우에는 Arrays.asList() 대신 Collections.singletonList()
+        Content content = new Content(Collections.singletonList(part));
 
-    this.contents = Collections.singletonList(content);
-  }
+        this.contents = Collections.singletonList(content);
+    }
 
-  // static 내부클래스는 외부 클래스 객체의 생성 여부와 상관없이 사용 가능
-  @Getter
-  @AllArgsConstructor
-  private static class Content {
-    private List<Part> parts;
-  }
+    // static 내부클래스는 외부 클래스 객체의 생성 여부와 상관없이 사용 가능
+    @Getter
+    @AllArgsConstructor
+    private static class Content {
 
-  @Getter
-  @AllArgsConstructor
-  private static class Part {
-    public String text;
-  }
+        private List<Part> parts;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private static class Part {
+
+        public String text;
+    }
 }
