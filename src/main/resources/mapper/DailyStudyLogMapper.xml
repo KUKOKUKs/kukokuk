@@ -106,18 +106,18 @@
      void createStudyLog(DailyStudyLog dailyStudyLog);
     -->
     <insert id="createStudyLog" parameterType="DailyStudyLog"
-      useGeneratedKeys="true" keyColumn="DAILY_STUDY_LOG_NO" keyProperty="dailyStudyLogNo">
-        INSERT INTO
-            KUKOKUK_DAILY_STUDY_LOGS
-            (
-             DAILY_STUDY_NO,
-             USER_NO
-            )
-        VALUES
-            (
-             #{dailyStudyNo},
-             #{userNo}
-            )
+        useGeneratedKeys="true" keyColumn="DAILY_STUDY_LOG_NO" keyProperty="dailyStudyLogNo">
+            INSERT INTO
+                KUKOKUK_DAILY_STUDY_LOGS
+                (
+                 DAILY_STUDY_NO,
+                 USER_NO
+                )
+            VALUES
+                (
+                 #{dailyStudyNo},
+                 #{userNo}
+                )
     </insert>
 
     <!--

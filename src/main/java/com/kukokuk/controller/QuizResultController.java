@@ -21,8 +21,9 @@ public class QuizResultController {
 
     /**
      * 특정 세션의 퀴즈 결과를 JSON으로 반환한다.
+     *
      * @param sessionNo 세션 번호0
-     * @param userNo 사용자 번호
+     * @param userNo    사용자 번호
      * @return 문제별 결과 리스트 (JSON)
      */
     @GetMapping("/{sessionNo}")

@@ -17,10 +17,12 @@ public class QuizController {
 
     /**
      * 랜덤 퀴즈를 N개 생성 요청
+     *
      * @param count 생성할 퀴즈 수
      */
     @GetMapping("/generate-random")
-    public ResponseEntity<String> generateRandomQuizSet(@RequestParam(defaultValue = "100") int count) {
+    public ResponseEntity<String> generateRandomQuizSet(
+        @RequestParam(defaultValue = "100") int count) {
 
         quizService.insertRandomQuizBulk(count);
         return ResponseEntity.ok(count + "개의 랜덤 퀴즈가 생성되었습니다.");

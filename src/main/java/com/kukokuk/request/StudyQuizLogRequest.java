@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class StudyQuizLogRequest {
-  private Integer dailyStudyQuizNo; // null 허용 (수정시 필요X)
-  private int selectedChoice;
+
+    private Integer dailyStudyQuizNo; // null 허용 (수정시 필요X)
+    private int selectedChoice;
 }

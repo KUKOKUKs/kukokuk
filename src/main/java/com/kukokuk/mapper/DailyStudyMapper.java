@@ -28,12 +28,12 @@ public interface DailyStudyMapper {
         @Param("condition") Map<String, Object> condition);
 
     // 학습자료를 생성
-  void insertDailyStudy(DailyStudy dailyStudy);
+    void insertDailyStudy(DailyStudy dailyStudy);
 
-  /**
-   * 학습자료 번호로 학습자료를 조회
-   * @param dailyStudyNo 학습자료 번호
-   * @return 학습자료
-   */
-  DailyStudy getDailyStudyByNo(int dailyStudyNo);
+    /**
+    * 학습자료 번호로 학습자료를 조회
+    * @param dailyStudyNo 학습자료 번호
+    * @return 학습자료
+    */
+    DailyStudy getDailyStudyByNo(int dailyStudyNo);
 }

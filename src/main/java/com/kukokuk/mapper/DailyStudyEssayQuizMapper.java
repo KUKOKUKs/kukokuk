@@ -6,5 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface DailyStudyEssayQuizMapper {
 
-  void insertdailyStudyEssayQuiz(DailyStudyEssayQuiz dailyStudyEssayQuiz);
+    void insertdailyStudyEssayQuiz(DailyStudyEssayQuiz dailyStudyEssayQuiz);
 }

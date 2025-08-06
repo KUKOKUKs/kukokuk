@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AppConfig {
+
     @Bean
     public ModelMapper modelMapper() {
         // ModelMapper 객체를 생성한다.
