@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.kukokuk.mapper.QuizSessionSummaryMapper">
 
@@ -16,6 +16,7 @@
         <result property="correctAnswers" column="CORRECT_ANSWERS"/>
         <result property="percentile" column="PERCENTILE"/>
         <result property="averageTimePerQuestion" column="AVERAGE_TIME_PER_QUESTION"/>
+        <result property="quizMode" column="QUIZ_MODE"/>
         <result property="createdDate" column="CREATED_DATE"/>
         <result property="updatedDate" column="UPDATED_DATE"/>
     </resultMap>
@@ -28,25 +29,23 @@
         @return insert된 행 수 (성공 시 1)
     -->
     <insert id="insertQuizSessionSummary" parameterType="QuizSessionSummary"
-      useGeneratedKeys="true" keyProperty="sessionNo">
-        INSERT INTO KUKOKUK_QUIZ_SESSION_SUMMARIES (
-            USER_NO,
-            TOTAL_QUESTION,
-            TOTAL_TIME_SEC,
-            CORRECT_ANSWERS,
-            PERCENTILE,
-            AVERAGE_TIME_PER_QUESTION,
-            CREATED_DATE
-        )
-        VALUES (
-                   #{userNo},
-                   #{totalQuestion},
-                   #{totalTimeSec},
-                   #{correctAnswers},
-                   #{percentile},
-                   #{averageTimePerQuestion},
-                   NOW()
-               )
+        useGeneratedKeys="true" keyProperty="sessionNo">
+        INSERT INTO KUKOKUK_QUIZ_SESSION_SUMMARIES (USER_NO,
+                                                    TOTAL_QUESTION,
+                                                    TOTAL_TIME_SEC,
+                                                    CORRECT_ANSWERS,
+                                                    PERCENTILE,
+                                                    AVERAGE_TIME_PER_QUESTION,
+                                                    QUIZ_MODE,
+                                                    CREATED_DATE)
+        VALUES (#{userNo},
+                #{totalQuestion},
+                #{totalTimeSec},
+                #{correctAnswers},
+                #{percentile},
+                #{averageTimePerQuestion},
+                #{quizMode},
+                NOW())
     </insert>
 
     <!--
@@ -58,9 +57,9 @@
     -->
     <update id="updateQuizSessionSummary" parameterType="QuizSessionSummary">
         UPDATE KUKOKUK_QUIZ_SESSION_SUMMARIES
-        SET CORRECT_ANSWERS = #{correctAnswers},
+        SET CORRECT_ANSWERS           = #{correctAnswers},
             AVERAGE_TIME_PER_QUESTION = #{averageTimePerQuestion},
-            PERCENTILE = #{percentile}
+            PERCENTILE                = #{percentile}
         WHERE SESSION_NO = #{sessionNo}
     </update>
 
@@ -74,7 +73,7 @@
         @return 조회된 QuizSessionSummary 객체, 없으면 null
     -->
     <select id="getSummaryBySessionNoAndUserNo"
-      resultMap="quizSessionSummaryMap">
+        resultMap="quizSessionSummaryMap">
         SELECT *
         FROM KUKOKUK_QUIZ_SESSION_SUMMARIES
         WHERE SESSION_NO = #{sessionNo}
