@@ -1,9 +1,11 @@
 package com.kukokuk.controller;
 
 import com.kukokuk.dto.UserForm;
+import com.kukokuk.exception.AppException;
 import com.kukokuk.exception.UserFormException;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.UserService;
+import com.kukokuk.util.FileValidationUtils;
 import com.kukokuk.validation.UserModifyCheck;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
@@ -13,7 +15,6 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Log4j2
 @Controller
@@ -40,12 +43,45 @@ public class UserController {
         log.info("userUpdateForm 객체 초기화(로그인 사용자)");
         return modelMapper.map(securityUser.getUser(), UserForm.class);
     }
+
+    // 프로필 이미지 삭제 요청
+    @PostMapping("/profile-img-delete")
+    public String deleteProfileImage(@AuthenticationPrincipal SecurityUser securityUser
+        , RedirectAttributes redirectAttributes) {
+        log.info("deleteProfileImage() 컨트롤러 실행");
+
+        try {
+            userService.deleteUserProfileImage(securityUser.getUser().getProfileFilename()
+                , securityUser.getUser().getUserNo());
+        } catch (IllegalArgumentException | IllegalStateException | AppException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/user/profile";
+    }
     
+    // 프로필 이미지 등록 요청
+    @PostMapping("/profile-img-update")
+    public String uploadProfileImage(@RequestParam("profileFile") MultipartFile file
+        , @AuthenticationPrincipal SecurityUser securityUser
+        , RedirectAttributes redirectAttributes) {
+        log.info("uploadProfile() 컨트롤러 실행");
+
+        try {
+            FileValidationUtils.validateProfileImage(file); // 파일 유효성 검사
+            userService.updateUserProfileImage(file, securityUser.getUser().getUserNo()); // 파일 저장 및 DB 업데이트 요청
+            redirectAttributes.addFlashAttribute("success", "프로필 이미지가 수정되었습니다.");
+        } catch (IllegalArgumentException | IllegalStateException | AppException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/user/profile";
+    }
+
     // 프로필 수정 폼
     @GetMapping("/profile")
     public String profileForm(@RequestParam(required = false) Boolean reset
-        , SessionStatus sessionStatus
-        , @AuthenticationPrincipal SecurityUser securityUser) {
+        , SessionStatus sessionStatus) {
         log.info("profileForm() 컨트롤러 실행");
 
         if (Boolean.TRUE.equals(reset)) {
@@ -62,7 +98,7 @@ public class UserController {
     public String profileModify(@Validated(UserModifyCheck.class) @ModelAttribute("userUpdateForm") UserForm form
         , @AuthenticationPrincipal SecurityUser securityUser
         , BindingResult errors
-        , Model model) {
+        , RedirectAttributes redirectAttributes) {
         log.info("profileModify() 컨트롤러 실행");
 
         // 유효성 검증 실패 시 다시 입력 페이지
@@ -87,7 +123,6 @@ public class UserController {
                     errors.getFieldError("gender")).getDefaultMessage());
             }
 
-            model.addAttribute("hasError", true); // 에러 플래그 전달
             return "user/profile/form"; // 유효성 검증 실패 시 다시 입력 페이지
         }
 
@@ -100,12 +135,13 @@ public class UserController {
             return "user/profile/form";
         }
 
+        redirectAttributes.addFlashAttribute("success", "프로필 정보가 수정되었습니다.");
         return "redirect:/user/profile";
     }
 
     // 사용자 학습 진도/단계 수정 요청
     @PostMapping("/study-level")
-    public String studyLevel(@ModelAttribute("userUpdateForm") UserForm form
+    public String studyLevel(@ModelAttribute("userForm") UserForm form
         , @AuthenticationPrincipal SecurityUser securityUser
         , HttpServletRequest request) {
         log.info("studyLevel() 컨트롤러 실행");

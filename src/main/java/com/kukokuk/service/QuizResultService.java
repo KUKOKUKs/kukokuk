@@ -1,7 +1,7 @@
 package com.kukokuk.service;
 
-import com.kukokuk.response.QuizResultResponse;
 import com.kukokuk.mapper.QuizResultMapper;
+import com.kukokuk.response.QuizResultResponse;
 import com.kukokuk.vo.QuizResult;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

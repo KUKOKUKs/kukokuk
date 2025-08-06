@@ -1,8 +1,8 @@
 package com.kukokuk.rest;
 
 import com.kukokuk.dto.UserStudyRecommendationDto;
-import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.request.CreateStudyLogRequest;
+import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.request.StudyQuizLogRequest;
 import com.kukokuk.request.UpdateStudyLogRequest;
 import com.kukokuk.response.ApiResponse;
@@ -21,8 +21,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
