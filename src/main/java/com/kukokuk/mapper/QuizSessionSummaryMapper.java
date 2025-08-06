@@ -11,6 +11,7 @@ public interface QuizSessionSummaryMapper {
 
     /**
      * 퀴즈 세션정보를 저장한다.
+     *
      * @param summary 저장할 퀴즈 세션
      * @return insert 성공 여부
      */

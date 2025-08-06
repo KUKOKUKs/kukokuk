@@ -1,35 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.kukokuk.mapper.QuizSessionSummaryMapper">
 
-   <!--
-    * 퀴즈 세션 요약 정보를 저장한다.
-    * @param summary 저장할 퀴즈 세션 요약 객체
-    * @return insert 성공 여부
-    int insertQuizSessionSummary(QuizSessionSummary summary);
-    -->
-    <insert id="insertQuizSessionSummary" parameterType="QuizSessionSummary" useGeneratedKeys="true" keyProperty="sessionNo">
+    <!--
+     * 퀴즈 세션 요약 정보를 저장한다.
+     * @param summary 저장할 퀴즈 세션 요약 객체
+     * @return insert 성공 여부
+     int insertQuizSessionSummary(QuizSessionSummary summary);
+     -->
+    <insert id="insertQuizSessionSummary" parameterType="QuizSessionSummary" useGeneratedKeys="true"
+        keyProperty="sessionNo">
         INSERT INTO KUKOKUK_QUIZ_SESSION_SUMMARIES
-        (
-            TOTAL_TIME_SEC,
-            TOTAL_QUESTION,
-            CORRECT_ANSWERS,
-            PERCENTILE,
-            AVERAGE_TIME_PER_QUESTION,
-            USER_NO
-        )
-        VALUES
-            (
-                #{totalTimeSec},
+        (TOTAL_TIME_SEC,
+         TOTAL_QUESTION,
+         CORRECT_ANSWERS,
+         PERCENTILE,
+         AVERAGE_TIME_PER_QUESTION,
+         USER_NO)
+        VALUES (#{totalTimeSec},
                 #{totalQuestion},
                 #{correctAnswers},
                 #{percentile},
                 #{averageTimePerQuestion},
-                #{userNo}
-            )
+                #{userNo})
     </insert>
 
 </mapper>

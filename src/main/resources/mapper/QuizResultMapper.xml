@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.kukokuk.mapper.QuizResultMapper">
 
@@ -75,8 +75,8 @@
     -->
 
     <select id="getQuizResultsBySessionNoAndUserNo"
-      parameterType="map"
-      resultType="com.kukokuk.response.QuizResultResponse">
+        parameterType="map"
+        resultType="com.kukokuk.response.QuizResultResponse">
         SELECT qm.QUIZ_NO          AS quizNo,
                qm.QUESTION         AS question,
                qm.OPTION1          AS option1,

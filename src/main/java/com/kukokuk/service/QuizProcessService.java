@@ -23,6 +23,7 @@ public class QuizProcessService {
 
     /**
      * 퀴즈 세션 요약과 결과 저장 + 퀴즈 자동 보충 처리
+     *
      * @param summary 세션 요약
      * @param results 문제 결과 리스트
      */
@@ -31,7 +32,9 @@ public class QuizProcessService {
     public void insertQuizSessionAndResults(QuizSessionSummary summary, List<QuizResult> results) {
         // 1. 세션 저장
         int inserted = quizSessionSummaryMapper.insertQuizSessionSummary(summary);
-        if (inserted != 1) throw new RuntimeException("세션 저장 실패");
+        if (inserted != 1) {
+            throw new RuntimeException("세션 저장 실패");
+        }
         log.info("세션 저장 성공");
         int sessionNo = summary.getSessionNo();
 

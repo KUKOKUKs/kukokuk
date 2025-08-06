@@ -3,11 +3,11 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/center}">
 <div layout:fragment="content">
-  <th:block th:each="card : ${data.cards}">
-    <p th:text="${card.cardIndex}"></p>
-    <p th:text="${card.content}"></p>
-    <p th:text="${card.dailyStudyCardNo}"></p>
-  </th:block>
+    <th:block th:each="card : ${data.cards}">
+        <p th:text="${card.cardIndex}"></p>
+        <p th:text="${card.content}"></p>
+        <p th:text="${card.dailyStudyCardNo}"></p>
+    </th:block>
 
 </div>
 

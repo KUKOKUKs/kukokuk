@@ -60,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class StudyService {
 
-    private final  DailyStudyMapper dailyStudyMapper;
+    private final DailyStudyMapper dailyStudyMapper;
     private final DailyStudyLogMapper dailyStudyLogMapper;
     private final DailyQuestMapper dailyQuestMapper;
     private final DailyQuestUserMapper dailyQuestUserMapper;
@@ -80,11 +80,8 @@ public class StudyService {
     private final ModelMapper modelMapper;
 
     /**
-      메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
-      <MainStudyViewDto 에 포함되는 데이터>
-        1. 학습탭의 일일 도전과제 목록
-        2. 사용자의 이전 학습 이력 목록
-        3. 사용자_일일 도전과제 목록 (아이템 획득 여부)
+     * 메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다 <MainStudyViewDto 에 포함되는 데이터> 1. 학습탭의 일일 도전과제 목록 2.
+     * 사용자의 이전 학습 이력 목록 3. 사용자_일일 도전과제 목록 (아이템 획득 여부)
      */
     public MainStudyViewDto getMainStudyView(SecurityUser securityUser) {
         MainStudyViewDto dto = new MainStudyViewDto();
@@ -148,7 +145,8 @@ public class StudyService {
      * @param recommendStudyCount recommendStudyCount 반환할 학습자료 수
      * @return 학습자료 목록 (DailyStudy)
      */
-    public List<UserStudyRecommendationDto> getUserDailyStudies(User user, int recommendStudyCount) {
+    public List<UserStudyRecommendationDto> getUserDailyStudies(User user,
+        int recommendStudyCount) {
         // 1단계 : 현재 사용자 수준/진도 기준으로 학습원본데이터_학습자료_학습이력DTO 목록 조회
       /*
         조회 조건
@@ -232,22 +230,23 @@ public class StudyService {
     }
 
     /**
-     * 학습원본데이터를 기반으로 AI 재구성을 통해 학습자료를 DB에 저장하고, 반환하는 메소드
-     * 1. 학습 원본자료와 사용자 수준의 프롬프트 텍스트 조회
-     * 2. 프롬프트를 생성하고, 프롬프트를 Gemini에게 전달해 응답 반환
-     * 3. 응답을 파싱해서 DB에 엔티티 insert
+     * 학습원본데이터를 기반으로 AI 재구성을 통해 학습자료를 DB에 저장하고, 반환하는 메소드 1. 학습 원본자료와 사용자 수준의 프롬프트 텍스트 조회 2. 프롬프트를
+     * 생성하고, 프롬프트를 Gemini에게 전달해 응답 반환 3. 응답을 파싱해서 DB에 엔티티 insert
+     *
      * @param dailyStudyMaterialNo
      * @param studyDifficultyNo
      * @return
      */
     public DailyStudy createDailyStudy(int dailyStudyMaterialNo, int studyDifficultyNo) {
         // dailyStudyMaterialNo 로 학습자료 원본데이터 조회
-         DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
+        DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(
+            dailyStudyMaterialNo);
 
-         // studyDifficulty로 사용자 수준의 프롬프트 텍스트 조회
-        StudyDifficulty studyDifficulty = studyDifficultyMapper.getDifficultyByNo(studyDifficultyNo);
+        // studyDifficulty로 사용자 수준의 프롬프트 텍스트 조회
+        StudyDifficulty studyDifficulty = studyDifficultyMapper.getDifficultyByNo(
+            studyDifficultyNo);
 
-         // 학습자료 원본데이터와 사용자의 학습 수준으로 프롬프트 생성
+        // 학습자료 원본데이터와 사용자의 학습 수준으로 프롬프트 생성
         String prompt = GeminiStudyPromptBuilder.buildPrompt(dailyStudyMaterial.getContent(),
             studyDifficulty.getPromptText());
 
@@ -255,18 +254,21 @@ public class StudyService {
         String content = geminiClient.getGeminiResponse(prompt);
 
         // 응답데이터에서 JSON만 추출
-        String contentJsonOnly = content.substring(content.indexOf("{"), content.lastIndexOf("}") + 1);
+        String contentJsonOnly = content.substring(content.indexOf("{"),
+            content.lastIndexOf("}") + 1);
 
         DailyStudy dailyStudy = null;
         // try문 범위 고민
         try {
             // Json응답데이터를 객체로 매핑
-            GeminiStudyResponse geminiStudyResponse = objectMapper.readValue(contentJsonOnly, GeminiStudyResponse.class);
+            GeminiStudyResponse geminiStudyResponse = objectMapper.readValue(contentJsonOnly,
+                GeminiStudyResponse.class);
 
             // 학습자료, 학습자료카드, 학습퀴즈, 학습 서술형퀴즈를 DB에 저장하는 메소드 호출
-            dailyStudy = insertDailyStudyWithOtherComponents(geminiStudyResponse, dailyStudyMaterialNo, studyDifficultyNo);
-        } catch (JsonProcessingException e){
-            log.error( e.getMessage());
+            dailyStudy = insertDailyStudyWithOtherComponents(geminiStudyResponse,
+                dailyStudyMaterialNo, studyDifficultyNo);
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
             // 오류처리 추가
         }
 
@@ -275,14 +277,16 @@ public class StudyService {
 
     /**
      * 전달받은 Gemini 응답 객체를 학습자료, 학습자료카드, 학습퀴즈, 학습 서술형퀴즈를 DB에 저장하는 메소드
-     * @param response Gemini 응답 객체
+     *
+     * @param response             Gemini 응답 객체
      * @param dailyStudyMaterialNo 원본데이터 식별자
-     * @param studyDifficultyNo 학습수준 식별자
+     * @param studyDifficultyNo    학습수준 식별자
      * @return DB에 저장된 학습자료 (DailyStudy)
      * @throws JsonProcessingException 호출하는 부분에서 try-catch 처리
      */
     @Transactional
-    public DailyStudy insertDailyStudyWithOtherComponents(GeminiStudyResponse response, int dailyStudyMaterialNo, int studyDifficultyNo)
+    public DailyStudy insertDailyStudyWithOtherComponents(GeminiStudyResponse response,
+        int dailyStudyMaterialNo, int studyDifficultyNo)
         throws JsonProcessingException {
         // 학습자료(DailyStudy) DB에 추가
         DailyStudy study = insertStudy(response, dailyStudyMaterialNo, studyDifficultyNo);
@@ -297,9 +301,10 @@ public class StudyService {
     }
 
     /**
-     * 학습자료(DailyStudy) DB에 추가하는 메소드 
+     * 학습자료(DailyStudy) DB에 추가하는 메소드
      */
-    private DailyStudy insertStudy(GeminiStudyResponse response, int dailyStudyMaterialNo, int studyDifficultyNo) {
+    private DailyStudy insertStudy(GeminiStudyResponse response, int dailyStudyMaterialNo,
+        int studyDifficultyNo) {
         // 학습자료 테이블에 데이터 추가
         DailyStudy dailyStudy = new DailyStudy();
         dailyStudy.setStudyDifficulty(studyDifficultyNo);
@@ -312,13 +317,13 @@ public class StudyService {
 
         return dailyStudy;
     }
-    
+
     /**
      * 학습자료카드(DailyStudyCard) DB에 추가하는 메소드
      */
     private void insertCards(List<Card> cards, int dailyStudyNo) throws JsonProcessingException {
         // 학습 카드 테이블에 데이터 추가
-        for (int i = 0; i < cards.size(); i++){
+        for (int i = 0; i < cards.size(); i++) {
             Card card = cards.get(i);
             DailyStudyCard dailyStudyCard = new DailyStudyCard();
             dailyStudyCard.setTitle(card.getTitle());
@@ -336,7 +341,7 @@ public class StudyService {
      */
     private void insertQuizzes(List<Quiz> quizzes, int dailyStudyNo) {
         // 퀴즈 테이블에 데이터 추가
-        for (Quiz quiz : quizzes){
+        for (Quiz quiz : quizzes) {
             DailyStudyQuiz dailyStudyQuiz = new DailyStudyQuiz();
             dailyStudyQuiz.setQuestion(quiz.getQuestion());
             dailyStudyQuiz.setOption1(quiz.getOptions().get(0));
@@ -350,7 +355,7 @@ public class StudyService {
             dailyStudyQuizMapper.insertDailyStudyQuiz(dailyStudyQuiz);
         }
     }
-    
+
     /**
      * 학습자료서술형쿼즈(DailyStudyEssayQuiz) DB에 추가하는 메소드
      */
@@ -368,11 +373,12 @@ public class StudyService {
     }
 
     /**
-    * 요청으로 받은 에듀넷 URL 리스트를 큐에 넣고 각각의 상태를 DB에 저장
-    * 파이썬 서버를 호출해 에듀넷 url에서 hwp 추출 후 텍스트 데이터를 반환받으면, 그 텍스트를 DB에 저장
-    * @param request
-    * @return
-    */
+     * 요청으로 받은 에듀넷 URL 리스트를 큐에 넣고 각각의 상태를 DB에 저장 파이썬 서버를 호출해 에듀넷 url에서 hwp 추출 후 텍스트 데이터를 반환받으면, 그
+     * 텍스트를 DB에 저장
+     *
+     * @param request
+     * @return
+     */
     public ParseMaterialResponse createMaterial(ParseMaterialRequest request) {
         ParseMaterialResponse parseMaterialResponse = new ParseMaterialResponse();
 
@@ -423,78 +429,79 @@ public class StudyService {
     }
 
     /**
-     * 학습 진행 화면에 필요한 데이터를 담은 StudyProgressViewDto 반환한다
-     *       <StudyProgressViewDto 에 포함되는 데이터>
-     *         1. dailyStudyNo에 해당하는 일일학습 정보
-     *         2. 일일학습 카드 목록
-     *         3. 사용자의 일일학습 이력
-     *         4. 일일학습 퀴즈 목록
-     *         5. 사용자의 일일학습 퀴즈 이력 목록
+     * 학습 진행 화면에 필요한 데이터를 담은 StudyProgressViewDto 반환한다 <StudyProgressViewDto 에 포함되는 데이터> 1.
+     * dailyStudyNo에 해당하는 일일학습 정보 2. 일일학습 카드 목록 3. 사용자의 일일학습 이력 4. 일일학습 퀴즈 목록 5. 사용자의 일일학습 퀴즈 이력 목록
      */
     public StudyProgressViewDto getStudyProgressView(int dailyStudyNo, int userNo) {
-      StudyProgressViewDto dto = new StudyProgressViewDto();
-    
-      // 1. dailyStudyNo에 해당하는 일일학습 정보 조회
-      DailyStudy dailyStudy = dailyStudyMapper.getDailyStudyByNo(dailyStudyNo);
-    
-      dto.setDailyStudy(dailyStudy);
-    
-      // 2. 해당 일일학습에 속한 일일학습 카드 목록 조회
-      List<DailyStudyCard> studyCards = dailyStudyCardMapper.getCardsByDailyStudyNo(dailyStudyNo);
-    
-      dto.setCards(studyCards);
-    
-      // 3. 사용자의 일일학습 이력 조회
-      DailyStudyLog studyLog = dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
-    
-      dto.setLog(studyLog);
-    
-      // 4. 일일학습 퀴즈 목록 조회
-      List<DailyStudyQuiz> studyQuizzes = dailyStudyQuizMapper.getStudyQuizzesByDailyStudyNo(dailyStudyNo);
-    
-      dto.setQuizzes(studyQuizzes);
-    
-      // 5. 사용자의 일일학습 퀴즈 이력 목록
-      List<DailyStudyQuizLog> studyQuizLogs = dailyStudyQuizLogMapper.getStudyQuizLogsByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
-    
-      dto.setQuizLogs(studyQuizLogs);
-    
-      return dto;
+        StudyProgressViewDto dto = new StudyProgressViewDto();
+
+        // 1. dailyStudyNo에 해당하는 일일학습 정보 조회
+        DailyStudy dailyStudy = dailyStudyMapper.getDailyStudyByNo(dailyStudyNo);
+
+        dto.setDailyStudy(dailyStudy);
+
+        // 2. 해당 일일학습에 속한 일일학습 카드 목록 조회
+        List<DailyStudyCard> studyCards = dailyStudyCardMapper.getCardsByDailyStudyNo(dailyStudyNo);
+
+        dto.setCards(studyCards);
+
+        // 3. 사용자의 일일학습 이력 조회
+        DailyStudyLog studyLog = dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo,
+            dailyStudyNo);
+
+        dto.setLog(studyLog);
+
+        // 4. 일일학습 퀴즈 목록 조회
+        List<DailyStudyQuiz> studyQuizzes = dailyStudyQuizMapper.getStudyQuizzesByDailyStudyNo(
+            dailyStudyNo);
+
+        dto.setQuizzes(studyQuizzes);
+
+        // 5. 사용자의 일일학습 퀴즈 이력 목록
+        List<DailyStudyQuizLog> studyQuizLogs = dailyStudyQuizLogMapper.getStudyQuizLogsByUserNoAndDailyStudyNo(
+            userNo, dailyStudyNo);
+
+        dto.setQuizLogs(studyQuizLogs);
+
+        return dto;
     }
-    
+
     /**
      * 해당 사용자의 해당 학습자료에 대한 이력 생성
+     *
      * @param dailyStudyNo
      * @param userNo
      * @return
      */
     public DailyStudyLog createDailyStudyLog(int dailyStudyNo, int userNo) {
-    
-      // 이미 존재하는 학습이력이 있는지 확인
-      DailyStudyLog existLog =  dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
-    
-      // 이미 존재하는 학습이력이면 에러 발생
-      if (existLog != null) {
-          throw new AppException("이미 해당 학습자료에대한 사용자의 이력이 존재합니다");
-      }
-    
-      // 학습이력 생성
-      DailyStudyLog log = new DailyStudyLog();
-      log.setDailyStudyNo(dailyStudyNo);
-      log.setUserNo(userNo);
-    
-      dailyStudyLogMapper.createStudyLog(log);
-    
-      return log;
+
+        // 이미 존재하는 학습이력이 있는지 확인
+        DailyStudyLog existLog = dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo,
+            dailyStudyNo);
+
+        // 이미 존재하는 학습이력이면 에러 발생
+        if (existLog != null) {
+            throw new AppException("이미 해당 학습자료에대한 사용자의 이력이 존재합니다");
+        }
+
+        // 학습이력 생성
+        DailyStudyLog log = new DailyStudyLog();
+        log.setDailyStudyNo(dailyStudyNo);
+        log.setUserNo(userNo);
+
+        dailyStudyLogMapper.createStudyLog(log);
+
+        return log;
     }
 
-  
-    public DailyStudyLog updateDailyStudyLog(int dailyStudyLogNo, UpdateStudyLogRequest updateStudyLogRequest, int userNo) {
+
+    public DailyStudyLog updateDailyStudyLog(int dailyStudyLogNo,
+        UpdateStudyLogRequest updateStudyLogRequest, int userNo) {
         log.info("updateStudyLogRequest 서비스 실행");
 
         // 학습이력의 사용자와 현재사용자가 일치하지않으면 권한 에러 발생
         DailyStudyLog log = dailyStudyLogMapper.getStudyLogByNo(dailyStudyLogNo);
-        if(log.getUserNo() != userNo){
+        if (log.getUserNo() != userNo) {
             throw new AccessDeniedException("본인의 학습이력만 수정할 수 있습니다");
         }
 
@@ -506,16 +513,17 @@ public class StudyService {
 
         // 수정된 학습이력 조회
         return dailyStudyLogMapper.getStudyLogByNo(dailyStudyLogNo);
-     }
+    }
 
     /**
-     * 학습퀴즈이력 생성 
-     * ㄴ 이미 존재하는 학습이력이 있으면, 수정 로직 호출
+     * 학습퀴즈이력 생성 ㄴ 이미 존재하는 학습이력이 있으면, 수정 로직 호출
+     *
      * @param studyQuizLogRequest
      * @param userNo
      * @return
      */
-    public DailyStudyQuizLog createStudyQuizLog(StudyQuizLogRequest studyQuizLogRequest, int userNo) {
+    public DailyStudyQuizLog createStudyQuizLog(StudyQuizLogRequest studyQuizLogRequest,
+        int userNo) {
         log.info("createStudyQuizLog 서비스 실행");
 
         int studyQuizNo = studyQuizLogRequest.getDailyStudyQuizNo();
@@ -528,7 +536,8 @@ public class StudyService {
         // 만약 이미 존재하는 퀴즈면 에러 발생 - 프론트에서 수정호출하도록 처리
         if (existLog != null) {
             log.info("이미 학습퀴즈이력이 존재하므로 update로직 호출");
-            return updateStudyQuizLog(existLog.getDailyStudyQuizLogNo(), studyQuizLogRequest, userNo);
+            return updateStudyQuizLog(existLog.getDailyStudyQuizLogNo(), studyQuizLogRequest,
+                userNo);
         }
 
         // studyQuizNo로 해당 퀴즈 조회후, 사용자 선택보기와 비교해서 정답여부 설정
@@ -545,10 +554,12 @@ public class StudyService {
 
         dailyStudyQuizLogMapper.createStudyQuizLog(dailyStudyQuizLog);
 
-        return dailyStudyQuizLogMapper.getStudyQuizLogsByNo(dailyStudyQuizLog.getDailyStudyQuizLogNo());
+        return dailyStudyQuizLogMapper.getStudyQuizLogsByNo(
+            dailyStudyQuizLog.getDailyStudyQuizLogNo());
     }
 
-    public DailyStudyQuizLog updateStudyQuizLog(int studyQuizLogNo, StudyQuizLogRequest studyQuizLogRequest, int userNo) {
+    public DailyStudyQuizLog updateStudyQuizLog(int studyQuizLogNo,
+        StudyQuizLogRequest studyQuizLogRequest, int userNo) {
         log.info("updateStudyQuizLog 서비스 실행");
 
         // 학습퀴즈이력의 사용자와 현재사용자가 일치하지않으면 권한 에러 발생

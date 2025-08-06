@@ -1,80 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{/layout/base}" th:with="menu='study'" >
+      layout:decorate="~{/layout/base}" th:with="menu='study'">
 <!--
 
 -->
 <div layout:fragment="content">
-<!--  <th:block th:each="study : ${data.getDailyStudies()}">-->
-<!--    <p th:text="${study.getDailyStudyNo()}">냠냠</p>-->
-<!--  </th:block>-->
-<!--  <p>냠냠</p>-->
-<!--  <p th:text="${data.getDailyQuests().get(0).getContentText()}">냠냠</p>-->
-<!--  <p th:text="${data.getDailyQuestUsers().get(0).getDailyQuestUserNo()}">냠냠</p>-->
-  <button type="button" id="hint-item-btn" data-daily-quest-user-no="${}">힌트 획득</button>
+    <!--  <th:block th:each="study : ${data.getDailyStudies()}">-->
+    <!--    <p th:text="${study.getDailyStudyNo()}">냠냠</p>-->
+    <!--  </th:block>-->
+    <!--  <p>냠냠</p>-->
+    <!--  <p th:text="${data.getDailyQuests().get(0).getContentText()}">냠냠</p>-->
+    <!--  <p th:text="${data.getDailyQuestUsers().get(0).getDailyQuestUserNo()}">냠냠</p>-->
+    <button type="button" id="hint-item-btn" data-daily-quest-user-no="${}">힌트 획득</button>
 
-  <th:block layout:fragment="script">
-    <!-- 인증된 사용자일떄만 학습자료 목록 조회 ajax 실행 -->
-    <th:block sec:authorize="isAuthenticated()">
-      <script>
-        $(document).ready(() => {
-          getDailyStudies();
-        });
-      </script>
+    <th:block layout:fragment="script">
+        <!-- 인증된 사용자일떄만 학습자료 목록 조회 ajax 실행 -->
+        <th:block sec:authorize="isAuthenticated()">
+            <script>
+                $(document).ready(() => {
+                    getDailyStudies();
+                });
+            </script>
+        </th:block>
+        <script>
+            /*
+            console.log("getDailyStudies : ", `[[${data.getDailyQuests()}]]`);
+            console.log("getDailyQuestUsers : ", `[[${data.getDailyQuestUsers()}]]`);
+            console.log("getDailyStudyLogs : ", `[[${data.getDailyStudyLogs()}]]`);
+            /*
+             */
+
+            /**
+             * 화면이 렌더링되는 시점에 사용자의 학습자료 목록 조회 및 조회할 학습자료 부족시 추가생성하는 API 요청
+             */
+            function getDailyStudies() {
+                $.ajax({
+                    url: '/api/studies',
+                    type: 'GET',
+                    contentType: 'application/json',
+                    data: {'rows': '4'},
+                    dataType: 'json',
+                    success: function (res) {
+                        console.log(res);
+                        // 화면 표현
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                })
+            }
+
+            /**
+             * 힌트아이템 버튼 클릭 시 힌트 획득하는 API 요청
+             */
+            $('#hint-item-btn').click(function () {
+                const dailyQuestUserNo = $(this).attr("data-daily-quest-user-no");
+
+                $.ajax({
+                    url: `/api/daily-quests/${dailyQuestUserNo}`,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (res) {
+                        console.log(res);
+                        // 화면 표현
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                })
+            });
+        </script>
+
+
+
     </th:block>
-    <script>
-      /*
-      console.log("getDailyStudies : ", `[[${data.getDailyQuests()}]]`);
-      console.log("getDailyQuestUsers : ", `[[${data.getDailyQuestUsers()}]]`);
-      console.log("getDailyStudyLogs : ", `[[${data.getDailyStudyLogs()}]]`);
-      /*
-       */
-
-      /**
-       * 화면이 렌더링되는 시점에 사용자의 학습자료 목록 조회 및 조회할 학습자료 부족시 추가생성하는 API 요청
-       */
-      function getDailyStudies() {
-        $.ajax({
-          url: '/api/studies',
-          type: 'GET',
-          contentType: 'application/json',
-          data: {'rows': '4'},
-          dataType: 'json',
-          success: function (res) {
-            console.log(res);
-            // 화면 표현
-          },
-          error: function (err) {
-            console.log(err);
-          }
-        })
-      }
-
-      /**
-       * 힌트아이템 버튼 클릭 시 힌트 획득하는 API 요청
-       */
-      $('#hint-item-btn').click(function() {
-        const dailyQuestUserNo = $(this).attr("data-daily-quest-user-no");
-
-        $.ajax({
-          url: `/api/daily-quests/${dailyQuestUserNo}`,
-          type: 'PUT',
-          contentType: 'application/json',
-          dataType: 'json',
-          success: function (res) {
-            console.log(res);
-            // 화면 표현
-          },
-          error: function (err) {
-            console.log(err);
-          }
-        })
-      });
-    </script>
-
-
-
-  </th:block>
 </div>
 </html>

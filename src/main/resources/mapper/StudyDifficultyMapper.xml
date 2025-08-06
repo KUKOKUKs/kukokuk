@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.StudyDifficultyMapper">
 
-  <!--
-   StudyDifficulty getDifficultyByNo(int studyDifficultyNo);
-  -->
-  <select id="getDifficultyByNo" resultType="StudyDifficulty">
-    SELECT
-        STUDY_DIFFICULTY_NO AS studyDifficultyNo,
-        EXPLANATION,
-        PROMPT_TEXT AS promptText
-    FROM
-        KUKOKUK_STUDY_DIFFICULTY
-    WHERE
-      STUDY_DIFFICULTY_NO = #{studyDifficultyNo}
-  </select>
+    <!--
+     StudyDifficulty getDifficultyByNo(int studyDifficultyNo);
+    -->
+    <select id="getDifficultyByNo" resultType="StudyDifficulty">
+        SELECT STUDY_DIFFICULTY_NO AS studyDifficultyNo,
+               EXPLANATION,
+               PROMPT_TEXT         AS promptText
+        FROM KUKOKUK_STUDY_DIFFICULTY
+        WHERE STUDY_DIFFICULTY_NO = #{studyDifficultyNo}
+    </select>
 
 </mapper>

@@ -1,6 +1,5 @@
 package com.kukokuk.response;
 
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,11 +10,12 @@ import lombok.Setter;
 @Setter
 
 public class PyParseMaterialResponse {
-  private String content;
-  private String school;
-  private int grade;
-  private String title;
-  private String keywords;
-  private String sourceFilename;
+
+    private String content;
+    private String school;
+    private int grade;
+    private String title;
+    private String keywords;
+    private String sourceFilename;
 
 }

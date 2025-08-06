@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DailyStudyLogMapper">
     <!--
         public List<DailyStudyLog> getStudyLogsByUserNo(@Param("userNo") int userNo,
         @Param("condition") Map<String, Object> condition);
     -->
     <resultMap id="DailyStudyLogResultMap" type="DailyStudyLog">
-    <id column="DAILY_STUDY_LOG_NO" property="dailyStudyLogNo"/>
-    <result column="USER_NO" property="userNo"/>
-    <result column="DAILY_STUDY_NO" property="dailyStudyNo"/>
-    <result column="STUDIED_CARD_COUNT" property="studiedCardCount"/>
-    <result column="COMPLETED_DATE" property="completedDate"/>
-    <result column="STATUS" property="status"/>
-    <result column="CREATED_DATE" property="createdDate"/>
-    <result column="UPDATED_DATE" property="updatedDate"/>
-</resultMap>
+        <id column="DAILY_STUDY_LOG_NO" property="dailyStudyLogNo"/>
+        <result column="USER_NO" property="userNo"/>
+        <result column="DAILY_STUDY_NO" property="dailyStudyNo"/>
+        <result column="STUDIED_CARD_COUNT" property="studiedCardCount"/>
+        <result column="COMPLETED_DATE" property="completedDate"/>
+        <result column="STATUS" property="status"/>
+        <result column="CREATED_DATE" property="createdDate"/>
+        <result column="UPDATED_DATE" property="updatedDate"/>
+    </resultMap>
 
     <select id="getStudyLogsByUserNo" resultMap="DailyStudyLogResultMap">
         SELECT
-            DAILY_STUDY_LOG_NO,
-            USER_NO,
-            DAILY_STUDY_NO,
-            STUDIED_CARD_COUNT,
-            COMPLETED_DATE,
-            STATUS,
-            CREATED_DATE,
-            UPDATED_DATE
+        DAILY_STUDY_LOG_NO,
+        USER_NO,
+        DAILY_STUDY_NO,
+        STUDIED_CARD_COUNT,
+        COMPLETED_DATE,
+        STATUS,
+        CREATED_DATE,
+        UPDATED_DATE
         FROM
-            KUKOKUK_DAILY_STUDY_LOGS
+        KUKOKUK_DAILY_STUDY_LOGS
         WHERE
-            USER_NO = #{userNo}
+        USER_NO = #{userNo}
         <if test="condition.status != null">
             <choose>
                 <when test="condition.status == 'inProgress'">
@@ -45,7 +46,7 @@
             <choose>
                 <when test="condition.order == 'updatedDate'">
                     ORDER BY
-                        UPDATED_DATE
+                    UPDATED_DATE
                 </when>
             </choose>
         </if>
@@ -66,57 +67,45 @@
     DailyStudyLog getStudyLogByUserNoAndDailyStudyNo(@Param("userNo") int userNo, @Param("dailyStudyNo") int dailyStudyNo);
     -->
     <select id="getStudyLogByUserNoAndDailyStudyNo" resultMap="DailyStudyLogResultMap">
-        SELECT
-            DAILY_STUDY_LOG_NO,
-            USER_NO,
-            DAILY_STUDY_NO,
-            STUDIED_CARD_COUNT,
-            COMPLETED_DATE,
-            STATUS,
-            CREATED_DATE,
-            UPDATED_DATE
-        FROM
-            KUKOKUK_DAILY_STUDY_LOGS
-        WHERE
-            USER_NO = #{userNo}
-            AND DAILY_STUDY_NO = #{dailyStudyNo}
+        SELECT DAILY_STUDY_LOG_NO,
+               USER_NO,
+               DAILY_STUDY_NO,
+               STUDIED_CARD_COUNT,
+               COMPLETED_DATE,
+               STATUS,
+               CREATED_DATE,
+               UPDATED_DATE
+        FROM KUKOKUK_DAILY_STUDY_LOGS
+        WHERE USER_NO = #{userNo}
+          AND DAILY_STUDY_NO = #{dailyStudyNo}
     </select>
 
     <!--
      void createStudyLog(DailyStudyLog dailyStudyLog);
     -->
     <insert id="createStudyLog" parameterType="DailyStudyLog"
-      useGeneratedKeys="true" keyColumn="DAILY_STUDY_LOG_NO" keyProperty="dailyStudyLogNo">
-        INSERT INTO
-            KUKOKUK_DAILY_STUDY_LOGS
-            (
-             DAILY_STUDY_NO,
-             USER_NO
-            )
-        VALUES
-            (
-             #{dailyStudyNo},
-             #{userNo}
-            )
+        useGeneratedKeys="true" keyColumn="DAILY_STUDY_LOG_NO" keyProperty="dailyStudyLogNo">
+        INSERT INTO KUKOKUK_DAILY_STUDY_LOGS
+        (DAILY_STUDY_NO,
+         USER_NO)
+        VALUES (#{dailyStudyNo},
+                #{userNo})
     </insert>
 
     <!--
     DailyStudyLog getStudyLogByNo(int dailyStudyLogNo);
     -->
     <select id="getStudyLogByNo" resultMap="DailyStudyLogResultMap">
-        SELECT
-            DAILY_STUDY_LOG_NO,
-            USER_NO,
-            DAILY_STUDY_NO,
-            STUDIED_CARD_COUNT,
-            COMPLETED_DATE,
-            STATUS,
-            CREATED_DATE,
-            UPDATED_DATE
-        FROM
-            KUKOKUK_DAILY_STUDY_LOGS
-        WHERE
-            DAILY_STUDY_LOG_NO = #{dailyStudyLogNo}
+        SELECT DAILY_STUDY_LOG_NO,
+               USER_NO,
+               DAILY_STUDY_NO,
+               STUDIED_CARD_COUNT,
+               COMPLETED_DATE,
+               STATUS,
+               CREATED_DATE,
+               UPDATED_DATE
+        FROM KUKOKUK_DAILY_STUDY_LOGS
+        WHERE DAILY_STUDY_LOG_NO = #{dailyStudyLogNo}
     </select>
 
     <!--
@@ -124,24 +113,24 @@
     -->
     <update id="updateStudyLog" parameterType="DailyStudyLog">
         UPDATE
-            KUKOKUK_DAILY_STUDY_LOGS
+        KUKOKUK_DAILY_STUDY_LOGS
         SET
-            UPDATED_DATE = NOW()
+        UPDATED_DATE = NOW()
 
-            <!-- null이 아닌 필드만 변경 -->
-            <if test="studiedCardCount != null">
-                , STUDIED_CARD_COUNT = #{studiedCardCount}
-            </if>
+        <!-- null이 아닌 필드만 변경 -->
+        <if test="studiedCardCount != null">
+            , STUDIED_CARD_COUNT = #{studiedCardCount}
+        </if>
 
-            <if test="status != null">
-                , STATUS = #{status}
-            </if>
+        <if test="status != null">
+            , STATUS = #{status}
+        </if>
 
-            <if test="status == 'COMPLETED'">
-                , COMPLETED_DATE = NOW()
-            </if>
+        <if test="status == 'COMPLETED'">
+            , COMPLETED_DATE = NOW()
+        </if>
         WHERE
-            DAILY_STUDY_LOG_NO = #{dailyStudyLogNo}
+        DAILY_STUDY_LOG_NO = #{dailyStudyLogNo}
     </update>
 
 </mapper>

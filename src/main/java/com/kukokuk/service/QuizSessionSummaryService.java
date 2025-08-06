@@ -14,13 +14,14 @@ public class QuizSessionSummaryService {
 
     /**
      * 퀴즈 세션 요약 정보를 저장한다.
+     *
      * @param summary 저장할 세션 요약 객체
      * @return 생성된 세션 번호
      */
     @Transactional
     public int insertQuizSessionSummary(QuizSessionSummary summary) {
         int sessionInserted = quizSessionSummaryMapper.insertQuizSessionSummary(summary);
-        if (sessionInserted  != 1) {
+        if (sessionInserted != 1) {
             throw new RuntimeException("퀴즈 세션 저장 실패: userNo=" + summary.getUserNo());
         }
 

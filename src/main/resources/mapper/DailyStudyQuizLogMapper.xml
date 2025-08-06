@@ -1,106 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DailyStudyQuizLogMapper">
-  
-  <resultMap id="DailyStudyQuizLogResultMap" type="DailyStudyQuizLog">
-    <id column="DAILY_STUDY_QUIZ_LOG_NO" property="dailyStudyQuizLogNo" />
-    <result column="IS_SUCCESS" property="isSuccess" />
-    <result column="SELECTED_CHOICE" property="selectedChoice" />
-    <result column="CREATED_DATE" property="createdDate" />
-    <result column="UPDATED_DATE" property="updatedDate" />
-    <result column="USER_NO" property="userNo" />
-    <result column="DAILY_STUDY_QUIZ_NO" property="dailyStudyQuizNo" />
-  </resultMap>
 
-  <!--
-    List<DailyStudyQuizLog> getStudyQuizLogsByUserNoAndDailyStudyNo(@Param("userNo") int userNo, @Param("dailyStudyNo") int dailyStudyNo);
-  -->
-  <select id="getStudyQuizLogsByUserNoAndDailyStudyNo" resultMap="DailyStudyQuizLogResultMap">
-    SELECT
-      L.DAILY_STUDY_QUIZ_LOG_NO,
-      L.IS_SUCCESS,
-      L.SELECTED_CHOICE,
-      L.CREATED_DATE,
-      L.UPDATED_DATE,
-      L.USER_NO,
-      L.DAILY_STUDY_QUIZ_NO
-    FROM
-      KUKOKUK_DAILY_STUDY_QUIZ_LOGS L
-    JOIN KUKOKUK_DAILY_STUDY_QUIZZES Q
-    ON L.DAILY_STUDY_QUIZ_NO = Q.DAILY_STUDY_QUIZ_NO
-    WHERE
-        L.USER_NO = #{userNo}
-        AND Q.DAILY_STUDY_NO = #{dailyStudyNo}
-    ORDER BY
-        L.CREATED_DATE ASC
-  </select>
+    <resultMap id="DailyStudyQuizLogResultMap" type="DailyStudyQuizLog">
+        <id column="DAILY_STUDY_QUIZ_LOG_NO" property="dailyStudyQuizLogNo"/>
+        <result column="IS_SUCCESS" property="isSuccess"/>
+        <result column="SELECTED_CHOICE" property="selectedChoice"/>
+        <result column="CREATED_DATE" property="createdDate"/>
+        <result column="UPDATED_DATE" property="updatedDate"/>
+        <result column="USER_NO" property="userNo"/>
+        <result column="DAILY_STUDY_QUIZ_NO" property="dailyStudyQuizNo"/>
+    </resultMap>
 
-  <!--
-    DailyStudyQuizLog getStudyQuizLogsByUserNoAndStudyQuizNo(@Param("userNo") int userNo, @Param("studyQuizNo") int studyQuizNo);
-  -->
-  <select id="getStudyQuizLogsByUserNoAndStudyQuizNo" resultMap="DailyStudyQuizLogResultMap">
-    SELECT
-      DAILY_STUDY_QUIZ_LOG_NO,
-      IS_SUCCESS,
-      SELECTED_CHOICE,
-      CREATED_DATE,
-      UPDATED_DATE,
-      USER_NO,
-      DAILY_STUDY_QUIZ_NO
-    FROM
-      KUKOKUK_DAILY_STUDY_QUIZ_LOGS
-    WHERE
-      USER_NO = #{userNo}
-      AND DAILY_STUDY_QUIZ_NO = #{studyQuizNo}
-  </select>
+    <!--
+      List<DailyStudyQuizLog> getStudyQuizLogsByUserNoAndDailyStudyNo(@Param("userNo") int userNo, @Param("dailyStudyNo") int dailyStudyNo);
+    -->
+    <select id="getStudyQuizLogsByUserNoAndDailyStudyNo" resultMap="DailyStudyQuizLogResultMap">
+        SELECT L.DAILY_STUDY_QUIZ_LOG_NO,
+               L.IS_SUCCESS,
+               L.SELECTED_CHOICE,
+               L.CREATED_DATE,
+               L.UPDATED_DATE,
+               L.USER_NO,
+               L.DAILY_STUDY_QUIZ_NO
+        FROM KUKOKUK_DAILY_STUDY_QUIZ_LOGS L
+                 JOIN KUKOKUK_DAILY_STUDY_QUIZZES Q
+                      ON L.DAILY_STUDY_QUIZ_NO = Q.DAILY_STUDY_QUIZ_NO
+        WHERE L.USER_NO = #{userNo}
+          AND Q.DAILY_STUDY_NO = #{dailyStudyNo}
+        ORDER BY L.CREATED_DATE ASC
+    </select>
 
-  <!--
-    void createStudyQuizLog(DailyStudyQuizLog dailyStudyQuizLog);
-  -->
-  <insert id="createStudyQuizLog" parameterType="DailyStudyQuizLog"
-    useGeneratedKeys="true" keyColumn="DAILY_STUDY_QUIZ_LOG_NO" keyProperty="dailyStudyQuizLogNo">
-    INSERT INTO
-      KUKOKUK_DAILY_STUDY_QUIZ_LOGS
-      (IS_SUCCESS, SELECTED_CHOICE, USER_NO, DAILY_STUDY_QUIZ_NO)
-    VALUES
-      (
-        #{isSuccess},
-        #{selectedChoice},
-        #{userNo},
-        #{dailyStudyQuizNo}
-      )
-  </insert>
+    <!--
+      DailyStudyQuizLog getStudyQuizLogsByUserNoAndStudyQuizNo(@Param("userNo") int userNo, @Param("studyQuizNo") int studyQuizNo);
+    -->
+    <select id="getStudyQuizLogsByUserNoAndStudyQuizNo" resultMap="DailyStudyQuizLogResultMap">
+        SELECT DAILY_STUDY_QUIZ_LOG_NO,
+               IS_SUCCESS,
+               SELECTED_CHOICE,
+               CREATED_DATE,
+               UPDATED_DATE,
+               USER_NO,
+               DAILY_STUDY_QUIZ_NO
+        FROM KUKOKUK_DAILY_STUDY_QUIZ_LOGS
+        WHERE USER_NO = #{userNo}
+          AND DAILY_STUDY_QUIZ_NO = #{studyQuizNo}
+    </select>
 
-  <!--
-    DailyStudyQuizLog getStudyQuizLogsByNo(int dailyStudyQuizLogNo);
-  -->
-  <select id="getStudyQuizLogsByNo" resultMap="DailyStudyQuizLogResultMap">
-    SELECT
-      DAILY_STUDY_QUIZ_LOG_NO,
-      IS_SUCCESS,
-      SELECTED_CHOICE,
-      CREATED_DATE,
-      UPDATED_DATE,
-      USER_NO,
-      DAILY_STUDY_QUIZ_NO
-    FROM
-      KUKOKUK_DAILY_STUDY_QUIZ_LOGS
-    WHERE
-      DAILY_STUDY_QUIZ_LOG_NO = #{dailyStudyQuizLogNo}
-  </select>
+    <!--
+      void createStudyQuizLog(DailyStudyQuizLog dailyStudyQuizLog);
+    -->
+    <insert id="createStudyQuizLog" parameterType="DailyStudyQuizLog"
+        useGeneratedKeys="true" keyColumn="DAILY_STUDY_QUIZ_LOG_NO"
+        keyProperty="dailyStudyQuizLogNo">
+        INSERT INTO KUKOKUK_DAILY_STUDY_QUIZ_LOGS
+            (IS_SUCCESS, SELECTED_CHOICE, USER_NO, DAILY_STUDY_QUIZ_NO)
+        VALUES (#{isSuccess},
+                #{selectedChoice},
+                #{userNo},
+                #{dailyStudyQuizNo})
+    </insert>
 
-  <!--
-    void updateStudyQuizLog(DailyStudyQuizLog log);
-  -->
-  <update id="updateStudyQuizLog" parameterType="DailyStudyQuizLog">
-    UPDATE
-      KUKOKUK_DAILY_STUDY_QUIZ_LOGS
-    SET
-      UPDATED_DATE = NOW(),
-      IS_SUCCESS = #{isSuccess},
-      SELECTED_CHOICE = #{selectedChoice}
-    WHERE
-      DAILY_STUDY_QUIZ_LOG_NO = #{dailyStudyQuizLogNo}
-  </update>
+    <!--
+      DailyStudyQuizLog getStudyQuizLogsByNo(int dailyStudyQuizLogNo);
+    -->
+    <select id="getStudyQuizLogsByNo" resultMap="DailyStudyQuizLogResultMap">
+        SELECT DAILY_STUDY_QUIZ_LOG_NO,
+               IS_SUCCESS,
+               SELECTED_CHOICE,
+               CREATED_DATE,
+               UPDATED_DATE,
+               USER_NO,
+               DAILY_STUDY_QUIZ_NO
+        FROM KUKOKUK_DAILY_STUDY_QUIZ_LOGS
+        WHERE DAILY_STUDY_QUIZ_LOG_NO = #{dailyStudyQuizLogNo}
+    </select>
+
+    <!--
+      void updateStudyQuizLog(DailyStudyQuizLog log);
+    -->
+    <update id="updateStudyQuizLog" parameterType="DailyStudyQuizLog">
+        UPDATE
+            KUKOKUK_DAILY_STUDY_QUIZ_LOGS
+        SET UPDATED_DATE    = NOW(),
+            IS_SUCCESS      = #{isSuccess},
+            SELECTED_CHOICE = #{selectedChoice}
+        WHERE DAILY_STUDY_QUIZ_LOG_NO = #{dailyStudyQuizLogNo}
+    </update>
 
 </mapper>

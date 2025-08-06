@@ -1,7 +1,7 @@
 package com.kukokuk.service;
 
-import com.kukokuk.response.QuizResultResponse;
 import com.kukokuk.mapper.QuizResultMapper;
+import com.kukokuk.response.QuizResultResponse;
 import com.kukokuk.vo.QuizResult;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +18,7 @@ public class QuizResultService {
 
     /**
      * 퀴즈 문제별 결과 저장, 통계 갱신
+     *
      * @param result 퀴즈 결과 객체
      */
     @Transactional
@@ -47,8 +48,9 @@ public class QuizResultService {
 
     /**
      * 특정 세션의 퀴즈 결과 목록을 조회한다.
+     *
      * @param sessionNo 세션 번호
-     * @param userNo 사용자 번호
+     * @param userNo    사용자 번호
      * @return 퀴즈 결과 응답 리스트
      */
     public List<QuizResultResponse> getQuizResultsBySession(int sessionNo, int userNo) {

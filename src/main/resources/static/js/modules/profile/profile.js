@@ -14,6 +14,9 @@ import {regExNickname, validateDate} from '/js/utils/validation-util.js';
 
 $(document).ready(() => {
     // 프로필 설정 관련
+    const $userProfileImgUpdateForm = $("#profile-img-update-form"); // 프로필 이미지 업데이트 폼
+    const $userProfileImgDeleteForm = $("#profile-img-delete-form"); // 프로필 이미지 삭제 폼
+    const $userUpdateProfileImg = $userProfileImgUpdateForm.find("input[name='profileFile']"); // profileFile input
     const $userUpdateForm = $("#profile-update-form"); // 프로필 설정 폼
     const $userUpdateName = $userUpdateForm.find("input[name='name']"); // name input
     const $userUpdateNickname = $userUpdateForm.find("input[name='nickname']"); // nickname input
@@ -30,6 +33,48 @@ $(document).ready(() => {
         if (validateProfileForm($(this))) {
             this.submit();
         }
+    });
+    
+    // 프로필 이미지 선택 핸들러
+    $userUpdateProfileImg.on("change", function (e) {
+        const file = this.files[0];
+        if (!file) return false;
+
+        const validateTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic']; // 선택 가능 확장자
+        const maxFileSize = 1024 * 1024; // 5MB 제한
+
+        // 파일 형식 유효성 검사
+        if (!validateTypes.includes(file.type)) {
+            alert("지원하지 않는 이미지 형식입니다.");
+            this.value = ""; // 선택 초기화
+            return false;
+        }
+
+        // 파일 크기 유효성 검사
+        if (file.size > maxFileSize) {
+            alert("이미지 크기는 5MB를 초과할 수 없습니다.");
+            this.value = ""; // 선택 초기화
+            return false;
+        }
+
+        const isConfirm = confirm("선택한 이미지로 등록하시겠습니까?");
+        if (!isConfirm) {
+            this.value = ""; // 선택 초기화
+            return false;
+        }
+
+        // 유효성 검사 통과 시 폼 제출
+        $userProfileImgUpdateForm.submit();
+    });
+
+    // 프로필 이미지 삭제 폼 제출 이벤트 발생 시 Confirm 후 제출
+    $userProfileImgDeleteForm.submit(function () {
+        const isConfirm = confirm('이 작업은 되돌릴 수 없습니다.\n프로필 이미지를 정말 삭제하시겠습니까?');
+
+        // 취소 시 리턴
+        if (!isConfirm) return false;
+
+        this.submit();
     });
 
     // nickname 중복 체크

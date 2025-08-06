@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class QuizSubmitResult {
+
     private int quizNo;
     private int selectedChoice;
     private String isSuccess;     // "Y" or "N"

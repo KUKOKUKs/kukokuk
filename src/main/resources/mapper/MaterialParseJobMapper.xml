@@ -1,120 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.MaterialParseJobMapper">
-  <!--
-    void insertParseJob(MaterialParseJob materialParseJob);
-  -->
-  <insert id="insertParseJob" parameterType="MaterialParseJob">
-    <selectKey resultType="int" keyProperty="materialParseJobNo" order="AFTER">
-      /* INSERT된 데이터의 식별자를 가져온다 (INSERT문 수행 후) */
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    INSERT INTO
+    <!--
+      void insertParseJob(MaterialParseJob materialParseJob);
+    -->
+    <insert id="insertParseJob" parameterType="MaterialParseJob">
+        <selectKey resultType="int" keyProperty="materialParseJobNo" order="AFTER">
+            /* INSERT된 데이터의 식별자를 가져온다 (INSERT문 수행 후) */
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO
         KUKOKUK_MATERIAL_PARSE_JOBS
         (URL)
-    VALUES
+        VALUES
         (#{url})
-  </insert>
+    </insert>
 
-  <!--
-    List<String> getExistUrls(List<String> allUrls);
-    파라미터로 받은 url중에 이미 DB에 존재하는 url만 조회
-  -->
-  <select id="getExistUrls">
-    SELECT
+    <!--
+      List<String> getExistUrls(List<String> allUrls);
+      파라미터로 받은 url중에 이미 DB에 존재하는 url만 조회
+    -->
+    <select id="getExistUrls">
+        SELECT
         URL
-    FROM
+        FROM
         KUKOKUK_MATERIAL_PARSE_JOBS
-    WHERE URL IN
-    <foreach collection="list" item="url"
-        open="(" separator="," close=")" nullable="true">
-      #{url}
-    </foreach>
-  </select>
+        WHERE URL IN
+        <foreach collection="list" item="url"
+            open="(" separator="," close=")" nullable="true">
+            #{url}
+        </foreach>
+    </select>
 
-  <!--
-    MaterialParseJob getParseJobByNo(int jobNo);
-  -->
-  <select id="getParseJobByNo" resultType="MaterialParseJob">
-    SELECT
-        MATERIAL_PARSE_JOB_NO AS materialParseJobNo,
-        URL AS url,
-        STATUS AS status,
-        MESSAGE AS message,
-        CREATED_DATE AS createdDate,
-        UPDATED_DATE AS updatedDate,
-        DAILY_STUDY_MATERIAL_NO AS dailyStudyMaterialNo
-    FROM
-      KUKOKUK_MATERIAL_PARSE_JOBS
-    WHERE
-      MATERIAL_PARSE_JOB_NO = #{jobNo}
-  </select>
+    <!--
+      MaterialParseJob getParseJobByNo(int jobNo);
+    -->
+    <select id="getParseJobByNo" resultType="MaterialParseJob">
+        SELECT MATERIAL_PARSE_JOB_NO   AS materialParseJobNo,
+               URL                     AS url,
+               STATUS                  AS status,
+               MESSAGE                 AS message,
+               CREATED_DATE            AS createdDate,
+               UPDATED_DATE            AS updatedDate,
+               DAILY_STUDY_MATERIAL_NO AS dailyStudyMaterialNo
+        FROM KUKOKUK_MATERIAL_PARSE_JOBS
+        WHERE MATERIAL_PARSE_JOB_NO = #{jobNo}
+    </select>
 
-  <!--
-     void updateParseJobStatusToInProgress(int jobNo);
-  -->
-  <update id="updateParseJobStatusToInProgress">
-    UPDATE
-        KUKOKUK_MATERIAL_PARSE_JOBS
-    SET
-        STATUS = 'IN_PROGRESS',
-        UPDATED_DATE = NOW()
-    WHERE
-        MATERIAL_PARSE_JOB_NO = #{jobNo}
-  </update>
+    <!--
+       void updateParseJobStatusToInProgress(int jobNo);
+    -->
+    <update id="updateParseJobStatusToInProgress">
+        UPDATE
+            KUKOKUK_MATERIAL_PARSE_JOBS
+        SET STATUS       = 'IN_PROGRESS',
+            UPDATED_DATE = NOW()
+        WHERE MATERIAL_PARSE_JOB_NO = #{jobNo}
+    </update>
 
-  <!--
-    void updateParseJobStatusToSuccess(@Param("jobNo") int jobNo, @Param("dailyStudyMaterialNo") int dailyStudyMaterialNo);
-  -->
-  <update id="updateParseJobStatusToSuccess">
-    UPDATE
-      KUKOKUK_MATERIAL_PARSE_JOBS
-    SET
-      STATUS = 'SUCCESS',
-      DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo},
-      UPDATED_DATE = NOW()
-    WHERE
-      MATERIAL_PARSE_JOB_NO = #{jobNo}
-  </update>
+    <!--
+      void updateParseJobStatusToSuccess(@Param("jobNo") int jobNo, @Param("dailyStudyMaterialNo") int dailyStudyMaterialNo);
+    -->
+    <update id="updateParseJobStatusToSuccess">
+        UPDATE
+            KUKOKUK_MATERIAL_PARSE_JOBS
+        SET STATUS                  = 'SUCCESS',
+            DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo},
+            UPDATED_DATE            = NOW()
+        WHERE MATERIAL_PARSE_JOB_NO = #{jobNo}
+    </update>
 
-  <!--
-   void updateParseJobStatusToFailed(int jobNo, String message);
-  -->
-  <update id="updateParseJobStatusToFailed">
-    UPDATE
-      KUKOKUK_MATERIAL_PARSE_JOBS
-    SET
-      STATUS = 'FAILED',
-      MESSAGE = #{message},
-      UPDATED_DATE = NOW()
-    WHERE
-      MATERIAL_PARSE_JOB_NO = #{jobNo}
-  </update>
+    <!--
+     void updateParseJobStatusToFailed(int jobNo, String message);
+    -->
+    <update id="updateParseJobStatusToFailed">
+        UPDATE
+            KUKOKUK_MATERIAL_PARSE_JOBS
+        SET STATUS       = 'FAILED',
+            MESSAGE      = #{message},
+            UPDATED_DATE = NOW()
+        WHERE MATERIAL_PARSE_JOB_NO = #{jobNo}
+    </update>
 
-  <!--
-   List<MaterialParseJob> getParseJobsWithMaterial(int offset);
-  -->
-  <select id="getParseJobsWithMaterial" resultType="MaterialParseJob">
-    SELECT
-        J.MATERIAL_PARSE_JOB_NO AS materialParseJobNo,
-        J.URL,
-        J.MESSAGE,
-        J.STATUS,
-        J.CREATED_DATE AS createdDate,
-        J.UPDATED_DATE AS updatedDate,
-        M.DAILY_STUDY_MATERIAL_NO AS "dailyStudyMaterialNo",
-        M.MATERIAL_TITLE AS "dailyStudyMaterial.materialTitle",
-        M.SCHOOL AS "dailyStudyMaterial.school",
-        M.GRADE AS "dailyStudyMaterial.grade",
-        M.SEQUENCE AS "dailyStudyMaterial.sequence"
-    FROM
-      KUKOKUK_MATERIAL_PARSE_JOBS J
-      LEFT OUTER JOIN
-      KUKOKUK_DAILY_STUDY_MATERIALS M
-        ON
-      J.DAILY_STUDY_MATERIAL_NO = M.DAILY_STUDY_MATERIAL_NO
-    ORDER BY MATERIAL_PARSE_JOB_NO
-    LIMIT #{rows}
-  </select>
+    <!--
+     List<MaterialParseJob> getParseJobsWithMaterial(int offset);
+    -->
+    <select id="getParseJobsWithMaterial" resultType="MaterialParseJob">
+        SELECT J.MATERIAL_PARSE_JOB_NO   AS materialParseJobNo,
+               J.URL,
+               J.MESSAGE,
+               J.STATUS,
+               J.CREATED_DATE            AS createdDate,
+               J.UPDATED_DATE            AS updatedDate,
+               M.DAILY_STUDY_MATERIAL_NO AS "dailyStudyMaterialNo",
+               M.MATERIAL_TITLE          AS "dailyStudyMaterial.materialTitle",
+               M.SCHOOL                  AS "dailyStudyMaterial.school",
+               M.GRADE                   AS "dailyStudyMaterial.grade",
+               M.SEQUENCE                AS "dailyStudyMaterial.sequence"
+        FROM KUKOKUK_MATERIAL_PARSE_JOBS J
+                 LEFT OUTER JOIN
+             KUKOKUK_DAILY_STUDY_MATERIALS M
+             ON
+                 J.DAILY_STUDY_MATERIAL_NO = M.DAILY_STUDY_MATERIAL_NO
+        ORDER BY MATERIAL_PARSE_JOB_NO
+        LIMIT #{rows}
+    </select>
 
 </mapper>

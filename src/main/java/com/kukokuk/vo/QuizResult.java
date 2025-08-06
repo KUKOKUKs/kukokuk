@@ -1,10 +1,9 @@
 package com.kukokuk.vo;
 
+import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.ibatis.type.Alias;
-
-import java.util.Date;
 
 @Getter
 @Setter

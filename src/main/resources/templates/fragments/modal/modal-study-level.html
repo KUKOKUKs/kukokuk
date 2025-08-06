@@ -28,27 +28,30 @@
                 </div>
                 <div class="input_info select_info">
                     <p class="select_title">학년</p>
-                    <select th:if="${user.currentSchool == '초등'}" name="currentGrade" class="form_select">
-                        <option value="1" th:selected="${user.currentGrade == 1}">1학년</option>
-                        <option value="2" th:selected="${user.currentGrade == 2}">2학년</option>
-                        <option value="3" th:selected="${user.currentGrade == 3}">3학년</option>
-                        <option value="4" th:selected="${user.currentGrade == 4}">4학년</option>
-                        <option value="5" th:selected="${user.currentGrade == 5}">5학년</option>
-                        <option value="6" th:selected="${user.currentGrade == 6}">6학년</option>
-                    </select>
-                    <select th:if="${user.currentSchool == '중등'}" name="currentGrade" class="form_select">
-                        <option value="1" th:selected="${user.currentGrade == 1}">1학년</option>
-                        <option value="2" th:selected="${user.currentGrade == 2}">2학년</option>
-                        <option value="3" th:selected="${user.currentGrade == 3}">3학년</option>
-                    </select>
-                    <select th:if="${user.currentSchool == null}" name="currentGrade" class="form_select">
-                        <option value="" selected disabled>선택</option>
+                    <select name="currentGrade" class="form_select">
+                        <option th:if="${user.currentGrade == null}" value="" disabled selected>선택</option>
+
+                        <!--/* 초등용 옵션 */-->
+                        <th:block th:if="${user.currentSchool == '초등'}">
+                            <option value="1" th:selected="${user.currentGrade == 1}">1학년</option>
+                            <option value="2" th:selected="${user.currentGrade == 2}">2학년</option>
+                            <option value="3" th:selected="${user.currentGrade == 3}">3학년</option>
+                            <option value="4" th:selected="${user.currentGrade == 4}">4학년</option>
+                            <option value="5" th:selected="${user.currentGrade == 5}">5학년</option>
+                            <option value="6" th:selected="${user.currentGrade == 6}">6학년</option>
+                        </th:block>
+
+                        <!--/* 중등용 옵션 */-->
+                        <th:block th:if="${user.currentSchool == '중등'}">
+                            <option value="1" th:selected="${user.currentGrade == 1}">1학년</option>
+                            <option value="2" th:selected="${user.currentGrade == 2}">2학년</option>
+                            <option value="3" th:selected="${user.currentGrade == 3}">3학년</option>
+                        </th:block>
                     </select>
                 </div>
                 <div class="input_info select_info">
                     <p class="select_title">단계</p>
                     <select name="studyDifficulty" class="form_select">
-                        <option th:if="${user.studyDifficulty == null}" value="" selected disabled>선택</option>
                         <option value="1" th:selected="${user.studyDifficulty == 1}">1단계</option>
                         <option value="2" th:selected="${user.studyDifficulty == 2}">2단계</option>
                         <option value="3" th:selected="${user.studyDifficulty == 3}">3단계</option>
