@@ -83,10 +83,10 @@ public class StudyService {
     private final ModelMapper modelMapper;
 
     /**
-     메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
-     <MainStudyViewDto 에 포함되는 데이터>
-     1. 사용자의 이전 학습 이력 목록
-     2. 학습탭의 일일 도전과제 목록 + 사용자의 일일 도전과제 수행 정보 (아이템 획득 여부)
+      메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
+      <MainStudyViewDto 에 포함되는 데이터>
+        1. 사용자의 이전 학습 이력 목록
+        2. 학습탭의 일일 도전과제 목록 + 사용자의 일일 도전과제 수행 정보 (아이템 획득 여부)
      */
     public MainStudyViewDto getMainStudyView(SecurityUser securityUser) {
         MainStudyViewDto dto = new MainStudyViewDto();
@@ -127,7 +127,7 @@ public class StudyService {
             // dailyQusetNo를 앞서 조회한 dailyQuest와 비교하기 위함
             Map<Integer, DailyQuestUser> userQuestMap = dailyQuestUsers.stream()
                 .collect(Collectors.toMap(
-                    dailyQuestUser -> dailyQuestUser.getDailyQuestNo(),
+                     dailyQuestUser -> dailyQuestUser.getDailyQuestNo(),
                     Function.identity()  // 입력값(dailyQuestUser)을 그대로 사용
                 ));
 
@@ -267,12 +267,12 @@ public class StudyService {
      */
     public DailyStudy createDailyStudy(int dailyStudyMaterialNo, int studyDifficultyNo) {
         // dailyStudyMaterialNo 로 학습자료 원본데이터 조회
-        DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
+         DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
 
-        // studyDifficulty로 사용자 수준의 프롬프트 텍스트 조회
+         // studyDifficulty로 사용자 수준의 프롬프트 텍스트 조회
         StudyDifficulty studyDifficulty = studyDifficultyMapper.getDifficultyByNo(studyDifficultyNo);
 
-        // 학습자료 원본데이터와 사용자의 학습 수준으로 프롬프트 생성
+         // 학습자료 원본데이터와 사용자의 학습 수준으로 프롬프트 생성
         String prompt = GeminiStudyPromptBuilder.buildPrompt(dailyStudyMaterial.getContent(),
             studyDifficulty.getPromptText());
 
@@ -396,11 +396,11 @@ public class StudyService {
     }
 
     /**
-     * 요청으로 받은 에듀넷 URL 리스트를 큐에 넣고 각각의 상태를 DB에 저장
-     * 파이썬 서버를 호출해 에듀넷 url에서 hwp 추출 후 텍스트 데이터를 반환받으면, 그 텍스트를 DB에 저장
-     * @param request
-     * @return
-     */
+    * 요청으로 받은 에듀넷 URL 리스트를 큐에 넣고 각각의 상태를 DB에 저장
+    * 파이썬 서버를 호출해 에듀넷 url에서 hwp 추출 후 텍스트 데이터를 반환받으면, 그 텍스트를 DB에 저장
+    * @param request
+    * @return
+    */
     public ParseMaterialResponse createMaterial(ParseMaterialRequest request) {
         ParseMaterialResponse parseMaterialResponse = new ParseMaterialResponse();
 
@@ -535,10 +535,10 @@ public class StudyService {
 
         // 수정된 학습이력 조회
         return dailyStudyLogMapper.getStudyLogByNo(dailyStudyLogNo);
-    }
+     }
 
     /**
-     * 학습퀴즈이력 생성
+     * 학습퀴즈이력 생성 
      * ㄴ 이미 존재하는 학습이력이 있으면, 수정 로직 호출
      * @param studyQuizLogRequest
      * @param userNo

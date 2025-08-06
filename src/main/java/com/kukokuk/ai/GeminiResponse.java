@@ -64,7 +64,8 @@ public class GeminiResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Content {
-    private List<Part> parts;
+
+        private List<Part> parts;
     }
 
     @Getter
