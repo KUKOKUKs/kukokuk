@@ -7,6 +7,7 @@
     <!-- 결과 VO 매핑 -->
     <resultMap id="quizResultMap" type="QuizResult">
         <id property="resultNo" column="RESULT_NO"/>
+        <result property="accuracyRate" column="ACCURACY_RATE"/>
         <result property="sessionNo" column="SESSION_NO"/>
         <result property="selectedChoice" column="SELECTED_CHOICE"/>
         <result property="isSuccess" column="IS_SUCCESS"/>
@@ -18,20 +19,16 @@
 
     <!-- 퀴즈 결과 저장 -->
     <insert id="insertQuizResult" parameterType="QuizResult">
-        INSERT INTO KUKOKUK_QUIZ_RESULTS (
-            SESSION_NO,
-            SELECTED_CHOICE,
-            IS_SUCCESS,
-            USER_NO,
-            QUIZ_NO
-        )
-        VALUES (
-                   #{sessionNo},
-                   #{selectedChoice},
-                   #{isSuccess},
-                   #{userNo},
-                   #{quizNo}
-               )
+        INSERT INTO KUKOKUK_QUIZ_RESULTS (SESSION_NO,
+                                          SELECTED_CHOICE,
+                                          IS_SUCCESS,
+                                          USER_NO,
+                                          QUIZ_NO)
+        VALUES (#{sessionNo},
+                #{selectedChoice},
+                #{isSuccess},
+                #{userNo},
+                #{quizNo})
     </insert>
 
     <!-- 퀴즈 사용 횟수 증가 -->
@@ -52,22 +49,32 @@
     <select id="getQuizResultsBySession"
         parameterType="map"
         resultType="com.kukokuk.dto.QuizResultDto">
-        SELECT
-            qm.QUIZ_NO         AS quizNo,
-            qm.QUESTION        AS question,
-            qm.OPTION1         AS option1,
-            qm.OPTION2         AS option2,
-            qm.OPTION3         AS option3,
-            qm.OPTION4         AS option4,
-            qr.SELECTED_CHOICE AS selectedChoice,
-            qm.SUCCESS_ANSWER  AS successAnswer,
-            qr.IS_SUCCESS      AS isSuccess,
-            qm.QUESTION_TYPE   AS questionType
+        SELECT qm.QUIZ_NO         AS quizNo,
+               qm.QUESTION        AS question,
+               qm.OPTION1         AS option1,
+               qm.OPTION2         AS option2,
+               qm.OPTION3         AS option3,
+               qm.OPTION4         AS option4,
+               qr.SELECTED_CHOICE AS selectedChoice,
+               qm.SUCCESS_ANSWER  AS successAnswer,
+               qr.IS_SUCCESS      AS isSuccess,
+               qm.QUESTION_TYPE   AS questionType
         FROM KUKOKUK_QUIZ_RESULTS qr
                  JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
         WHERE qr.SESSION_NO = #{sessionNo}
           AND qr.USER_NO = #{userNo}
         ORDER BY qr.RESULT_NO ASC
     </select>
+
+    <!-- 정답률(ACCURACY_RATE) 갱신 -->
+    <update id="updateAccuracyRate" parameterType="int">
+        UPDATE KUKOKUK_QUIZ_MASTERS
+        SET ACCURACY_RATE =
+                CASE
+                    WHEN USAGE_COUNT = 0 THEN 0
+                    ELSE (SUCCESS_COUNT * 100.0 / USAGE_COUNT)
+                    END
+        WHERE QUIZ_NO = #{quizNo}
+    </update>
 
 </mapper>

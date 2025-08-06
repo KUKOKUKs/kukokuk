@@ -73,7 +73,8 @@ public class QuizController {
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
         int userNo = securityUser.getUser().getUserNo();
-        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
+        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(
+            sessionNo, userNo);
         model.addAttribute("summary", summary);
 
         if ("level".equals(summary.getQuizMode())) {
@@ -90,7 +91,8 @@ public class QuizController {
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
         int userNo = securityUser.getUser().getUserNo();
-        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
+        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(
+            sessionNo, userNo);
         List<QuizResultDto> results = quizResultService.getQuizResultsBySession(sessionNo, userNo);
 
         model.addAttribute("summary", summary);

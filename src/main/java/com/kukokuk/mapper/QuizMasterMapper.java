@@ -65,6 +65,8 @@ public interface QuizMasterMapper {
         @Param("questionType") String questionType
     );
 
+    int updatePlusUserHintCount(int userNo);
 
+    int updateMinusUserHintCount(int userNo);
 }
 

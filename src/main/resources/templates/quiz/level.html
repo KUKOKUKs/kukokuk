@@ -1,0 +1,30 @@
+<!-- quiz/level.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>단계별 퀴즈</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script th:src="@{/js/quiz/level.js}"></script>
+</head>
+<body>
+<div id="quiz-wrapper">
+    <div id="progress"><span id="cur"></span> / <span id="total"></span></div>
+    <div id="quiz-content">
+        <div id="question"></div>
+        <ul id="options">
+            <li class="quiz-option" data-choice="1"></li>
+            <li class="quiz-option" data-choice="2"></li>
+            <li class="quiz-option" data-choice="3"></li>
+            <li class="quiz-option" data-choice="4"></li>
+        </ul>
+        <button id="hint-btn">힌트</button>
+        <button id="next-btn">다음</button>
+    </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const quizList = [[${quizList}]];
+    /*]]>*/
+</script>
+</body>
+</html>
