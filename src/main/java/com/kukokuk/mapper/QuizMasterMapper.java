@@ -1,5 +1,6 @@
 package com.kukokuk.mapper;
 
+import com.kukokuk.dto.QuizLevelResultDto;
 import com.kukokuk.vo.QuizMaster;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -71,6 +72,13 @@ public interface QuizMasterMapper {
      * @return usage_count 값
      */
     int getUsageCount(int quizNo);
+
+    /**
+     * 세션 번호로 DIFFICULTY와 QUESTION_TYPE을 조회한다.
+     * @param sessionNo 세션 번호
+     * @return QuizLevelResultDto
+     */
+    QuizLevelResultDto getDifficultyAndQuestionTypeBySessionNo(@Param("sessionNo") int sessionNo);
 
 }
 

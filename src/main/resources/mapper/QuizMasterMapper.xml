@@ -132,7 +132,6 @@
         LIMIT 10
     </select>
 
-
     <!--
      * 해당 퀴즈의 usage_count를 반환한다.
      * @param quizNo 퀴즈 번호
@@ -144,5 +143,16 @@
         FROM KUKOKUK_QUIZ_MASTERS
         WHERE QUIZ_NO = #{quizNo}
     </select>
+
+    <select id="getDifficultyAndQuestionTypeBySessionNo" resultType="com.kukokuk.dto.QuizLevelResultDto">
+    SELECT
+        qm.DIFFICULTY AS difficulty,
+        qm.QUESTION_TYPE AS questionType
+    FROM KUKOKUK_QUIZ_RESULTS qr
+             JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
+    WHERE qr.SESSION_NO = #{sessionNo}
+    LIMIT 1
+</select>
+
 
 </mapper>

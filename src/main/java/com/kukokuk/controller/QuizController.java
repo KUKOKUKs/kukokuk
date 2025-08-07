@@ -1,5 +1,6 @@
 package com.kukokuk.controller;
 
+import com.kukokuk.dto.QuizLevelResultDto;
 import com.kukokuk.dto.QuizMasterDto;
 import com.kukokuk.dto.QuizResultDto;
 import com.kukokuk.dto.QuizSubmitDto;
@@ -12,15 +13,18 @@ import com.kukokuk.service.QuizSessionSummaryService;
 import com.kukokuk.vo.QuizMaster;
 import com.kukokuk.vo.QuizResult;
 import com.kukokuk.vo.QuizSessionSummary;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Log4j2
 @Controller
@@ -52,6 +56,8 @@ public class QuizController {
             summary.setQuizMode("speed");
         }
 
+        log.info("[컨트롤러] summary.quizMode={}", summary.getQuizMode());
+
         List<QuizResult> results = new ArrayList<>();
         for (QuizSubmitResultDto r : request.getResults()) {
             QuizResult qr = new QuizResult();
@@ -77,11 +83,18 @@ public class QuizController {
             sessionNo, userNo);
         model.addAttribute("summary", summary);
 
+        // DTO로 조회 및 세팅
+        QuizLevelResultDto levelResult = quizService.getDifficultyAndQuestionTypeBySessionNo(sessionNo);
+        model.addAttribute("difficulty", levelResult.getDifficulty());
+        model.addAttribute("questionType", levelResult.getQuestionType());
+
         if ("level".equals(summary.getQuizMode())) {
             return "quiz/level-result1";
         }
         return "quiz/speed-result1";
     }
+
+
 
     /**
      * [공통] 퀴즈 결과 상세 페이지 렌더링

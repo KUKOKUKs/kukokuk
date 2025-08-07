@@ -31,6 +31,7 @@ public class QuizProcessService {
      */
     @Transactional
     public int insertQuizSessionAndResults(QuizSessionSummary summary, List<QuizResult> results) {
+        log.info("[Service] insertQuizSessionAndResults() summary.quizMode={}", summary.getQuizMode());
         log.info("[시작] insertQuizSessionAndResults() - userNo={}, 문제 수={}", summary.getUserNo(), results.size());
 
         // [1] 세션 요약 필드 계산 및 설정
@@ -41,7 +42,6 @@ public class QuizProcessService {
         summary.setCorrectAnswers(0);  // 초기값
         summary.setAverageTimePerQuestion(totalQuestion == 0 ? 0f : summary.getTotalTimeSec() / totalQuestion);
         summary.setPercentile(0); // 추후 랭킹 계산용
-        summary.setQuizMode("speed");
 
         log.info("[summary 설정 완료] {}", summary);
 

@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class QuizSubmitDto {
+
     private Float totalTimeSec;
-    private String quizMode; // 🟡 mode 추가
+    private String quizMode;
     private List<QuizSubmitResultDto> results;
 }

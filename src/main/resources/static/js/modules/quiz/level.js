@@ -101,6 +101,29 @@ $(document).ready(function () {
                 value: "N"
             }));
         });
+        $form.append($("<input>", {
+            type: "hidden",
+            name: "quizMode",
+            value: "level"
+        }));
+        $form.append($("<input>", {
+            type: "hidden",
+            name: "totalTimeSec",
+            value: "0.0"
+        }));
+
+        // **CSRF 토큰 추가**
+        const csrfToken = $("meta[name='_csrf']").attr("content");
+        if (csrfToken) {
+            $form.append($("<input>", {
+                type: "hidden",
+                name: "_csrf",
+                value: csrfToken
+            }));
+        }
+
         $form.submit();
     }
+
+
 });
