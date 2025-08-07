@@ -77,4 +77,16 @@
         WHERE QUIZ_NO = #{quizNo}
     </update>
 
+    <update id="updateDifficulty" parameterType="int">
+        UPDATE KUKOKUK_QUIZ_MASTERS
+        SET DIFFICULTY =
+                CASE
+                    WHEN ACCURACY_RATE &lt;= 30 THEN '상'
+                    WHEN ACCURACY_RATE &gt; 30 AND ACCURACY_RATE &lt;= 60 THEN '중'
+                    WHEN ACCURACY_RATE &gt; 60 THEN '하'
+                    END
+        WHERE QUIZ_NO = #{quizNo}
+    </update>
+
+
 </mapper>

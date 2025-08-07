@@ -135,4 +135,14 @@ public class QuizController {
         model.addAttribute("questionType", questionType);
         return "quiz/level";
     }
+
+    @GetMapping("/select")
+    public String selectQuizMode() {
+        return "quiz/select";
+    }
+
+    @GetMapping("/level-select")
+    public String selectLevelQuizSetting() {
+        return "quiz/level-select";
+    }
 }

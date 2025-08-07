@@ -66,14 +66,18 @@ public class QuizProcessService {
             if (isCorrect) correctAnswers++;
 
             quizResultMapper.insertQuizResult(result);
-            log.info("[결과 저장] quizNo={}, 선택={}, 정답={}, 정오답={}",
-                result.getQuizNo(), result.getSelectedChoice(), correctChoice, result.getIsSuccess());
-
             quizResultMapper.updateUsageCount(result.getQuizNo());
             if (isCorrect) {
                 quizResultMapper.updateSuccessCount(result.getQuizNo());
             }
+
+            int usageCount = quizMasterMapper.getUsageCount(result.getQuizNo());
+            if (usageCount == 20) {
+                quizResultMapper.updateAccuracyRate(result.getQuizNo());
+                quizResultMapper.updateDifficulty(result.getQuizNo());
+            }
         }
+
 
         // [4] 세션 요약 정답 수 갱신
         summary.setCorrectAnswers(correctAnswers);

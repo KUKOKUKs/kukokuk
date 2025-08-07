@@ -1,48 +1,74 @@
-let currentIndex = 0;
-let usedHint = false;
+$(document).ready(function () {
+    let currentQuizIndex = 0;
+    let selectedAnswers = [];
 
-$(document).ready(function() {
-    showQuiz(currentIndex);
+    const $quizTotal = $("#quiz-total");
+    const $quizCurrent = $("#quiz-current");
+    const $quizQuestion = $("#quiz-question");
+    const $quizOptions = $("#quiz-options");
 
-    $("#hint-btn").click(function() {
-        if (usedHint) return;
-        const quiz = quizList[currentIndex];
-        $.post("/api/quiz/hint", {
-            quizNo: quiz.quizNo,
-            correctChoice: quiz.successAnswer
-        }, function(res) {
-            const removeChoice = res.removeChoice;
-            $(".quiz-option[data-choice='" + removeChoice + "']").hide();
-            $("#hint-btn").prop("disabled", true);
-            usedHint = true;
-        });
-    });
-
-    $("#next-btn").click(function() {
-        if (currentIndex < quizList.length - 1) {
-            currentIndex++;
-            usedHint = false;
-            showQuiz(currentIndex);
-            $("#hint-btn").prop("disabled", false);
-        } else {
-            // 결과 제출 로직 구현 (폼 전송 또는 Ajax)
-            submitQuizResults();
-        }
-    });
-
-    $(document).on("click", ".quiz-option", function() {
-        $(".quiz-option").removeClass("selected");
-        $(this).addClass("selected");
-    });
-});
-
-function showQuiz(idx) {
-    const quiz = quizList[idx];
-    $("#question").text(quiz.question);
-    for (let i = 1; i <= 4; i++) {
-        $(".quiz-option[data-choice='" + i + "']").show().text(quiz["option" + i]).removeClass("selected");
+    if (!Array.isArray(quizzes) || quizzes.length === 0) {
+        alert("퀴즈를 불러오지 못했습니다.");
+        return;
     }
-    $("#cur").text(idx + 1);
-    $("#total").text(quizList.length);
-    $("#hint-btn").prop("disabled", false);
-}
+
+    selectedAnswers = new Array(quizzes.length).fill(null);
+    $quizTotal.text(quizzes.length);
+    currentQuizIndex = 0;
+    renderCurrentQuiz();
+
+    function renderCurrentQuiz() {
+        const quiz = quizzes[currentQuizIndex];
+        $quizCurrent.text(currentQuizIndex + 1);
+        $quizQuestion.text(`Q${currentQuizIndex + 1}. ${quiz.question}`).css("text-align", "center");
+        $quizOptions.empty();
+
+        for (let i = 1; i <= 4; i++) {
+            const optionText = quiz["option" + i];
+            const $btn = $(`<button class="btn white" data-choice="${i}">
+                        <span class="choice-no">${i}.</span> ${optionText}
+                    </button>`);
+
+            $btn.on("click", function () {
+                selectedAnswers[currentQuizIndex] = i;
+                goToNextQuestion();
+            });
+
+            $quizOptions.append($btn);
+        }
+    }
+
+    function goToNextQuestion() {
+        currentQuizIndex++;
+
+        if (currentQuizIndex < quizzes.length) {
+            renderCurrentQuiz();
+        } else {
+            // 폼 전송
+            const $form = $("#quiz-result-form");
+
+            quizzes.forEach((quiz, idx) => {
+                $form.append($("<input>", {
+                    type: "hidden",
+                    name: `results[${idx}].quizNo`,
+                    value: quiz.quizNo
+                }));
+
+                $form.append($("<input>", {
+                    type: "hidden",
+                    name: `results[${idx}].selectedChoice`,
+                    value: selectedAnswers[idx] ?? 0
+                }));
+
+                $form.append($("<input>", {
+                    type: "hidden",
+                    name: `results[${idx}].isBookmarked`,
+                    value: "N"
+                }));
+            });
+
+            $("body").append($form);
+            $form.submit();
+        }
+    }
+});

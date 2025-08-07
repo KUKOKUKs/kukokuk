@@ -65,8 +65,12 @@ public interface QuizMasterMapper {
         @Param("questionType") String questionType
     );
 
-    int updatePlusUserHintCount(int userNo);
+    /**
+     * 해당 퀴즈의 usage_count를 반환한다.
+     * @param quizNo 퀴즈 번호
+     * @return usage_count 값
+     */
+    int getUsageCount(int quizNo);
 
-    int updateMinusUserHintCount(int userNo);
 }
 
