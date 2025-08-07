@@ -118,19 +118,20 @@
         WHERE USAGE_COUNT &gt;= 20
         AND QUESTION_TYPE = #{questionType}
         <choose>
-            <when test="difficulty == '상'">
+            <when test='"상" == difficulty'>
                 AND ACCURACY_RATE &lt;= 30
             </when>
-            <when test="difficulty == '중'">
+            <when test='"중" == difficulty'>
                 AND ACCURACY_RATE &gt; 30 AND ACCURACY_RATE &lt;= 60
             </when>
-            <when test="difficulty == '하'">
+            <when test='"하" == difficulty'>
                 AND ACCURACY_RATE &gt; 60
             </when>
         </choose>
         ORDER BY RAND()
         LIMIT 10
     </select>
+
 
     <!--
      * 해당 퀴즈의 usage_count를 반환한다.

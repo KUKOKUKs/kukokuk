@@ -19,11 +19,12 @@
 
     <!-- 퀴즈 결과 저장 -->
     <insert id="insertQuizResult" parameterType="QuizResult">
-        INSERT INTO KUKOKUK_QUIZ_RESULTS (SESSION_NO,
-                                          SELECTED_CHOICE,
-                                          IS_SUCCESS,
-                                          USER_NO,
-                                          QUIZ_NO)
+        INSERT INTO KUKOKUK_QUIZ_RESULTS
+        (SESSION_NO,
+         SELECTED_CHOICE,
+         IS_SUCCESS,
+         USER_NO,
+         QUIZ_NO)
         VALUES (#{sessionNo},
                 #{selectedChoice},
                 #{isSuccess},
