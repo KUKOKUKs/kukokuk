@@ -4,6 +4,30 @@
 <mapper namespace="com.kukokuk.mapper.UserMapper">
 
     <!--
+        * 사용자 힌드 개수 -1 업데이트
+        * @param userNo 사용자 번호
+        void updateUserHintCountMinus(int userNo);
+    -->
+    <update id="updateUserHintCountMinus">
+        UPDATE
+            KUKOKUK_USERS
+        SET HINT_COUNT = IF(HINT_COUNT > 0, HINT_COUNT - 1, 0)
+        WHERE USER_NO = #{userNo}
+    </update>
+
+    <!--
+        * 사용자 힌드 개수 +1 업데이트
+        * @param userNo 사용자 번호
+        void updateUserHintCountPlus(int userNo);
+    -->
+    <update id="updateUserHintCountPlus">
+        UPDATE
+            KUKOKUK_USERS
+        SET HINT_COUNT = HINT_COUNT + 1
+        WHERE USER_NO = #{userNo}
+    </update>
+
+    <!--
         * 사용자 프로필 이미지 정보 업데이트
         * @param profileFilename 프로필 이미지 파일명
         * @param userNo 사용자 번호
