@@ -1,6 +1,5 @@
 package com.kukokuk.response;
 
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 

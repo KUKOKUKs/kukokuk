@@ -134,7 +134,7 @@ public class StudyService {
 
             // 3-4. 도전과제 목록을 순회하며 사용자의 도전과제 수행 정보와 매칭
             for (DailyQuestDto questDto : dailyQuestDtos){
-                // 그 dailyQuest의 no를 가진 DailyQuestUser를 matchedUser에 저장 
+                // 그 dailyQuest의 no를 가진 DailyQuestUser를 matchedUser에 저장
                 DailyQuestUser matchedUser = userQuestMap.get(questDto.getDailyQuestNo());
 
                 // 해당 도전과제를 수행한 사용자의 이력이 있을 경우
@@ -325,7 +325,7 @@ public class StudyService {
     }
 
     /**
-     * 학습자료(DailyStudy) DB에 추가하는 메소드 
+     * 학습자료(DailyStudy) DB에 추가하는 메소드
      */
     private DailyStudy insertStudy(GeminiStudyResponse response, int dailyStudyMaterialNo, int studyDifficultyNo) {
         // 학습자료 테이블에 데이터 추가
@@ -341,7 +341,7 @@ public class StudyService {
 
         return dailyStudy;
     }
-    
+
     /**
      * 학습자료카드(DailyStudyCard) DB에 추가하는 메소드
      */
@@ -379,7 +379,7 @@ public class StudyService {
             dailyStudyQuizMapper.insertDailyStudyQuiz(dailyStudyQuiz);
         }
     }
-    
+
     /**
      * 학습자료서술형쿼즈(DailyStudyEssayQuiz) DB에 추가하는 메소드
      */
@@ -502,10 +502,10 @@ public class StudyService {
                 .toList();
 
         dto.setQuizWithLogDtos(quizWithLogDtos);
-
+      
         return dto;
     }
-    
+
     /**
      * 해당 사용자의 해당 학습자료에 대한 이력 생성
      * @param dailyStudyNo
@@ -513,27 +513,27 @@ public class StudyService {
      * @return
      */
     public DailyStudyLog createDailyStudyLog(int dailyStudyNo, int userNo) {
-    
-      // 이미 존재하는 학습이력이 있는지 확인
-      DailyStudyLog existLog =  dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
-    
-      // 이미 존재하는 학습이력이면 에러 발생
-      if (existLog != null) {
-          throw new AppException("이미 해당 학습자료에대한 사용자의 이력이 존재합니다");
-      }
-    
-      // 학습이력 생성
-      DailyStudyLog log = new DailyStudyLog();
-      log.setDailyStudyNo(dailyStudyNo);
-      log.setUserNo(userNo);
-    
-      dailyStudyLogMapper.createStudyLog(log);
 
-      // 학습이력 번호로 조회해서 반환
-      return dailyStudyLogMapper.getStudyLogByNo(log.getDailyStudyLogNo());
+        // 이미 존재하는 학습이력이 있는지 확인
+        DailyStudyLog existLog =  dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
+
+        // 이미 존재하는 학습이력이면 에러 발생
+        if (existLog != null) {
+            throw new AppException("이미 해당 학습자료에대한 사용자의 이력이 존재합니다");
+        }
+
+        // 학습이력 생성
+        DailyStudyLog log = new DailyStudyLog();
+        log.setDailyStudyNo(dailyStudyNo);
+        log.setUserNo(userNo);
+
+        dailyStudyLogMapper.createStudyLog(log);
+
+        // 학습이력 번호로 조회해서 반환
+        return dailyStudyLogMapper.getStudyLogByNo(log.getDailyStudyLogNo());
     }
 
-  
+
     public DailyStudyLog updateDailyStudyLog(int dailyStudyLogNo, UpdateStudyLogRequest updateStudyLogRequest, int userNo) {
         log.info("updateStudyLogRequest 서비스 실행");
 

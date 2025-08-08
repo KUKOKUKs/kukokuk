@@ -9,7 +9,7 @@ import org.apache.ibatis.type.Alias;
 @Getter
 @Setter
 @NoArgsConstructor
-@Alias("BookMarked")
+@Alias("QuizBookmarked")
 public class QuizBookmarked {
 
     private Integer bookmarkNo;     // 북마크 식별자 (PK)

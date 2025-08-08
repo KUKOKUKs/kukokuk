@@ -19,6 +19,7 @@ public class QuizMaster {
     private String option2;
     private String option3;
     private String option4;
+    private float accuracyRate;  // 정답률 (%)
     private int successAnswer;
     private String questionType;   // ENUM('단어','뜻')
     private String difficulty;     // ENUM('상','중','하')

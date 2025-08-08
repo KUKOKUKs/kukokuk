@@ -1,5 +1,6 @@
 package com.kukokuk.mapper;
 
+import com.kukokuk.dto.QuizLevelResultDto;
 import com.kukokuk.vo.QuizMaster;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -35,20 +36,49 @@ public interface QuizMasterMapper {
      */
     void insertQuiz(QuizMaster quiz);
 
-  /**
-   * usage_count가 지정된 값 이하인 퀴즈 중 랜덤하게 limit 개 조회
-   * @param usageCount 풀린횟수
-   * @param limit 기준값
-   * @return 퀴즈
-   */
-  List<QuizMaster> getQuizMastersForSpeed(@Param("usageCount") int usageCount, @Param("limit") int limit);
+    /**
+     * usage_count가 지정된 값 이하인 퀴즈 중 랜덤하게 limit 개 조회
+     *
+     * @param usageCount 풀린횟수
+     * @param limit      기준값
+     * @return 퀴즈
+     */
+    List<QuizMaster> getQuizMastersForSpeed(@Param("usageCount") int usageCount,
+        @Param("limit") int limit);
 
+    /**
+     * 특정 퀴즈 번호의 정답 번호를 조회한다.
+     *
+     * @param quizNo 퀴즈 번호
+     * @return 정답 선택 번호
+     */
+    Integer getCorrectChoiceByQuizNo(int quizNo);
 
-  /**
-   * 특정 퀴즈 번호의 정답 번호를 조회한다.
-   * @param quizNo 퀴즈 번호
-   * @return 정답 선택 번호
-   */
-  Integer getCorrectChoiceByQuizNo(int quizNo);
+    /**
+     * 난이도 및 유형에 따라 퀴즈 목록을 조회한다.
+     *
+     * @param difficulty   난이도 ('상', '중', '하')
+     * @param questionType 문제 유형 ('뜻', '단어')
+     * @return 퀴즈 목록
+     */
+    List<QuizMaster> getQuizListByDifficultyAndType(
+        @Param("difficulty") String difficulty,
+        @Param("questionType") String questionType
+    );
+
+    /**
+     * 해당 퀴즈의 usage_count를 반환한다.
+     * @param quizNo 퀴즈 번호
+     * @return usage_count 값
+     */
+    int getUsageCount(int quizNo);
+
+    /**
+     * 세션 번호로 DIFFICULTY와 QUESTION_TYPE을 조회한다.
+     * @param sessionNo 세션 번호
+     * @return QuizLevelResultDto
+     */
+    QuizLevelResultDto getDifficultyAndQuestionTypeBySessionNo(@Param("sessionNo") int sessionNo);
+
 }
 

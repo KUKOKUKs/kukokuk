@@ -1,10 +1,6 @@
 package com.kukokuk.dto;
 
-import com.kukokuk.vo.DailyQuest;
-import com.kukokuk.vo.DailyQuestUser;
-import com.kukokuk.vo.DailyStudy;
 import com.kukokuk.vo.DailyStudyLog;
-import com.kukokuk.vo.User;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
