@@ -11,6 +11,8 @@ export async function getStudyDifficultyList() {
             url: "/api/studies/difficulties",
             dataType: "json",
         });
+
+        console.log("getStudyDifficultyList() api 요청 response: ", response);
         return response.data;
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);
