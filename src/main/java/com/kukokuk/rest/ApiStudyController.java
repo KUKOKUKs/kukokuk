@@ -6,6 +6,7 @@ import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.request.StudyQuizLogRequest;
 import com.kukokuk.request.UpdateStudyLogRequest;
 import com.kukokuk.response.ApiResponse;
+import com.kukokuk.response.DailyStudyLogResponse;
 import com.kukokuk.response.DailyStudySummaryResponse;
 import com.kukokuk.response.ParseMaterialResponse;
 import com.kukokuk.response.ResponseEntityUtils;
@@ -154,17 +155,17 @@ public class ApiStudyController {
      * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
      */
     @PutMapping("/logs/{dailyStudyLogNo}")
-    public ResponseEntity<ApiResponse<DailyStudyLog>> updateDailyStudyLog(
+    public ResponseEntity<ApiResponse<DailyStudyLogResponse>> updateDailyStudyLog(
         @RequestBody UpdateStudyLogRequest updateStudyLogRequest,
         @PathVariable("dailyStudyLogNo") int dailyStudyLogNo,
         @AuthenticationPrincipal SecurityUser securityUser
     ) {
         log.info("updateDailyStudyLog 컨트롤러 실행");
 
-        DailyStudyLog updatedlog = studyService.updateDailyStudyLog(dailyStudyLogNo,
+        DailyStudyLogResponse response = studyService.updateDailyStudyLog(dailyStudyLogNo,
             updateStudyLogRequest, securityUser.getUser().getUserNo());
 
-        return ResponseEntityUtils.ok("사용자 학습 이력 수정 성공", updatedlog);
+        return ResponseEntityUtils.ok("사용자 학습 이력 수정 성공", response);
     }
 
     /**

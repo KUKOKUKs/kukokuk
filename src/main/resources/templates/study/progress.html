@@ -386,8 +386,10 @@
                 success: function (res) {
                     console.log('학습 이력 업데이트 성공: ', res);
 
+                    const isHintObtained = res.data.hintObtained;
+
                     // 학습 완료 페이지로 이동
-                    window.location.href = `/study/${dailyStudy.dailyStudyNo}/complete`;
+                    window.location.href = `/study/${dailyStudy.dailyStudyNo}/complete?hint=${isHintObtained}`;
                 },
                 error: function (err) {
                     console.error('학습 이력 업데이트 실패 :', err);

@@ -25,9 +25,11 @@ import com.kukokuk.mapper.DailyStudyQuizLogMapper;
 import com.kukokuk.mapper.DailyStudyQuizMapper;
 import com.kukokuk.mapper.MaterialParseJobMapper;
 import com.kukokuk.mapper.StudyDifficultyMapper;
+import com.kukokuk.mapper.UserMapper;
 import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.request.StudyQuizLogRequest;
 import com.kukokuk.request.UpdateStudyLogRequest;
+import com.kukokuk.response.DailyStudyLogResponse;
 import com.kukokuk.response.ParseMaterialResponse;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.util.SchoolGradeUtils;
@@ -75,6 +77,7 @@ public class StudyService {
     private final DailyStudyQuizLogMapper dailyStudyQuizLogMapper;
     private final DailyStudyEssayQuizMapper dailyStudyEssayQuizMapper;
     private final MaterialParseJobMapper materialParseJobMapper;
+    private final UserMapper userMapper;
 
     private final StringRedisTemplate stringRedisTemplate;
 
@@ -534,23 +537,44 @@ public class StudyService {
     }
 
 
-    public DailyStudyLog updateDailyStudyLog(int dailyStudyLogNo, UpdateStudyLogRequest updateStudyLogRequest, int userNo) {
+    public DailyStudyLogResponse updateDailyStudyLog(int dailyStudyLogNo, UpdateStudyLogRequest updateStudyLogRequest, int userNo) {
         log.info("updateStudyLogRequest 서비스 실행");
 
         // 학습이력의 사용자와 현재사용자가 일치하지않으면 권한 에러 발생
-        DailyStudyLog log = dailyStudyLogMapper.getStudyLogByNo(dailyStudyLogNo);
-        if(log.getUserNo() != userNo){
+        DailyStudyLog existedlog = dailyStudyLogMapper.getStudyLogByNo(dailyStudyLogNo);
+        if(existedlog.getUserNo() != userNo){
             throw new AccessDeniedException("본인의 학습이력만 수정할 수 있습니다");
+        }
+
+        // 이미 학습완료 상태인 이력인지 여부
+        boolean alreadyCompleted = "COMPLETED".equals(existedlog.getStatus());
+        // 이번 요청에서 힌트를 획득했는지 여부
+        boolean hintObtained = false;
+
+        // 수정 전 학습이력이 '학습완료'상태가 아니고, 수정 후 학습이력이 '학습완료' 상태일 경우
+        // 처음으로 해당학습을 완료하는 이력이므로 힌트아이템을 획득하도록 한다
+        if (!alreadyCompleted && "COMPLETED".equals(updateStudyLogRequest.getStatus())) {
+            log.info("첫 학습완료이므로 힌트를 획득합니다");
+            userMapper.updateUserHintCountPlus(userNo);
+            hintObtained = true;
         }
 
         // 수정할 컬럼만 담은 VO객체로 수정 mapper 호출
         DailyStudyLog updateLog = modelMapper.map(updateStudyLogRequest, DailyStudyLog.class);
         updateLog.setDailyStudyLogNo(dailyStudyLogNo);
 
+        // 만약 이미 학습완료 상태인데 STATUS를 수정하려는 경우 (복습 등), STATUS는 변경되지 않게 한다
+        if (alreadyCompleted) {
+            updateLog.setStatus(null);
+        }
+
         dailyStudyLogMapper.updateStudyLog(updateLog);
 
         // 수정된 학습이력 조회
-        return dailyStudyLogMapper.getStudyLogByNo(dailyStudyLogNo);
+        DailyStudyLog updatedLog = dailyStudyLogMapper.getStudyLogByNo(dailyStudyLogNo);
+        DailyStudyLogResponse response = modelMapper.map(updatedLog, DailyStudyLogResponse.class);
+        response.setHintObtained(hintObtained);
+        return response;
      }
 
     /**
