@@ -338,6 +338,10 @@
         overflow-x: hidden;
         transition: width var(--trst);
 
+        .study {
+            gap: 0;
+        }
+
         &.collapsed {
             width: 70px;
             min-width: 70px;

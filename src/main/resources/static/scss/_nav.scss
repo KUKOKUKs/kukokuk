@@ -10,6 +10,7 @@
     padding: var(--baseGap);
     padding-top: calc(var(--logoHeight) + (var(--baseGap) * 2) + var(--baseFontSize));
     padding-bottom: 0;
+    background-color: #fff;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -24,10 +25,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--smallGap);
-
-    &.study {
-        gap: 0;
-    }
 
     .menu {
         font-weight: bold;
