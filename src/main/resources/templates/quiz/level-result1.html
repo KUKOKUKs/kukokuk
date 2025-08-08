@@ -10,8 +10,8 @@
     <div style="margin: 30px 0;">
         <p><strong>총 문항 수:</strong> <span th:text="${summary.totalQuestion}">0</span>개</p>
         <p><strong>정답 수:</strong> <span th:text="${summary.correctAnswers}">0</span>개</p>
-        <span>난이도: <span th:text="${difficulty}"></span></span>
-        <span>문제 유형: <span th:text="${questionType}"></span></span>
+        <p><strong>선택한 난이도:</strong> <span th:text="${difficulty}">-</span></p>
+        <p><strong>문제 유형:</strong> <span th:text="${questionType}">-</span></p>
     </div>
 
     <div style="margin-top: 30px;">

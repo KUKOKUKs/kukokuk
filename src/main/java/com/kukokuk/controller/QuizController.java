@@ -110,6 +110,9 @@ public class QuizController {
 
         model.addAttribute("summary", summary);
         model.addAttribute("results", results);
+        QuizLevelResultDto levelResult = quizService.getDifficultyAndQuestionTypeBySessionNo(sessionNo);
+        model.addAttribute("difficulty", levelResult.getDifficulty());
+        model.addAttribute("questionType", levelResult.getQuestionType());
 
         if ("level".equals(summary.getQuizMode())) {
             return "quiz/level-result2";
