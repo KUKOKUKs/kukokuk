@@ -5,7 +5,12 @@ import {
     addInputErrorMessage,
     clearInputErrorMessage
 } from '/js/utils/form-error-util.js';
-import {validateDate} from '/js/utils/validation-util.js';
+import {
+    regExEmail,
+    regExNickname,
+    regExPassword,
+    validateDate
+} from '/js/utils/validation-util.js';
 import {debounce} from '/js/utils/debounce-util.js';
 import {
     checkNicknameDuplicate,
@@ -14,9 +19,6 @@ import {
 
 $(document).ready(() => {
     let isValid = false; // 폼 내부 인풋 유효성 검증 플래그
-    const regExEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z.]{2,5}$/; // 이메일 정규표현식
-    const regExPassword = /^(?=.*[a-zA-Z])(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,16}$/; // 비밀번호 정규표현식
-    const regExNickname = /^[a-zA-Z0-9가-힣_]{4,16}$/; // 닉네임 정규표현식
     const $submitBtn = $("button[type='submit']");
     const $inputDeleteBtn = $(".input_delete_btn"); // 인풋 값 초기화 버튼
     const $inputPasswordViewBtn = $(".input-password-view-btn"); // password 타입 토글 버튼
@@ -28,7 +30,7 @@ $(document).ready(() => {
     const $registerPasswordConfirm = $registerForm.find("input[name='passwordConfirm']"); // passwordConfirm input
     const $registerName = $registerForm.find("input[name='name']"); // name input
     const $registerBirthDate = $registerForm.find("input[name='birthDate']"); // birthDate input
-    const $registerNickname = $registerForm.find("input[name='nickname']"); // birthDate input
+    const $registerNickname = $registerForm.find("input[name='nickname']"); // nickname input
     let isValidName = false; // 이름 유효성 검사 여부
     let isValidBirthDate = false; // 생년월일 유효성 검사 여부
 
@@ -182,7 +184,7 @@ $(document).ready(() => {
 
         // 값이 비었거나 8자리 이하일 경우
         if (current === "" || current.length < 8) {
-            addInputErrorMessage($registerBirthDate, "생년월일을 입력해 주세요");
+            addInputErrorMessage($registerBirthDate, "생년월일을 확인해 주세요");
         } else {
             const y = current.slice(0, 4);
             const m = current.slice(4, 6);
@@ -244,10 +246,9 @@ $(document).ready(() => {
     // 로그인 폼 제출 이벤트 발생 시 유효성 검사 후 제출
     $loginForm.submit(function (e) {
         e.preventDefault();
-        const $form = $(this);
 
         // 유효성 검사 통화 시 제출
-        if (validateLoginForm($form)) {
+        if (validateLoginForm($(this))) {
             this.submit();
         }
     });

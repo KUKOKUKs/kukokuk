@@ -42,12 +42,9 @@
         .menu_icon {
             width: var(--baseIcon);
             height: var(--baseIcon);
+            font-size: var(--baseIcon);
 
-            iconify-icon {
-                font-size: var(--baseIcon);
-            }
-
-            &:has(.profile:has(img)) {
+            &.profile:has(img) {
                 border: 1px solid var(--borderColor);
                 overflow: hidden;
                 border-radius: 50%;

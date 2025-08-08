@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/center}">
+
+<div layout:fragment="content" class="result-detail-container" style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
+
+    <h2 style="text-align: center;">단계별 퀴즈 결과 상세</h2>
+
+    <div style="margin: 20px 0; text-align: center;">
+        <p><strong>총 문항 수:</strong> <span th:text="${summary.totalQuestion}">0</span>개</p>
+        <p><strong>정답 수:</strong> <span th:text="${summary.correctAnswers}">0</span>개</p>
+        <p><strong>선택한 난이도:</strong> <span th:text="${difficulty}">-</span></p>
+        <p><strong>문제 유형:</strong> <span th:text="${questionType}">-</span></p>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+        <tr style="background-color: #f0f0f0;">
+            <th>#</th>
+            <th>문제</th>
+            <th>선택한 보기</th>
+            <th>정답</th>
+            <th>정오답</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="result, iterStat : ${results}">
+            <td th:text="${iterStat.count}">1</td>
+            <td th:text="${result.question}">문제 내용</td>
+            <td>
+                <span th:if="${result.selectedChoice == 0}">미선택</span>
+                <span th:if="${result.selectedChoice != 0}" th:text="${result.selectedChoice}">-</span>
+            </td>
+            <td th:text="${result.successAnswer}">2</td>
+            <td>
+                <span th:if="${result.isSuccess == 'Y'}" style="color: green;">정답</span>
+                <span th:unless="${result.isSuccess == 'Y'}" style="color: red;">오답</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="/" class="btn white">홈으로</a>
+    </div>
+</div>
+</html>

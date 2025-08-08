@@ -1,5 +1,7 @@
 // noinspection ES6UnusedImports
 
+import {elementarySchool, middleSchool} from '/js/utils/handler-util.js';
+
 $(document).ready(() => {
     // 사용자 진도/단계 설정 관련
     const $modalStudyLevelForm = $("#modal-study-level-form"); // 진도/단계 설정 폼
@@ -7,8 +9,6 @@ $(document).ready(() => {
     const $modalStudyLevelGrade = $modalStudyLevelForm.find("select[name='currentGrade']"); // currentGrade select
     const $modalStudyLevelDifficulty = $modalStudyLevelForm.find("select[name='studyDifficulty']"); // studyDifficulty select
     const $modalStudyLevelSubmitBtn = $modalStudyLevelForm.find("button[type='submit']"); // $modalStudyLevelForm submit button
-    const elementarySchool = setGradeOptions(6);
-    const middleSchool = setGradeOptions(3);
 
     // 진도 선택 핸들러
     $modalStudyLevelSchool.on("change", function () {
@@ -46,13 +46,4 @@ $(document).ready(() => {
             $modalStudyLevelSubmitBtn.removeClass("disabled");
         }
     });
-
-    // 학년 옵션 생성
-    function setGradeOptions(count) {
-        let options = '';
-        for (let i = 1; i <= count; i++) {
-            options += `<option value="${i}">${i}학년</option>`;
-        }
-        return options;
-    }
 });

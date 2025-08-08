@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.QuizMasterMapper">
     <resultMap id="QuizMasterMap" type="QuizMaster">
         <id property="quizNo" column="QUIZ_NO"/>
@@ -73,33 +73,86 @@
 
     <!-- QuizMasterMapper.xml -->
     <select id="getQuizMastersForSpeed" resultMap="QuizMasterMap">
-        SELECT
-            quiz_no,
-            question,
-            option1,
-            option2,
-            option3,
-            option4,
-            success_answer,
-            question_type,
-            entry_no,
-            usage_count
+        SELECT quiz_no,
+               question,
+               option1,
+               option2,
+               option3,
+               option4,
+               success_answer,
+               question_type,
+               entry_no,
+               usage_count
         FROM KUKOKUK_QUIZ_MASTERS
         WHERE usage_count &lt; #{usageCount}
         ORDER BY RAND()
         LIMIT #{limit}
     </select>
 
- <!--
-    * 특정 퀴즈 번호의 정답 번호를 조회한다.
-    * @param quizNo 퀴즈 번호
-    * @return 정답 선택 번호
-    int getCorrectChoiceByQuizNo(int quizNo);
- -->
+    <!--
+       * 특정 퀴즈 번호의 정답 번호를 조회한다.
+       * @param quizNo 퀴즈 번호
+       * @return 정답 선택 번호
+       int getCorrectChoiceByQuizNo(int quizNo);
+    -->
     <select id="getCorrectChoiceByQuizNo" resultType="java.lang.Integer">
         SELECT success_answer
         FROM KUKOKUK_QUIZ_MASTERS
         WHERE quiz_no = #{quizNo}
     </select>
+
+
+    <!--
+     * 난이도 및 유형에 따라 퀴즈 목록을 조회한다.
+     * @param difficulty   난이도 ('상', '중', '하')
+     * @param questionType 문제 유형 ('뜻', '단어')
+     * @return 퀴즈 목록
+    List<QuizMaster> getQuizListByDifficultyAndType(
+        @Param("difficulty") String difficulty,
+        @Param("questionType") String questionType
+    );
+    -->
+    <select id="getQuizListByDifficultyAndType" resultMap="QuizMasterMap">
+        SELECT *
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE USAGE_COUNT &gt;= 20
+        AND QUESTION_TYPE = #{questionType}
+        <choose>
+            <when test='"상" == difficulty'>
+                AND ACCURACY_RATE &lt;= 30
+            </when>
+            <when test='"중" == difficulty'>
+                AND ACCURACY_RATE &gt; 30 AND ACCURACY_RATE &lt;= 60
+            </when>
+            <when test='"하" == difficulty'>
+                AND ACCURACY_RATE &gt; 60
+            </when>
+        </choose>
+        ORDER BY RAND()
+        LIMIT 10
+    </select>
+
+    <!--
+     * 해당 퀴즈의 usage_count를 반환한다.
+     * @param quizNo 퀴즈 번호
+     * @return usage_count 값
+    int getUsageCount(int quizNo);
+    -->
+    <select id="getUsageCount" parameterType="int" resultType="int">
+        SELECT USAGE_COUNT
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE QUIZ_NO = #{quizNo}
+    </select>
+
+    <select id="getDifficultyAndQuestionTypeBySessionNo" resultType="com.kukokuk.dto.QuizLevelResultDto">
+    SELECT
+        qm.DIFFICULTY AS difficulty,
+        qm.QUESTION_TYPE AS questionType
+    FROM KUKOKUK_QUIZ_RESULTS qr
+             JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
+    WHERE qr.SESSION_NO = #{sessionNo}
+    LIMIT 1
+</select>
+
 
 </mapper>
