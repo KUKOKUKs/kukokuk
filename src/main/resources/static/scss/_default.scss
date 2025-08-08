@@ -23,10 +23,24 @@
         left: calc(var(--baseGap) + var(--baseFontSize));
         z-index: 1;
     }
+
+    &.small {
+        width: var(--smallLogoWidth);
+        height: var(--smallLogoHeight);
+    }
+}
+
+.symbol_logo {
+    display: block;
+    width: var(--symbolLogoSize);
+    aspect-ratio: 1 / 1;
+    background: url("/images/kukokuk_symbol_logo.png") 0 0 no-repeat;
+    background-size: contain;
 }
 
 .main {
     display: flex;
+    min-height: 100vh;
 }
 
 .content {
@@ -61,9 +75,17 @@
     padding: var(--containerPadding);
 }
 
-.copyright {
-    font-size: var(--smallFontSize);
-    padding: 1em;
+#footer {
+    position: sticky;
+    left: 0;
+    bottom: 0;
+    background: #fff;
+
+    .copyright {
+        font-size: var(--smallFontSize);
+        padding-bottom: var(--baseGap);
+        padding-top: var(--largePadding);
+    }
 }
 
 .component {

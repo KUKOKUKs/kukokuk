@@ -11,7 +11,7 @@ import org.apache.ibatis.type.Alias;
 public class DailyStudyLog {
 
     private int dailyStudyLogNo;
-    private int studiedCardCount;
+    private Integer studiedCardCount;
     private Date completedDate;
     private String status;
     private Date createdDate;
