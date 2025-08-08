@@ -10,6 +10,7 @@
     height: 100%;
     padding: var(--baseGap);
     padding-top: calc(var(--logoHeight) + (var(--baseGap) * 2) + var(--baseFontSize));
+    background-color: #fff;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

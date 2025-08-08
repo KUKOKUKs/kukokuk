@@ -1,21 +1,18 @@
 // noinspection ES6UnusedImports
 
-import {validateLoginForm} from '/js/modules/sign/sign-form-validator.js';
+import {validateLoginForm} from './sign-form-validator.js';
+import {checkNicknameDuplicate, checkUsernameDuplicate} from './sign-api.js';
 import {
     addInputErrorMessage,
     clearInputErrorMessage
-} from '/js/utils/form-error-util.js';
+} from '../../utils/form-error-util.js';
 import {
     regExEmail,
     regExNickname,
     regExPassword,
     validateDate
-} from '/js/utils/validation-util.js';
-import {debounce} from '/js/utils/debounce-util.js';
-import {
-    checkNicknameDuplicate,
-    checkUsernameDuplicate
-} from '/js/modules/sign/sign-api.js';
+} from '../../utils/validation-util.js';
+import {debounce} from '../../utils/debounce-util.js';
 
 $(document).ready(() => {
     let isValid = false; // 폼 내부 인풋 유효성 검증 플래그
@@ -46,13 +43,20 @@ $(document).ready(() => {
     // username(email) 중복 체크
     async function handleEmailInput(username) {
         clearInputErrorMessage($registerEmail); // 에러 메세지 초기화
-        const isDuplicated = await checkUsernameDuplicate(username);
-        console.log("handleEmailInput 실행 결과: ", isDuplicated);
 
-        isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
+        try {
+            const isDuplicated = await checkUsernameDuplicate(username);
+            console.log("handleEmailInput 실행 결과: ", isDuplicated);
+            isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
 
-        if (!isValid) {
-            addInputErrorMessage($registerEmail, "사용중인 이메일입니다");
+            if (!isValid) {
+                addInputErrorMessage($registerEmail, "사용중인 이메일입니다");
+            }
+        } catch (error) {
+            console.error(error);
+            addInputErrorMessage($registerEmail, "중복 확인 요청에 실패했습니다");
+            isValid = false;
+            return false;
         }
 
         // 제출 버튼 활성화/비활성화 설정
@@ -62,13 +66,20 @@ $(document).ready(() => {
     // nickname 중복 체크
     async function handleNicknameInput(nickname) {
         clearInputErrorMessage($registerNickname); // 에러 메세지 초기화
-        const isDuplicated = await checkNicknameDuplicate(nickname);
-        console.log("handleNicknameInput 실행 결과: ", isDuplicated);
 
-        isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
+        try {
+            const isDuplicated = await checkNicknameDuplicate(username);
+            console.log("handleNicknameInput 실행 결과: ", isDuplicated);
+            isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
 
-        if (!isValid) {
-            addInputErrorMessage($registerNickname, "사용중인 닉네임입니다");
+            if (!isValid) {
+                addInputErrorMessage($registerNickname, "사용중인 닉네임입니다");
+            }
+        } catch (error) {
+            console.error(error);
+            addInputErrorMessage($registerEmail, "중복 확인 요청에 실패했습니다");
+            isValid = false;
+            return false;
         }
 
         // 제출 버튼 활성화/비활성화 설정

@@ -1,4 +1,5 @@
-import {elementarySchool, middleSchool} from '/js/utils/handler-util.js';
+import {elementarySchool, middleSchool} from '../../utils/handler-util.js';
+import {getStudyDifficultyList} from "./study-api.js";
 
 $(document).ready(async function () {
     // 로컬스토리지에서 studyDifficultyList 값 가져오기
@@ -8,13 +9,20 @@ $(document).ready(async function () {
         // 값이 없을 경우
         console.log("studyDifficultyList falsy: ", studyDifficultyList);
 
-        studyDifficultyList = await getStudyDifficultyList(); // 비동기로 데이터 요청
-        if (!studyDifficultyList) {
-            localStorage.removeItem("studyDifficultyList"); // 로컬스토리지에서 삭제
-        } else {
-            localStorage.setItem("studyDifficultyList", studyDifficultyList.data); // 데이터를 로컬스토리지에 저장
-            setStudyDifficultyList(studyDifficultyList.data); // study-difficulty에 리스트 추가
-            console.log("studyDifficultyList setting 완료");
+        try {
+            studyDifficultyList = await getStudyDifficultyList(); // 비동기로 데이터 요청
+
+            if (!studyDifficultyList) {
+                console.log("학습 단계 정보 비동기 요청 반환 값이 없습니다.");
+                localStorage.removeItem("studyDifficultyList"); // 로컬스토리지에서 삭제
+            } else {
+                localStorage.setItem("studyDifficultyList", studyDifficultyList.data); // 데이터를 로컬스토리지에 저장
+                setStudyDifficultyList(studyDifficultyList.data); // study-difficulty에 리스트 추가
+                console.log("studyDifficultyList setting 완료");
+            }
+        } catch (error) {
+            // 요청 에러
+            console.error(error);
         }
     } else {
         console.log("studyDifficultyList true", studyDifficultyList);
@@ -40,27 +48,6 @@ $(document).ready(async function () {
 
         // 부모 요소에 리스트 추가
         $studyDifficultyElement.html(content);
-    }
-
-    // 학습 단계 정보 비동기 요청
-    async function getStudyDifficultyList() {
-        console.log("학습 단계 정보 비동기 요청 getStudyDifficultyList() 실행");
-
-        try {
-            return await $.ajax({
-                method: "GET",
-                url: "/api/studies/difficulties",
-                dataType: "json",
-                success: (data) => {
-                    console.log("학습 단계 정보 비동기 요청 성공 data: ", data);
-                },
-            });
-        } catch (error) {
-            // 에러시 alert 및 새로고침
-            console.log("학습 단계 정보 비동기 요청 실패 error: ", error);
-            alert(error.message + "\n다시 시도해 주세요.");
-            return false;
-        }
     }
 
     // 사용자 진도/단계 설정 관련

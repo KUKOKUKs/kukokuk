@@ -1,16 +1,14 @@
 // noinspection ES6UnusedImports
 
-import {
-    validateProfileForm
-} from '/js/modules/profile/profile-form-validator.js';
+import {validateProfileForm} from './profile-form-validator.js';
+import {checkNicknameDuplicate} from '../sign/sign-api.js';
 import {
     addInputErrorMessage,
     clearInputErrorMessage
-} from '/js/utils/form-error-util.js';
-import {checkNicknameDuplicate} from '/js/modules/sign/sign-api.js';
-import {debounce} from '/js/utils/debounce-util.js';
-import {elementarySchool, middleSchool} from '/js/utils/handler-util.js';
-import {regExNickname, validateDate} from '/js/utils/validation-util.js';
+} from '../../utils/form-error-util.js';
+import {debounce} from '../../utils/debounce-util.js';
+import {elementarySchool, middleSchool} from '../../utils/handler-util.js';
+import {regExNickname, validateDate} from '../../utils/validation-util.js';
 
 $(document).ready(() => {
     // 프로필 설정 관련
