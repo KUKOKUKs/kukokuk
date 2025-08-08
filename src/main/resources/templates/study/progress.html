@@ -2,13 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/center}">
+
+<!--/* 학습 진행화면에서 표시할 네비바 */-->
+<div id="study-nav-fragment" layout:fragment="fixed-nav-fragment">
+    <div th:replace="~{fragments/common/study-nav :: study-nav-fragment(data=${data})}"></div>
+</div>
+
 <div layout:fragment="content">
 
     <!-- 학습진행바 -->
     <div class="level_info study_progress">
         <div class="level_bar">
-            <div class="experience_point" th:style="|width: 10%;|"></div>
-            <div class="quiz_marker" th:style="|left: 60%;|">
+            <!--/* 퀴즈는 항상 4개 */-->
+            <div class="experience_point"></div>
+            <div class="quiz_marker">
                 <div class="line"></div>
                 <div class="label">퀴즈</div>
             </div>
@@ -52,22 +59,50 @@
     let quizzes = /*[[${data.quizzes}]]*/ [];
     let quizLogs = /*[[${data.quizLogs}]]*/ [];
     console.log(cards);
-    let currentIndex = 0;
+    let currentIndex = studyLog && studyLog.studiedCardCount !== 0 ? studyLog.studiedCardCount : 0;
+    console.log("currentIndex: "+ currentIndex);
+    // 개수 계산
     const cardCount = cards.length;
     const quizCount = quizzes.length;
-    const totalCount = cardCount + quizCount;
+    // 그 외의 info 카드 개수
+    const startInfoCount = 1;      // 인덱스 0
+    const quizInfoCount = 1;       // 카드 끝난 직후
+    const lastInfoCount = 1;      // 마지막
+    // 전체 화면 개수
+    const totalCount = cardCount + quizCount + startInfoCount + quizInfoCount + lastInfoCount;
+    // 인덱스 계산
+    const cardLastIndex = startInfoCount + cardCount - 1;
+    const quizInfoIndex = cardLastIndex + 1; // 퀴즈 안내 화면 인덱스
+    const quizStartIndex = quizInfoIndex + 1;
+
     console.log(totalCount);
     console.log('studyLog : ' + studyLog);
     console.log(quizzes);
 
     const $prevBtn = $('#prev-btn');
     const $nextBtn = $('#next-btn');
+    const $navListItem = $('.study_nav_list_item');
     // 전체 카드 콘텐츠를 담을 컨테이너
     const $mainContentContainer = $('#main-study-content');
 
     // 화면이 렌더링될 때 한 번 실행할 함수들
-    renderCard();
-    updateOrCreateLog();
+    $(document).ready(function() {
+        renderContent();
+        updateOrCreateLog();
+        renderQuizMarkerPosition(); // ← quiz_marker 위치 설정
+    });
+
+    /**
+     * 렌더링 시점에 퀴즈 마커의 위치를 정하는 함수
+     */
+    function renderQuizMarkerPosition() {
+        const $quizMarker = $('.quiz_marker');
+
+        const progressStepCount = totalCount - 1; // 진행률 기준 칸 수 (startInfo 제외)
+        const markerPercent = (quizInfoIndex / progressStepCount) * 100;
+
+        $quizMarker.css('left', markerPercent + '%');
+    }
 
     /**
      * 화면 렌더링 시점에 학습이력 존재 여부에 따라 학습이력 생성/수정 요청
@@ -117,14 +152,14 @@
     /**
      * 현재 인덱스에 해당하는 학습 카드를 화면에 렌더링하는 함수
      */
-    function renderCard() {
+    function renderCard(index) {
         // 전체 카드 콘텐츠를 담을 컨테이너의 기존 내용 초기화
         $mainContentContainer.empty();
         // 카드 제목, 내용등의 텍스트를 담을 최상위 div
         const $studyCardDiv = $('<div>').addClass('component study_progress_card');
 
         // 현재 인덱스의 카드 데이터 추출
-        const card = cards[currentIndex];
+        const card = cards[index];
         const content = JSON.parse(card.content); // JSON 문자열형식의 content를 JSON으로 파싱
         console.log(content);
 
@@ -187,13 +222,11 @@
      * 현재 인덱스에 맞는 퀴즈를 렌더링하는 함수
      * 현재 퀴즈에 대한 사용자의 학습 이력이 존재하면, 그것도 고려
      */
-    function renderQuiz() {
+    function renderQuiz(index) {
         // 컨테이너 초기화
         $mainContentContainer.empty();
 
-        let currentCardIndex = currentIndex - cardCount;
-
-        const quiz = quizzes[currentCardIndex];
+        const quiz = quizzes[index];
         let quizLog = null;
         let studyQuizLogNo = null;
 
@@ -260,10 +293,52 @@
     }
 
     /**
+     * 학습 정보와 관련된 추가 화면을 렌더링하는 함수
+     * @param type
+     */
+    function renderInfoCard(type) {
+        // 전체 카드 콘텐츠를 담을 컨테이너의 기존 내용 초기화
+        $mainContentContainer.empty();
+        // 카드 제목, 내용등의 텍스트를 담을 최상위 div
+        const $studyCardDiv = $('<div>').addClass('component study_progress_card');
+
+        let html = '';
+
+        switch (type) {
+            case 'start':
+                html = `
+                    <div class="info">오늘의 학습을 시작해볼까요?</div>
+                    <div class="title">${dailyStudy.title}</div>
+                    <div class="paragraph">${dailyStudy.content}</div>
+                `;
+                break;
+            case 'quiz':
+                html = `
+                    <div class="info">학습을 마쳤으니 퀴즈를 풀어볼까요?</div>
+                `;
+                break;
+            case 'last':
+                html = `
+                    <div class="info">학습을 완료하였습니다!</div>
+                `;
+                break;
+        }
+
+        $studyCardDiv.html(html);
+        $mainContentContainer.append($studyCardDiv);
+    }
+
+    /**
      *
      */
     $prevBtn.click(() => {
         $nextBtn.removeClass('blink');
+
+        if ( currentIndex > 0 ) {
+            currentIndex -= 1;
+            console.log(currentIndex);
+            renderContent();
+        }
     });
 
     /**
@@ -275,13 +350,12 @@
         // 마지막 인덱스 전까지
         if (currentIndex < totalCount - 1) {
             currentIndex += 1;
-            console.log(currentIndex);
+            console.log('currentIndex: ' + currentIndex);
             renderContent();
 
             // 현재 인덱스가 학습이력의 학습카드개수를 넘으면 학습이력 업데이트
-            // 카드 렌더링 부분에서는
-            if (currentIndex > studyLog.studiedCardCount - 1) {
-                const updateStudiedCartCount = currentIndex + 1;
+            if (currentIndex <= cardLastIndex && currentIndex > studyLog.studiedCardCount - 1) {
+                const updateStudiedCartCount = currentIndex - 1 + startInfoCount;
                 $.ajax({
                     url: `/api/studies/logs/${studyLogNo}`,
                     type: 'PUT',
@@ -298,6 +372,28 @@
                 });
             }
         }
+        // 마지막 인덱스면 이력업데이트 및 학습끝내기
+        else if (currentIndex === totalCount - 1) {
+            $.ajax({
+                url: `/api/studies/logs/${studyLogNo}`,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "studiedCardCount": cardCount,
+                    "status": "COMPLETED"
+                }),
+                dataType: 'json',
+                success: function (res) {
+                    console.log('학습 이력 업데이트 성공: ', res);
+
+                    // 학습 완료 페이지로 이동
+                    window.location.href = `/study/${dailyStudy.dailyStudyNo}/complete`;
+                },
+                error: function (err) {
+                    console.error('학습 이력 업데이트 실패 :', err);
+                }
+            });
+        }
     })
 
     /**
@@ -307,23 +403,48 @@
      * - renderBtn을 호출해 화면에 맞는 버튼 렌더링
      */
     function renderContent() {
-        // 현재 인덱스가 카드 마지막 인덱스 이하라면, 카드 렌더링
-        if (currentIndex <= cardCount - 1) {
-            renderCard();
+        // 첫 인덱스일 경우, 첫화면 안내
+        if (currentIndex === 0) {
+            renderInfoCard('start');
         }
-        // 현재 인덱스가 카드 마지막 인덱스를 초과하면, 퀴즈 렌더링
-        else {
-            renderQuiz();
+        // 현재 인덱스가 카드 마지막 인덱스 이하라면, 일반 학습 카드 렌더링
+        else if (currentIndex <= cardLastIndex) {
+            renderCard(currentIndex - 1); // currentIndex가 1일때 cards[0]
+        }
+        // 퀴즈 직전 화면
+        else if (currentIndex === quizInfoIndex) {
+            renderInfoCard('quiz');
+        }
+        // 현재 인덱스가 카드 마지막 인덱스를 초과하고 , 일반 학습 퀴즈 렌더링
+        else if (currentIndex < totalCount - 1) {
+            // 총 카드가 3개고 currentIndex가 5면 quizzes[0] 렌더링
+            renderQuiz(currentIndex - quizStartIndex);
+        }
+        // 마지막 인덱스 (퀴즈 포함 전체 마지막)
+        else if (currentIndex === totalCount - 1) {
+            renderInfoCard('last');
         }
         renderBtn();
+        renderProgressBar();
+        renderNav();
     }
 
     /**
      * 인덱스에 맞는 버튼 렌더링
      */
     function renderBtn() {
+        $nextBtn.removeClass("study_end_btn");
+
+        // prevBtn 변경
+        if (currentIndex === 0) {
+            $prevBtn.prop('disabled', true); // 첫 화면이면 비활성화
+        } else {
+            $prevBtn.prop('disabled', false);
+        }
+
+        // nextBtn변경
         // 다음 인덱스가 퀴즈 시작 인덱스인 경우
-        if (currentIndex === cardCount - 1) {
+        if (currentIndex === cardLastIndex) {
             $nextBtn.removeClass("white");
             $nextBtn.addClass("primary");
             $nextBtn.text("퀴즈 풀러가기");
@@ -374,6 +495,8 @@
 
                     // 사용자의 정답/오답 여부에 따라 selected된 보기에 스타일 추가
                     markQuizResult(updatedLog.isSuccess);
+                    // 사용자의 정답/오답 여부에 따라 네비바 목록에 아이콘 추가
+                    updateQuizNavIcon(studyQuizNo, updatedLog.isSuccess);
                 },
                 error: function (err) {
                     console.error('퀴즈 수정 실패:', err);
@@ -401,6 +524,8 @@
 
                     // 사용자의 정답/오답 여부에 따라 selected된 보기에 스타일 추가
                     markQuizResult(newLog.isSuccess);
+                    // 사용자의 정답/오답 여부에 따라 네비바 목록에 아이콘 추가
+                    updateQuizNavIcon(studyQuizNo, newLog.isSuccess);
                 },
                 error: function (err) {
                     console.error('퀴즈 생성 실패:', err);
@@ -410,29 +535,29 @@
     });
 
     /**
-     * 학습 끝내기 버튼을 클릭했을 때의 이벤트 핸들러
+     * 퀴즈 제출 후 네비바에 아이콘 업데이트
      */
-    $(document).on('click', '.study_end_btn', function () {
-        $.ajax({
-            url: `/api/studies/logs/${studyLogNo}`,
-            type: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                "studiedCardCount": cardCount,
-                "status": "COMPLETED"
-            }),
-            dataType: 'json',
-            success: function (res) {
-                console.log('학습 이력 업데이트 성공: ', res);
+    function updateQuizNavIcon(quizNo, isSuccess) {
+        const $quizNavItem = $(`.study_nav_list_item[data-quiz-no="${quizNo}"]`);
+        $quizNavItem.find('.study_item_icon').remove(); // 기존 아이콘 제거
 
-                // 학습 완료 페이지로 이동
-                window.location.href = `/study/${dailyStudy.dailyStudyNo}/complete`;
-            },
-            error: function (err) {
-                console.error('학습 이력 업데이트 실패 :', err);
-            }
-        });
-    });
+        let iconHtml = '';
+
+        if (isSuccess === 'Y') {
+            iconHtml = `
+                <span class="study_item_icon icon_pop">
+                    <iconify-icon style="color: var(--primaryColor)" icon="rivet-icons:circle"></iconify-icon>
+                </span>`;
+        } else if (isSuccess === 'N') {
+            iconHtml = `
+                <span class="study_item_icon icon_pop">
+                    <iconify-icon icon="emojione-v1:cross-mark"></iconify-icon>
+                </span>`;
+        }
+
+        $quizNavItem.append(iconHtml);
+    }
+
 
     /**
      * 퀴즈 렌더링 화면에서 option 버튼 클릭시 selected 되도록
@@ -458,30 +583,88 @@
 
         } else if (isSuccess === 'N') {
             $('.study_quiz_option.selected').addClass('wrong');
+            $nextBtn.removeClass('blink');
         }
     }
 
     /**
-     * 학습 끝내기 버튼을 클릭했을 때의 이벤트 핸들러
+     * 현재 인덱스에 맞게 학습 진행바를 렌더링하는 함수
+     * quiz 안내 화면은 화면이긴 하지만 진행률 전체 구간 수에도 포함하지 않음
      */
-    $(document).on('click', '.study_end_btn', function() {
-        $.ajax({
-            url: `/api/studies/logs/${studyLogNo}`,
-            type: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                "studiedCardCount": cardCount,
-                "status": "COMPLETED"
-            }),
-            dataType: 'json',
-            success: function (res) {
-                console.log('학습 이력 업데이트 성공: ', res);
+    function renderProgressBar() {
+        $experiencePoint = $('.experience_point');
 
-                // 학습 완료 페이지로 이동
-                window.location.href = `/study/${dailyStudy.dailyStudyNo}/complete`;
+        const progressStepCount = totalCount - 1; // startInfo 화면만 제외
+        let progressStepIndex = currentIndex // 진행률 계산용 인덱스
+
+        // 시작화면 : 진행도 0%
+        if (currentIndex === 0) {
+            $experiencePoint.css('width', '0%');
+            $experiencePoint.removeClass('after_quiz');
+            return;
+        }
+
+        // 진행률 계산
+        const progressPercent = (progressStepIndex / progressStepCount) * 100;
+        $experiencePoint.css('width', progressPercent  + '%');
+
+        // 현재 인덱스가 카드 인덱스라면 클래스 추가해서 진행바 색상 변경
+        if (currentIndex >= quizInfoIndex) {
+            $experiencePoint.addClass('after_quiz');
+        } else {
+            $experiencePoint.removeClass('after_quiz');
+        }
+    }
+
+    /**
+     * 네비바 렌더링
+     */
+    function renderNav() {
+        $navListItem.removeClass('active');
+        let $activeCard;
+
+        if (currentIndex >= quizStartIndex) {
+            $activeCard = $(`.study_nav_list_item[data-quiz-index=${currentIndex - quizStartIndex + 1}]`);
+        } else {
+            $activeCard = $(`.study_nav_list_item[data-card-index=${currentIndex}]`);
+
+            // 아이콘이 없으면
+            if ($activeCard.find('.study_item_icon').length === 0) {
+                const iconHtml = `
+                    <span class="study_item_icon ">
+                        <iconify-icon icon="icon-park-solid:check-one"></iconify-icon>
+                    </span>`;
+
+                $activeCard.append(iconHtml);
             }
-        });
-    });
+        }
+
+        $activeCard.addClass('active');
+    }
+
+    /**
+     * 네비바에서 특정 카드 목록을 눌렀을 때 동작할 이벤트 핸들러
+     */
+    $navListItem.click(function() {
+
+        let targetIndex;
+
+        // 학습 카드일 경우
+        if ($(this).data('card-index') !== undefined) {
+            targetIndex = parseInt($(this).data('card-index'));
+        }
+        // 퀴즈인 경우
+        else if ($(this).data('quiz-index') !== undefined) {
+            const quizIndex = parseInt($(this).data('quiz-index'));
+            targetIndex = quizStartIndex + (quizIndex - 1);
+        }
+
+        // currentIndex를 변경한 후 렌더링
+        currentIndex = targetIndex;
+        renderContent();
+    })
+
+
     /*]]>*/
 </script>
 

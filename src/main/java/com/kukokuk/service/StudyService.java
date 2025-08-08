@@ -10,6 +10,7 @@ import com.kukokuk.ai.GeminiStudyResponse.EssayQuiz;
 import com.kukokuk.ai.GeminiStudyResponse.Quiz;
 import com.kukokuk.dto.DailyQuestDto;
 import com.kukokuk.dto.MainStudyViewDto;
+import com.kukokuk.dto.QuizWithLogDto;
 import com.kukokuk.dto.StudyProgressViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.exception.AppException;
@@ -460,34 +461,49 @@ public class StudyService {
      *         5. 사용자의 일일학습 퀴즈 이력 목록
      */
     public StudyProgressViewDto getStudyProgressView(int dailyStudyNo, int userNo) {
-      StudyProgressViewDto dto = new StudyProgressViewDto();
-    
-      // 1. dailyStudyNo에 해당하는 일일학습 정보 조회
-      DailyStudy dailyStudy = dailyStudyMapper.getDailyStudyByNo(dailyStudyNo);
-    
-      dto.setDailyStudy(dailyStudy);
-    
-      // 2. 해당 일일학습에 속한 일일학습 카드 목록 조회
-      List<DailyStudyCard> studyCards = dailyStudyCardMapper.getCardsByDailyStudyNo(dailyStudyNo);
-    
-      dto.setCards(studyCards);
-    
-      // 3. 사용자의 일일학습 이력 조회
-      DailyStudyLog studyLog = dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
-    
-      dto.setLog(studyLog);
-    
-      // 4. 일일학습 퀴즈 목록 조회
-      List<DailyStudyQuiz> studyQuizzes = dailyStudyQuizMapper.getStudyQuizzesByDailyStudyNo(dailyStudyNo);
-    
-      dto.setQuizzes(studyQuizzes);
-    
-      // 5. 사용자의 일일학습 퀴즈 이력 목록
-      List<DailyStudyQuizLog> studyQuizLogs = dailyStudyQuizLogMapper.getStudyQuizLogsByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
-    
-      dto.setQuizLogs(studyQuizLogs);
-    
-      return dto;
+        StudyProgressViewDto dto = new StudyProgressViewDto();
+
+        // 1. dailyStudyNo에 해당하는 일일학습 정보 조회
+        DailyStudy dailyStudy = dailyStudyMapper.getDailyStudyByNo(dailyStudyNo);
+
+        dto.setDailyStudy(dailyStudy);
+
+        // 2. 해당 일일학습에 속한 일일학습 카드 목록 조회
+        List<DailyStudyCard> studyCards = dailyStudyCardMapper.getCardsByDailyStudyNo(dailyStudyNo);
+
+        dto.setCards(studyCards);
+
+        // 3. 사용자의 일일학습 이력 조회
+        DailyStudyLog studyLog = dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
+
+        dto.setLog(studyLog);
+
+        // 4. 일일학습 퀴즈 목록 조회
+        List<DailyStudyQuiz> studyQuizzes = dailyStudyQuizMapper.getStudyQuizzesByDailyStudyNo(dailyStudyNo);
+
+        dto.setQuizzes(studyQuizzes);
+
+        // 5. 사용자의 일일학습 퀴즈 이력 목록
+        List<DailyStudyQuizLog> studyQuizLogs = dailyStudyQuizLogMapper.getStudyQuizLogsByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
+
+        dto.setQuizLogs(studyQuizLogs);
+
+        // 사용자의 퀴즈 이력을 quizNo기준의 Map으로 변환
+        Map<Integer, DailyStudyQuizLog> quizLogMap = studyQuizLogs.stream()
+              .collect(Collectors.toMap(DailyStudyQuizLog::getDailyStudyQuizNo, Function.identity()));
+
+        // 퀴즈와 사용자의 이력을 합친 DTO 생성
+        List<QuizWithLogDto> quizWithLogDtos = studyQuizzes.stream()
+                .map(quiz -> {
+                    QuizWithLogDto quizWithLogDto = modelMapper.map(quiz, QuizWithLogDto.class);
+                    quizWithLogDto.setDailyStudyQuizLog(quizLogMap.get(quiz.getDailyStudyQuizNo()));
+                    return quizWithLogDto;
+                })
+                .toList();
+
+        dto.setQuizWithLogDtos(quizWithLogDtos);
+
+        return dto;
     }
     
     /**

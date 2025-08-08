@@ -106,6 +106,7 @@ public class SecurityConfig {
                         , "/css/**"                     // css
                         , "/js/**"                      // javascript
                         , "/images/**"                  // 정적 이미지 경로
+                        , "/study/test"
                     ).permitAll();
 
                 // DevTools, 브라우저 프록시 확장기능 요청 시 허용(개발환경만 적용)
