@@ -3,31 +3,20 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/layout/center}">
 
-<!-- 콘텐츠 영역 -->
 <div layout:fragment="content" class="result-summary-container" style="max-width: 700px; margin: 0 auto; padding: 40px 20px; text-align: center;">
 
-    <h2>스피드 퀴즈 결과 요약</h2>
+    <h2>단계별 퀴즈 결과 요약</h2>
 
     <div style="margin: 30px 0;">
         <p><strong>총 문항 수:</strong> <span th:text="${summary.totalQuestion}">0</span>개</p>
-        <p><strong>총 소요 시간:</strong> <span th:text="${summary.totalTimeSec}">0</span>초</p>
         <p><strong>정답 수:</strong> <span th:text="${summary.correctAnswers}">0</span>개</p>
-        <p><strong>문항당 평균 시간:</strong> <span th:text="${summary.averageTimePerQuestion}">0.0</span>초</p>
-        <p><strong>상위 퍼센트:</strong> <span th:text="${summary.percentile}">0</span>%</p>
+        <span>난이도: <span th:text="${difficulty}"></span></span>
+        <span>문제 유형: <span th:text="${questionType}"></span></span>
     </div>
 
     <div style="margin-top: 30px;">
         <a href="/" class="btn white" style="margin-right: 10px;">홈으로</a>
         <a th:href="@{/quiz/result/detail(sessionNo=${summary.sessionNo})}" class="btn">상세 결과 보기</a>
     </div>
-
-    <!-- 디버깅용 출력 -->
-    <div>
-        <p>sessionNo 디버그: <span th:text="${summary.sessionNo}">0</span></p>
-        <p>totalQuestion 디버그: <span th:text="${summary.totalQuestion}">0</span></p>
-        <p>summary 전체 디버그: <span th:text="${summary}">null</span></p>
-    </div>
-
 </div>
-
 </html>

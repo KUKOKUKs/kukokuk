@@ -31,6 +31,7 @@ public class QuizProcessService {
      */
     @Transactional
     public int insertQuizSessionAndResults(QuizSessionSummary summary, List<QuizResult> results) {
+        log.info("[Service] insertQuizSessionAndResults() summary.quizMode={}", summary.getQuizMode());
         log.info("[시작] insertQuizSessionAndResults() - userNo={}, 문제 수={}", summary.getUserNo(), results.size());
 
         // [1] 세션 요약 필드 계산 및 설정
@@ -41,7 +42,6 @@ public class QuizProcessService {
         summary.setCorrectAnswers(0);  // 초기값
         summary.setAverageTimePerQuestion(totalQuestion == 0 ? 0f : summary.getTotalTimeSec() / totalQuestion);
         summary.setPercentile(0); // 추후 랭킹 계산용
-        summary.setQuizMode("speed");
 
         log.info("[summary 설정 완료] {}", summary);
 
@@ -66,14 +66,18 @@ public class QuizProcessService {
             if (isCorrect) correctAnswers++;
 
             quizResultMapper.insertQuizResult(result);
-            log.info("[결과 저장] quizNo={}, 선택={}, 정답={}, 정오답={}",
-                result.getQuizNo(), result.getSelectedChoice(), correctChoice, result.getIsSuccess());
-
             quizResultMapper.updateUsageCount(result.getQuizNo());
             if (isCorrect) {
                 quizResultMapper.updateSuccessCount(result.getQuizNo());
             }
+
+            int usageCount = quizMasterMapper.getUsageCount(result.getQuizNo());
+            if (usageCount == 20) {
+                quizResultMapper.updateAccuracyRate(result.getQuizNo());
+                quizResultMapper.updateDifficulty(result.getQuizNo());
+            }
         }
+
 
         // [4] 세션 요약 정답 수 갱신
         summary.setCorrectAnswers(correctAnswers);

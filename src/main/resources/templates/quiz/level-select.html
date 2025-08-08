@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/center}">
+
+<div layout:fragment="content" class="level-select-container" style="max-width:480px; margin:60px auto; padding:40px 20px; text-align:center;">
+    <h2>단계별 퀴즈 설정</h2>
+    <form id="levelQuizForm" th:action="@{/quiz/level}" method="get" style="margin-top:30px;">
+        <div style="margin-bottom:25px;">
+            <label for="difficulty"><strong>난이도 선택</strong></label>
+            <select name="difficulty" id="difficulty" required style="margin-left:10px;">
+                <option value="" disabled selected>난이도 선택</option>
+                <option value="상">상 (어려움)</option>
+                <option value="중">중 (보통)</option>
+                <option value="하">하 (쉬움)</option>
+            </select>
+        </div>
+        <div style="margin-bottom:30px;">
+            <label for="questionType"><strong>출제 유형</strong></label>
+            <select name="questionType" id="questionType" required style="margin-left:10px;">
+                <option value="" disabled selected>유형 선택</option>
+                <option value="뜻">뜻 보고 단어 고르기</option>
+                <option value="단어">단어 보고 뜻 고르기</option>
+            </select>
+        </div>
+        <button type="submit" class="btn white" style="width:220px;">단계별 퀴즈 시작</button>
+    </form>
+</div>
+</html>

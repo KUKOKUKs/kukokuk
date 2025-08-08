@@ -55,4 +55,5 @@ public class QuizResultService {
     public List<QuizResultDto> getQuizResultsBySession(int sessionNo, int userNo) {
         return quizResultMapper.getQuizResultsBySession(sessionNo, userNo);
     }
+
 }

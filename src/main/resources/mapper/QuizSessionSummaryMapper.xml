@@ -5,8 +5,8 @@
 <mapper namespace="com.kukokuk.mapper.QuizSessionSummaryMapper">
 
     <!--
-        퀴즈 세션 요약 resultMap
-        DB 컬럼명(snake_case)과 VO 필드명(camelCase)을 명시적으로 매핑한다.
+        퀴즈 세션 요약
+        DB 컬럼명과 VO 필드명을 명시적으로 매핑한다.
     -->
     <resultMap id="quizSessionSummaryMap" type="QuizSessionSummary">
         <id property="sessionNo" column="SESSION_NO"/>
