@@ -615,4 +615,12 @@ public class StudyService {
 
         return log;
     }
+
+    /**
+     * 학습수준 목록을 조회
+     * @return
+     */
+    public List<StudyDifficulty> getStudyDifficulties() {
+        return studyDifficultyMapper.getDifficulties();
+    }
 }
