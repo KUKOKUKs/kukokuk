@@ -10,6 +10,7 @@ import com.kukokuk.ai.GeminiStudyResponse.EssayQuiz;
 import com.kukokuk.ai.GeminiStudyResponse.Quiz;
 import com.kukokuk.dto.DailyQuestDto;
 import com.kukokuk.dto.MainStudyViewDto;
+import com.kukokuk.dto.QuizWithLogDto;
 import com.kukokuk.dto.StudyProgressViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.exception.AppException;
@@ -487,6 +488,21 @@ public class StudyService {
 
         dto.setQuizLogs(studyQuizLogs);
 
+        // 사용자의 퀴즈 이력을 quizNo기준의 Map으로 변환
+        Map<Integer, DailyStudyQuizLog> quizLogMap = studyQuizLogs.stream()
+              .collect(Collectors.toMap(DailyStudyQuizLog::getDailyStudyQuizNo, Function.identity()));
+
+        // 퀴즈와 사용자의 이력을 합친 DTO 생성
+        List<QuizWithLogDto> quizWithLogDtos = studyQuizzes.stream()
+                .map(quiz -> {
+                    QuizWithLogDto quizWithLogDto = modelMapper.map(quiz, QuizWithLogDto.class);
+                    quizWithLogDto.setDailyStudyQuizLog(quizLogMap.get(quiz.getDailyStudyQuizNo()));
+                    return quizWithLogDto;
+                })
+                .toList();
+
+        dto.setQuizWithLogDtos(quizWithLogDtos);
+      
         return dto;
     }
 
@@ -598,5 +614,13 @@ public class StudyService {
         dailyStudyQuizLogMapper.updateStudyQuizLog(log);
 
         return log;
+    }
+
+    /**
+     * 학습수준 목록을 조회
+     * @return
+     */
+    public List<StudyDifficulty> getStudyDifficulties() {
+        return studyDifficultyMapper.getDifficulties();
     }
 }

@@ -15,6 +15,7 @@ import com.kukokuk.vo.DailyStudy;
 import com.kukokuk.vo.DailyStudyLog;
 import com.kukokuk.vo.DailyStudyMaterial;
 import com.kukokuk.vo.DailyStudyQuizLog;
+import com.kukokuk.vo.StudyDifficulty;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -200,5 +201,11 @@ public class ApiStudyController {
             studyQuizLogRequest, securityUser.getUser().getUserNo());
 
         return ResponseEntityUtils.ok("사용자 학습퀴즈 이력 수정 성공", updatedlog);
+    }
+
+    @GetMapping("/difficulties")
+    public ResponseEntity<ApiResponse<List<StudyDifficulty>>> getStudyDifficulties() {
+        List<StudyDifficulty> studyDifficulties = studyService.getStudyDifficulties();
+        return ResponseEntityUtils.ok("학습수준 목록 조회 성공", studyDifficulties);
     }
 }

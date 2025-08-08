@@ -1,30 +1,56 @@
-<!-- quiz/level.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>단계별 퀴즈</title>
+    <link rel="stylesheet" href="/css/main.css" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script th:src="@{/js/quiz/level.js}"></script>
 </head>
 <body>
-<div id="quiz-wrapper">
-    <div id="progress"><span id="cur"></span> / <span id="total"></span></div>
-    <div id="quiz-content">
-        <div id="question"></div>
-        <ul id="options">
-            <li class="quiz-option" data-choice="1"></li>
-            <li class="quiz-option" data-choice="2"></li>
-            <li class="quiz-option" data-choice="3"></li>
-            <li class="quiz-option" data-choice="4"></li>
-        </ul>
-        <button id="hint-btn">힌트</button>
-        <button id="next-btn">다음</button>
+<div class="quiz-container" style="position:relative;">
+    <h1 style="text-align:center;">단계별 퀴즈</h1>
+
+    <!-- 힌트 버튼 우측상단 고정 -->
+    <button id="hint-btn" class="btn hint-btn"
+            type="button"
+            style="position:absolute; top:20px; right:20px;">힌트</button>
+
+    <!-- 진행도 영역 -->
+    <div id="quiz-header" style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <div>
+            <span id="quiz-current">1</span> / <span id="quiz-total">0</span>
+        </div>
+        <div style="width:60px;"></div>
+    </div>
+
+    <div id="quiz-question" style="margin-bottom:20px; font-size:18px; font-weight:bold; text-align:center;"></div>
+    <div id="quiz-options" style="display:flex; flex-direction:column; gap:10px;"></div>
+
+    <!-- 이전/다음(제출) 버튼 flex 정렬 -->
+    <div style="display:flex; justify-content:space-between; margin-top:24px;">
+        <button id="prev-btn" class="btn" type="button" style="flex:1; margin-right:6px;">이전</button>
+        <button id="next-btn" class="btn blue" type="button" style="flex:1; margin-left:6px;">다음</button>
     </div>
 </div>
+
+<!-- 결과 제출용 폼 -->
+<form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
+
+<!-- 제출 모달 -->
+<div id="submit-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:999;
+    background:rgba(0,0,0,0.3); align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:24px 32px; border-radius:14px; box-shadow:0 4px 16px rgba(0,0,0,0.14); min-width:260px; text-align:center; margin:auto;">
+        <div style="margin-bottom:20px; font-size:1.1em;">퀴즈를 제출하시겠습니까?</div>
+        <button id="submit-confirm-btn" class="btn blue" style="margin-right:10px;">제출</button>
+        <button id="submit-cancel-btn" class="btn">취소</button>
+    </div>
+</div>
+
+<!-- quizList JS 주입 -->
 <script th:inline="javascript">
-    /*<![CDATA[*/
-    const quizList = [[${quizList}]];
-    /*]]>*/
+    let quizzes = /*[[${quizList}]]*/ [];
 </script>
+<script src="/js/modules/quiz/level.js"></script>
 </body>
 </html>

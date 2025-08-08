@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<div th:fragment="study-nav-fragment(data)" class="nav_container nav_container_study">
+    <div class="nav_wrap">
+        <div class="study_nav_header_info">
+            <div class="study_nav_header">
+                <h1 class="symbol_logo"></h1>
+                <span class="side_bar_icon">
+                    <iconify-icon icon="ri:side-bar-line"></iconify-icon>
+                </span>
+            </div>
+        </div>
+
+        <div class="study_nav_list_container d_flex column base_gap">
+            <div class="study_nav_list study_nav_card_list">
+                <div class="study_nav_list_title">
+                    학습
+                </div>
+                <ul class="nav_list study">
+                    <li class="study_nav_list_item"
+                        th:each="card, state : ${data.cards}"
+                        th:attr="data-card-index=${state.count}">
+                        <p th:text="|${state.count}. ${card.title}|" />
+                        <th:block th:if="${data.log != null && data.log.studiedCardCount >= state.count}">
+                            <span class="study_item_icon ">
+                                <iconify-icon icon="icon-park-solid:check-one"></iconify-icon>
+                            </span>
+                        </th:block>
+                    </li>
+                </ul>
+            </div>
+            <div class="study_nav_list study_nav_quiz_list">
+                <div class="study_nav_list_title">
+                    퀴즈
+                </div>
+                <ul class="nav_list study">
+                    <li class="study_nav_list_item"
+                        th:each="quiz, state : ${data.quizWithLogDtos}"
+                        th:attr="data-quiz-index=${state.count},
+                                 data-quiz-no=${quiz.dailyStudyQuizNo}">
+                        <p th:text="|퀴즈 ${state.count}|"></p>
+                        <th:block th:if="${quiz.dailyStudyQuizLog != null}">
+                            <th:block th:if="${'Y'.equals(quiz.dailyStudyQuizLog.isSuccess)}">
+                                <span class="study_item_icon">
+                                    <iconify-icon style="color: var(--primaryColor)" icon="rivet-icons:circle"></iconify-icon>
+                                </span>
+                            </th:block>
+                            <th:block th:if="${'N'.equals(quiz.dailyStudyQuizLog.isSuccess)}">
+                                <span class="study_item_icon">
+                                    <iconify-icon icon="emojione-v1:cross-mark"></iconify-icon>
+                                </span>
+                            </th:block>
+                        </th:block>
+                    </li>
+                    <li class="study_nav_list_item">
+                        <p>퀴즈 1</p>
+                        <span class="study_item_icon">
+                             <iconify-icon icon="emojione-v1:cross-mark"></iconify-icon>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <div th:replace="~{fragments/common/footer :: footer-fragment}"></div>
+    </div>
+
+    <script>
+        $('.side_bar_icon').click(function() {
+            $('.nav_wrap').toggleClass('collapsed');
+        })
+    </script>
+</div>
+</html>

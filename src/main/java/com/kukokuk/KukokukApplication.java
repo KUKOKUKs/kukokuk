@@ -18,7 +18,7 @@ public class KukokukApplication {
         // QuizService Bean 꺼내기
         QuizService quizService = context.getBean(QuizService.class);
 
-     /*   // 퀴즈 유형별 100개씩 생성
+        /*// 퀴즈 유형별 200개씩 생성 : 처음 플랫폼 시작시 1회만 가동하면 됨
         quizService.insertRandomQuizBulk(200);*/
     }
 }

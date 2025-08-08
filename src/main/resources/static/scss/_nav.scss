@@ -1,8 +1,7 @@
 .nav_container {
     width: var(--navWidth);
     min-width: var(--navWidth);
-    min-height: 100vh;
-    border-right: 1px solid var(--borderColor);
+    min-height: 100%;
 }
 
 .nav_wrap {
@@ -10,11 +9,13 @@
     height: 100%;
     padding: var(--baseGap);
     padding-top: calc(var(--logoHeight) + (var(--baseGap) * 2) + var(--baseFontSize));
+    padding-bottom: 0;
     background-color: #fff;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: var(--baseGap);
+    border-right: 1px solid var(--borderColor);
     position: fixed;
     top: 0;
     left: 0;

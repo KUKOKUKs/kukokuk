@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/center}">
+
+<div layout:fragment="content" class="quiz-select-container" style="max-width:400px;margin:60px auto;text-align:center;">
+    <h2>퀴즈 모드 선택</h2>
+    <div style="margin-top:30px;">
+        <a th:href="@{/quiz/speed}" class="btn white" style="width:200px; margin-bottom:20px;">스피드 퀴즈</a>
+        <br>
+        <a th:href="@{/quiz/level-select}" class="btn white" style="width:200px;">단계별 퀴즈</a>
+    </div>
+</div>
+</html>

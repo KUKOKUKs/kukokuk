@@ -1,5 +1,6 @@
 package com.kukokuk.service;
 
+import com.kukokuk.dto.QuizLevelResultDto;
 import com.kukokuk.mapper.DictEntryMapper;
 import com.kukokuk.mapper.QuizMasterMapper;
 import com.kukokuk.vo.DictEntry;
@@ -7,6 +8,7 @@ import com.kukokuk.vo.QuizMaster;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -146,7 +148,6 @@ public class QuizService {
 
     }
 
-
     /**
      * 스피드 퀴즈용 문제 10개 조회
      * @param usageCount 기준 usage_count
@@ -167,6 +168,15 @@ public class QuizService {
     public List<QuizMaster> getLevelQuizList(String difficulty, String questionType) {
         log.info("단계별 퀴즈 요청 - 난이도: {}, 유형: {}", difficulty, questionType);
         return quizMasterMapper.getQuizListByDifficultyAndType(difficulty, questionType);
+    }
+
+    /**
+     * 세션 번호로 DIFFICULTY, QUESTION_TYPE을 조회한다.
+     * @param sessionNo 세션 번호
+     * @return QuizLevelResultdto
+     */
+    public QuizLevelResultDto getDifficultyAndQuestionTypeBySessionNo(int sessionNo) {
+        return quizMasterMapper.getDifficultyAndQuestionTypeBySessionNo(sessionNo);
     }
 
 

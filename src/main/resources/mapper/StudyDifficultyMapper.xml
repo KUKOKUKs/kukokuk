@@ -14,4 +14,13 @@
         WHERE STUDY_DIFFICULTY_NO = #{studyDifficultyNo}
     </select>
 
+    <!--
+     List<StudyDifficulty> getDifficulties();
+    -->
+    <select id="getDifficulties" resultType="StudyDifficulty">
+        SELECT STUDY_DIFFICULTY_NO AS studyDifficultyNo,
+               EXPLANATION,
+               PROMPT_TEXT         AS promptText
+        FROM KUKOKUK_STUDY_DIFFICULTY
+    </select>
 </mapper>
