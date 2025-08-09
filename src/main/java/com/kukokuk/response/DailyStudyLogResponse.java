@@ -18,5 +18,5 @@ public class DailyStudyLogResponse {
     private int userNo;
     private int dailyStudyNo;
 
-    private boolean hintObtained; // 힌트를 획득했는지
+    private boolean questCompleted; // 도전과제를 달성했는지
 }

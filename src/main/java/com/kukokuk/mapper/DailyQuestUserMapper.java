@@ -34,4 +34,15 @@ public interface DailyQuestUserMapper {
      * @param dailyQuestUserNo 일일 도전과제 수행 식별자
      */
     void updateIsObtained(int dailyQuestUserNo);
+
+    /**
+     * 도전과제를 달성한 후, 사용자의 도전과제 달성 이력을 생성
+     */
+    void insertDailyQuestUser(DailyQuestUser dailyQuestUser);
+
+    /**
+     * 이 쿼리를 수행하는 날짜에 존재하는 사용자의 해당 도전과제에 대한 이력 조회
+     */
+    DailyQuestUser getTodayQuestUserByUserNoAndQuestNo(@Param("userNo") int userNo,
+        @Param("dailyQuestNo") int dailyQuestNo);
 }

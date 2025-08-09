@@ -60,4 +60,33 @@
             UPDATED_DATE = NOW()
         WHERE DAILY_QUEST_USER_NO = #{dailyQuestUserNo}
     </update>
+
+    <!--
+    void insertDailyQuestUser(DailyQuestUser dailyQuestUser);
+    -->
+    <insert id="insertDailyQuestUser" parameterType="DailyQuestUser">
+        INSERT INTO
+            KUKOKUK_DAILY_QUEST_USERS
+            (DAILY_QUEST_NO, USER_NO)
+        VALUES
+            (#{dailyQuestNo}, #{userNo})
+    </insert>
+
+    <!--
+      void getTodayQuestUserByUserNoAndQuestNo(@Param("userNo") int userNo,
+        @Param("dailyQuestNo") int dailyQuestNo);
+    -->
+    <select id="getTodayQuestUserByUserNoAndQuestNo" resultMap="DailyQuestUserResultMap">
+        SELECT DAILY_QUEST_USER_NO,
+               DAILY_QUEST_NO,
+               IS_OBTAINED,
+               CREATED_DATE,
+               USER_NO
+        FROM
+            KUKOKUK_DAILY_QUEST_USERS
+        WHERE
+            USER_NO = #{userNo}
+            AND DAILY_QUEST_NO = #{dailyQuestNo}
+            AND DATE(CREATED_DATE) = CURDATE()
+    </select>
 </mapper>

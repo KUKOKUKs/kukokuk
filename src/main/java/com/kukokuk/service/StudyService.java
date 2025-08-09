@@ -32,6 +32,7 @@ import com.kukokuk.request.UpdateStudyLogRequest;
 import com.kukokuk.response.DailyStudyLogResponse;
 import com.kukokuk.response.ParseMaterialResponse;
 import com.kukokuk.security.SecurityUser;
+import com.kukokuk.util.DailyQuestEnum;
 import com.kukokuk.util.SchoolGradeUtils;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
@@ -549,14 +550,26 @@ public class StudyService {
         // 이미 학습완료 상태인 이력인지 여부
         boolean alreadyCompleted = "COMPLETED".equals(existedlog.getStatus());
         // 이번 요청에서 힌트를 획득했는지 여부
-        boolean hintObtained = false;
+        boolean questCompleted = false;
 
         // 수정 전 학습이력이 '학습완료'상태가 아니고, 수정 후 학습이력이 '학습완료' 상태일 경우
-        // 처음으로 해당학습을 완료하는 이력이므로 힌트아이템을 획득하도록 한다
+        // 오늘 달성한 도전과제가 있는지 확인하고, 없으면 도전과제 달성이력을 추가한다
         if (!alreadyCompleted && "COMPLETED".equals(updateStudyLogRequest.getStatus())) {
-            log.info("첫 학습완료이므로 힌트를 획득합니다");
-            userMapper.updateUserHintCountPlus(userNo);
-            hintObtained = true;
+
+            // 오늘 날짜의 도전과제 수행 이력이 존재하는지 확인
+            DailyQuestUser existQuestUser = dailyQuestUserMapper.getTodayQuestUserByUserNoAndQuestNo(userNo, DailyQuestEnum.COMPLETED_DAILY_STUDY.getDailyQuestNo());
+
+            // 오늘의 도전과제 수행 이력이 존재하지 않을 때만
+            if (existQuestUser == null) {
+                DailyQuestUser dailyQuestUser = new DailyQuestUser();
+                dailyQuestUser.setDailyQuestNo(DailyQuestEnum.COMPLETED_DAILY_STUDY.getDailyQuestNo());
+                dailyQuestUser.setUserNo(userNo);
+
+                dailyQuestUserMapper.insertDailyQuestUser(dailyQuestUser);
+                log.info("오늘의 도전과제를 달성했습니다");
+            }
+
+            questCompleted = true;
         }
 
         // 수정할 컬럼만 담은 VO객체로 수정 mapper 호출
@@ -573,7 +586,7 @@ public class StudyService {
         // 수정된 학습이력 조회
         DailyStudyLog updatedLog = dailyStudyLogMapper.getStudyLogByNo(dailyStudyLogNo);
         DailyStudyLogResponse response = modelMapper.map(updatedLog, DailyStudyLogResponse.class);
-        response.setHintObtained(hintObtained);
+        response.setQuestCompleted(questCompleted);
         return response;
      }
 
