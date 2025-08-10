@@ -4,15 +4,16 @@
 <mapper namespace="com.kukokuk.mapper.UserMapper">
 
     <!--
-        * 사용자 경험치 업데이트
-        *  @param experiencePoints 추가할 사용자 경험치
-        * @param userNo 사용자 번호
-        void updateUserExperiencePoints(int experiencePoints, int userNo);
+        * 사용자 경험치 추가 및 레벨업
+        * @param user 사용자 정보
+        void updateUserExperienceAndLevelUp(User user);
     -->
-    <update id="updateUserExperiencePoints">
+    <update id="updateUserExperienceAndLevelUp" parameterType="User">
         UPDATE
             KUKOKUK_USERS
-        SET EXPERIENCE_POINTS = EXPERIENCE_POINTS + #{experiencePoints}
+        SET
+            EXPERIENCE_POINTS = EXPERIENCE_POINTS + #{experiencePoints}
+            , LEVEL = #{level}
         WHERE USER_NO = #{userNo}
     </update>
 
@@ -61,50 +62,49 @@
     -->
     <update id="updateUser" parameterType="User">
         UPDATE
-        KUKOKUK_USERS
+            KUKOKUK_USERS
         SET
-        UPDATED_DATE = CURRENT_TIMESTAMP
-        <if test="password != null">
-            , PASSWORD = #{password}
-        </if>
-        <if test="name != null">
-            , NAME = #{name}
-        </if>
-        <if test="nickname != null">
-            , NICKNAME = #{nickname}
-        </if>
-        <if test="birthDate != null">
-            , BIRTH_DATE = #{birthDate}
-        </if>
-        <if test="gender != null">
-            , GENDER = #{gender}
-        </if>
-        <if test="profileFilename != null">
-            , PROFILE_FILENAME = #{profileFilename}
-        </if>
-        <if test="level != null">
-            , LEVEL = #{level}
-        </if>
-        <if test="experiencePoints != null">
-            , EXPERIENCE_POINTS = #{experiencePoints}
-        </if>
-        <if test="studyDifficulty != null">
-            , STUDY_DIFFICULTY = #{studyDifficulty}
-        </if>
-        <if test="currentSchool != null">
-            , CURRENT_SCHOOL = #{currentSchool}
-        </if>
-        <if test="currentGrade != null">
-            , CURRENT_GRADE = #{currentGrade}
-        </if>
-        <if test="hintCount != null">
-            , HINT_COUNT = #{hintCount}
-        </if>
-        <if test="isDeleted != null">
-            , IS_DELETED = #{isDeleted}
-        </if>
-        WHERE
-        USER_NO = #{userNo}
+            UPDATED_DATE = CURRENT_TIMESTAMP
+            <if test="password != null">
+                , PASSWORD = #{password}
+            </if>
+            <if test="name != null">
+                , NAME = #{name}
+            </if>
+            <if test="nickname != null">
+                , NICKNAME = #{nickname}
+            </if>
+            <if test="birthDate != null">
+                , BIRTH_DATE = #{birthDate}
+            </if>
+            <if test="gender != null">
+                , GENDER = #{gender}
+            </if>
+            <if test="profileFilename != null">
+                , PROFILE_FILENAME = #{profileFilename}
+            </if>
+            <if test="level != null">
+                , LEVEL = #{level}
+            </if>
+            <if test="experiencePoints != null">
+                , EXPERIENCE_POINTS = #{experiencePoints}
+            </if>
+            <if test="studyDifficulty != null">
+                , STUDY_DIFFICULTY = #{studyDifficulty}
+            </if>
+            <if test="currentSchool != null">
+                , CURRENT_SCHOOL = #{currentSchool}
+            </if>
+            <if test="currentGrade != null">
+                , CURRENT_GRADE = #{currentGrade}
+            </if>
+            <if test="hintCount != null">
+                , HINT_COUNT = #{hintCount}
+            </if>
+            <if test="isDeleted != null">
+                , IS_DELETED = #{isDeleted}
+            </if>
+        WHERE USER_NO = #{userNo}
     </update>
 
     <!--
@@ -129,7 +129,7 @@
         <result column="IS_DELETED" property="isDeleted"/>
         <result column="CREATED_DATE" property="createdDate"/>
         <result column="UPDATED_DATE" property="updatedDate"/>
-        <result column="MAX_EXP" property="maxExp"/>
+        <result column="NEXT_LEVEL_EXP" property="maxExp"/>
         <collection column="USER_NO" property="roleNames"
             ofType="string" select="getUserRoleNamesByUserNo"/>
     </resultMap>
@@ -159,12 +159,9 @@
              , U.IS_DELETED
              , U.CREATED_DATE
              , U.UPDATED_DATE
-             , L.MAX_EXP
+             , (L.MAX_EXP + 1) AS NEXT_LEVEL_EXP
         FROM KUKOKUK_USERS U
-                 JOIN
-             KUKOKUK_LEVEL L
-             ON
-                 U.LEVEL = L.LEVEL
+             JOIN KUKOKUK_LEVEL L ON U.LEVEL = L.LEVEL
         WHERE U.USER_NO = #{userNo}
     </select>
 
@@ -194,11 +191,9 @@
              , U.CREATED_DATE
              , U.UPDATED_DATE
              , L.MAX_EXP
+             , (L.MAX_EXP + 1) AS NEXT_LEVEL_EXP
         FROM KUKOKUK_USERS U
-                 JOIN
-             KUKOKUK_LEVEL L
-             ON
-                 U.LEVEL = L.LEVEL
+             JOIN KUKOKUK_LEVEL L ON U.LEVEL = L.LEVEL
         WHERE U.USERNAME = #{username}
     </select>
 

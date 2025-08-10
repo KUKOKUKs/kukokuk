@@ -9,11 +9,10 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
 
     /**
-     * 사용자 경험치 업데이트
-     * @param experiencePoints 추가할 사용자 경험치
-     * @param userNo 사용자 번호
+     * 사용자 경험치 추가 및 레벨업
+     * @param user 사용자 정보
      */
-    void updateUserExperiencePoints(int experiencePoints, int userNo);
+    void updateUserExperienceAndLevelUp(User user);
 
     /**
      * 사용자 힌드 개수 -1 업데이트
@@ -32,8 +31,8 @@ public interface UserMapper {
      * @param profileFilename 프로필 이미지 파일명
      * @param userNo 사용자 번호
      */
-    void updateUserProfileImage(@Param("profileFilename") String profileFilename
-        , @Param("userNo") int userNo);
+    void updateUserProfileImage(@Param("userNo") int userNo
+        , @Param("profileFilename") String profileFilename);
 
     /**
      * 사용자 정보 업데이트
