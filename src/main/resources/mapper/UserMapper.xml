@@ -4,6 +4,19 @@
 <mapper namespace="com.kukokuk.mapper.UserMapper">
 
     <!--
+        * 사용자 경험치 업데이트
+        *  @param experiencePoints 추가할 사용자 경험치
+        * @param userNo 사용자 번호
+        void updateUserExperiencePoints(int experiencePoints, int userNo);
+    -->
+    <update id="updateUserExperiencePoints">
+        UPDATE
+            KUKOKUK_USERS
+        SET EXPERIENCE_POINTS = EXPERIENCE_POINTS + #{experiencePoints}
+        WHERE USER_NO = #{userNo}
+    </update>
+
+    <!--
         * 사용자 힌드 개수 -1 업데이트
         * @param userNo 사용자 번호
         void updateUserHintCountMinus(int userNo);

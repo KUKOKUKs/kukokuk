@@ -9,6 +9,13 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
 
     /**
+     * 사용자 경험치 업데이트
+     * @param experiencePoints 추가할 사용자 경험치
+     * @param userNo 사용자 번호
+     */
+    void updateUserExperiencePoints(int experiencePoints, int userNo);
+
+    /**
      * 사용자 힌드 개수 -1 업데이트
      * @param userNo 사용자 번호
      */
