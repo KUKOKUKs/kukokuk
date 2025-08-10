@@ -106,7 +106,7 @@ public class ApiStudyController {
                 DailyStudyMaterial material = dto.getDailyStudyMaterial();
 
                 int totalCardCount = study.getCardCount();
-                int studiedCardCount = (log != null) ? log.getStudiedCardCount() : 0;
+                int studiedCardCount = (log != null && log.getStudiedCardCount() != null) ? log.getStudiedCardCount() : 0;
                 int progressRate =
                     (totalCardCount == 0) ? 0 : (int) ((studiedCardCount * 100.0) / totalCardCount);
 

@@ -209,7 +209,7 @@ public class StudyService {
         );
 
         // 생성되는 DTO 확인 로그
-        userStudyRecommendationDtos.forEach(dto -> log.debug("사용자 맞춤 study 조회 : " + dto.toString()));
+        userStudyRecommendationDtos.forEach(dto -> log.info("사용자 맞춤 study 조회 : " + dto.toString()));
 
         String nowCurrentSchool = user.getCurrentSchool();
         Integer nowCurrentGrade = user.getCurrentGrade();
@@ -284,6 +284,7 @@ public class StudyService {
      * @return
      */
     public DailyStudy createDailyStudy(int dailyStudyMaterialNo, int studyDifficultyNo) {
+        log.info("createDailyStudy 학습자료 생성 메소드 호출 | dailyStudyMaterialNo : " + dailyStudyMaterialNo + ", studyDifficultyNo : " + studyDifficultyNo);
         // dailyStudyMaterialNo 로 학습자료 원본데이터 조회
          DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
 

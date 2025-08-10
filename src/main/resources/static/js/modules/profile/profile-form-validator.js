@@ -1,9 +1,8 @@
 import {
     addInputErrorMessage,
     allClearFormErrorMessage
-} from "/js/utils/form-error-util.js";
-
-import {regExNickname, validateBirthDate} from '/js/utils/validation-util.js';
+} from "../../utils/form-error-util.js";
+import {regExNickname, validateBirthDate} from '../../utils/validation-util.js';
 
 // 프로필 수정 폼 제출 시 유효성 검사
 export function validateProfileForm($form) {

@@ -129,7 +129,7 @@
                     url: '/api/studies',
                     type: 'GET',
                     contentType: 'application/json',
-                    data: {'rows': '4'},
+                    data: {'rows': '10'},
                     dataType: 'json',
                     success: function (res) {
                         console.log(res);
@@ -137,6 +137,7 @@
                         const studyList = res.data;
 
                         studyList.forEach((study, index) => {
+                            console.log(study);
                             // 학습 상태에 따라 표현할 텍스트 설정
                             let statusText = '';
                             switch (study.status) {
@@ -161,7 +162,7 @@
                                                 : ''}" data-study-no="${study.dailyStudyNo}" data-study-status="${statusText}">
                                   <div class="study_info">
                                     <div class="study_title">${study.title}</div>
-                                    <div class="study_content">${study.explanation}</div>
+                                    <div class="study_content">${study.explanation ? study.explanation : ''}</div>
                                   </div>
                                   <div class="level_info study_list">
                                     <div class="level_bar">
