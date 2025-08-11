@@ -94,7 +94,7 @@ public class Pagination {
     }
 
     /**
-     * Math.ceilDiv(int, int) 대신 사용할 올림 나눗셈 메서드
+     * 올림 나눗셈 메서드
      */
     private int ceilDiv(int a, int b) {
         return (a + b - 1) / b;
