@@ -27,7 +27,7 @@ public class ApiQuizBookmarkController {
     public ApiResponse<Void> addBookmark(@PathVariable int quizNo,
         @AuthenticationPrincipal SecurityUser securityUser) {
         int userNo = securityUser.getUser().getUserNo();
-        boolean success = quizBookmarkService.addBookmark(userNo, quizNo);
+        boolean success = quizBookmarkService.insertBookmark(userNo, quizNo);
         return success
             ? ApiResponse.success("북마크 성공")
             : ApiResponse.fail(400, "북마크 실패");
@@ -37,7 +37,7 @@ public class ApiQuizBookmarkController {
     public ApiResponse<Void> removeBookmark(@PathVariable int quizNo,
         @AuthenticationPrincipal SecurityUser securityUser) {
         int userNo = securityUser.getUser().getUserNo();
-        boolean success = quizBookmarkService.removeBookmark(userNo, quizNo);
+        boolean success = quizBookmarkService.deleteBookmark(userNo, quizNo);
         return success
             ? ApiResponse.success("북마크 해제 성공")
             : ApiResponse.fail(400, "북마크 해제 실패");

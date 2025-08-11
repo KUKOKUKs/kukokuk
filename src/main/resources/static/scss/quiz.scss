@@ -1,0 +1,58 @@
+/* quiz.scss - 단계별 퀴즈 설정 페이지 전용 스타일 */
+/* common.scss 변수, reset, 기본 요소 스타일 기반 */
+
+/* 라디오 버튼 숨기기 (화면에서만) */
+.btn_list input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 선택 가능한 버튼 스타일 */
+.btn_list label.btn {
+    cursor: pointer;
+    border: var(--baseBorder);
+    background-color: var(--subColor);
+    color: var(--primaryColor);
+    font-size: var(--baseFontSize);
+    font-weight: bold;
+    border-radius: var(--bdrs);
+    padding: var(--smallPadding);
+    transition: background-color var(--trst), color var(--trst), border-color var(--trst);
+    text-align: center;
+}
+
+/* 버튼 hover 효과 */
+.btn_list label.btn:hover {
+    border-color: var(--primaryColor);
+    background-color: #fff;
+    color: var(--primaryColor);
+}
+
+/* 선택된 버튼 스타일 */
+.btn_list input[type="radio"]:checked + * {
+    border-color: var(--primaryColor);
+    background-color: var(--primaryColor);
+    color: #fff;
+}
+
+/* 난이도/출제 유형 타이틀 */
+.quiz_section_title {
+    font-size: var(--subFontSize);
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: var(--smallGap);
+    color: var(--blackColor);
+}
+
+/* 시작 버튼 */
+.start_quiz_btn {
+    margin-top: var(--baseGap);
+    font-size: var(--largeFontSize);
+}
+
+.btn.active {
+    border-color: var(--primaryColor);
+    background-color: var(--primaryColor);
+    color: #fff;
+}

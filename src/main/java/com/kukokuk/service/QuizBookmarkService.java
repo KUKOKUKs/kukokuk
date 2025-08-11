@@ -25,7 +25,7 @@ public class QuizBookmarkService {
      * @return 성공 여부
      */
     @Transactional
-    public boolean addBookmark(int userNo, int quizNo) {
+    public boolean insertBookmark(int userNo, int quizNo) {
         // 이미 북마크 되어 있으면 중복 등록 방지
         QuizBookmarked existing = quizBookmarkedMapper.getQuizBookmarkedByUserNoAndQuizNo(userNo, quizNo);
         if (existing != null) return true;
@@ -43,7 +43,7 @@ public class QuizBookmarkService {
      * @return 성공 여부
      */
     @Transactional
-    public boolean removeBookmark(int userNo, int quizNo) {
+    public boolean deleteBookmark(int userNo, int quizNo) {
         int deleted = quizBookmarkedMapper.deleteQuizBookmarkedByUserNoAndQuizNo(userNo, quizNo);
         return deleted > 0;
     }
@@ -65,14 +65,6 @@ public class QuizBookmarkService {
      * @return 북마크 리스트
      */
     @Transactional(readOnly = true)
-    public List<QuizBookmarked> getBookmarkList(int userNo) {
-        return quizBookmarkedMapper.getQuizBookmarkedListByUserNo(userNo);
-    }
-
-    /**
-     * 해당 사용자의 북마크한 퀴즈 리스트(QuizMaster) 조회
-     */
-    @Transactional(readOnly = true)
     public List<QuizMaster> getBookmarkedQuizList(int userNo) {
         List<QuizBookmarked> bookmarkList = quizBookmarkedMapper.getQuizBookmarkedListByUserNo(userNo);
         if (bookmarkList.isEmpty()) return Collections.emptyList();
@@ -83,7 +75,7 @@ public class QuizBookmarkService {
     }
 
     /**
-     * 해당 사용자의 북마크 퀴즈 목록 조회 (페이징)
+     * 해당 사용자의 북마크 퀴즈 목록 조회 (페이징)(추후사용)
      * @param userNo 사용자 번호
      * @param offset 시작 위치
      * @param limit 조회 개수
@@ -95,7 +87,7 @@ public class QuizBookmarkService {
     }
 
     /**
-     * 해당 사용자의 북마크 퀴즈 총 개수 조회
+     * 해당 사용자의 북마크 퀴즈 총 개수 조회(추후 사용)
      * @param userNo 사용자 번호
      * @return int (북마크된 퀴즈 개수)
      */

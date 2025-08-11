@@ -39,6 +39,26 @@ public class QuizController {
     private final QuizResultService quizResultService;
     private final QuizBookmarkService quizBookmarkService; // ★추가
 
+    //[퀴즈 선택페이지]뷰이동
+    @GetMapping("/main")
+    public String viewMain(){
+        log.info("[확인] viewMain() 페이지 컨트롤러 실행");
+        return "quiz/main";
+    }
+
+    // [단계별 퀴즈] 난이도 선택 후 문제 10개 조회
+    @GetMapping("/level")
+    public String viewLevelQuizList(@RequestParam String difficulty,
+        @RequestParam String questionType,
+        Model model) {
+        List<QuizMaster> quizList = quizService.getLevelQuizList(difficulty, questionType);
+
+        model.addAttribute("quizList", quizList);
+        model.addAttribute("difficulty", difficulty);
+        model.addAttribute("questionType", questionType);
+        return "quiz/level";
+    }
+
     // [공통] 퀴즈 결과 저장 처리
     @PostMapping("/result")
     public String submitQuizResults(@ModelAttribute QuizSubmitDto request,
@@ -121,19 +141,6 @@ public class QuizController {
         return "quiz/speed";
     }
 
-    // [단계별 퀴즈] 난이도 선택 후 문제 10개 조회
-    @GetMapping("/level")
-    public String viewLevelQuizList(@RequestParam String difficulty,
-        @RequestParam String questionType,
-        Model model) {
-        List<QuizMaster> quizList = quizService.getLevelQuizList(difficulty, questionType);
-
-        model.addAttribute("quizList", quizList);
-        model.addAttribute("difficulty", difficulty);
-        model.addAttribute("questionType", questionType);
-        return "quiz/level";
-    }
-
     @GetMapping("/select")
     public String selectQuizMode() {
         return "quiz/select";
@@ -162,6 +169,8 @@ public class QuizController {
         return "quiz/bookmark"; // templates/quiz/bookmark.html
 
     }
+
+
 
 
 }
