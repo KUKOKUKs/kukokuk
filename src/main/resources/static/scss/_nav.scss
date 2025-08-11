@@ -40,6 +40,9 @@
             width: var(--baseIcon);
             height: var(--baseIcon);
             font-size: var(--baseIcon);
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
             &.profile:has(img) {
                 border: 1px solid var(--borderColor);
