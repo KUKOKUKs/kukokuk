@@ -49,22 +49,22 @@ public interface QuizBookmarkedMapper {
     List<QuizBookmarked> getQuizBookmarkedListByUserNo(int userNo);
 
     /**
-     *
-     * @param userNo
-     * @param offset
-     * @param limit
-     * @return
+     * 해당 사용자의 북마크 퀴즈 목록 조회 (페이징)
+     * @param userNo 사용자 번호
+     * @param offset 시작 위치
+     * @param limit 조회 개수
+     * @return List<BookmarkedQuizDto>
      */
-    List<BookmarkedQuizDto> findBookmarkedQuizzes(
+    List<BookmarkedQuizDto> getBookmarkedQuizzes(
         @Param("userNo") int userNo,
         @Param("offset") int offset,
         @Param("limit") int limit
     );
 
     /**
-     *
-     * @param userNo
-     * @return
+     * 해당 사용자의 북마크 퀴즈 총 개수 조회
+     * @param userNo 사용자 번호
+     * @return int (북마크된 퀴즈 개수)
      */
-    int countBookmarkedQuizzes(int userNo);
+    int getCountBookmarkedQuizzes(int userNo);
 }

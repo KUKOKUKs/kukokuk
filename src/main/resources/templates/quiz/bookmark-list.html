@@ -11,17 +11,11 @@
         <span th:if="${#lists.isEmpty(quizList)}">아직 북마크한 퀴즈가 없습니다.</span>
     </div>
 
-    <table th:if="${!#lists.isEmpty(quizList)}" style="width:100%; border-collapse:collapse; margin-top:20px;">
-        <thead>
-        <tr style="background-color:#f0f0f0;">
-            <th>#</th>
-            <th>문제</th>
-            <th>정답</th>
-            <th>난이도</th>
-            <th>유형</th>
-            <th>관리</th>
-        </tr>
-        </thead>
+    <div class="bookmark-empty-msg" style="margin-bottom:20px;">
+        <span th:if="${#lists.isEmpty(quizList)}">아직 북마크한 퀴즈가 없습니다.</span>
+    </div>
+
+    <table th:if="${!#lists.isEmpty(quizList)}" ...>
         <tbody>
         <tr th:each="quiz, iterStat : ${quizList}">
             <td th:text="${iterStat.count}">1</td>
@@ -30,13 +24,17 @@
             <td th:text="${quiz.difficulty}">난이도</td>
             <td th:text="${quiz.questionType}">유형</td>
             <td>
-                <button type="button" class="btn btn-sm btn-danger"
-                        th:data-quizno="${quiz.quizNo}"
-                        onclick="removeBookmark(this)">북마크 해제</button>
+                <button type="button"
+                        class="bookmark-btn"
+                        th:data-quiz-no="${quiz.quizNo}"
+                        data-bookmarked="true">
+                    <span style="color: #e74c3c;">&#10084;</span>
+                </button>
             </td>
         </tr>
         </tbody>
     </table>
+
 </div>
 
 <script th:src="@{/js/modules/quiz/bookmark-list.js}"></script>

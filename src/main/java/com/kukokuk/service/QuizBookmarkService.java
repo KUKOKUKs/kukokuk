@@ -1,5 +1,6 @@
 package com.kukokuk.service;
 
+import com.kukokuk.dto.BookmarkedQuizDto;
 import com.kukokuk.mapper.QuizBookmarkedMapper;
 import com.kukokuk.mapper.QuizMasterMapper;
 import com.kukokuk.vo.QuizBookmarked;
@@ -71,6 +72,7 @@ public class QuizBookmarkService {
     /**
      * 해당 사용자의 북마크한 퀴즈 리스트(QuizMaster) 조회
      */
+    @Transactional(readOnly = true)
     public List<QuizMaster> getBookmarkedQuizList(int userNo) {
         List<QuizBookmarked> bookmarkList = quizBookmarkedMapper.getQuizBookmarkedListByUserNo(userNo);
         if (bookmarkList.isEmpty()) return Collections.emptyList();
@@ -78,5 +80,27 @@ public class QuizBookmarkService {
             .map(QuizBookmarked::getQuizNo)
             .collect(Collectors.toList());
         return quizMasterMapper.getQuizMastersByQuizNos(quizNos);
+    }
+
+    /**
+     * 해당 사용자의 북마크 퀴즈 목록 조회 (페이징)
+     * @param userNo 사용자 번호
+     * @param offset 시작 위치
+     * @param limit 조회 개수
+     * @return List<BookmarkedQuizDto>
+     */
+    @Transactional(readOnly = true)
+    public List<BookmarkedQuizDto> getBookmarkedQuizzes(int userNo, int offset, int limit) {
+        return quizBookmarkedMapper.getBookmarkedQuizzes(userNo, offset, limit);
+    }
+
+    /**
+     * 해당 사용자의 북마크 퀴즈 총 개수 조회
+     * @param userNo 사용자 번호
+     * @return int (북마크된 퀴즈 개수)
+     */
+    @Transactional(readOnly = true)
+    public int getCountBookmarkedQuizzes(int userNo) {
+        return quizBookmarkedMapper.getCountBookmarkedQuizzes(userNo);
     }
 }

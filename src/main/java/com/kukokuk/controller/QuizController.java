@@ -157,4 +157,6 @@ public class QuizController {
         model.addAttribute("listType", "bookmark");
         return "quiz/bookmark-list"; // quiz/bookmark-bookmark-list.html
     }
+
+
 }
