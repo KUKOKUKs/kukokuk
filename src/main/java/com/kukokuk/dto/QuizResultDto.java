@@ -2,9 +2,11 @@ package com.kukokuk.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.ibatis.type.Alias;
 
 @Getter
 @Setter
+@Alias("QuizResultDto")
 public class QuizResultDto {
     private int quizNo;
     private String question;

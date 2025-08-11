@@ -32,8 +32,7 @@
     <insert id="insertQuizBookmarked" parameterType="QuizBookmarked">
         INSERT INTO KUKOKUK_QUIZ_BOOKMARKED
             (USER_NO, QUIZ_NO, CREATED_DATE)
-        VALUES
-            (#{userNo}, #{quizNo}, NOW())
+        VALUES (#{userNo}, #{quizNo}, NOW())
     </insert>
 
     <!--
@@ -43,7 +42,8 @@
         * @return int (삭제된 row 수)
     -->
     <delete id="deleteQuizBookmarkedByUserNoAndQuizNo">
-        DELETE FROM KUKOKUK_QUIZ_BOOKMARKED
+        DELETE
+        FROM KUKOKUK_QUIZ_BOOKMARKED
         WHERE USER_NO = #{userNo}
           AND QUIZ_NO = #{quizNo}
     </delete>

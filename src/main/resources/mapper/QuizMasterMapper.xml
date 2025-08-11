@@ -73,21 +73,22 @@
 
     <!-- QuizMasterMapper.xml -->
     <select id="getQuizMastersForSpeed" resultMap="QuizMasterMap">
-        SELECT quiz_no,
-               question,
-               option1,
-               option2,
-               option3,
-               option4,
-               success_answer,
-               question_type,
-               entry_no,
-               usage_count
+        SELECT QUIZ_NO,
+               QUESTION,
+               OPTION1,
+               OPTION2,
+               OPTION3,
+               OPTION4,
+               SUCCESS_ANSWER,
+               QUESTION_TYPE,
+               ENTRY_NO,
+               USAGE_COUNT
         FROM KUKOKUK_QUIZ_MASTERS
-        WHERE usage_count &lt; #{usageCount}
+        WHERE USAGE_COUNT &lt; #{usageCount}
         ORDER BY RAND()
         LIMIT #{limit}
     </select>
+
 
     <!--
        * 특정 퀴즈 번호의 정답 번호를 조회한다.
@@ -146,13 +147,21 @@
 
     <select id="getDifficultyAndQuestionTypeBySessionNo" resultType="com.kukokuk.dto.QuizLevelResultDto">
     SELECT
-        qm.DIFFICULTY AS difficulty,
-        qm.QUESTION_TYPE AS questionType
+        qm.DIFFICULTY ,
+        qm.QUESTION_TYPE
     FROM KUKOKUK_QUIZ_RESULTS qr
              JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
     WHERE qr.SESSION_NO = #{sessionNo}
     LIMIT 1
 </select>
 
+    <select id="getQuizMastersByQuizNos" resultMap="QuizMasterMap">
+        SELECT QUIZ_NO, QUESTION, ANSWER, DIFFICULTY, QUESTION_TYPE
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE QUIZ_NO IN
+        <foreach collection="quizNos" item="quizNo" open="(" separator="," close=")">
+            #{quizNo}
+        </foreach>
+    </select>
 
 </mapper>

@@ -1,18 +1,21 @@
 package com.kukokuk.service;
 
 import com.kukokuk.mapper.QuizBookmarkedMapper;
+import com.kukokuk.mapper.QuizMasterMapper;
 import com.kukokuk.vo.QuizBookmarked;
+import com.kukokuk.vo.QuizMaster;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class QuizBookmarkService {
-
     private final QuizBookmarkedMapper quizBookmarkedMapper;
+    private final QuizMasterMapper quizMasterMapper;
 
     /**
      * 퀴즈 북마크 등록
@@ -63,5 +66,17 @@ public class QuizBookmarkService {
     @Transactional(readOnly = true)
     public List<QuizBookmarked> getBookmarkList(int userNo) {
         return quizBookmarkedMapper.getQuizBookmarkedListByUserNo(userNo);
+    }
+
+    /**
+     * 해당 사용자의 북마크한 퀴즈 리스트(QuizMaster) 조회
+     */
+    public List<QuizMaster> getBookmarkedQuizList(int userNo) {
+        List<QuizBookmarked> bookmarkList = quizBookmarkedMapper.getQuizBookmarkedListByUserNo(userNo);
+        if (bookmarkList.isEmpty()) return Collections.emptyList();
+        List<Integer> quizNos = bookmarkList.stream()
+            .map(QuizBookmarked::getQuizNo)
+            .collect(Collectors.toList());
+        return quizMasterMapper.getQuizMastersByQuizNos(quizNos);
     }
 }

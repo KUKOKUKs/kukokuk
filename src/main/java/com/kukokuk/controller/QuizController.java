@@ -6,6 +6,7 @@ import com.kukokuk.dto.QuizResultDto;
 import com.kukokuk.dto.QuizSubmitDto;
 import com.kukokuk.dto.QuizSubmitResultDto;
 import com.kukokuk.security.SecurityUser;
+import com.kukokuk.service.QuizBookmarkService;
 import com.kukokuk.service.QuizProcessService;
 import com.kukokuk.service.QuizResultService;
 import com.kukokuk.service.QuizService;
@@ -36,10 +37,9 @@ public class QuizController {
     private final QuizProcessService quizProcessService;
     private final QuizSessionSummaryService quizSessionSummaryService;
     private final QuizResultService quizResultService;
+    private final QuizBookmarkService quizBookmarkService; // ★추가
 
-    /**
-     * [공통] 퀴즈 결과 저장 처리
-     */
+    // [공통] 퀴즈 결과 저장 처리
     @PostMapping("/result")
     public String submitQuizResults(@ModelAttribute QuizSubmitDto request,
         @AuthenticationPrincipal SecurityUser securityUser) {
@@ -48,13 +48,7 @@ public class QuizController {
         QuizSessionSummary summary = new QuizSessionSummary();
         summary.setUserNo(userNo);
         summary.setTotalTimeSec(request.getTotalTimeSec());
-
-        // 사용자가 어떤 모드에서 푼 것인지 명시
-        if ("level".equals(request.getQuizMode())) {
-            summary.setQuizMode("level");
-        } else {
-            summary.setQuizMode("speed");
-        }
+        summary.setQuizMode("level".equals(request.getQuizMode()) ? "level" : "speed");
 
         log.info("[컨트롤러] summary.quizMode={}", summary.getQuizMode());
 
@@ -71,16 +65,13 @@ public class QuizController {
         return "redirect:/quiz/result?sessionNo=" + sessionNo;
     }
 
-    /**
-     * [공통] 퀴즈 결과 요약 페이지 렌더링
-     */
+    // [공통] 퀴즈 결과 요약 페이지 렌더링
     @GetMapping("/result")
     public String viewQuizSummary(@RequestParam int sessionNo,
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
         int userNo = securityUser.getUser().getUserNo();
-        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(
-            sessionNo, userNo);
+        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
         model.addAttribute("summary", summary);
 
         // DTO로 조회 및 세팅
@@ -94,18 +85,13 @@ public class QuizController {
         return "quiz/speed-result1";
     }
 
-
-
-    /**
-     * [공통] 퀴즈 결과 상세 페이지 렌더링
-     */
+    // [공통] 퀴즈 결과 상세 페이지 렌더링
     @GetMapping("/result/detail")
     public String viewQuizResultDetail(@RequestParam int sessionNo,
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
         int userNo = securityUser.getUser().getUserNo();
-        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(
-            sessionNo, userNo);
+        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
         List<QuizResultDto> results = quizResultService.getQuizResultsBySession(sessionNo, userNo);
 
         model.addAttribute("summary", summary);
@@ -120,9 +106,7 @@ public class QuizController {
         return "quiz/speed-result2";
     }
 
-    /**
-     * [스피드 퀴즈] 문제 10개 조회
-     */
+    // [스피드 퀴즈] 문제 10개 조회
     @GetMapping("/speed")
     public String viewSpeedQuizList(Model model) {
         int usageThreshold = 20;
@@ -137,9 +121,7 @@ public class QuizController {
         return "quiz/speed";
     }
 
-    /**
-     * [단계별 퀴즈] 난이도 선택 후 문제 10개 조회
-     */
+    // [단계별 퀴즈] 난이도 선택 후 문제 10개 조회
     @GetMapping("/level")
     public String viewLevelQuizList(@RequestParam String difficulty,
         @RequestParam String questionType,
@@ -160,5 +142,19 @@ public class QuizController {
     @GetMapping("/level-select")
     public String selectLevelQuizSetting() {
         return "quiz/level-select";
+    }
+
+    /**
+     * [북마크] 내가 북마크한 퀴즈 목록
+     */
+    @GetMapping("/bookmark-list")
+    public String bookmarkListPage(
+        @AuthenticationPrincipal SecurityUser securityUser,
+        Model model) {
+        int userNo = securityUser.getUser().getUserNo();
+        List<QuizMaster> quizList = quizBookmarkService.getBookmarkedQuizList(userNo);
+        model.addAttribute("quizList", quizList);
+        model.addAttribute("listType", "bookmark");
+        return "quiz/bookmark-list"; // quiz/bookmark-bookmark-list.html
     }
 }
