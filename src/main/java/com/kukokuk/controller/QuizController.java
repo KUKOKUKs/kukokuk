@@ -144,8 +144,12 @@ public class QuizController {
         return "quiz/level-select";
     }
 
+
     /**
      * [북마크] 내가 북마크한 퀴즈 목록
+     * @param securityUser 로그인한 사용자
+     * @param model 뷰 모델
+     * @return 북마크 목록 뷰 이름
      */
     @GetMapping("/bookmark-list")
     public String bookmarkListPage(
@@ -155,7 +159,8 @@ public class QuizController {
         List<QuizMaster> quizList = quizBookmarkService.getBookmarkedQuizList(userNo);
         model.addAttribute("quizList", quizList);
         model.addAttribute("listType", "bookmark");
-        return "quiz/bookmark-list"; // quiz/bookmark-bookmark-list.html
+        return "quiz/bookmark"; // templates/quiz/bookmark.html
+
     }
 
 

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>북마크 목록</title>
+    <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+<div class="bookmark-list-container">
+    <h1 class="bookmark-title">내가 북마크한 퀴즈</h1>
+
+    <div class="bookmark-empty-msg">
+        <span th:if="${#lists.isEmpty(quizList)}">아직 북마크한 퀴즈가 없습니다.</span>
+    </div>
+
+    <table th:if="${!#lists.isEmpty(quizList)}" class="bookmark-table">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>문제</th>
+            <th>보기</th>
+            <th>정답</th>
+            <th>난이도</th>
+            <th>유형</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="quiz, iterStat : ${quizList}">
+            <td th:text="${iterStat.count}"></td>
+            <td th:text="${quiz.question}"></td>
+            <td>
+                <div class="text-toggle">
+                    <div class="text-content">
+                        <span th:text="${quiz.option1}"></span><br>
+                        <span th:text="${quiz.option2}"></span><br>
+                        <span th:text="${quiz.option3}"></span><br>
+                        <span th:text="${quiz.option4}"></span>
+                    </div>
+                    <button type="button" class="toggle-btn">더보기</button>
+                </div>
+            </td>
+
+            <td th:text="${quiz.successAnswer}"></td>
+            <td th:text="${quiz.difficulty}"></td>
+            <td th:text="${quiz.questionType}"></td>
+            <td>
+                <button type="button"
+                        class="bookmark-btn"
+                        th:data-quiz-no="${quiz.quizNo}"
+                        data-bookmarked="true">
+                    <span class="heart-icon">&#10084;</span>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="/js/modules/quiz/bookmark.js"></script>
+</body>
+</html>

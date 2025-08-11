@@ -154,14 +154,32 @@
     WHERE qr.SESSION_NO = #{sessionNo}
     LIMIT 1
 </select>
+    <!--
+     * 여러 퀴즈 번호에 해당하는 퀴즈 정보 조회
+     * @param quizNos 퀴즈 번호 리스트
+     * @return 퀴즈 정보 리스트
+    List<QuizMaster> getQuizMastersByQuizNos(List<Integer> quizNos);
 
+    -->
     <select id="getQuizMastersByQuizNos" resultMap="QuizMasterMap">
-        SELECT QUIZ_NO, QUESTION, ANSWER, DIFFICULTY, QUESTION_TYPE
+        SELECT QUIZ_NO,
+        ENTRY_NO,
+        QUESTION,
+        OPTION1,
+        OPTION2,
+        OPTION3,
+        OPTION4,
+        SUCCESS_ANSWER,
+        QUESTION_TYPE,
+        DIFFICULTY,
+        USAGE_COUNT,
+        SUCCESS_COUNT
         FROM KUKOKUK_QUIZ_MASTERS
         WHERE QUIZ_NO IN
         <foreach collection="quizNos" item="quizNo" open="(" separator="," close=")">
             #{quizNo}
         </foreach>
     </select>
+
 
 </mapper>
