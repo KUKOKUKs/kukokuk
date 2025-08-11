@@ -1,16 +1,18 @@
 // noinspection ES6UnusedImports
 
-import {
-    validateProfileForm
-} from '/js/modules/profile/profile-form-validator.js';
+import {validateProfileForm} from './profile-form-validator.js';
+import {checkNicknameDuplicate} from '../sign/sign-api.js';
 import {
     addInputErrorMessage,
     clearInputErrorMessage
-} from '/js/utils/form-error-util.js';
-import {checkNicknameDuplicate} from '/js/modules/sign/sign-api.js';
-import {debounce} from '/js/utils/debounce-util.js';
-import {elementarySchool, middleSchool} from '/js/utils/handler-util.js';
-import {regExNickname, validateDate} from '/js/utils/validation-util.js';
+} from '../../utils/form-error-util.js';
+import {debounce} from '../../utils/debounce-util.js';
+import {
+    elementarySchool,
+    middleSchool,
+    setStudyDifficultyList
+} from '../../utils/handler-util.js';
+import {regExNickname, validateDate} from '../../utils/validation-util.js';
 
 $(document).ready(() => {
     // 프로필 설정 관련
@@ -24,6 +26,7 @@ $(document).ready(() => {
     const $userUpdateCurrentNickname = $userUpdateForm.find("input[name='currentNickname']"); // currentNickname input
     const $userUpdateCurrentSchool = $userUpdateForm.find("select[name='currentSchool']"); // currentSchool select
     const $userUpdateCurrentGrade = $userUpdateForm.find("select[name='currentGrade']"); // currentGrade select
+    const $modalUserUpdateStudyDifficultyInfoElement = $userUpdateForm.find("#study-difficulty"); // 단계별 설명 리스트가 추가될 부모 요소
 
     // 프로필 설정 폼 제출 이벤트 발생 시 유효성 검사 후 제출
     $userUpdateForm.submit(function (e) {
@@ -170,6 +173,19 @@ $(document).ready(() => {
             $userUpdateCurrentGrade.html(elementarySchool);
         } else if (val === "중등") {
             $userUpdateCurrentGrade.html(middleSchool);
+        }
+    });
+
+    // 단계별 설명 리스트 모달창 열기
+    const $modalStudyDifficultyInfoBtn = $("#modal-study-difficulty-info-btn"); // 모달창 열기 버튼
+    const $modalStudyDifficultyInfo = $("#modal-study-difficulty-info"); // 모달창
+    $modalStudyDifficultyInfoBtn.click(function () {
+        if ($modalStudyDifficultyInfo.length) {
+            // 해당 모달창 요소가 있을 경우 열기
+            $modalStudyDifficultyInfo.show();
+
+            // 모달창 단계별 설명 리스트 추가
+            setStudyDifficultyList($modalUserUpdateStudyDifficultyInfoElement);
         }
     });
 });

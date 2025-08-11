@@ -11,7 +11,7 @@
     --primaryColor: #009b90;
     --subColor: #e0f2f1;
     --grayColor: #767676;
-    --lightGrayColor: #f7f7f7;
+    --lightGrayColor: #f1f1f1;
     --blackColor: #2b2b2b;
     --darkGreenColor: #00544e;
     --yellowColor: #ffc43b;
@@ -23,20 +23,26 @@
     /* element property */
     --logoWidth: 100px;
     --logoHeight: 65px;
+    --smallLogoWidth: 80px;
+    --smallLogoHeight: 52px;
+    --symbolLogoSize: 35px;
     --mainContentWidth: 600px;
     --subContentWidth: 400px;
     --centerContentWidth: 800px;
     --modalWidth: 400px;
-    --modalMinHeight: 300px;
-    --modalMaxHeight: 450px;
+    --modalHeight: 450px;
     --navWidth: 250px;
     --baseIcon: 30px;
     --smallIcon: 16px;
     --tinyIcon: 10px;
     --largeIcon: 40px;
     --profileThumbnail: 80px;
+    --inputHeight: 60px;
+    --tabHeight: 40px;
+    --modalInfoTitleWidth: 50px;
 
     --containerPadding: 1.5rem;
+    --largePadding: 30px;
     --basePadding: 18px;
     --smallPadding: .75em;
     --tinyPadding: .3em;
@@ -85,6 +91,7 @@ img {
 }
 
 button {
+    cursor: pointer;
     background-color: inherit;
 }
 

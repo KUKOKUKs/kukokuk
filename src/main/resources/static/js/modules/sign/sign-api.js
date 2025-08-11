@@ -1,6 +1,6 @@
 // noinspection ES6UnusedImports
 
-import {apiErrorProcessByXhr} from '/js/utils/api-error-util.js';
+import {apiErrorProcessByXhr} from '../../utils/api-error-util.js';
 
 /**
  * username을 전달받아 중복 확인 비동기 요청
@@ -17,7 +17,6 @@ export async function checkUsernameDuplicate(username) {
             dataType: "json",
         });
         return response.data;
-
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);
     }
@@ -38,7 +37,6 @@ export async function checkNicknameDuplicate(nickname) {
             dataType: "json",
         });
         return response.data;
-
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);
     }

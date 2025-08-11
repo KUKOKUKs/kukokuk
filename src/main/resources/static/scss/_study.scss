@@ -128,35 +128,52 @@
 .study_progress_card {
     height: 800px;
     width: 800px;
-    padding: var(--basePadding) 0;
+    padding: var(--largePadding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--smallGap);
 
     .title {
         font-size: var(--pageTitleFontSize);
         font-weight: 600;
         color: var(--darkGreenColor);
-        padding: var(--smallPadding);
+        margin-bottom: 1rem;
     }
 
     .paragraph {
         font-size: 20px;
         font-weight: 400;
-
     }
 
     .example {
+        font-size: 20px;
+        color: var(--primaryColor);
+
+        .example_label {
+
+        }
 
     }
 
     .definition {
+        border-left: 4px solid var(--darkGreenColor);
+        font-size: 20px;
+        padding: var(--basePadding);
 
+        .definition_term {
+            color: var(--darkGreenColor);
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-right: 0.3rem;
+        }
     }
 
     .quote {
-
+        font-size: 20px;
     }
 
     .list {
-
+        font-size: 20px;
     }
 }
 
@@ -243,4 +260,149 @@
 
 .study_quiz_submit_btn {
 
+}
+
+
+/* 학습진행 화면의 네비바에서 사용하는 스타일 */
+.study_nav_list_title {
+    padding: 0.5em;
+    color: var(--darkGreenColor);
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.6);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.study_nav_list_item {
+    min-height: 40px;
+    padding: 1em 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    border-bottom: var(--baseBorder);
+    transition: background-color var(--trst);
+    cursor: pointer;
+
+    .study_item_icon {
+        height: 100%;
+        aspect-ratio: 1 / 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--darkGreenColor);
+        font-size: 1.2em;
+
+        &.icon_pop {
+            animation: popIn 0.3s ease;
+        }
+    }
+
+    &.active {
+        background-color: var(--subColor);
+        color: var(--primaryColor);
+        font-weight: 600;
+        border-left: 6px solid var(--primaryColor);
+
+        .study_item_icon {
+            color: var(--primaryColor);
+        }
+    }
+
+    &:hover {
+        background-color: var(--subColor);
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.nav_container_study {
+    .nav_wrap {
+        padding-top: 0;
+        padding-left: 0;
+        padding-right: 0;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        transition: width var(--trst);
+
+        .study {
+            gap: 0;
+        }
+
+        &.collapsed {
+            width: 70px;
+            min-width: 70px;
+            overflow-y: hidden;
+
+            // 부드럽게 사라지는 효과
+            .symbol_logo,
+            .study_nav_list_container,
+            #footer {
+                opacity: 0;
+            }
+        }
+
+        #footer {
+            padding: 0 var(--baseGap);
+        }
+    }
+
+    /* 내부 요소의 스르륵 나타나는 효과 */
+    .study_nav_list_container,
+    .symbol_logo {
+        transition: opacity var(--trst);
+    }
+}
+
+.study_nav_header_info {
+    padding-bottom: var(--largePadding);
+    background-color: #fff;
+    position: sticky; // ✅ 부모 기준 고정
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.study_nav_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--basePadding);
+    width: 100%;
+    height: 70px;
+
+    .symbol_logo {
+        transition: opacity var(--trst);
+    }
+
+    .side_bar_icon {
+        padding: 2px;
+        cursor: pointer;
+        border-radius: var(--bdrs);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        iconify-icon {
+            font-size: var(--baseIcon);
+            color: var(--darkGreenColor);
+        }
+
+        &:hover {
+            background-color: var(--subColor);
+        }
+    }
 }

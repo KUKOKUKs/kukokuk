@@ -46,4 +46,10 @@ public class StudyController {
     public String studyComplete(@PathVariable("dailyStudyNo") int dailyStudyNo) {
         return "study/complete";
     }
+
+    @GetMapping("/test")
+    public String testHtml() {
+        return "study/test";
+    }
+
 }

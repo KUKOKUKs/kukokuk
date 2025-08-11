@@ -112,28 +112,38 @@
             height: 20px;
             position: relative; // 자식이 absolute일 때 위치 기준
 
-        }
+            .experience_point {
+                transition: width 0.4s ease-in-out, // width가 변경되면 ease-in-out 을 실행
+                            background-color 0.3s ease; // background-color 변경되면 ease룰 실행
 
-        .quiz_marker {
-            position: absolute;
-            top: -2px; // 기본 위치가 level_bar아래이므로
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-
-            .line {
-                width: 3px;
-                height: 24px;
-                background-color: var(--darkGreenColor);
-                border-radius: var(--bdrs);
+                &.after_quiz {
+                    background-color: var(--redColor);
+                }
             }
 
-            .label {
-                font-size: var(--baseFontSize);
-                margin-top: 2px;
-                font-weight: 600;
+            .quiz_marker {
+                position: absolute;
+                top: -2px; // 기본 위치가 level_bar아래이므로
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                transform: translateX(-50%); // line을 가운데로 정렬
+
+                .line {
+                    width: 3px;
+                    height: 24px;
+                    background-color: var(--darkGreenColor);
+                    border-radius: var(--bdrs);
+                }
+
+                .label {
+                    font-size: var(--baseFontSize);
+                    margin-top: 2px;
+                    font-weight: 600;
+                }
             }
         }
+
 
 }
 }
