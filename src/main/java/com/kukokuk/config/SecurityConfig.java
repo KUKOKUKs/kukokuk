@@ -107,6 +107,7 @@ public class SecurityConfig {
                         , "/js/**"                      // javascript
                         , "/images/**"                  // 정적 이미지 경로
                         , "/study/test"
+                        , "/study/{dailyStudyNo}/essay"
                         , "/api/studies/difficulties"
                     ).permitAll();
 
@@ -119,7 +120,7 @@ public class SecurityConfig {
                 // 인증 필요한 경로들
                 auth
                     .requestMatchers("/user/**").hasRole("USER")
-                    .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
+//                    .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
 
                     // 그 외 모든 요청은 로그인 필요
                     .anyRequest().authenticated();

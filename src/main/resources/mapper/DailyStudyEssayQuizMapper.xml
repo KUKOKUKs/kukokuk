@@ -3,6 +3,22 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DailyStudyEssayQuizMapper">
 
+    <resultMap id="DailyStudyEssayQuizResultMap" type="DailyStudyEssayQuiz">
+        <id property="dailyStudyEssayQuizNo" column="DAILY_STUDY_ESSAY_QUIZ_NO"/>
+        <result property="question" column="QUESTION"/>
+    </resultMap>
+
+    <resultMap id="DailyStudyEssayQuizLogResultMap" type="DailyStudyEssayQuizLog">
+        <id property="dailyStudyEssayQuizLogNo" column="DAILY_STUDY_ESSAY_QUIZ_LOG_NO"/>
+        <result property="userAnswer" column="USER_ANSWER"/>
+        <result property="score" column="SCORE"/>
+        <result property="aiFeedback" column="AI_FEEDBACK"/>
+        <result property="createdDate" column="CREATED_DATE"/>
+        <result property="updatedDate" column="UPDATED_DATE"/>
+        <result property="userNo" column="USER_NO"/>
+        <result property="dailyStudyEssayQuizNo" column="DAILY_STUDY_ESSAY_QUIZ_NO"/>
+    </resultMap>
+
     <!--
        void insertdailyStudyEssayQuiz(DailyStudyEssayQuiz dailyStudyEssayQuiz);
     -->
@@ -11,5 +27,96 @@
             (DAILY_STUDY_NO, QUESTION)
         VALUES (#{dailyStudyNo}, #{question})
     </insert>
+
+    <!--
+    DailyStudyEssayQuiz getEssayQuizByDailyStudyNo(int dailyStudyNo);
+    -->
+    <select id="getEssayQuizByDailyStudyNo" resultMap="DailyStudyEssayQuizResultMap">
+        SELECT
+            DAILY_STUDY_ESSAY_QUIZ_NO,
+            QUESTION
+        FROM
+            KUKOKUK_DAILY_STUDY_ESSAY_QUIZZES
+        WHERE
+            DAILY_STUDY_NO = #{dailyStudyNo}
+    </select>
+
+    <!--
+      DailyStudyEssayQuiz getEssayQuizByNo(int dailyStudyEssayQuizNo);
+    -->
+    <select id="getEssayQuizByNo" resultMap="DailyStudyEssayQuizResultMap">
+        SELECT
+            DAILY_STUDY_ESSAY_QUIZ_NO,
+            QUESTION
+        FROM
+            KUKOKUK_DAILY_STUDY_ESSAY_QUIZZES
+        WHERE
+            DAILY_STUDY_ESSAY_QUIZ_NO = #{dailyStudyEssayQuizNo}
+    </select>
+
+    <!--
+     DailyStudyEssayQuizLog getEssayQuizLogByQuizNoAndUserNo(@Param("dailyStudyEssayQuizNo") int dailyStudyEssayQuizNo, @Param("userNo") int userNo);
+     -->
+    <select id="getEssayQuizLogByQuizNoAndUserNo" resultMap="DailyStudyEssayQuizLogResultMap">
+        SELECT
+            DAILY_STUDY_ESSAY_QUIZ_LOG_NO,
+            USER_ANSWER,
+            SCORE,
+            AI_FEEDBACK,
+            CREATED_DATE,
+            UPDATED_DATE,
+            USER_NO,
+            DAILY_STUDY_ESSAY_QUIZ_NO
+        FROM
+            KUKOKUK_DAILY_STUDY_ESSAY_QUIZ_LOGS
+        WHERE
+            DAILY_STUDY_ESSAY_QUIZ_NO = #{dailyStudyEssayQuizNo}
+            AND USER_NO = #{userNo}
+    </select>
+
+    <!--
+    void insertStudyEssayQuizLog(DailyStudyEssayQuizLog essayQuizLog);
+    -->
+    <insert id="insertStudyEssayQuizLog"
+      useGeneratedKeys="true" keyProperty="dailyStudyEssayQuizLogNo" keyColumn="DAILY_STUDY_ESSAY_QUIZ_LOG_NO">
+        INSERT INTO
+            KUKOKUK_DAILY_STUDY_ESSAY_QUIZ_LOGS
+            (DAILY_STUDY_ESSAY_QUIZ_NO, USER_NO, USER_ANSWER)
+        VALUES
+            (#{dailyStudyEssayQuizNo}, #{userNo}, #{userAnswer})
+    </insert>
+
+    <!--
+    DailyStudyEssayQuizLog getEssayQuizLogByNo(int dailyStudyEssayQuizLogNo);
+    -->
+    <select id="getEssayQuizLogByNo" resultMap="DailyStudyEssayQuizLogResultMap">
+        SELECT
+            DAILY_STUDY_ESSAY_QUIZ_LOG_NO,
+            USER_ANSWER,
+            SCORE,
+            AI_FEEDBACK,
+            CREATED_DATE,
+            UPDATED_DATE,
+            USER_NO,
+            DAILY_STUDY_ESSAY_QUIZ_NO
+        FROM
+            KUKOKUK_DAILY_STUDY_ESSAY_QUIZ_LOGS
+        WHERE
+            DAILY_STUDY_ESSAY_QUIZ_LOG_NO = #{dailyStudyEssayQuizLogNo}
+    </select>
+
+    <!--
+    void updateStudyEssayQuizLog(DailyStudyEssayQuizLog log);
+    -->
+    <update id="updateStudyEssayQuizLog">
+        UPDATE
+            KUKOKUK_DAILY_STUDY_ESSAY_QUIZ_LOGS
+        SET
+            USER_ANSWER = #{userAnswer},
+            SCORE = #{score},
+            AI_FEEDBACK = #{aiFeedback}
+        WHERE
+            DAILY_STUDY_ESSAY_QUIZ_LOG_NO = #{dailyStudyEssayQuizLogNo}
+    </update>
 
 </mapper>

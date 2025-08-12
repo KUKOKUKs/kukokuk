@@ -649,6 +649,7 @@
             width: 25%;
         }
     }
+
 }
 
 .btn {
@@ -690,6 +691,13 @@
         border-color: var(--darkGreenColor);
         background-color: var(--darkGreenColor);
         color: #fff;
+    }
+
+    &.gray {
+        border: 2px solid var(--lightGrayColor);;
+        background-color: transparent;
+        color: var(--grayColor);
+        box-shadow: none;
     }
 
     &:hover {
@@ -743,6 +751,10 @@
         font-size: var(--tinyIcon);
     }
 
+    &.primary {
+        color: var(--primaryColor);
+    }
+
 }
 
 .hints_info {
@@ -783,6 +795,10 @@
         justify-content: space-between; /* 양끝 정렬 */
     }
 
+    &.justify_content_end {
+        justify-content: flex-end;
+    }
+
     &.align_center {
         align-items: center; /* 수직/수평 정렬 */
     }
@@ -798,6 +814,10 @@
 
 .small_gap {
     gap: var(--smallGap); /* 작은 gap */
+}
+
+.tiny_gap {
+    gap: var(--tinyGap); /* 작은 gap */
 }
 
 .large_gap {
