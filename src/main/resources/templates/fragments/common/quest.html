@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
+<html>
+<div th:fragment="quest-fragment" id="quest-container" class="component">
+    <div class="component_title">일일도전과제</div>
+
+    <div class="component_list_container quest_list_container">
+        <div class="component_info small with_icon">
+            <p class="list_info">aaaaaaaaa</p>
+            <button class="btn small white">이동</button>
+        </div>
+        <div class="component_info small with_icon">
+            <p class="list_info">aaaaaaaaa</p>
+            <button class="btn small white">이동</button>
+        </div>
+    </div>
+
+    <script type="module" th:src="@{/js/modules/quest/quest.js}"></script>
+</div>
 </html>

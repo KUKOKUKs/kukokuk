@@ -3,6 +3,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--baseGap);
+
+    .learning_level_info {
+        background-color: var(--subColor);
+        border-radius: var(--bdrs);
+    }
 }
 
 .welcome_info {
@@ -143,23 +148,9 @@
                 }
             }
         }
-
-
-}
-}
-
-.learning_level_info {
-    .learning_info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--smallGap);
-        font-size: var(--smallFontSize);
-        padding: 0.3em 0.3em 0.3em 0.63em;
-        border-radius: var(--bdrs);
-        background-color: var(--subColor);
     }
 }
+
 
 /* 프로필 페이지 */
 .profile_img_container {

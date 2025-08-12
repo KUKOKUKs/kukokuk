@@ -51,7 +51,7 @@ $(document).ready(async function () {
     });
 
     // 사용자 진도/단계 선택 모달창 열기
-    const $modalStudyLevelBtn = $("#modal-study-level-btn"); // 모달창 열기 버튼
+    const $modalStudyLevelBtn = $(".modal-study-level-btn"); // 모달창 열기 버튼
     const $modalStudyLevel = $("#modal-study-level"); // 모달창
     $modalStudyLevelBtn.click(function () {
         if ($modalStudyLevel.length) {
