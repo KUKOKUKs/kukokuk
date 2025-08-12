@@ -106,6 +106,7 @@ public class ApiStudyController {
 
         // UserStudyRecommendationDto에서 응답에 필요한 정보만 반환하도록 ResponseDTO에 매핑
         List<DailyStudySummaryResponse> responses = dtos.stream()
+            .filter(dto -> dto.getDailyStudy() != null)
             .map(dto -> {
                 DailyStudy study = dto.getDailyStudy();
                 DailyStudyLog log = dto.getDailyStudyLog();

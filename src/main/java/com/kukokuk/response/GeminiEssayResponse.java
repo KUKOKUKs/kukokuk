@@ -17,6 +17,7 @@ public class GeminiEssayResponse {
     @Setter
     public static class Section {
         private String type;
+        private String icon;
         private String title;
         private List<Item> items;
 
