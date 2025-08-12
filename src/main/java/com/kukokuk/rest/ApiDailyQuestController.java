@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +20,10 @@ public class ApiDailyQuestController {
 
     private final DailyQuestService dailyQuestService;
 
-    @GetMapping();
-    public ResponseEntity<ApiResponse<>> questList() {
-
-    }
+//    @GetMapping();
+//    public ResponseEntity<ApiResponse<>> questList() {
+//
+//    }
 
     /**
      * 사용자가 도전과제를 완료한 후 힌트 아이템 버튼을 클릭시,

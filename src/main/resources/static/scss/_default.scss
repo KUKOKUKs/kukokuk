@@ -569,6 +569,10 @@
         transform: translate(-50%, -50%);
         transition: margin-top var(--trst);
         overflow: hidden;
+        
+        .btn_list {
+            background-color: #fff;
+        }
 
         .modal_top {
             width: 100%;
@@ -648,7 +652,6 @@
 /* button */
 .btn_list {
     width: 100%;
-    background-color: #fff;
     display: flex;
     align-items: center;
     gap: var(--smallGap);
@@ -708,6 +711,13 @@
         color: #fff;
     }
 
+    &.gray {
+        border: 2px solid var(--lightGrayColor);;
+        background-color: transparent;
+        color: var(--grayColor);
+        box-shadow: none;
+    }
+
     &:hover {
         border-color: var(--primaryColor);
         color: var(--primaryColor);
@@ -759,6 +769,10 @@
         font-size: var(--tinyIcon);
     }
 
+    &.primary {
+        color: var(--primaryColor);
+    }
+
 }
 
 .hints_info {
@@ -804,6 +818,10 @@
     align-items: center; /* 수직/수평 정렬 */
 }
 
+.justify_content_end {
+    justify-content: flex-end;
+}
+
 .align_end {
     align-items: flex-end; /* 끝 정렬 */
 }
@@ -814,6 +832,10 @@
 
 .small_gap {
     gap: var(--smallGap); /* 작은 gap */
+}
+
+.tiny_gap {
+    gap: var(--tinyGap); /* 작은 gap */
 }
 
 .large_gap {
