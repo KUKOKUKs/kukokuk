@@ -5,10 +5,7 @@ $(document).ready(function () {
     const $quizCurrent = $("#quiz-current");
     const $quizQuestion = $("#quiz-question");
     const $quizOptions = $("#quiz-options");
-    const $modal = $("#submit-modal");
-
-    // **모달 무조건 hide (초기화)**
-    $modal.hide();
+    const $progressBar = $("#progress-bar"); // 진행률 바
 
     console.log("quizzes length =", quizzes.length); // 데이터 확인용
 
@@ -49,36 +46,36 @@ $(document).ready(function () {
         $("#prev-btn").prop("disabled", currentQuizIndex === 0);
         $("#next-btn").text(currentQuizIndex === quizzes.length - 1 ? "제출" : "다음");
 
-        // **문제 렌더링마다도 모달 hide**
-        $modal.hide();
+        // 진행률 바 업데이트
+        updateProgressBar();
     }
 
-    $("#prev-btn").off("click").on("click", function() {
+    function updateProgressBar() {
+        const progress = ((currentQuizIndex + 1) / quizzes.length) * 100;
+        $progressBar.css("width", progress + "%");
+    }
+
+    $("#prev-btn").off("click").on("click", function () {
         if (currentQuizIndex > 0) {
             currentQuizIndex--;
             renderCurrentQuiz();
         }
     });
 
-    $("#next-btn").off("click").on("click", function() {
+    $("#next-btn").off("click").on("click", function () {
         if (currentQuizIndex < quizzes.length - 1) {
             currentQuizIndex++;
             renderCurrentQuiz();
         } else {
-            // 마지막 문제에서만 show
-            $modal.show();
+            // 마지막 문제일 때 confirm 창 표시
+            if (confirm("퀴즈를 제출하시겠습니까?")) {
+                submitResults();
+            }
         }
     });
 
     $("#hint-btn").off("click").on("click", function () {
         alert("힌트 기능은 추후 지원 예정입니다.");
-    });
-
-    $("#submit-confirm-btn").off("click").on("click", function() {
-        submitResults();
-    });
-    $("#submit-cancel-btn").off("click").on("click", function() {
-        $modal.hide();
     });
 
     function submitResults() {
@@ -112,7 +109,7 @@ $(document).ready(function () {
             value: "0.0"
         }));
 
-        // **CSRF 토큰 추가**
+        // CSRF 토큰 추가
         const csrfToken = $("meta[name='_csrf']").attr("content");
         if (csrfToken) {
             $form.append($("<input>", {
@@ -124,6 +121,4 @@ $(document).ready(function () {
 
         $form.submit();
     }
-
-
 });

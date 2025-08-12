@@ -10,6 +10,7 @@ $(document).ready(function () {
   const $quizQuestion = $("#quiz-question");
   const $quizOptions = $("#quiz-options");
   const $quizTimer = $("#quiz-timer");
+  const $timerBar = $("#timer-progress-bar");
 
   if (!Array.isArray(quizzes) || quizzes.length === 0) {
     alert("퀴즈를 불러오지 못했습니다.");
@@ -48,8 +49,27 @@ $(document).ready(function () {
   function startTimer() {
     clearInterval(timerInterval);
     timeLeft = 10;
+    const totalTime = timeLeft;
+
+    // 타이머 텍스트 초기화
     $quizTimer.removeClass("low-time").text("00:10");
 
+    // 진행 바 초기화 (transition 제거 후 100%)
+    $timerBar.css({
+      transition: "none",
+      width: "100%"
+    });
+
+    // 브라우저 reflow 강제 (transition 적용 위해)
+    void $timerBar[0].offsetWidth;
+
+    // transition 전체시간 적용 후 0%까지 감소
+    $timerBar.css({
+      transition: `width ${totalTime}s linear`,
+      width: "0%"
+    });
+
+    // 숫자 타이머 갱신
     timerInterval = setInterval(function () {
       timeLeft--;
       if (timeLeft <= 5) $quizTimer.addClass("low-time");
@@ -57,11 +77,11 @@ $(document).ready(function () {
 
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
-        console.log(`문제 ${currentQuizIndex + 1}: 시간 초과`);
         handleSubmit();
       }
     }, 1000);
   }
+
 
   function handleSubmit() {
     clearInterval(timerInterval);
@@ -92,13 +112,11 @@ $(document).ready(function () {
           name: `results[${idx}].quizNo`,
           value: quiz.quizNo
         }));
-
         $form.append($("<input>", {
           type: "hidden",
           name: `results[${idx}].selectedChoice`,
           value: selectedAnswers[idx] ?? 0
         }));
-
         $form.append($("<input>", {
           type: "hidden",
           name: `results[${idx}].isBookmarked`,
