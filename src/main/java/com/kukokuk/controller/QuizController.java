@@ -48,9 +48,13 @@ public class QuizController {
 
     // [단계별 퀴즈] 난이도 선택 후 문제 10개 조회
     @GetMapping("/level")
-    public String viewLevelQuizList(@RequestParam String difficulty,
-        @RequestParam String questionType,
+    public String viewLevelQuizList(@RequestParam(required = false) String difficulty,
+        @RequestParam(required = false) String questionType,
         Model model) {
+        if (difficulty == null || questionType == null) {
+            return "redirect:/quiz/level-select"; // 값 없으면 다시 선택 화면으로
+        }
+
         List<QuizMaster> quizList = quizService.getLevelQuizList(difficulty, questionType);
 
         model.addAttribute("quizList", quizList);
@@ -58,6 +62,7 @@ public class QuizController {
         model.addAttribute("questionType", questionType);
         return "quiz/level";
     }
+
 
     // [공통] 퀴즈 결과 저장 처리
     @PostMapping("/result")

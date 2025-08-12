@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{/layout/base}"
-      th:with="menu='quiz', title='단계별 퀴즈 설정'">
+      layout:decorate="~{/layout/base}" th:with="menu='quiz', title='단계별 퀴즈 설정'">
 
 <head>
     <link rel="stylesheet" href="/css/main.css" />
@@ -14,7 +13,6 @@
             <h1 class="content_title">단계별 퀴즈 설정</h1>
         </div>
 
-        <!-- 난이도/출제유형 선택 폼 -->
         <form id="levelQuizForm" th:action="@{/quiz/level}" method="get" class="d_flex column base_gap">
 
             <!-- 난이도 선택 -->
@@ -22,18 +20,15 @@
                 <p class="bold small_font tac">난이도 선택</p>
                 <div class="btn_list column">
                     <label class="btn white">
-                        <input type="radio" name="difficulty" value="상"
-                               th:checked="${difficulty} == '상'" required>
+                        <input type="radio" name="difficulty" value="상" required>
                         상 (어려움)
                     </label>
                     <label class="btn white">
-                        <input type="radio" name="difficulty" value="중"
-                               th:checked="${difficulty} == '중'" required>
+                        <input type="radio" name="difficulty" value="중" required>
                         중 (보통)
                     </label>
                     <label class="btn white">
-                        <input type="radio" name="difficulty" value="하"
-                               th:checked="${difficulty} == '하'" required>
+                        <input type="radio" name="difficulty" value="하" required>
                         하 (쉬움)
                     </label>
                 </div>
@@ -44,13 +39,11 @@
                 <p class="bold small_font tac">출제 유형</p>
                 <div class="btn_list column">
                     <label class="btn white">
-                        <input type="radio" name="questionType" value="뜻"
-                               th:checked="${questionType} == '뜻'" required>
+                        <input type="radio" name="questionType" value="뜻" required>
                         뜻 보고 단어 고르기
                     </label>
                     <label class="btn white">
-                        <input type="radio" name="questionType" value="단어"
-                               th:checked="${questionType} == '단어'" required>
+                        <input type="radio" name="questionType" value="단어" required>
                         단어 보고 뜻 고르기
                     </label>
                 </div>
@@ -61,7 +54,11 @@
         </form>
     </div>
 
-    <!-- 프로필 영역 -->
+    <form id="quiz-result-form" th:action="@{/quiz/submit}" method="post">
+        <input type="hidden" name="difficulty" th:value="${difficulty}">
+        <input type="hidden" name="questionType" th:value="${questionType}">
+    </form>
+
     <div id="sub-content">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
     </div>
