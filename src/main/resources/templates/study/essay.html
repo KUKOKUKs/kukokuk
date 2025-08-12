@@ -93,15 +93,24 @@
      */
     $('#essay-feedback-btn').click(function() {
 
-        // 오른쪽 피드백 창이 열리도록 설정
-        $('.content').removeClass('center');
-        $('.content').addClass('show_essay_feedback');
-
         const userAnswer = $answerInput.val().trim();
         if (!userAnswer) {
             alert('답변을 입력해주세요.')
             return;
         }
+
+        // 오른쪽 피드백 창이 열리도록 설정
+        $('.content').removeClass('center');
+        $('.content').addClass('show_essay_feedback');
+
+        // 응답받기 전까지 로딩표시 추가
+        $aiFeedbackContainer.html(`
+            <div class="loading_spinner">
+                <div class="spinner"></div>
+                <div class="info_text">AI 피드백 생성 중...</div>
+            </div>
+        `);
+
         // dailyStudyEssayQuizLogNo가 null이 아니라면 요청바디에 포함
         // null이면 포함하지않고 AI요청
         const requestBody = {
@@ -123,6 +132,9 @@
             },
             error: function(err) {
                 alert('피드백 생성에 실패했어요, 다시 시도해주세요');
+                $aiFeedbackContainer.empty().html(`
+                <div class="info_text">피드백 생성에 실패했어요, 다시 시도해주세요.</div>
+                `);
             }
         })
     })
@@ -194,6 +206,7 @@
             const sectionHtml = `
                 <div class="component essay_feedback_box">
                     <div class="title">
+                        <span>${section.icon ? section.icon : ''} </span>
                         ${section.title}
                     </div>
                     ${itemHtml}

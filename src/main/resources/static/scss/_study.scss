@@ -416,6 +416,7 @@
 
 .essay_feedback_container {
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     gap: var(--baseGap);
@@ -432,6 +433,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--smallGap);
+    height: 100%;
+    justify-content: center;
 }
 
 /* 올라오는 riseIn 애니메이션 정의 */
@@ -505,6 +508,11 @@
         opacity: 1;
         padding: var(--containerLargePadding);
         justify-items: center;
-        border-left: 0.2px solid var(--grayColor);
+        border-left: 2px solid var(--lightGrayColor);
     }
+}
+
+.info_text {
+    text-align: center;
+    font-weight: 500;
 }
