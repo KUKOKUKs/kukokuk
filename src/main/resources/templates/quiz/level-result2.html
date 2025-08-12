@@ -22,6 +22,7 @@
             <th>선택한 보기</th>
             <th>정답</th>
             <th>정오답</th>
+            <th>북마크</th>
         </tr>
         </thead>
         <tbody>
@@ -37,6 +38,16 @@
                 <span th:if="${result.isSuccess == 'Y'}" style="color: green;">정답</span>
                 <span th:unless="${result.isSuccess == 'Y'}" style="color: red;">오답</span>
             </td>
+            <td>
+                <button type="button" class="bookmark-btn"
+                        th:data-quiz-no="${result.quizNo}"
+                        th:data-bookmarked="${result.bookmarked == 'Y'}"
+                        th:attr="aria-label=${result.bookmarked == 'Y' ? '북마크 해제' : '북마크 등록'}"
+                        style="background: none; border: none; font-size: 20px; cursor: pointer;">
+                    <span th:if="${result.bookmarked == 'Y'}" style="color: #e74c3c;">&#10084;</span>
+                    <span th:unless="${result.bookmarked == 'Y'}" style="color: #b2bec3;">&#9825;</span>
+                </button>
+            </td>
         </tr>
         </tbody>
     </table>
@@ -45,4 +56,9 @@
         <a href="/" class="btn white">홈으로</a>
     </div>
 </div>
+
+<th:block layout:fragment="script">
+    <script src="/js/modules/quiz/bookmark.js"></script>
+</th:block>
+
 </html>

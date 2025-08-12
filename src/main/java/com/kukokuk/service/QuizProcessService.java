@@ -37,25 +37,19 @@ public class QuizProcessService {
         log.info("[시작] insertQuizSessionAndResults() - userNo={}, 문제 수={}", summary.getUserNo(),
             results.size());
 
-        // [1] 세션 요약 필드 계산 및 설정
         int totalQuestion = results.size();
         int correctAnswers = 0;
 
         summary.setTotalQuestion(totalQuestion);
-        summary.setCorrectAnswers(0);  // 초기값
+        summary.setCorrectAnswers(0);
         summary.setAverageTimePerQuestion(
             totalQuestion == 0 ? 0f : summary.getTotalTimeSec() / totalQuestion);
-        summary.setPercentile(0); // 추후 랭킹 계산용
+        summary.setPercentile(0);
 
-        log.info("[summary 설정 완료] {}", summary);
-
-        // [2] 세션 저장
         quizSessionSummaryService.insertQuizSessionSummary(summary);
-
-        int sessionNo = summary.getSessionNo(); // keyProperty 로 전달된 sessionNo
+        int sessionNo = summary.getSessionNo();
         log.info("[세션 저장 완료] sessionNo={}", sessionNo);
 
-        // [3] 결과 저장 및 통계 처리
         for (QuizResult result : results) {
             result.setSessionNo(sessionNo);
 
@@ -71,45 +65,42 @@ public class QuizProcessService {
                 correctAnswers++;
             }
 
+            // 결과 저장
             quizResultMapper.insertQuizResult(result);
 
-            // [!] 스피드 모드에서만 카운트 증가
-            if ("speed".equals(summary.getQuizMode())) {
-                quizResultMapper.updateUsageCount(result.getQuizNo());
-                if (isCorrect) {
-                    quizResultMapper.updateSuccessCount(result.getQuizNo());
-                }
-                int usageCount = quizMasterMapper.getUsageCount(result.getQuizNo());
-                if (usageCount == 20) {
-                    quizResultMapper.updateAccuracyRate(result.getQuizNo());
-                    quizResultMapper.updateDifficulty(result.getQuizNo());
-                }
-            } else {
-                log.info("[레벨모드] usageCount, successCount, 정답률/난이도 증가 모두 스킵: quizNo={}",
-                    result.getQuizNo());
+            // 정답률/난이도는 20회 도달 순간(19→20)에서만 1회 확정
+            quizResultMapper.updateUsageCount(result.getQuizNo());
+            if (isCorrect) {
+                quizResultMapper.updateSuccessCount(result.getQuizNo());
+            }
+
+            // update 후 최신 usageCount 조회
+            int afterUsage = quizMasterMapper.getUsageCount(result.getQuizNo());
+
+            // 처음 20회 도달 시에만 정확도/난이도 산정
+            if (afterUsage == 20) {
+                quizResultMapper.updateAccuracyRate(result.getQuizNo());
+                quizResultMapper.updateDifficulty(result.getQuizNo());
             }
         }
 
-        // [4] 세션 요약 정답 수 갱신
+        // 세션 요약 갱신
         summary.setCorrectAnswers(correctAnswers);
         summary.setAverageTimePerQuestion(
             totalQuestion == 0 ? 0f : summary.getTotalTimeSec() / totalQuestion);
 
-        // 상위 퍼센트 계산
         int sameGroupTotal = quizSessionSummaryMapper.getCountSameSessions(correctAnswers);
         int slowerCount = quizSessionSummaryMapper.getCountSlowerSessions(correctAnswers,
             summary.getAverageTimePerQuestion());
-
-        int percentile = (sameGroupTotal == 0) ? 0 :
-            (int) (((sameGroupTotal - slowerCount) / (float) sameGroupTotal) * 100);
+        int percentile = (sameGroupTotal == 0) ? 0
+            : (int) (((sameGroupTotal - slowerCount) / (float) sameGroupTotal) * 100);
 
         summary.setPercentile(percentile);
-        quizSessionSummaryMapper.updateQuizSessionSummary(summary); // 최종 update
+        quizSessionSummaryMapper.updateQuizSessionSummary(summary);
 
-        log.info("[전체 처리 완료] 세션 {}, 정답 수: {}, 상위 퍼센트: {}",
-            sessionNo, correctAnswers, percentile);
+        log.info("[전체 처리 완료] 세션 {}, 정답 수: {}, 상위 퍼센트: {}", sessionNo, correctAnswers, percentile);
 
-        // [5] 퀴즈 자동 보충
+        // 스피드 퀴즈 풀 유지
         maintainSpeedQuizPool();
 
         return sessionNo;
