@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum DailyQuestEnum {
 
     COMPLETED_DAILY_STUDY(1),
-    COMPLETED_DAILY_STUDY_ASSEY_QUIZ(2);
+    COMPLETED_DAILY_STUDY_ESSAY_QUIZ(2);
 
     private final int dailyQuestNo;
 

@@ -107,6 +107,7 @@ public class SecurityConfig {
                         , "/js/**"                      // javascript
                         , "/images/**"                  // 정적 이미지 경로
                         , "/study/test"
+                        , "/study/{dailyStudyNo}/essay"
                         , "/api/studies/difficulties"
                     ).permitAll();
 

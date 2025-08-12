@@ -153,7 +153,7 @@
                             const buttons = index === 0 ? `
                                 <div class="study_btn_list">
                                   <a href="/study/${study.dailyStudyNo}" class="btn dark">${statusText}</a>
-                                  <button class="btn white">AI 피드백 기반 논술형 퀴즈 풀기</button>
+                                  <a href="/study/${study.dailyStudyNo}/essay" class="btn white">AI 피드백 기반 논술형 퀴즈 풀기</a>
                                 </div>
                               ` : ``;
 
@@ -211,7 +211,7 @@
                     const buttonsHtml = `
             <div class="study_btn_list">
               <a href="/study/${dailyStudyNo}" class="btn dark">${statusText}</a>
-              <button class="btn white">AI 피드백 기반 논술형 퀴즈 풀기</button>
+              <a href="/study/${dailyStudyNo}/essay" class="btn white">AI 피드백 기반 논술형 퀴즈 풀기</a>
             </div>
           `;
 

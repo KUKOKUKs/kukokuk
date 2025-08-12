@@ -17,6 +17,8 @@ public class DailyStudyEssayQuizLog {
     private Date createdDate;
     private Date updatedDate;
     private int dailyStudyEssayQuizNo;
+    private int userNo;
 
     private DailyStudyEssayQuiz dailyStudyEssayQuiz;
+    private User user;
 }

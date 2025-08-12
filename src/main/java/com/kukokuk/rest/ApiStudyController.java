@@ -1,7 +1,10 @@
 package com.kukokuk.rest;
 
+import com.kukokuk.response.EssayQuizLogResponse;
+import com.kukokuk.response.GeminiEssayResponse;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.request.CreateStudyLogRequest;
+import com.kukokuk.request.EssayQuizLogRequest;
 import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.request.StudyQuizLogRequest;
 import com.kukokuk.request.UpdateStudyLogRequest;
@@ -13,6 +16,7 @@ import com.kukokuk.response.ResponseEntityUtils;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.StudyService;
 import com.kukokuk.vo.DailyStudy;
+import com.kukokuk.vo.DailyStudyEssayQuizLog;
 import com.kukokuk.vo.DailyStudyLog;
 import com.kukokuk.vo.DailyStudyMaterial;
 import com.kukokuk.vo.DailyStudyQuizLog;
@@ -20,6 +24,7 @@ import com.kukokuk.vo.StudyDifficulty;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiStudyController {
 
     private final StudyService studyService;
+    private final ModelMapper modelMapper;
 
     /**
      * POST /api/studies/parse-materials
@@ -209,5 +215,75 @@ public class ApiStudyController {
     public ResponseEntity<ApiResponse<List<StudyDifficulty>>> getStudyDifficulties() {
         List<StudyDifficulty> studyDifficulties = studyService.getStudyDifficulties();
         return ResponseEntityUtils.ok("학습수준 목록 조회 성공", studyDifficulties);
+    }
+
+    /**
+     * POST /api/studies/essays/logs
+     * 서술형 퀴즈의 이력을 생성
+     * 요청바디 : { "dailyStudyEssayQuizNo": 101,
+     *   "userAnswer": "유저가 작성한 답변" }
+     */
+    @PostMapping("/essays/logs")
+    public ResponseEntity<ApiResponse<EssayQuizLogResponse>> createEssayQuizLog(@RequestBody EssayQuizLogRequest essayQuizLogRequest,
+        @AuthenticationPrincipal SecurityUser securityUser) {
+
+        DailyStudyEssayQuizLog essayQuizLog = studyService.createStudyEssayQuizLog(essayQuizLogRequest, securityUser.getUser().getUserNo());
+
+        EssayQuizLogResponse response = modelMapper.map(essayQuizLog, EssayQuizLogResponse.class);
+
+        return ResponseEntityUtils.ok("서술형 퀴즈 이력 생성 성공", response);
+    }
+
+    /**
+     * PUT /api/studies/essays/logs/{essayQuizLogNo}
+     * 서술형 퀴즈의 이력을 수정
+     * 요청바디 : { "dailyStudyEssayQuizNo": 101,
+     *   "userAnswer": "유저가 작성한 답변" }
+     */
+    @PutMapping("/essays/logs/{essayQuizLogNo}")
+    public ResponseEntity<ApiResponse<EssayQuizLogResponse>> createEssayQuizLog(
+        @PathVariable("essayQuizLogNo") int essayQuizLogNo,
+        @RequestBody EssayQuizLogRequest essayQuizLogRequest,
+        @AuthenticationPrincipal SecurityUser securityUser) {
+
+        DailyStudyEssayQuizLog essayQuizLog = studyService.updateStudyEssayQuizLog(essayQuizLogNo, essayQuizLogRequest, securityUser.getUser().getUserNo());
+
+        EssayQuizLogResponse response = modelMapper.map(essayQuizLog, EssayQuizLogResponse.class);
+
+        return ResponseEntityUtils.ok("서술형 퀴즈 이력 수정 성공", response);
+    }
+
+    /**
+     * PUT /api/studies/essays/ai
+     * ai 피드백 생성 및 DB에 저장
+     * 요청바디 : {
+     * 	"dailyStudyEssayQuizLogNo" : 1 // 사용자 이력이 이미존재하면 포함하여 보냄
+     *   "dailyStudyEssayQuizNo": 101,
+     *   "userAnswer": "유저가 작성한 답변"
+     * }
+     */
+    @PutMapping("/essays/ai")
+    public ResponseEntity<ApiResponse<GeminiEssayResponse>> updateAiFeedback(
+        @RequestBody EssayQuizLogRequest request,
+        @AuthenticationPrincipal SecurityUser securityUser
+    ) {
+        log.info("updateAiFeedback 컨트롤러 실행");
+
+        int userNo = securityUser.getUser().getUserNo();
+        DailyStudyEssayQuizLog essayQuizLog = null;
+
+        // 요청 본문에 essayQuizLogNo 필드가 존재한다면, 기존 이력 업데이트
+        if (request.getDailyStudyEssayQuizLogNo() != null) {
+            essayQuizLog = studyService.updateStudyEssayQuizLog(request.getDailyStudyEssayQuizLogNo(), request, userNo);
+        }
+        // 기존 이력 존재하지 않으면 생성
+        else {
+            essayQuizLog = studyService.createStudyEssayQuizLog(request, userNo);
+        }
+
+        // AI 피드백 생성하는 서비스 메소드 호출
+        GeminiEssayResponse response = studyService.generateAiFeedback(essayQuizLog, securityUser.getUser().getStudyDifficulty());
+
+        return ResponseEntityUtils.ok("AI 피드백 생성 및 저장 완료", response);
     }
 }

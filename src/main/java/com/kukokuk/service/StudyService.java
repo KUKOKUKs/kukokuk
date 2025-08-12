@@ -3,6 +3,7 @@ package com.kukokuk.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kukokuk.ai.GeminiClient;
+import com.kukokuk.response.GeminiEssayResponse;
 import com.kukokuk.ai.GeminiStudyPromptBuilder;
 import com.kukokuk.ai.GeminiStudyResponse;
 import com.kukokuk.ai.GeminiStudyResponse.Card;
@@ -11,6 +12,7 @@ import com.kukokuk.ai.GeminiStudyResponse.Quiz;
 import com.kukokuk.dto.DailyQuestDto;
 import com.kukokuk.dto.MainStudyViewDto;
 import com.kukokuk.dto.QuizWithLogDto;
+import com.kukokuk.dto.StudyEssayViewDto;
 import com.kukokuk.dto.StudyProgressViewDto;
 import com.kukokuk.dto.UserStudyRecommendationDto;
 import com.kukokuk.exception.AppException;
@@ -26,6 +28,7 @@ import com.kukokuk.mapper.DailyStudyQuizMapper;
 import com.kukokuk.mapper.MaterialParseJobMapper;
 import com.kukokuk.mapper.StudyDifficultyMapper;
 import com.kukokuk.mapper.UserMapper;
+import com.kukokuk.request.EssayQuizLogRequest;
 import com.kukokuk.request.ParseMaterialRequest;
 import com.kukokuk.request.StudyQuizLogRequest;
 import com.kukokuk.request.UpdateStudyLogRequest;
@@ -39,6 +42,7 @@ import com.kukokuk.vo.DailyQuestUser;
 import com.kukokuk.vo.DailyStudy;
 import com.kukokuk.vo.DailyStudyCard;
 import com.kukokuk.vo.DailyStudyEssayQuiz;
+import com.kukokuk.vo.DailyStudyEssayQuizLog;
 import com.kukokuk.vo.DailyStudyLog;
 import com.kukokuk.vo.DailyStudyMaterial;
 import com.kukokuk.vo.DailyStudyQuiz;
@@ -292,7 +296,7 @@ public class StudyService {
         StudyDifficulty studyDifficulty = studyDifficultyMapper.getDifficultyByNo(studyDifficultyNo);
 
          // 학습자료 원본데이터와 사용자의 학습 수준으로 프롬프트 생성
-        String prompt = GeminiStudyPromptBuilder.buildPrompt(dailyStudyMaterial.getContent(),
+        String prompt = GeminiStudyPromptBuilder.buildDailyStudyPrompt(dailyStudyMaterial.getContent(),
             studyDifficulty.getPromptText());
 
         // Gemini에게 학습자료 원본 텍스트 전달해서, 응답 데이터 반환
@@ -673,5 +677,126 @@ public class StudyService {
      */
     public List<StudyDifficulty> getStudyDifficulties() {
         return studyDifficultyMapper.getDifficulties();
+    }
+
+    /**
+     * 서술형 퀴즈 화면에 필요한 데이터 조회
+     * @param dailyStudyNo
+     * @param userNo
+     */
+    public StudyEssayViewDto getStudyEssayView(int dailyStudyNo, Integer userNo) {
+        log.info("getStudyEssayView 서비스 실행");
+
+        StudyEssayViewDto dto = new StudyEssayViewDto();
+
+        // 서술형 퀴즈 데이터 조회
+        DailyStudyEssayQuiz essay = dailyStudyEssayQuizMapper.getEssayQuizByDailyStudyNo(dailyStudyNo);
+        dto.setEssay(essay);
+
+        // 사용자의 서술형 퀴즈 이력 조회
+        if (userNo != null) {
+            DailyStudyEssayQuizLog essayLog = dailyStudyEssayQuizMapper.getEssayQuizLogByQuizNoAndUserNo(essay.getDailyStudyEssayQuizNo(),userNo);
+            dto.setEssayLog(essayLog);
+        }
+
+        return dto;
+    }
+
+    /**
+     * 서술형 퀴즈 이력 생성
+     * @param request
+     * @param userNo
+     * @return
+     */
+    public DailyStudyEssayQuizLog createStudyEssayQuizLog(EssayQuizLogRequest request, int userNo) {
+        log.info("createStudyEssayQuizLog 서비스 실행");
+
+        // 이미 존재하는 사용자의 서술형 퀴즈 이력이 존재하는지 확인 후 , 존재하면 업데이트 메소드 호출
+        DailyStudyEssayQuizLog existLog = dailyStudyEssayQuizMapper.getEssayQuizLogByQuizNoAndUserNo(request.getDailyStudyEssayQuizNo(), userNo);
+        if (existLog != null) {
+            return updateStudyEssayQuizLog(existLog.getDailyStudyEssayQuizLogNo(), request, userNo);
+        }
+
+        // DTO를 VO객체로 변환
+        DailyStudyEssayQuizLog essayQuizLog = modelMapper.map(request, DailyStudyEssayQuizLog.class);
+        essayQuizLog.setUserNo(userNo);
+
+        // 서술형퀴즈 이력 생성 매퍼 호출
+        dailyStudyEssayQuizMapper.insertStudyEssayQuizLog(essayQuizLog);
+
+        // 생성된 이력을 조회해서 반환
+        return dailyStudyEssayQuizMapper.getEssayQuizLogByNo(essayQuizLog.getDailyStudyEssayQuizLogNo());
+    }
+
+    /**
+     * 서술형 퀴즈 이력 수정
+     * @param dailyStudyEssayQuizLogNo
+     * @param request
+     * @param userNo
+     * @return
+     */
+    public DailyStudyEssayQuizLog updateStudyEssayQuizLog(int dailyStudyEssayQuizLogNo ,EssayQuizLogRequest request, int userNo) {
+        log.info("updateStudyEssayQuizLog 서비스 실행");
+
+        // 서술형퀴즈이력의 사용자와 현재사용자가 일치하지않으면 권한 에러 발생
+        DailyStudyEssayQuizLog essayQuizLog = dailyStudyEssayQuizMapper.getEssayQuizLogByNo(dailyStudyEssayQuizLogNo);
+        if (essayQuizLog.getUserNo() != userNo) {
+            throw new AccessDeniedException("본인의 서술형퀴즈 이력만 수정할 수 있습니다");
+        }
+
+        // 조회했던 서술형퀴즈이력에서 수정 필드만 변경후 수정 매퍼 호출
+        essayQuizLog.setUserAnswer(request.getUserAnswer());
+        dailyStudyEssayQuizMapper.updateStudyEssayQuizLog(essayQuizLog);
+
+        return essayQuizLog;
+    }
+
+    /**
+     * @param essayQuizLog
+     * @return
+     */
+    public GeminiEssayResponse generateAiFeedback(DailyStudyEssayQuizLog essayQuizLog, int studyDifficultyNo) {
+        log.info("generateAiFeedback 서비스 메소드 실행");
+
+        // 이력에 존재하는 서술형 퀴즈 번호로 서술형퀴즈 조회 (질문 컬럼 조회 목적)
+        DailyStudyEssayQuiz essayQuiz = dailyStudyEssayQuizMapper.getEssayQuizByNo(
+            essayQuizLog.getDailyStudyEssayQuizNo());
+
+        // studyDifficulty로 사용자 수준의 프롬프트 텍스트 조회
+        StudyDifficulty studyDifficulty = studyDifficultyMapper.getDifficultyByNo(
+            studyDifficultyNo);
+
+        // 서술형 질문과 사용자 답변, 사용자의 학습 수준으로 프롬프트 생성
+        String prompt = GeminiStudyPromptBuilder.buildEssayQuizPrompt(
+            essayQuiz.getQuestion(),
+            essayQuizLog.getUserAnswer(),
+            studyDifficulty.getPromptText()
+        );
+
+        // Gemini에게 학습자료 원본 텍스트 전달해서, 응답 데이터 반환
+        String content = geminiClient.getGeminiResponse(prompt);
+
+        // 응답데이터에서 JSON만 추출
+        String contentJsonOnly = content.substring(content.indexOf("{"),
+            content.lastIndexOf("}") + 1);
+
+        // JSON 응답데이터를 essayQuizLog의 aiFeedback필드에 업데이트
+        essayQuizLog.setAiFeedback(contentJsonOnly);
+        dailyStudyEssayQuizMapper.updateStudyEssayQuizLog(essayQuizLog);
+
+        // try문 범위 고민
+        GeminiEssayResponse geminiEssayResponse = null;
+
+        try {
+            // Json응답데이터를 객체로 매핑
+            geminiEssayResponse = objectMapper.readValue(contentJsonOnly,
+                GeminiEssayResponse.class);
+
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+            // 오류처리 추가
+        }
+
+        return geminiEssayResponse;
     }
 }

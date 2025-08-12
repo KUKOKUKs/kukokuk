@@ -1,10 +1,12 @@
 package com.kukokuk.controller;
 
 import com.kukokuk.dto.MainStudyViewDto;
+import com.kukokuk.dto.StudyEssayViewDto;
 import com.kukokuk.dto.StudyProgressViewDto;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.StudyService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+@Log4j2
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/study")
@@ -50,6 +53,20 @@ public class StudyController {
     @GetMapping("/test")
     public String testHtml() {
         return "study/test";
+    }
+
+    @GetMapping("/{dailyStudyNo}/essay")
+    public String studyEssay(@PathVariable("dailyStudyNo") int dailyStudyNo,
+        @AuthenticationPrincipal SecurityUser securityUser,
+        Model model) {
+        log.info("studyEssay 컨트롤러 실행");
+
+        Integer userNo = securityUser != null ? securityUser.getUser().getUserNo() : null;
+        StudyEssayViewDto dto = studyService.getStudyEssayView(dailyStudyNo, userNo);
+
+        model.addAttribute("data", dto);
+
+        return "study/essay";
     }
 
 }
