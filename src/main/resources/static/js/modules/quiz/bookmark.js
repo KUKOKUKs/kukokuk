@@ -9,9 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.bookmark-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             const quizNo = this.dataset.quizNo;
-            let isBookmarked = this.dataset.bookmarked === "true";
+            let isBookmarked = (this.dataset.bookmarked || "").toLowerCase() === "true";
 
-            // 확인창
             const confirmMsg = isBookmarked
                 ? "이 문제를 북마크에서 삭제하시겠습니까?"
                 : "이 문제를 북마크에 추가하시겠습니까?";
@@ -20,27 +19,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = `/api/quiz/bookmark/${quizNo}`;
             const method = isBookmarked ? 'DELETE' : 'POST';
 
-            // optimistic UI 반영
+            // optimistic UI
             toggleBookmarkBtn(this, !isBookmarked);
 
             fetch(url, { method: method })
-            .then(res => {
-                console.log("응답 상태:", res.status);
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
-                console.log("응답 데이터:", data);
                 if (!data.success) {
-                    toggleBookmarkBtn(this, isBookmarked); // 원상복구
+                    toggleBookmarkBtn(this, isBookmarked); // 복구
                     alert(data.message || '북마크 처리 실패');
                     return;
                 }
                 if (isBookmarked) {
-                    // 북마크 해제 시 카드 제거
+                    // 북마크 해제 시 카드 삭제
                     const card = this.closest('.quiz-card');
                     if (card) card.remove();
 
-                    // 북마크 없을 경우 메시지 표시
+                    // 모든 카드 삭제 시 메시지 표시
                     if (document.querySelectorAll('.quiz-card').length === 0) {
                         const emptyMsg = document.querySelector('.bookmark-empty-msg');
                         if (emptyMsg) emptyMsg.textContent = '아직 북마크한 퀴즈가 없습니다.';
@@ -49,31 +44,31 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(err => {
                 console.error("fetch 오류:", err);
-                toggleBookmarkBtn(this, isBookmarked); // 원상복구
+                toggleBookmarkBtn(this, isBookmarked); // 복구
                 alert('네트워크 오류로 북마크 처리에 실패했습니다.');
             });
         });
     });
 
     // ------------------------
-    // 더보기/접기
+    // 보기 더보기/접기
     // ------------------------
     document.querySelectorAll('.toggle-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            const container = this.closest('.text-toggle');
-            container.classList.toggle('expanded');
-            this.textContent = container.classList.contains('expanded') ? '접기' : '더보기';
+            const options = this.previousElementSibling; // quiz-options
+            options.classList.toggle('hidden');
+            this.textContent = options.classList.contains('hidden') ? '더보기' : '접기';
         });
     });
 
     // ------------------------
-    // 북마크 버튼 상태 토글 함수
+    // 북마크 버튼 상태 토글 함수 (Iconify 아이콘 사용)
     // ------------------------
     function toggleBookmarkBtn(btn, isBookmarked) {
-        btn.dataset.bookmarked = isBookmarked;
+        btn.dataset.bookmarked = isBookmarked ? "true" : "false";
         btn.innerHTML = isBookmarked
-            ? '<span style="color: var(--redColor);">&#10084;</span>'
-            : '<span style="color: var(--grayColor);">&#9825;</span>';
+            ? '<iconify-icon icon="emojione:red-heart" style="font-size: 1.5rem;"></iconify-icon>'
+            : '<iconify-icon icon="emojione-monotone:red-heart" style="font-size: 1.5rem;"></iconify-icon>';
     }
 
 });

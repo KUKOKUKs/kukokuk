@@ -43,8 +43,17 @@
                         th:data-quiz-no="${result.quizNo}"
                         th:data-bookmarked="${result.bookmarked == 'Y'}"
                         th:attr="aria-label=${result.bookmarked == 'Y' ? '북마크 해제' : '북마크 등록'}">
-                    <span th:if="${result.bookmarked == 'Y'}" style="color: var(--redColor);">&#10084;</span>
-                    <span th:unless="${result.bookmarked == 'Y'}" style="color: var(--grayColor);">&#9825;</span>
+
+                    <!-- 북마크 상태에 따라 아이콘 변경 -->
+                    <iconify-icon
+                        th:if="${result.bookmarked == 'Y'}"
+                        icon="emojione:red-heart"
+                        style="font-size: 1.5rem;"></iconify-icon>
+
+                    <iconify-icon
+                        th:unless="${result.bookmarked == 'Y'}"
+                        icon="emojione-monotone:red-heart"
+                        style="font-size: 1.5rem;"></iconify-icon>
                 </button>
             </td>
         </tr>

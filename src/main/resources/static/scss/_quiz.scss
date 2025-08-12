@@ -1,19 +1,19 @@
 /* ===============================
-   Quiz 공통 스타일
+   Quiz 공통 스타일 (기존 변수만 사용)
    =============================== */
 
 /* 라디오 버튼 숨기기 */
 .btn input[type="radio"] {
     position: absolute;
     opacity: 0;
-    pointer-events: none; // 클릭 방지
+    pointer-events: none; /* 클릭 방지 */
 }
 
 .btn.level-select {
     border-color: var(--borderColor);
     background-color: #fff;
     color: var(--primaryColor);
-    transition: all 0.2s ease-in-out;
+    transition: all var(--trst);
 }
 
 /* 선택된 상태 유지 */
@@ -27,10 +27,9 @@
 .btn.level-select:hover {
     border-color: var(--primaryColor);
     color: var(--primaryColor);
-    background-color: #f9f9f9;
+    background-color: var(--lightGrayColor);
 }
 
-/* quiz.scss */
 .quiz-container {
     position: relative;
     max-width: var(--centerContentWidth);
@@ -50,53 +49,53 @@
     color: var(--primaryColor);
 }
 
-/* 스피드 퀴즈 타이머 진행바 (level 스타일 기반) */
+/* 스피드 퀴즈 타이머 진행바 */
 .level_info.timer_progress {
     width: 100%;
-    margin: 8px 0;
+    margin: var(--smallGap) 0;
 }
 
 .timer_level_bar {
     position: relative;
     width: 100%;
-    height: 20px;
+    height: var(--tabHeight);
     background-color: var(--lightGrayColor);
     border-radius: var(--bdrs);
     overflow: hidden;
 }
 
-/* 실제 채워지는 부분 (기존 timer-progress-bar 역할) */
+/* 실제 채워지는 부분 */
 .timer_experience_point {
     height: 100%;
     width: 100%;
-    background-color: #ffc43b;
-    transition: width linear, background-color 0.3s ease; /* 시간은 JS에서 설정 */
+    background-color: var(--yellowColor);
+    transition: width linear, background-color var(--trst);
 }
 
-/* 타이머 종료나 특정 조건 시 색상 변경 */
+/* 타이머 종료 색상 변경 */
 .timer_experience_point.after_quiz {
     background-color: var(--redColor);
 }
 
-/* 마커 디자인 필요 시 */
+/* 마커 */
 .timer_level_bar .quiz_marker {
     position: absolute;
-    top: -2px;
+    top: calc(var(--tinyGap) * -1);
     display: flex;
     flex-direction: column;
     align-items: center;
     transform: translateX(-50%);
 }
 .timer_level_bar .quiz_marker .line {
-    width: 3px;
-    height: 24px;
+    width: var(--tinyIcon);
+    height: var(--largeIcon);
     background-color: var(--darkGreenColor);
     border-radius: var(--bdrs);
 }
 .timer_level_bar .quiz_marker .label {
     font-size: var(--baseFontSize);
-    margin-top: 2px;
-    font-weight: 600;
+    margin-top: var(--tinyGap);
+    font-weight: bold;
 }
 
 #quiz-question {
@@ -115,7 +114,7 @@
 .quiz-nav {
     display: flex;
     justify-content: space-between;
-    margin-top: 24px;
+    margin-top: var(--largeGap);
 }
 
 .quiz-nav button {
@@ -123,11 +122,11 @@
 }
 
 .quiz-nav button:first-child {
-    margin-right: 6px;
+    margin-right: var(--tinyGap);
 }
 
 .quiz-nav button:last-child {
-    margin-left: 6px;
+    margin-left: var(--tinyGap);
 }
 
 /* 모달 공통 스타일 */
@@ -144,10 +143,10 @@
 
 #submit-modal .modal-inner {
     background: #fff;
-    padding: 24px 32px;
+    padding: var(--modalPadding);
     border-radius: var(--bdrs);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
-    min-width: 260px;
+    box-shadow: var(--bxsh);
+    min-width: var(--modalWidth);
     text-align: center;
 }
 
@@ -156,14 +155,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 12px;
-    border: 1px solid var(--borderColor);
-    border-radius: 8px;
+    padding: var(--tinyGap) var(--smallGap);
+    border: var(--thinBorder);
+    border-radius: var(--bdrs);
     background-color: #fff;
     color: var(--primaryColor);
-    font-size: 14px;
+    font-size: var(--subFontSize);
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    transition: all var(--trst);
 
     &[data-bookmarked="true"] {
         background-color: var(--primaryColor);
@@ -172,7 +171,7 @@
     }
 
     &:hover {
-        background-color: #f9f9f9;
+        background-color: var(--lightGrayColor);
         border-color: var(--primaryColor);
         color: var(--primaryColor);
     }
