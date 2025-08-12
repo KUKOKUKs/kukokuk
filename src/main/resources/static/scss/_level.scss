@@ -1,23 +1,18 @@
 .quiz-container {
     .btn.selected {
-        background: #e0f2f1;
-        color: #fff;
+        background: #009b90;
+        color: #e0f2f1;
         border: 1.5px solid #009b90;
     }
     .hint-btn {
-        background: #e0f2f1;
-        color: #009b90;
+        background: #009b90;
+        color: #e0f2f1;
         font-size: 0.9em;
         border-radius: 16px;
         padding: 3px 16px;
         border: none;
         box-shadow: 0 1px 4px rgba(25, 118, 210, 0.08);
+        margin-top: 8px;
     }
 }
 
-/* 아래는 절대 쓰지마! */
-// #submit-modal {
-//     display: flex !important;
-//     align-items: center;
-//     justify-content: center;
-// }

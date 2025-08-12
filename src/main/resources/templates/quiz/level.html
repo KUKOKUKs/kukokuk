@@ -11,23 +11,24 @@
 <div class="quiz-container">
     <h1 class="quiz-title">단계별 퀴즈</h1>
 
+    <!-- 진행 상황 표시 -->
+    <div id="quiz-progress-info">
+        <span id="quiz-current">1</span> / <span id="quiz-total">0</span>
+    </div>
+
     <!-- 힌트 버튼 -->
     <button id="hint-btn" class="hint-btn">
         힌트 <span id="hint-count">(0)</span>
     </button>
 
     <!-- 진행률 바 -->
-    <div id="progress-container">
-        <div id="progress-bar"></div>
-    </div>
-
-    <div id="quiz-header">
-        <div>
-            <span id="quiz-current">1</span> / <span id="quiz-total">0</span>
+    <div class="level_info timer_progress">
+        <div class="timer_level_bar">
+            <div class="timer_experience_point" id="timer-progress-bar"></div>
         </div>
-        <div style="width:60px;"></div>
     </div>
 
+    <!-- 문제 -->
     <div id="quiz-question"></div>
     <div id="quiz-options"></div>
 
@@ -41,11 +42,10 @@
 <form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
 
 <script th:inline="javascript">
-
     let quizzes = /*[[${quizList}]]*/ [];
     console.log("주입된 quizzes =", quizzes);
-    /*]]>*/
 </script>
 
 <script src="/js/modules/quiz/level.js"></script>
-
+</body>
+</html>

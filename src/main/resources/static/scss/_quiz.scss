@@ -29,6 +29,7 @@
     color: var(--primaryColor);
     background-color: #f9f9f9;
 }
+
 /* quiz.scss */
 .quiz-container {
     position: relative;
@@ -44,35 +45,59 @@
     margin-bottom: var(--baseGap);
 }
 
-#quiz-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--smallGap);
-    font-size: var(--subFontSize);
-}
-
 #quiz-timer {
     font-weight: bold;
     color: var(--primaryColor);
 }
 
-/* 진행 바 */
-#timer-progress {
+/* 스피드 퀴즈 타이머 진행바 (level 스타일 기반) */
+.level_info.timer_progress {
     width: 100%;
-    height: 6px;
+    margin: 8px 0;
+}
+
+.timer_level_bar {
+    position: relative;
+    width: 100%;
+    height: 20px;
     background-color: var(--lightGrayColor);
     border-radius: var(--bdrs);
     overflow: hidden;
-    margin-bottom: 10px;
-
-    #timer-progress-bar {
-        height: 100%;
-        background-color: var(--primaryColor);
-        transition: width 0.2s linear;
-    }
 }
 
+/* 실제 채워지는 부분 (기존 timer-progress-bar 역할) */
+.timer_experience_point {
+    height: 100%;
+    width: 100%;
+    background-color: #ffc43b;
+    transition: width linear, background-color 0.3s ease; /* 시간은 JS에서 설정 */
+}
+
+/* 타이머 종료나 특정 조건 시 색상 변경 */
+.timer_experience_point.after_quiz {
+    background-color: var(--redColor);
+}
+
+/* 마커 디자인 필요 시 */
+.timer_level_bar .quiz_marker {
+    position: absolute;
+    top: -2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-50%);
+}
+.timer_level_bar .quiz_marker .line {
+    width: 3px;
+    height: 24px;
+    background-color: var(--darkGreenColor);
+    border-radius: var(--bdrs);
+}
+.timer_level_bar .quiz_marker .label {
+    font-size: var(--baseFontSize);
+    margin-top: 2px;
+    font-weight: 600;
+}
 
 #quiz-question {
     margin-bottom: var(--baseGap);
@@ -125,24 +150,8 @@
     min-width: 260px;
     text-align: center;
 }
-#progress-container {
-    width: 100%;
-    height: 8px;
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    margin: 10px 0;
-    overflow: hidden;
-}
 
-#progress-bar {
-    height: 100%;
-    width: 0%;
-    background-color: var(--subColor); /* 테마 색상 */
-    transition: width 0.3s ease;
-}
-
-
-/*bookmark.html*/
+/* 북마크 버튼 */
 .quiz-bookmark-btn {
     display: inline-flex;
     align-items: center;
