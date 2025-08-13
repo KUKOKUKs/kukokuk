@@ -73,21 +73,22 @@
 
     <!-- QuizMasterMapper.xml -->
     <select id="getQuizMastersForSpeed" resultMap="QuizMasterMap">
-        SELECT quiz_no,
-               question,
-               option1,
-               option2,
-               option3,
-               option4,
-               success_answer,
-               question_type,
-               entry_no,
-               usage_count
+        SELECT QUIZ_NO,
+               QUESTION,
+               OPTION1,
+               OPTION2,
+               OPTION3,
+               OPTION4,
+               SUCCESS_ANSWER,
+               QUESTION_TYPE,
+               ENTRY_NO,
+               USAGE_COUNT
         FROM KUKOKUK_QUIZ_MASTERS
-        WHERE usage_count &lt; #{usageCount}
+        WHERE USAGE_COUNT &lt; #{usageCount}
         ORDER BY RAND()
         LIMIT #{limit}
     </select>
+
 
     <!--
        * 특정 퀴즈 번호의 정답 번호를 조회한다.
@@ -144,15 +145,47 @@
         WHERE QUIZ_NO = #{quizNo}
     </select>
 
-    <select id="getDifficultyAndQuestionTypeBySessionNo" resultType="com.kukokuk.dto.QuizLevelResultDto">
-    SELECT
-        qm.DIFFICULTY AS difficulty,
-        qm.QUESTION_TYPE AS questionType
-    FROM KUKOKUK_QUIZ_RESULTS qr
-             JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
-    WHERE qr.SESSION_NO = #{sessionNo}
-    LIMIT 1
-</select>
+    <!--
+     * 세션 번호로 DIFFICULTY와 QUESTION_TYPE을 조회한다.
+     * @param sessionNo 세션 번호
+     * @return QuizLevelResultDto
+    -->
+    <select id="getDifficultyAndQuestionTypeBySessionNo"
+        resultType="com.kukokuk.dto.QuizLevelResultDto">
+        SELECT
+            qm.DIFFICULTY AS difficulty,
+            qm.QUESTION_TYPE AS questionType
+        FROM KUKOKUK_QUIZ_RESULTS qr
+                 JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
+        WHERE qr.SESSION_NO = #{sessionNo}
+        LIMIT 1
+    </select>
+    <!--
+     * 여러 퀴즈 번호에 해당하는 퀴즈 정보 조회
+     * @param quizNos 퀴즈 번호 리스트
+     * @return 퀴즈 정보 리스트
+    List<QuizMaster> getQuizMastersByQuizNos(List<Integer> quizNos);
+
+    -->
+    <select id="getQuizMastersByQuizNos" resultMap="QuizMasterMap">
+        SELECT QUIZ_NO,
+        ENTRY_NO,
+        QUESTION,
+        OPTION1,
+        OPTION2,
+        OPTION3,
+        OPTION4,
+        SUCCESS_ANSWER,
+        QUESTION_TYPE,
+        DIFFICULTY,
+        USAGE_COUNT,
+        SUCCESS_COUNT
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE QUIZ_NO IN
+        <foreach collection="quizNos" item="quizNo" open="(" separator="," close=")">
+            #{quizNo}
+        </foreach>
+    </select>
 
 
 </mapper>

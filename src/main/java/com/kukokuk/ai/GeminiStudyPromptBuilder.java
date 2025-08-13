@@ -14,7 +14,7 @@ public class GeminiStudyPromptBuilder {
           
           이 수준에 맞게 학습자료를 다음과 같은 구조로 재구성해 주세요.
           
-          1. 전체 학습 자료를 이해하기 쉬운 카드(card) 형식으로 3~6개로 나눠 요약해 주세요.
+          1. 전체 학습 자료를 이해하기 쉬운 카드(card) 형식으로 5~10개로 나눠 요약해 주세요.
           2. 각 카드는 다음과 같은 구조를 따릅니다:
              - title: 카드 제목
              - body: 다음과 같은 타입의 구성 요소 배열
@@ -27,7 +27,7 @@ public class GeminiStudyPromptBuilder {
           4. 카드 생성 후, 아래와 같은 형식의 객관식 퀴즈 4개를 생성해주세요:
              - question: 문제 내용
              - options: 보기 4개 (문자열 배열)
-             - answer: 정답 보기 번호 (1~4)
+             - answer: 정답 보기 번호 (int)
           5. 마지막으로 서술형 퀴즈 1개를 생성해주세요:
              - question: 서술형 질문
              - evaluation_points: 채점 기준 목록
@@ -104,10 +104,10 @@ public class GeminiStudyPromptBuilder {
             
             [출력 요구사항]
             - JSON 최상위 키는 오직 "sections" 하나만.
-            - 각 section은 {type, title, items[]} 형식.
+            - 각 section은 {type, icon, title, items[]} 형식.
             - type은 summary | positives | improvements | questions | scores | custom 등 자유롭게 사용.
             - items는 반드시 배열이며, 각 요소는 최소 {text}를 포함.
-            - 필요 시 icon/tags/metric/value/max 등의 필드를 선택적으로 추가 가능.
+            - 필요 시 tags/metric/value/max 등의 필드를 선택적으로 추가 가능.
             - 점수는 type="scores" 섹션의 items에 {metric, value, max}로 표현(예: {"metric":"정확성","value":4,"max":5}).
             - 마크다운/코드펜스/불필요한 텍스트 없이 **JSON만 출력**.
             - 한국어로 작성.

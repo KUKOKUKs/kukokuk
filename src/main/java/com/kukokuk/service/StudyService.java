@@ -237,11 +237,11 @@ public class StudyService {
                 break;
             }
 
-            log.info("다음학년 추가 조회");
-
             // 현재 조건이 될 학습진도를 변경
             nowCurrentSchool = nextGrade.getLeft();
             nowCurrentGrade = nextGrade.getRight();
+
+            log.info("다음학년 추가 조회 : " + nowCurrentSchool + " ," + nowCurrentGrade);
 
             // 더 조회해야할 학습자료 개수 조건 갱신
             int remainingRowCount = recommendStudyCount - userStudyRecommendationDtos.size();
@@ -315,6 +315,7 @@ public class StudyService {
 
             // 학습자료, 학습자료카드, 학습퀴즈, 학습 서술형퀴즈를 DB에 저장하는 메소드 호출
             dailyStudy = insertDailyStudyWithOtherComponents(geminiStudyResponse, dailyStudyMaterialNo, studyDifficultyNo);
+            log.info("저장된 학습자료 : " + dailyStudy.toString());
         } catch (JsonProcessingException e){
             log.error( e.getMessage());
             // 오류처리 추가
