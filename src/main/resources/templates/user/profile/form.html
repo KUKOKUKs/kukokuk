@@ -132,7 +132,12 @@
                 </div>
 
                 <div class="input_info select_info">
-                    <p class="select_title">단계</p>
+                    <button type="button" id="modal-study-difficulty-info-btn" class="select_title">
+                        단계
+                        <span class="icon_btn small">
+                            <iconify-icon icon="flat-color-icons:info"></iconify-icon>
+                        </span>
+                    </button>
                     <select name="studyDifficulty" class="form_select">
                         <option value="1" th:selected="${user.studyDifficulty == 1}">1단계</option>
                         <option value="2" th:selected="${user.studyDifficulty == 2}">2단계</option>
@@ -148,6 +153,8 @@
                 <a href="/" class="btn white">취소</a>
                 <button type="submit" id="submit-btn" class="btn primary">수정</button>
             </div>
+
+            <div th:replace="~{fragments/modal/modal-study-difficulty-info :: modal-study-difficulty-info-fragment}"></div>
         </form>
     </div>
 </div>

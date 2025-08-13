@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/center}">
+
+<div layout:fragment="content" class="result-summary-container">
+    <h2 class="result-title">스피드 퀴즈 결과 요약</h2>
+
+    <div class="result-stats">
+        <div class="stat-card">
+            <span class="label">총 문항 수</span>
+            <span class="value" th:text="${summary.totalQuestion}">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="label">총 소요 시간</span>
+            <span class="value" th:text="${summary.totalTimeSec}">0</span><span class="unit">초</span>
+        </div>
+        <div class="stat-card">
+            <span class="label">정답 수</span>
+            <span class="value" th:text="${summary.correctAnswers}">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="label">문항당 평균 시간</span>
+            <span class="value" th:text="${summary.averageTimePerQuestion}">0.0</span><span class="unit">초</span>
+        </div>
+        <div class="stat-card full-width">
+            <span class="label">상위 퍼센트</span>
+            <span class="value" th:text="${summary.percentile}">0</span><span class="unit">%</span>
+        </div>
+    </div>
+
+    <div class="result-buttons">
+        <a href="/" class="btn white">홈으로</a>
+        <a th:href="@{/quiz/result/detail(sessionNo=${summary.sessionNo})}" class="btn">상세 결과</a>
+    </div>
+</div>
+</html>

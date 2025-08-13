@@ -30,14 +30,15 @@
     -->
     <insert id="insertQuizSessionSummary" parameterType="QuizSessionSummary"
         useGeneratedKeys="true" keyProperty="sessionNo">
-        INSERT INTO KUKOKUK_QUIZ_SESSION_SUMMARIES (USER_NO,
-                                                    TOTAL_QUESTION,
-                                                    TOTAL_TIME_SEC,
-                                                    CORRECT_ANSWERS,
-                                                    PERCENTILE,
-                                                    AVERAGE_TIME_PER_QUESTION,
-                                                    QUIZ_MODE,
-                                                    CREATED_DATE)
+        INSERT INTO KUKOKUK_QUIZ_SESSION_SUMMARIES
+        (USER_NO,
+         TOTAL_QUESTION,
+         TOTAL_TIME_SEC,
+         CORRECT_ANSWERS,
+         PERCENTILE,
+         AVERAGE_TIME_PER_QUESTION,
+         QUIZ_MODE,
+         CREATED_DATE)
         VALUES (#{userNo},
                 #{totalQuestion},
                 #{totalTimeSec},

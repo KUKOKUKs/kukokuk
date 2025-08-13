@@ -7,7 +7,7 @@
     <div class="modal_container">
         <div class="modal_top">
             <p class="modal_title">시작할 진도/단계를 선택해 주세요</p>
-            <button type="button" id="modal-close-btn" class="modal_close">
+            <button type="button" class="modal_close_btn modal_close">
                 <iconify-icon icon="basil:cancel-outline"></iconify-icon>
             </button>
         </div>
@@ -71,7 +71,7 @@
                         </select>
                     </div>
 
-                    <div id="study-difficulty" class="modal_explanation_info"></div>
+                    <div id="study-difficulty" class="modal_explanation_info pd_top_base"></div>
                 </div>
             </div>
 
@@ -82,6 +82,6 @@
         </form>
     </div>
 
-    <script type="module" th:src="@{js/modules/study/modal-study-level.js}"></script>
+    <script type="module" th:src="@{/js/modules/study/modal-study-level.js}"></script>
 </div>
 </html>

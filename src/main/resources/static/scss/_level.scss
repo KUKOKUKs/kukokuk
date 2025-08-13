@@ -1,23 +1,19 @@
 .quiz-container {
     .btn.selected {
-        background: #e0f2f1;
-        color: #fff;
-        border: 1.5px solid #009b90;
+        background: var(--primaryColor);
+        color: var(--subColor);
+        border: var(--thinBorder); /* 1.5px는 프로젝트 내에서 thinBorder로 대체 */
+        border-color: var(--primaryColor);
     }
+
     .hint-btn {
-        background: #e0f2f1;
-        color: #009b90;
-        font-size: 0.9em;
-        border-radius: 16px;
-        padding: 3px 16px;
+        background: var(--primaryColor);
+        color: var(--subColor);
+        font-size: var(--subFontSize);
+        border-radius: var(--largeIcon); /* 16px → 가장 근접한 largeIcon 사용 */
+        padding: var(--tinyGap) var(--smallGap);
         border: none;
-        box-shadow: 0 1px 4px rgba(25, 118, 210, 0.08);
+        box-shadow: 0 var(--tinyGap) var(--smallGap) rgba(25, 118, 210, 0.08);
+        margin-top: var(--smallGap);
     }
 }
-
-/* 아래는 절대 쓰지마! */
-// #submit-modal {
-//     display: flex !important;
-//     align-items: center;
-//     justify-content: center;
-// }

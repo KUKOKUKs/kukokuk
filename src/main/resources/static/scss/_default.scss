@@ -393,6 +393,7 @@
                 height: 100%;
                 padding: 0 15px;
                 display: flex;
+                justify-content: space-between;
                 align-items: center;
                 background-color: var(--lightGrayColor);
             }
@@ -539,6 +540,7 @@
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 1;
 
     .modal_container {
         width: var(--modalWidth);
@@ -554,6 +556,7 @@
 
         .modal_top {
             width: 100%;
+            border-bottom: var(--thinBorder);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -565,7 +568,7 @@
                 font-weight: bold;
             }
 
-            #modal-close-btn {
+            .modal_close_btn {
                 width: 30px;
                 min-width: 30px;
                 height: 30px;
@@ -582,7 +585,7 @@
             width: 100%;
             min-height: var(--modalHeight);
             max-height: var(--modalHeight);
-            padding: 0 var(--modalPadding);
+            padding: var(--modalPadding);
             padding-bottom: var(--modalPaddingBottom);
             overflow-y: auto;
 
@@ -596,7 +599,6 @@
     }
 
     .modal_explanation_info {
-        padding: var(--basePadding) 0;
         display: flex;
         flex-direction: column;
         gap: var(--smallGap);
@@ -743,6 +745,9 @@
     }
 
     &.tiny {
+        width: var(--tinyIcon);
+        min-width: var(--tinyIcon);
+        height: var(--tinyIcon);
         font-size: var(--tinyIcon);
     }
 
@@ -821,6 +826,10 @@
 
 .pd_0 {
     padding: 0;
+}
+
+.pd_top_base {
+    padding-top: var(--basePadding);
 }
 
 /* border */
