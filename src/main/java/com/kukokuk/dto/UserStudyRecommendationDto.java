@@ -22,6 +22,7 @@ public class UserStudyRecommendationDto {
     private Integer dailyStudyNo;
     private Integer dailyStudyLogNo;
     private Integer userNo;
+    private Integer dailyStudyEssayQuizLogNo;
 
     private DailyStudyMaterial dailyStudyMaterial;
     private DailyStudy dailyStudy;

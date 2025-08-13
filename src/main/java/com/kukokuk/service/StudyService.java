@@ -3,6 +3,7 @@ package com.kukokuk.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kukokuk.ai.GeminiClient;
+import com.kukokuk.dto.StudyCompleteViewDto;
 import com.kukokuk.response.GeminiEssayResponse;
 import com.kukokuk.ai.GeminiStudyPromptBuilder;
 import com.kukokuk.ai.GeminiStudyResponse;
@@ -799,5 +800,22 @@ public class StudyService {
         }
 
         return geminiEssayResponse;
+    }
+
+    /**
+     * 학습 완료 화면에서
+     * @param dailyStudyNo
+     * @param userNo
+     * @return
+     */
+    public StudyCompleteViewDto getStudyCompleteView(int dailyStudyNo, int userNo) {
+        log.info("getStudyCompleteView 서비스 메소드 실행");
+
+        StudyCompleteViewDto dto = new StudyCompleteViewDto();
+
+        DailyStudyLog studyLog = dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
+        dto.setLog(studyLog);
+
+        return dto;
     }
 }

@@ -174,20 +174,34 @@
 
             // **텍스트**를 strong 태그로 변환
             const rawContent = typeof item.content === 'string' ? item.content : '';
-            const parsedContent = rawContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            const parsedContent = rawContent.replace(/\*\*(.*?)\*\*/g, '<strong class="strong">$1</strong>');
 
-            // paragraph, quote 타입이면 기본 p태그 삽입
-            if (item.type === 'paragraph' || item.type === 'quote') {
+            // paragraph이면 기본 p태그 삽입
+            if (item.type === 'paragraph') {
                 $div.html(`<p>${parsedContent}</p>`);
+            }
+            // quote 타입이면 인용
+            else if (item.type === 'quote') {
+                const quoteStyled = parsedContent.replace(/[“”"]/g, '<span class="double_quote">$&</span>');
+                console.log(quoteStyled);
+
+                // HTML에 그대로 출력 (큰따옴표 유지)
+                $div.html(`<blockquote class="custom_quote">
+                                ${quoteStyled}
+                            </blockquote>`);
             }
             // list 타입이면 content가 리스트 형식이므로 순회하면서 ul태그내에 li로 삽입
             else if (item.type === 'list') {
-                const $ul = $('<ul>');
-                item.content.forEach(text => {
+                const $ul = $('<ul class="custom_list">');
+                item.content.forEach(((text, idx) => {
                     // item.content가 list형식이므로 parsedContent 사용 불가. 추가적으로 변환 작업
-                    const parsed = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                    $ul.append($('<li>').html(parsed));
-                });
+                    const parsed = text.replace(/\*\*(.*?)\*\*/g, '<strong class="strong">$1</strong>');
+
+                    // li 태그 생성
+                    const $li = $('<li class="custom_list_item">').html(parsed).attr('data-index', idx + 1);
+
+                    $ul.append($li);
+                }));
                 $div.append($ul);
             }
             // definition 타입이면 : 기준으로 정의와 설명을 구분
@@ -203,11 +217,44 @@
             }
             // example 타입이면 텍스트앞에 '예시' 문구 추가
             else if (item.type === 'example') {
-                $div.html(`<p><strong class="example_label">예시</strong>: ${parsedContent}</p>`)
+                $div.html(`<p>
+                                <strong class="example_label">
+                                    예시
+                                </strong>: ${parsedContent}
+                            </p>`);
             }
             // table 타입이면 표 추가구현
             else if (item.type === 'table') {
-                $div.html(`<p>표</p>`);
+                // 2차원 배열 형식
+                const tableData = item.content;
+
+                // HTML 문자열 구성
+                let tableHtml = `<table class="study_table">`;
+
+                // 첫 번째 행을 thead로
+                if (tableData.length > 0) {
+                    tableHtml += `<thead><tr>`;
+                    tableData[0].forEach(header => {
+                        tableHtml += `<th>${header}</th>`;
+                    });
+                    tableHtml += `</tr></thead>`;
+                }
+
+                // 나머지 행을 tbody로
+                if (tableData.length > 1) {
+                    tableHtml += `<tbody>`;
+                    for (let i = 1; i < tableData.length; i++) {
+                        tableHtml += `<tr>`;
+                        tableData[i].forEach(cell => {
+                            tableHtml += `<td>${cell}</td>`;
+                        });
+                        tableHtml += `</tr>`;
+                    }
+                    tableHtml += `</tbody>`;
+                }
+                tableHtml += `</table>`;
+
+                $div.html(tableHtml);
             }
 
             // 적절한 HTML가 적용된 div를 allContentDiv(텍스트용 컨테이너)에 append
@@ -300,7 +347,7 @@
         // 전체 카드 콘텐츠를 담을 컨테이너의 기존 내용 초기화
         $mainContentContainer.empty();
         // 카드 제목, 내용등의 텍스트를 담을 최상위 div
-        const $studyCardDiv = $('<div>').addClass('component study_progress_card');
+        const $studyCardDiv = $('<div>').addClass('component study_progress_card center');
 
         let html = '';
 
@@ -309,7 +356,7 @@
                 html = `
                     <div class="info">오늘의 학습을 시작해볼까요?</div>
                     <div class="title">${dailyStudy.title}</div>
-                    <div class="paragraph">${dailyStudy.explanation}</div>
+                    <div class="paragraph">${dailyStudy.explanation ? dailyStudy.explanation : ''}</div>
                 `;
                 break;
             case 'quiz':
