@@ -1,24 +1,50 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/base}" th:with="title='프로필', menu='profile'">
 <div layout:fragment="content">
-    <div class="form_component">
+    <div class="form_component"
+         sec:authorize="isAuthenticated()"
+         th:with="user=${#authentication.principal.user}
+                , profileFilename=${user.profileFilename}">
         <h1 class="content_title">프로필</h1>
 
         <div class="profile_img_container">
-            <div class="profile_thumbnail">
-                <div class="thumbnail_img">
-                    <img src="" alt="" class="thumbnail">
-                    <span class="icon_btn">edit</span>
-                </div>
-                <p class="account">test@test.test</p>
-            </div>
+            <form method="post"
+                  th:action="@{/user/profile-img-update}"
+                  enctype="multipart/form-data"
+                  class="thumbnail_img"
+                  id="profile-img-update-form"
+                  th:if="${profileFilename == null}">
+                <input type="file"
+                       accept="image/jpeg,image/png,image/webp,image/heic"
+                       name="profileFile"
+                       class="d_none"
+                       id="profile-img-input">
+                <img th:src="@{/images/basic_profile_img.jpg}" alt="profile thumbnail" class="thumbnail">
+                <label for="profile-img-input" class="icon_btn color_primary">
+                    <iconify-icon icon="fluent-color:person-edit-32"></iconify-icon>
+                </label>
+            </form>
+
+            <form method="post"
+                  th:action="@{/user/profile-img-delete}"
+                  class="thumbnail_img"
+                  id="profile-img-delete-form"
+                  th:if="${profileFilename != null}">
+                <img th:src="${user.profileFileUrl}" alt="profile thumbnail" class="thumbnail">
+                <button type="submit" id="profile-img-delete-btn" class="icon_btn">
+                    <iconify-icon icon="mi:delete"></iconify-icon>
+                </button>
+            </form>
+
+            <p class="account small_font">test@test.test</p>
         </div>
 
         <form method="post"
-              th:action="@{/register/profile}"
+              th:action="@{/user/profile}"
               th:object="${userUpdateForm}"
               class="form_wrap container pd_0"
-              id="user-update-form">
+              id="profile-update-form">
+            <input type="hidden" name="currentNickname" th:value="${userUpdateForm.nickname}">
 
             <div class="form_input_list">
                 <div class="input_info">
@@ -74,53 +100,74 @@
 
                 <div class="input_info select_info">
                     <p class="select_title">진도</p>
-                    <select th:field="*{currentSchool}" class="form_select">
-                        <option th:if="${currentSchool == null}" value="" selected disabled>선택</option>
-                        <option value="초등">초등</option>
-                        <option value="중등">중등</option>
+                    <select name="currentSchool" class="form_select">
+                        <option th:if="${user.currentSchool == null}" value="" disabled selected>선택</option>
+                        <option value="초등" th:selected="${user.currentSchool == '초등'}">초등</option>
+                        <option value="중등" th:selected="${user.currentSchool == '중등'}">중등</option>
                     </select>
                 </div>
 
                 <div class="input_info select_info">
                     <p class="select_title">학년</p>
-                    <select th:if="${currentSchool == '초등'}" th:field="*{currentGrade}" class="form_select">
-                        <option value="1">1학년</option>
-                        <option value="2">2학년</option>
-                        <option value="3">3학년</option>
-                        <option value="4">4학년</option>
-                        <option value="5">5학년</option>
-                        <option value="6">6학년</option>
-                    </select>
+                    <select name="currentGrade" class="form_select">
+                        <option th:if="${user.currentGrade == null}" value="" disabled selected>선택</option>
 
-                    <select th:if="${currentSchool == '중등'}" th:field="*{currentGrade}" class="form_select">
-                        <option value="1">1학년</option>
-                        <option value="2">2학년</option>
-                        <option value="3">3학년</option>
-                    </select>
+                        <!--/* 초등용 옵션 */-->
+                        <th:block th:if="${user.currentSchool == '초등'}">
+                            <option value="1" th:selected="${user.currentGrade == 1}">1학년</option>
+                            <option value="2" th:selected="${user.currentGrade == 2}">2학년</option>
+                            <option value="3" th:selected="${user.currentGrade == 3}">3학년</option>
+                            <option value="4" th:selected="${user.currentGrade == 4}">4학년</option>
+                            <option value="5" th:selected="${user.currentGrade == 5}">5학년</option>
+                            <option value="6" th:selected="${user.currentGrade == 6}">6학년</option>
+                        </th:block>
 
-                    <select th:if="${currentSchool == null}" th:field="*{currentGrade}" class="form_select">
-                        <option value="" selected disabled>선택</option>
+                        <!--/* 중등용 옵션 */-->
+                        <th:block th:if="${user.currentSchool == '중등'}">
+                            <option value="1" th:selected="${user.currentGrade == 1}">1학년</option>
+                            <option value="2" th:selected="${user.currentGrade == 2}">2학년</option>
+                            <option value="3" th:selected="${user.currentGrade == 3}">3학년</option>
+                        </th:block>
                     </select>
                 </div>
 
                 <div class="input_info select_info">
-                    <p class="select_title">단계</p>
-                    <select th:field="*{studyDifficulty}" class="form_select">
-                        <option th:if="${studyDifficulty == null}" value="" selected disabled>선택</option>
-                        <option value="1">1단계</option>
-                        <option value="2">2단계</option>
-                        <option value="3">3단계</option>
-                        <option value="4">4단계</option>
-                        <option value="5">5단계</option>
-                        <option value="6">6단계</option>
+                    <button type="button" id="modal-study-difficulty-info-btn" class="select_title">
+                        단계
+                        <span class="icon_btn small">
+                            <iconify-icon icon="flat-color-icons:info"></iconify-icon>
+                        </span>
+                    </button>
+                    <select name="studyDifficulty" class="form_select">
+                        <option value="1" th:selected="${user.studyDifficulty == 1}">1단계</option>
+                        <option value="2" th:selected="${user.studyDifficulty == 2}">2단계</option>
+                        <option value="3" th:selected="${user.studyDifficulty == 3}">3단계</option>
+                        <option value="4" th:selected="${user.studyDifficulty == 4}">4단계</option>
+                        <option value="5" th:selected="${user.studyDifficulty == 5}">5단계</option>
+                        <option value="6" th:selected="${user.studyDifficulty == 6}">6단계</option>
                     </select>
                 </div>
             </div>
 
             <div class="btn_list">
+                <a href="/" class="btn white">취소</a>
                 <button type="submit" id="submit-btn" class="btn primary">수정</button>
             </div>
+
+            <div th:replace="~{fragments/modal/modal-study-difficulty-info :: modal-study-difficulty-info-fragment}"></div>
         </form>
     </div>
 </div>
+
+<th:block layout:fragment="script">
+    <script th:if="${error != null}">
+        alert("[[${error}]]");
+    </script>
+
+    <script th:if="${success != null}">
+        alert("[[${success}]]");
+    </script>
+
+    <script type="module" th:src="@{/js/modules/profile/profile.js}"></script>
+</th:block>
 </html>

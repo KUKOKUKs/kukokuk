@@ -14,9 +14,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class StudyProgressViewDto {
-  private DailyStudy dailyStudy;
-  private List<DailyStudyCard> cards;
-  private DailyStudyLog log;
-  private List<DailyStudyQuiz> quizzes;
-  private List<DailyStudyQuizLog> quizLogs;
+
+    private DailyStudy dailyStudy;
+    private List<DailyStudyCard> cards;
+    private DailyStudyLog log;
+    private List<DailyStudyQuiz> quizzes; // JS용 -> 추후 리팩토링
+    private List<DailyStudyQuizLog> quizLogs; // JS용 -> 추후 리팩토링
+    private List<QuizWithLogDto> quizWithLogDtos; // SSR용
 }

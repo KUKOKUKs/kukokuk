@@ -34,4 +34,11 @@ public class User {
     private Integer maxExp; // 레벨업에 필요한 누적 경험치
     private List<String> roleNames; // 사용자 권한 정보 목록
 
+    public String getProfileFileUrl() {
+        if (profileFilename == null || profileFilename.isBlank()) {
+            return null;
+        }
+        return "/images/profile/" + userNo + "/" + profileFilename;
+    }
+
 }

@@ -1,8 +1,6 @@
 package com.kukokuk.vo;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Date;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,14 +15,15 @@ import org.apache.ibatis.type.Alias;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DailyStudyMaterial {
-  private int dailyStudyMaterialNo;
-  private String school;
-  private int grade;
-  private String materialTitle;
-  private String keywords;
-  private String content;
-  private String sourceFilename;
-  private int sequence;
-  private Date createdDate;
-  private Date updatedDate;
+
+    private int dailyStudyMaterialNo;
+    private String school;
+    private int grade;
+    private String materialTitle;
+    private String keywords;
+    private String content;
+    private String sourceFilename;
+    private int sequence;
+    private Date createdDate;
+    private Date updatedDate;
 }

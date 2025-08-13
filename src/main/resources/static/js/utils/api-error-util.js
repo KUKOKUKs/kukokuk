@@ -12,7 +12,7 @@ export function apiErrorProcessByXhr(responseJSON) {
             // 400~600 에러 코드 처리
             // 4xx: 클라이언트 오류 (입력값 오류, 인증 실패 등)
             // 5xx: 서버 오류 (예외처리 등)
-            alert(message);
+            throw new Error(message + "\n다시 시도해 주세요.");
         } else {
             alert(`알 수 없는 오류가 발생했습니다.\n에러코드: ${status})\n페이지를 새로고침합니다.`);
             location.reload();

@@ -7,7 +7,7 @@
     <div class="modal_container">
         <div class="modal_top">
             <p class="modal_title">시작할 진도/단계를 선택해 주세요</p>
-            <button type="button" id="modal-close-btn" class="modal_close">
+            <button type="button" class="modal_close_btn modal_close">
                 <iconify-icon icon="basil:cancel-outline"></iconify-icon>
             </button>
         </div>
@@ -18,44 +18,60 @@
               class="modal_info form_wrap"
               id="modal-study-level-form">
             <div class="form_input_list">
-                <div class="input_info select_info">
-                    <p class="select_title">진도</p>
-                    <select name="currentSchool" class="form_select">
-                        <option th:if="${user.currentSchool == null}" value="" selected disabled>선택</option>
-                        <option value="초등" th:selected="${user.currentSchool == '초등'}">초등</option>
-                        <option value="중등" th:selected="${user.currentSchool == '중등'}">중등</option>
-                    </select>
+                <div class="tab_btn_list">
+                    <button type="button" class="tab_btn selected">진도<span class="active"></span></button>
+                    <button type="button" class="tab_btn">단계<span class="active"></span></button>
                 </div>
-                <div class="input_info select_info">
-                    <p class="select_title">학년</p>
-                    <select th:if="${user.currentSchool == '초등'}" name="currentGrade" class="form_select">
-                        <option value="1" th:selected="${user.currentGrade == 1}">1학년</option>
-                        <option value="2" th:selected="${user.currentGrade == 2}">2학년</option>
-                        <option value="3" th:selected="${user.currentGrade == 3}">3학년</option>
-                        <option value="4" th:selected="${user.currentGrade == 4}">4학년</option>
-                        <option value="5" th:selected="${user.currentGrade == 5}">5학년</option>
-                        <option value="6" th:selected="${user.currentGrade == 6}">6학년</option>
-                    </select>
-                    <select th:if="${user.currentSchool == '중등'}" name="currentGrade" class="form_select">
-                        <option value="1" th:selected="${user.currentGrade == 1}">1학년</option>
-                        <option value="2" th:selected="${user.currentGrade == 2}">2학년</option>
-                        <option value="3" th:selected="${user.currentGrade == 3}">3학년</option>
-                    </select>
-                    <select th:if="${user.currentSchool == null}" name="currentGrade" class="form_select">
-                        <option value="" selected disabled>선택</option>
-                    </select>
+
+                <div class="tab_content selected">
+                    <div class="input_info select_info">
+                        <p class="select_title">진도</p>
+                        <select name="currentSchool" class="form_select">
+                            <option th:if="${user.currentSchool == null}" value="" selected disabled>선택</option>
+                            <option value="초등" th:selected="${user.currentSchool == '초등'}">초등</option>
+                            <option value="중등" th:selected="${user.currentSchool == '중등'}">중등</option>
+                        </select>
+                    </div>
+
+                    <div class="input_info select_info">
+                        <p class="select_title">학년</p>
+                        <select name="currentGrade" class="form_select">
+                            <option th:if="${user.currentGrade == null}" value="" disabled selected>선택</option>
+
+                            <!--/* 초등용 옵션 */-->
+                            <th:block th:if="${user.currentSchool == '초등'}">
+                                <option value="1" th:selected="${user.currentGrade == 1}">1학년</option>
+                                <option value="2" th:selected="${user.currentGrade == 2}">2학년</option>
+                                <option value="3" th:selected="${user.currentGrade == 3}">3학년</option>
+                                <option value="4" th:selected="${user.currentGrade == 4}">4학년</option>
+                                <option value="5" th:selected="${user.currentGrade == 5}">5학년</option>
+                                <option value="6" th:selected="${user.currentGrade == 6}">6학년</option>
+                            </th:block>
+
+                            <!--/* 중등용 옵션 */-->
+                            <th:block th:if="${user.currentSchool == '중등'}">
+                                <option value="1" th:selected="${user.currentGrade == 1}">1학년</option>
+                                <option value="2" th:selected="${user.currentGrade == 2}">2학년</option>
+                                <option value="3" th:selected="${user.currentGrade == 3}">3학년</option>
+                            </th:block>
+                        </select>
+                    </div>
                 </div>
-                <div class="input_info select_info">
-                    <p class="select_title">단계</p>
-                    <select name="studyDifficulty" class="form_select">
-                        <option th:if="${user.studyDifficulty == null}" value="" selected disabled>선택</option>
-                        <option value="1" th:selected="${user.studyDifficulty == 1}">1단계</option>
-                        <option value="2" th:selected="${user.studyDifficulty == 2}">2단계</option>
-                        <option value="3" th:selected="${user.studyDifficulty == 3}">3단계</option>
-                        <option value="4" th:selected="${user.studyDifficulty == 4}">4단계</option>
-                        <option value="5" th:selected="${user.studyDifficulty == 5}">5단계</option>
-                        <option value="6" th:selected="${user.studyDifficulty == 6}">6단계</option>
-                    </select>
+
+                <div class="tab_content">
+                    <div class="input_info select_info one_input">
+                        <p class="select_title">단계</p>
+                        <select name="studyDifficulty" class="form_select">
+                            <option value="1" th:selected="${user.studyDifficulty == 1}">1단계</option>
+                            <option value="2" th:selected="${user.studyDifficulty == 2}">2단계</option>
+                            <option value="3" th:selected="${user.studyDifficulty == 3}">3단계</option>
+                            <option value="4" th:selected="${user.studyDifficulty == 4}">4단계</option>
+                            <option value="5" th:selected="${user.studyDifficulty == 5}">5단계</option>
+                            <option value="6" th:selected="${user.studyDifficulty == 6}">6단계</option>
+                        </select>
+                    </div>
+
+                    <div id="study-difficulty" class="modal_explanation_info pd_top_base"></div>
                 </div>
             </div>
 
@@ -65,5 +81,7 @@
             </div>
         </form>
     </div>
+
+    <script type="module" th:src="@{/js/modules/study/modal-study-level.js}"></script>
 </div>
 </html>

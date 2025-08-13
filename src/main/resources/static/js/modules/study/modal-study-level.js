@@ -1,14 +1,17 @@
-// noinspection ES6UnusedImports
+import {
+    elementarySchool,
+    middleSchool,
+    setStudyDifficultyList
+} from '../../utils/handler-util.js';
 
-$(document).ready(() => {
+$(document).ready(async function () {
     // 사용자 진도/단계 설정 관련
     const $modalStudyLevelForm = $("#modal-study-level-form"); // 진도/단계 설정 폼
     const $modalStudyLevelSchool = $modalStudyLevelForm.find("select[name='currentSchool']"); // currentSchool select
     const $modalStudyLevelGrade = $modalStudyLevelForm.find("select[name='currentGrade']"); // currentGrade select
     const $modalStudyLevelDifficulty = $modalStudyLevelForm.find("select[name='studyDifficulty']"); // studyDifficulty select
     const $modalStudyLevelSubmitBtn = $modalStudyLevelForm.find("button[type='submit']"); // $modalStudyLevelForm submit button
-    const elementarySchool = setGradeOptions(6);
-    const middleSchool = setGradeOptions(3);
+    const $modalStudyDifficultyInfoElement = $modalStudyLevelForm.find("#study-difficulty"); // 단계별 설명 리스트가 추가될 부모 요소
 
     // 진도 선택 핸들러
     $modalStudyLevelSchool.on("change", function () {
@@ -47,12 +50,16 @@ $(document).ready(() => {
         }
     });
 
-    // 학년 옵션 생성
-    function setGradeOptions(count) {
-        let options = '';
-        for (let i = 1; i <= count; i++) {
-            options += `<option value="${i}">${i}학년</option>`;
+    // 사용자 진도/단계 선택 모달창 열기
+    const $modalStudyLevelBtn = $("#modal-study-level-btn"); // 모달창 열기 버튼
+    const $modalStudyLevel = $("#modal-study-level"); // 모달창
+    $modalStudyLevelBtn.click(function () {
+        if ($modalStudyLevel.length) {
+            // 해당 모달창 요소가 있을 경우 열기
+            $modalStudyLevel.show();
+
+            // 모달창 단계별 설명 리스트 추가
+            setStudyDifficultyList($modalStudyDifficultyInfoElement);
         }
-        return options;
-    }
+    });
 });

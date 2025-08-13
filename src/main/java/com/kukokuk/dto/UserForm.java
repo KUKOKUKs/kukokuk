@@ -15,6 +15,7 @@ import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -59,5 +60,7 @@ public class UserForm {
     private Integer studyDifficulty;
     private Integer hintCount;
     private String isDeleted; // ENUM("N", "Y")
+    
+    private MultipartFile profileFile; // 프로필 이미지 파일
 
 }

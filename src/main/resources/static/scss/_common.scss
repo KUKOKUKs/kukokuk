@@ -11,32 +11,40 @@
     --primaryColor: #009b90;
     --subColor: #e0f2f1;
     --grayColor: #767676;
-    --lightGrayColor: #f7f7f7;
+    --lightGrayColor: #f1f1f1;
     --blackColor: #2b2b2b;
     --darkGreenColor: #00544e;
     --yellowColor: #ffc43b;
     --redColor: #ff5b45;
-    --blueColor: #2783d9;
-    --lightRedColor: #ffcec8;
+    --blueColor: #2783D9;
     --borderColor: #d9d9d9;
     --dimmedColor: rgba(0, 0, 0, 0.3);
 
     /* element property */
     --logoWidth: 100px;
     --logoHeight: 65px;
+    --smallLogoWidth: 80px;
+    --smallLogoHeight: 52px;
+    --symbolLogoSize: 35px;
     --mainContentWidth: 600px;
     --subContentWidth: 400px;
     --centerContentWidth: 800px;
     --modalWidth: 400px;
-    --modalMinHeight: 300px;
-    --modalMaxHeight: 450px;
+    --modalHeight: 450px;
     --navWidth: 250px;
     --baseIcon: 30px;
     --smallIcon: 16px;
     --tinyIcon: 10px;
     --largeIcon: 40px;
+    --profileThumbnail: 80px;
+    --inputHeight: 60px;
+    --tabHeight: 40px;
+    --modalInfoTitleWidth: 50px;
 
     --containerPadding: 1.5rem;
+    --containerLargePadding: 3.5rem;
+
+    --largePadding: 30px;
     --basePadding: 18px;
     --smallPadding: .75em;
     --tinyPadding: .3em;
@@ -53,6 +61,7 @@
 
     --baseGap: 1.25rem;
     --smallGap: 10px;
+    --tinyGap: 5px;
     --largeGap: 46px;
 }
 
@@ -85,6 +94,7 @@ img {
 }
 
 button {
+    cursor: pointer;
     background-color: inherit;
 }
 

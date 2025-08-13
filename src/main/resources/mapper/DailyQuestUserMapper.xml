@@ -2,44 +2,44 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DailyQuestUserMapper">
 
-  <!-- 일일도전과제 수행 정보를 VO 객체에 담는 ResultMap -->
-  <resultMap id="DailyQuestUserResultMap" type="DailyQuestUser">
+    <!-- 일일도전과제 수행 정보를 VO 객체에 담는 ResultMap -->
+    <resultMap id="DailyQuestUserResultMap" type="DailyQuestUser">
     <id property="dailyQuestUserNo" column="DAILY_QUEST_USER_NO"/>
     <result property="dailyQuestNo" column="DAILY_QUEST_NO"/>
     <result property="userNo" column="USER_NO"/>
     <result property="isObtained" column="IS_OBTAINED"/>
     <result property="createdDate" column="CREATED_DATE"/>
-  </resultMap>
+    </resultMap>
 
-  <!--
-    List<DailyQuestUser> getDailyQuestUsersByUserNo(@Param("userNo") int userNo,
-          @Param("condition") Map<String, Object> condition);
-  -->
-  <select id="getDailyQuestUsersByUserNo" resultMap="DailyQuestUserResultMap">
-    SELECT
-        U.DAILY_QUEST_USER_NO,
-        U.DAILY_QUEST_NO,
-        U.IS_OBTAINED,
-        U.CREATED_DATE,
-        U.USER_NO
-    FROM
-        KUKOKUK_DAILY_QUEST_USERS U
-        JOIN KUKOKUK_DAILY_QUESTS Q
-            ON U.DAILY_QUEST_NO = Q.DAILY_QUEST_NO
-    WHERE
-        U.USER_NO = #{userNo}
-        <if test="condition.contentType != null">
-          AND Q.CONTENT_TYPE = #{condition.contentType}
-        </if>
-        <if test="condition.completedDate != null">
-          AND DATE(U.CREATED_DATE) = DATE(#{condition.completedDate})
-        </if>
-  </select>
+      <!--
+        List<DailyQuestUser> getDailyQuestUsersByUserNo(@Param("userNo") int userNo,
+              @Param("condition") Map<String, Object> condition);
+      -->
+      <select id="getDailyQuestUsersByUserNo" resultMap="DailyQuestUserResultMap">
+          SELECT
+          U.DAILY_QUEST_USER_NO,
+          U.DAILY_QUEST_NO,
+          U.IS_OBTAINED,
+          U.CREATED_DATE,
+          U.USER_NO
+          FROM
+          KUKOKUK_DAILY_QUEST_USERS U
+          JOIN KUKOKUK_DAILY_QUESTS Q
+          ON U.DAILY_QUEST_NO = Q.DAILY_QUEST_NO
+          WHERE
+          U.USER_NO = #{userNo}
+          <if test="condition.contentType != null">
+              AND Q.CONTENT_TYPE = #{condition.contentType}
+          </if>
+          <if test="condition.completedDate != null">
+              AND DATE(U.CREATED_DATE) = DATE(#{condition.completedDate})
+          </if>
+      </select>
 
-  <!--
+    <!--
     void getDailyQuestUserByNo(int dailyQuestUserNo);
-  -->
-  <select id="getDailyQuestUserByNo" resultMap="DailyQuestUserResultMap">
+    -->
+    <select id="getDailyQuestUserByNo" resultMap="DailyQuestUserResultMap">
     SELECT DAILY_QUEST_USER_NO,
            DAILY_QUEST_NO,
            IS_OBTAINED,
@@ -49,17 +49,44 @@
       KUKOKUK_DAILY_QUEST_USERS
     WHERE
       DAILY_QUEST_USER_NO = #{dailyQuestUserNo}
-  </select>
+    </select>
 
-  <!--
-   void updateIsObtained(int dailyQuestUserNo);
-  -->
-  <update id="updateIsObtained">
-    UPDATE KUKOKUK_DAILY_QUEST_USERS
-    SET
-        IS_OBTAINED = 'Y',
-        UPDATED_DATE = NOW()
-    WHERE
-      DAILY_QUEST_USER_NO = #{dailyQuestUserNo}
-  </update>
+    <!--
+    void updateIsObtained(int dailyQuestUserNo);
+    -->
+    <update id="updateIsObtained">
+        UPDATE KUKOKUK_DAILY_QUEST_USERS
+        SET IS_OBTAINED  = 'Y',
+            UPDATED_DATE = NOW()
+        WHERE DAILY_QUEST_USER_NO = #{dailyQuestUserNo}
+    </update>
+
+    <!--
+    void insertDailyQuestUser(DailyQuestUser dailyQuestUser);
+    -->
+    <insert id="insertDailyQuestUser" parameterType="DailyQuestUser">
+        INSERT INTO
+            KUKOKUK_DAILY_QUEST_USERS
+            (DAILY_QUEST_NO, USER_NO)
+        VALUES
+            (#{dailyQuestNo}, #{userNo})
+    </insert>
+
+    <!--
+      void getTodayQuestUserByUserNoAndQuestNo(@Param("userNo") int userNo,
+        @Param("dailyQuestNo") int dailyQuestNo);
+    -->
+    <select id="getTodayQuestUserByUserNoAndQuestNo" resultMap="DailyQuestUserResultMap">
+        SELECT DAILY_QUEST_USER_NO,
+               DAILY_QUEST_NO,
+               IS_OBTAINED,
+               CREATED_DATE,
+               USER_NO
+        FROM
+            KUKOKUK_DAILY_QUEST_USERS
+        WHERE
+            USER_NO = #{userNo}
+            AND DAILY_QUEST_NO = #{dailyQuestNo}
+            AND DATE(CREATED_DATE) = CURDATE()
+    </select>
 </mapper>

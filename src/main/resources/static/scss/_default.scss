@@ -23,10 +23,24 @@
         left: calc(var(--baseGap) + var(--baseFontSize));
         z-index: 1;
     }
+
+    &.small {
+        width: var(--smallLogoWidth);
+        height: var(--smallLogoHeight);
+    }
+}
+
+.symbol_logo {
+    display: block;
+    width: var(--symbolLogoSize);
+    aspect-ratio: 1 / 1;
+    background: url("/images/kukokuk_symbol_logo.png") 0 0 no-repeat;
+    background-size: contain;
 }
 
 .main {
     display: flex;
+    min-height: 100vh;
 }
 
 .content {
@@ -70,9 +84,17 @@
     padding: var(--containerPadding);
 }
 
-.copyright {
-    font-size: var(--smallFontSize);
-    padding: 1em;
+#footer {
+    position: sticky;
+    left: 0;
+    bottom: 0;
+    background: #fff;
+
+    .copyright {
+        font-size: var(--smallFontSize);
+        padding-bottom: var(--baseGap);
+        padding-top: var(--largePadding);
+    }
 }
 
 .component {
@@ -91,7 +113,7 @@
             align-content: center;
             font-size: var(--largeFontSize);
             font-weight: 700;
-            
+
         }
 
         /* 리스트 컴포넌트의 리스트 부분 */
@@ -200,7 +222,7 @@
     flex-direction: column;
 
     .input_info {
-        height: 60px;
+        height: var(--inputHeight);
         font-size: var(--subFontSize);
         background-color: #fff;
         padding: var(--inputPadding);
@@ -211,7 +233,7 @@
         overflow: hidden;
 
         &:has(.input_icon) {
-            padding-right: 60px;
+            padding-right: var(--inputHeight);
         }
 
         &:first-child {
@@ -380,6 +402,7 @@
                 height: 100%;
                 padding: 0 15px;
                 display: flex;
+                justify-content: space-between;
                 align-items: center;
                 background-color: var(--lightGrayColor);
             }
@@ -390,6 +413,127 @@
 .input_description {
     width: 100%;
     font-size: var(--subFontSize);
+}
+
+/* tab content */
+.tab_btn_list {
+    width: 100%;
+    background-color: var(--subColor);
+    display: flex;
+    align-items: center;
+    border-radius: var(--bdrs) var(--bdrs) 0 0;
+    border: var(--thinBorder);
+    border-bottom: none;
+    overflow: hidden;
+    position: relative;
+
+    .tab_btn {
+        width: 100%;
+        height: var(--tabHeight);
+        border-bottom: var(--thinBorder);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--smallFontSize);
+        color: var(--grayColor);
+        border-right: var(--thinBorder);
+        cursor: pointer;
+        position: relative;
+
+        .active {
+            display: none;
+            width: calc(100% + (var(--bdrs) * 4));
+            height: calc(var(--bdrs) * 2);
+            background-color: #fff;
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+
+            &::before {
+                content: "";
+                display: block;
+                width: calc(var(--bdrs) * 2);
+                height: calc(var(--bdrs) * 2);
+                background-color: var(--subColor);
+                border-width: 0 1px 1px 0;
+                border-style: solid;
+                border-color: var(--borderColor);
+                border-radius: 0 0 var(--bdrs) 0;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                box-sizing: border-box;
+            }
+
+            &::after {
+                content: "";
+                display: block;
+                width: calc(var(--bdrs) * 2);
+                height: calc(var(--bdrs) * 2);
+                background-color: var(--subColor);
+                border-width: 0 0 1px 1px;
+                border-style: solid;
+                border-color: var(--borderColor);
+                border-radius: 0 0 0 var(--bdrs);
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                box-sizing: border-box;
+            }
+        }
+
+        &.selected {
+            font-weight: bold;
+            color: var(--primaryColor);
+            background-color: #fff;
+            border-bottom-color: transparent;
+            border-left: var(--thinBorder);
+            border-radius: var(--bdrs) var(--bdrs) 0 0;
+
+            .active {
+                display: block;
+            }
+        }
+
+        &.selected_left {
+            border-right: none;
+        }
+
+        &:first-child.selected {
+            border-left: none;
+
+            .active::before{
+                display: none;
+            }
+        }
+
+        &:last-child {
+            border-right: none;
+
+            .active::after{
+                display: none;
+            }
+        }
+    }
+}
+
+.tab_content {
+    display: none;
+
+    &.selected {
+        display: block;
+    }
+
+    .input_info:first-child {
+        border-radius: 0;
+        border-top: none;
+    }
+
+    .input_info.one_input {
+        border-radius: 0 0 var(--bdrs) var(--bdrs);
+    }
 }
 
 .error_message {
@@ -405,6 +549,7 @@
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 1;
 
     .modal_container {
         width: var(--modalWidth);
@@ -420,19 +565,19 @@
 
         .modal_top {
             width: 100%;
+            border-bottom: var(--thinBorder);
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: var(--smallGap);
             padding: var(--modalPadding);
-            padding-bottom: 0;
 
             .modal_title {
                 font-size: var(--baseFontSize);
                 font-weight: bold;
             }
 
-            #modal-close-btn {
+            .modal_close_btn {
                 width: 30px;
                 min-width: 30px;
                 height: 30px;
@@ -447,8 +592,8 @@
 
         .modal_info {
             width: 100%;
-            min-height: var(--modalMinHeight);
-            max-height: var(--modalMaxHeight);
+            min-height: var(--modalHeight);
+            max-height: var(--modalHeight);
             padding: var(--modalPadding);
             padding-bottom: var(--modalPaddingBottom);
             overflow-y: auto;
@@ -456,7 +601,29 @@
             .btn_list {
                 padding: var(--modalPadding);
                 position: absolute;
+                left: 0;
                 bottom: 0;
+            }
+        }
+    }
+
+    .modal_explanation_info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--smallGap);
+
+        .modal_explanation {
+            display: flex;
+            align-items: flex-start;
+            font-size: var(--smallFontSize);
+
+            .explanation_title {
+                min-width: var(--modalInfoTitleWidth);
+                font-weight: bold;
+            }
+
+            .explanation {
+                color: var(--grayColor);
             }
         }
     }
@@ -474,6 +641,7 @@
 /* button */
 .btn_list {
     width: 100%;
+    background-color: #fff;
     display: flex;
     align-items: center;
     gap: var(--smallGap);
@@ -490,6 +658,7 @@
             width: 25%;
         }
     }
+
 }
 
 .btn {
@@ -531,6 +700,13 @@
         border-color: var(--darkGreenColor);
         background-color: var(--darkGreenColor);
         color: #fff;
+    }
+
+    &.gray {
+        border: 2px solid var(--lightGrayColor);;
+        background-color: transparent;
+        color: var(--grayColor);
+        box-shadow: none;
     }
 
     &:hover {
@@ -578,7 +754,14 @@
     }
 
     &.tiny {
+        width: var(--tinyIcon);
+        min-width: var(--tinyIcon);
+        height: var(--tinyIcon);
         font-size: var(--tinyIcon);
+    }
+
+    &.primary {
+        color: var(--primaryColor);
     }
 
 }
@@ -625,6 +808,10 @@
         justify-content: space-between; /* 양끝 정렬 */
     }
 
+    &.justify_content_end {
+        justify-content: flex-end;
+    }
+
     &.align_center {
         align-items: center; /* 수직/수평 정렬 */
     }
@@ -642,12 +829,20 @@
     gap: var(--smallGap); /* 작은 gap */
 }
 
+.tiny_gap {
+    gap: var(--tinyGap); /* 작은 gap */
+}
+
 .large_gap {
     gap: var(--largeGap); /* 큰 gap */
 }
 
 .pd_0 {
     padding: 0;
+}
+
+.pd_top_base {
+    padding-top: var(--basePadding);
 }
 
 /* border */
@@ -799,4 +994,39 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/*
+    로딩 표시를 위한 클래스
+    사용 예시
+    <div class="loading_spinner">
+        <div class="spinner"></div>
+        <div>AI 피드백 생성 중...</div>
+    </div>
+ */
+.loading_spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--smallGap);
+
+    &.full_height {
+        height: 100%;
+        justify-content: center;
+    }
+
+    .spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--borderColor);
+        border-top-color: var(--primaryColor);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

@@ -9,13 +9,14 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @Alias("DailyStudyQuizLog")
 public class DailyStudyQuizLog {
-  private int dailyStudyQuizLogNo;
-  private String isSuccess; // ENUM("Y", "N")
-  private int selectedChoice;
-  private Date createdDate;
-  private Date updatedDate;
-  private int userNo;
-  private int dailyStudyQuizNo;
 
-  private DailyStudyQuiz dailyStudyQuiz;
+    private int dailyStudyQuizLogNo;
+    private String isSuccess; // ENUM("Y", "N")
+    private int selectedChoice;
+    private Date createdDate;
+    private Date updatedDate;
+    private int userNo;
+    private int dailyStudyQuizNo;
+
+    private DailyStudyQuiz dailyStudyQuiz;
 }

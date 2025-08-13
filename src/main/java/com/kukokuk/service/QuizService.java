@@ -1,5 +1,6 @@
 package com.kukokuk.service;
 
+import com.kukokuk.dto.QuizLevelResultDto;
 import com.kukokuk.mapper.DictEntryMapper;
 import com.kukokuk.mapper.QuizMasterMapper;
 import com.kukokuk.vo.DictEntry;
@@ -109,7 +110,7 @@ public class QuizService {
 
     /**
      * 최초 1회만 실행되는 함수
-     * 사전 데이터의 랜덤한 단어를 기반으로 서로 다른 유형의 퀴즈를 100개씩 생성한다.
+     * 사전 데이터의 랜덤한 단어를 기반으로 서로 다른 유형의 퀴즈를 200개 생성한다.
      * 생성하려는 퀴즈 count의 수를 기반으로 퀴즈의 수가 모자란 만큼만 생성
      * @param count 생성할 퀴즈 수
      */
@@ -146,7 +147,6 @@ public class QuizService {
 
     }
 
-
     /**
      * 스피드 퀴즈용 문제 10개 조회
      * @param usageCount 기준 usage_count
@@ -155,6 +155,27 @@ public class QuizService {
      */
     public List<QuizMaster> getSpeedQuizList(int usageCount, int limit) {
         return quizMasterMapper.getQuizMastersForSpeed(usageCount, limit);
+    }
+
+    /**
+     * 단계별 퀴즈용 문제 10개 조회
+     *
+     * @param difficulty 난이도 ("상", "중", "하")
+     * @param questionType 문제 유형 ("뜻", "단어")
+     * @return QuizMaster 리스트
+     */
+    public List<QuizMaster> getLevelQuizList(String difficulty, String questionType) {
+        log.info("단계별 퀴즈 요청 - 난이도: {}, 유형: {}", difficulty, questionType);
+        return quizMasterMapper.getQuizListByDifficultyAndType(difficulty, questionType);
+    }
+
+    /**
+     * 세션 번호로 DIFFICULTY, QUESTION_TYPE을 조회한다.
+     * @param sessionNo 세션 번호
+     * @return QuizLevelResultdto
+     */
+    public QuizLevelResultDto getDifficultyAndQuestionTypeBySessionNo(int sessionNo) {
+        return quizMasterMapper.getDifficultyAndQuestionTypeBySessionNo(sessionNo);
     }
 
 

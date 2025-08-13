@@ -1,8 +1,7 @@
 .nav_container {
     width: var(--navWidth);
     min-width: var(--navWidth);
-    min-height: 100vh;
-    border-right: 1px solid var(--borderColor);
+    min-height: 100%;
 }
 
 .nav_wrap {
@@ -10,10 +9,13 @@
     height: 100%;
     padding: var(--baseGap);
     padding-top: calc(var(--logoHeight) + (var(--baseGap) * 2) + var(--baseFontSize));
+    padding-bottom: 0;
+    background-color: #fff;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: var(--baseGap);
+    border-right: 1px solid var(--borderColor);
     position: fixed;
     top: 0;
     left: 0;
@@ -37,12 +39,12 @@
         .menu_icon {
             width: var(--baseIcon);
             height: var(--baseIcon);
+            font-size: var(--baseIcon);
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-            iconify-icon {
-                font-size: var(--baseIcon);
-            }
-
-            &:has(.profile:has(img)) {
+            &.profile:has(img) {
                 border: 1px solid var(--borderColor);
                 overflow: hidden;
                 border-radius: 50%;

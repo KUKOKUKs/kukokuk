@@ -10,7 +10,8 @@ import org.apache.ibatis.type.Alias;
 @NoArgsConstructor
 @Alias("StudyDifficulty")
 public class StudyDifficulty {
-  private int studyDifficultyNo;
-  private String explanation;
-  private String promptText;
+
+    private int studyDifficultyNo;
+    private String explanation;
+    private String promptText;
 }

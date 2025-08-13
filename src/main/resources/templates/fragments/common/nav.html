@@ -13,7 +13,7 @@
                 </a>
             </li>
             <li class="nav_menu">
-                <a href="" class="menu"
+                <a href="/study" class="menu"
                     th:classappend="${menu == 'study'} ? 'active'">
                     <span class="menu_icon">
                         <iconify-icon icon="fluent-color:book-24"></iconify-icon>
@@ -22,8 +22,8 @@
                 </a>
             </li>
             <li class="nav_menu">
-                <a href="" class="menu"
-                    th:classappend="${menu == 'game'} ? 'active'">
+                <a href="/quiz/main" class="menu"
+                    th:classappend="${menu == 'quiz'} ? 'active'">
                     <span class="menu_icon">
                         <iconify-icon icon="fluent-color:game-chat-20"></iconify-icon>
                     </span>
@@ -63,12 +63,13 @@
                           th:with="user=${#authentication.principal.user}">
                         <!--/* 프로필 이미지가 있는 경우 */-->
                         <img th:if="${user.profileFilename != null}"
-                             th:src="${user.profileFilename}"
+                             th:src="${user.profileFileUrl}"
                              alt="profile thumbnail">
 
                         <!--/* 프로필 이미지가 없는 경우 (기본 아이콘 출력) */-->
-                        <iconify-icon th:if="${user.profileFilename == null}"
-                                      icon="streamline-color:user-profile-focus-flat"></iconify-icon>
+                        <img th:if="${user.profileFilename == null}"
+                             th:src="@{/images/basic_profile_img.jpg}"
+                             alt="profile thumbnail">
                     </span>
                     <span>프로필</span>
                 </a>
