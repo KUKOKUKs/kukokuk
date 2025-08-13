@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/center}">
+
+<body class="result-page">
+<div class="result-page-wrapper">
+    <div layout:fragment="content" class="result-detail-container">
+
+        <h2 class="result-title">스피드 퀴즈 결과 상세</h2>
+
+        <div class="result-summary">
+            <p><strong>총 문항 수:</strong> <span th:text="${summary.totalQuestion}">0</span>개</p>
+            <p><strong>총 소요 시간:</strong> <span th:text="${summary.totalTimeSec}">0</span>초</p>
+        </div>
+
+        <table class="result-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>문제</th>
+                <th>선택한 보기</th>
+                <th>정답</th>
+                <th>정오답</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="result, iterStat : ${results}">
+                <td th:text="${iterStat.count}">1</td>
+                <td th:text="${result.question}">문제 내용</td>
+                <td>
+                    <span th:if="${result.selectedChoice == 0}">시간 초과</span>
+                    <span th:if="${result.selectedChoice != 0}" th:text="${result.selectedChoice}">-</span>
+                </td>
+                <td th:text="${result.successAnswer}">2</td>
+                <td>
+                    <span th:if="${result.isSuccess == 'Y'}" class="answer-correct">정답</span>
+                    <span th:unless="${result.isSuccess == 'Y'}" class="answer-wrong">오답</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="result-footer">
+            <a href="/" class="btn white">홈으로</a>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

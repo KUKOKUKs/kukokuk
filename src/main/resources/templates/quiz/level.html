@@ -8,49 +8,44 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-<div class="quiz-container" style="position:relative;">
-    <h1 style="text-align:center;">단계별 퀴즈</h1>
+<div class="quiz-container">
+    <h1 class="quiz-title">단계별 퀴즈</h1>
 
-    <!-- 힌트 버튼 우측상단 고정 -->
-    <button id="hint-btn" class="btn hint-btn"
-            type="button"
-            style="position:absolute; top:20px; right:20px;">힌트</button>
-
-    <!-- 진행도 영역 -->
-    <div id="quiz-header" style="display:flex; justify-content:space-between; margin-bottom:10px;">
-        <div>
-            <span id="quiz-current">1</span> / <span id="quiz-total">0</span>
-        </div>
-        <div style="width:60px;"></div>
+    <!-- 진행 상황 표시 -->
+    <div id="quiz-progress-info">
+        <span id="quiz-current">1</span> / <span id="quiz-total">0</span>
     </div>
 
-    <div id="quiz-question" style="margin-bottom:20px; font-size:18px; font-weight:bold; text-align:center;"></div>
-    <div id="quiz-options" style="display:flex; flex-direction:column; gap:10px;"></div>
+    <!-- 힌트 버튼 -->
+    <button id="hint-btn" class="hint-btn">
+        힌트 <span id="hint-count">(0)</span>
+    </button>
 
-    <!-- 이전/다음(제출) 버튼 flex 정렬 -->
-    <div style="display:flex; justify-content:space-between; margin-top:24px;">
-        <button id="prev-btn" class="btn" type="button" style="flex:1; margin-right:6px;">이전</button>
-        <button id="next-btn" class="btn blue" type="button" style="flex:1; margin-left:6px;">다음</button>
+    <!-- 진행률 바 -->
+    <div class="level_info timer_progress">
+        <div class="timer_level_bar">
+            <div class="timer_experience_point" id="timer-progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- 문제 -->
+    <div id="quiz-question"></div>
+    <div id="quiz-options"></div>
+
+    <div class="quiz-nav">
+        <button id="prev-btn" class="btn" type="button">이전</button>
+        <button id="next-btn" class="btn blue" type="button">다음</button>
     </div>
 </div>
 
 <!-- 결과 제출용 폼 -->
 <form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
 
-<!-- 제출 모달 -->
-<div id="submit-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:999;
-    background:rgba(0,0,0,0.3); align-items:center; justify-content:center;">
-    <div style="background:#fff; padding:24px 32px; border-radius:14px; box-shadow:0 4px 16px rgba(0,0,0,0.14); min-width:260px; text-align:center; margin:auto;">
-        <div style="margin-bottom:20px; font-size:1.1em;">퀴즈를 제출하시겠습니까?</div>
-        <button id="submit-confirm-btn" class="btn blue" style="margin-right:10px;">제출</button>
-        <button id="submit-cancel-btn" class="btn">취소</button>
-    </div>
-</div>
-
-<!-- quizList JS 주입 -->
 <script th:inline="javascript">
     let quizzes = /*[[${quizList}]]*/ [];
+    console.log("주입된 quizzes =", quizzes);
 </script>
+
 <script src="/js/modules/quiz/level.js"></script>
 </body>
 </html>

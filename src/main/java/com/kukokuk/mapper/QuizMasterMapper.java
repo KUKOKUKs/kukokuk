@@ -55,6 +55,13 @@ public interface QuizMasterMapper {
     Integer getCorrectChoiceByQuizNo(int quizNo);
 
     /**
+     * 여러 퀴즈 번호에 해당하는 퀴즈 정보 조회
+     * @param quizNos 퀴즈 번호 리스트
+     * @return 퀴즈 정보 리스트
+     */
+    List<QuizMaster> getQuizMastersByQuizNos(List<Integer> quizNos);
+
+    /**
      * 난이도 및 유형에 따라 퀴즈 목록을 조회한다.
      *
      * @param difficulty   난이도 ('상', '중', '하')

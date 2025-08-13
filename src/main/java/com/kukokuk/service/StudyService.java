@@ -3,6 +3,7 @@ package com.kukokuk.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kukokuk.ai.GeminiClient;
+import com.kukokuk.dto.StudyCompleteViewDto;
 import com.kukokuk.response.GeminiEssayResponse;
 import com.kukokuk.ai.GeminiStudyPromptBuilder;
 import com.kukokuk.ai.GeminiStudyResponse;
@@ -237,11 +238,11 @@ public class StudyService {
                 break;
             }
 
-            log.info("다음학년 추가 조회");
-
             // 현재 조건이 될 학습진도를 변경
             nowCurrentSchool = nextGrade.getLeft();
             nowCurrentGrade = nextGrade.getRight();
+
+            log.info("다음학년 추가 조회 : " + nowCurrentSchool + " ," + nowCurrentGrade);
 
             // 더 조회해야할 학습자료 개수 조건 갱신
             int remainingRowCount = recommendStudyCount - userStudyRecommendationDtos.size();
@@ -315,6 +316,7 @@ public class StudyService {
 
             // 학습자료, 학습자료카드, 학습퀴즈, 학습 서술형퀴즈를 DB에 저장하는 메소드 호출
             dailyStudy = insertDailyStudyWithOtherComponents(geminiStudyResponse, dailyStudyMaterialNo, studyDifficultyNo);
+            log.info("저장된 학습자료 : " + dailyStudy.toString());
         } catch (JsonProcessingException e){
             log.error( e.getMessage());
             // 오류처리 추가
@@ -798,5 +800,22 @@ public class StudyService {
         }
 
         return geminiEssayResponse;
+    }
+
+    /**
+     * 학습 완료 화면에서
+     * @param dailyStudyNo
+     * @param userNo
+     * @return
+     */
+    public StudyCompleteViewDto getStudyCompleteView(int dailyStudyNo, int userNo) {
+        log.info("getStudyCompleteView 서비스 메소드 실행");
+
+        StudyCompleteViewDto dto = new StudyCompleteViewDto();
+
+        DailyStudyLog studyLog = dailyStudyLogMapper.getStudyLogByUserNoAndDailyStudyNo(userNo, dailyStudyNo);
+        dto.setLog(studyLog);
+
+        return dto;
     }
 }

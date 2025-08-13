@@ -1,0 +1,43 @@
+<html layout:decorate="~{/layout/center}" th:with="title='받아쓰기'">
+<div layout:fragment="content">
+    <div class="center_content_wrap">
+        <div class="question_container blue">
+            <div class="question_result_title">
+                <h1>받아쓰기 결과</h1>
+            </div>
+            <div class="question_result_content">
+                <p>모든 문제 풀이가 완료되었습니다.</p>
+                <div class="question_result_table">
+                    <table class="result_table">
+                        <tr>
+                            <th>시작 시각</th>
+                            <td th:text="${#dates.format(startTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        </tr>
+                        <tr>
+                            <th>종료 시각</th>
+                            <td th:text="${#dates.format(endTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        </tr>
+                        <tr>
+                            <th>정답 점수</th>
+                            <td th:text="${score} + '점'"></td>
+                        </tr>
+                        <tr>
+                            <th>맞은 개수</th>
+                            <td th:text="${correctCount} + '개'"></td>
+                        </tr>
+                        <tr>
+                            <th>사용한 힌트 수</th>
+                            <td th:text="${hintUsedCount} + '회'"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="result_btn_list">
+                <a href="/dictation/start" class="btn white">다시 시작</a>
+                <a href="/quiz" class="btn primary">돌아 가기</a>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

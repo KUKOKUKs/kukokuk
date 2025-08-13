@@ -1,9 +1,10 @@
 package com.kukokuk.mapper;
 
+import com.kukokuk.dto.BookmarkedQuizDto;
 import com.kukokuk.vo.QuizBookmarked;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import java.util.List;
 
 /**
  * 퀴즈 북마크 Mapper
@@ -46,4 +47,24 @@ public interface QuizBookmarkedMapper {
      * @return 북마크 리스트
      */
     List<QuizBookmarked> getQuizBookmarkedListByUserNo(int userNo);
+
+    /**
+     * 해당 사용자의 북마크 퀴즈 목록 조회 (페이징)
+     * @param userNo 사용자 번호
+     * @param offset 시작 위치
+     * @param limit 조회 개수
+     * @return List<BookmarkedQuizDto>
+     */
+    List<BookmarkedQuizDto> getBookmarkedQuizzes(
+        @Param("userNo") int userNo,
+        @Param("offset") int offset,
+        @Param("limit") int limit
+    );
+
+    /**
+     * 해당 사용자의 북마크 퀴즈 총 개수 조회
+     * @param userNo 사용자 번호
+     * @return int (북마크된 퀴즈 개수)
+     */
+    int getCountBookmarkedQuizzes(int userNo);
 }

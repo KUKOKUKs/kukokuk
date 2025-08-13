@@ -31,6 +31,7 @@
         <result column="DAILY_STUDY_LOG_NO" property="dailyStudyLogNo"/>
         <result column="USER_NO" property="userNo"/>
         <result column="DAILY_STUDY_MATERIAL_NO" property="dailyStudyMaterialNo"/>
+        <result column="DAILY_STUDY_ESSAY_QUIZ_LOG_NO" property="dailyStudyEssayQuizLogNo"/>
 
         <!-- 중첩 객체: DailyStudy -->
         <association property="dailyStudy" javaType="DailyStudy">
@@ -82,30 +83,44 @@
             M.DAILY_STUDY_MATERIAL_NO,
             M.SCHOOL,
             M.GRADE,
-            M.SEQUENCE
+            M.SEQUENCE,
+
+            EL.DAILY_STUDY_ESSAY_QUIZ_LOG_NO
         FROM
             KUKOKUK_DAILY_STUDY_MATERIALS M
             LEFT OUTER JOIN KUKOKUK_DAILY_STUDIES S
                 ON M.DAILY_STUDY_MATERIAL_NO = S.DAILY_STUDY_MATERIAL_NO
+                /* 그 원본데이터에 사용자 수준에 맞는 학습자료가 생성되어있거나, 학습자료가 아직 생성되지 않은경우 포함
+                   JOIN 조건으로 포함해야 정상 동작함*/
+                AND (S.STUDY_DIFFICULTY = #{userInfo.studyDifficulty} OR S.STUDY_DIFFICULTY IS NULL)
             LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_LOGS L
                 ON S.DAILY_STUDY_NO = L.DAILY_STUDY_NO
+            LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_ESSAY_QUIZZES E
+                      ON S.DAILY_STUDY_NO = E.DAILY_STUDY_NO
+            LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_ESSAY_QUIZ_LOGS EL
+                      ON E.DAILY_STUDY_ESSAY_QUIZ_NO = EL.DAILY_STUDY_ESSAY_QUIZ_NO
+                          AND EL.USER_NO = #{userNo}
         WHERE
             /* 사용자의 학교/학년에 맞는 원본데이터 */
             M.SCHOOL = #{userInfo.currentSchool}
             AND M.GRADE = #{userInfo.currentGrade}
-            /* 그 원본데이터에 사용자 수준에 맞는 학습자료가 생성되어있거나, 학습자료가 아직 생성되지 않은경우 포함 */
-            AND (S.STUDY_DIFFICULTY = #{userInfo.studyDifficulty} OR S.STUDY_DIFFICULTY IS NULL)
             /* 그 원본데이터에 연결된 학습이력이 아예 존재하지 않거나,
                 해당 사용자와 연결된 학습이력이 있고 학습완료 상태가 아닐때만 포함 */
             AND (
                 L.USER_NO IS NULL
-                OR (L.USER_NO = #{userNo} AND L.STATUS != 'COMPLETED')
+                OR (L.USER_NO = #{userNo}
+                        AND (
+                            L.STATUS != 'COMPLETED'
+                            OR (L.STATUS = 'COMPLETED' AND EL.DAILY_STUDY_ESSAY_QUIZ_LOG_NO IS NULL)
+                        )
+                    )
             )
         ORDER BY
             /* 사용자가 이미 학습 진행중인 학습자료가 우선순위가 높도록 설정 */
             CASE
-                WHEN L.STATUS = 'IN_PROGRESS' THEN 0
-                ELSE 1
+                WHEN L.STATUS = 'COMPLETED' THEN 0
+                WHEN L.STATUS = 'IN_PROGRESS' THEN 1
+                ELSE 2
             END,
             /* 사용자가 이미 학습 진행중인 학습자료 중에서도 가장 최근에 학습한 학습자료가 먼저
                 학습이력이 아예 NULL일 경우는 UPDATE_DATE 정렬해서 고려되지 않아야 하므로 후순위로 */
@@ -124,9 +139,9 @@
     -->
     <insert id="insertDailyStudy" parameterType="DailyStudy" useGeneratedKeys="true" keyProperty="dailyStudyNo" keyColumn="DAILY_STUDY_NO">
         INSERT INTO KUKOKUK_DAILY_STUDIES
-            (STUDY_DIFFICULTY, TITLE, DAILY_STUDY_MATERIAL_NO, CARD_COUNT)
+            (STUDY_DIFFICULTY, TITLE, EXPLANATION,  DAILY_STUDY_MATERIAL_NO, CARD_COUNT)
         VALUES
-            (#{studyDifficulty}, #{title}, #{dailyStudyMaterialNo}, #{cardCount})
+            (#{studyDifficulty}, #{title}, #{explanation}, #{dailyStudyMaterialNo}, #{cardCount})
     </insert>
 
     <!--
