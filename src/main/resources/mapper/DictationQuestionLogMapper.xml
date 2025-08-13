@@ -1,100 +1,150 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kukokuk.mapper.DictationQuestionMapper">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.mapper.DictationQuestionLogMapper">
 
-    <!--
-    /**
-     * 받아쓰기 이력 생성
-     * @param dictationQuestionLog 받아쓰기 이력
-     */
-     insertLog(DictationQuestionLog dictationQuestionLog)
-     -->
-    <insert id="insertLog" parameterType="DictationQuestionLog">
-        INSERT INTO KUKOKUK_DICTATION_QUESTION_LOGS ( USER_NO
-                                                    , DICTATION_QUESTION_NO
-                                                    , DICTATION_SESSION_NO
-                                                    , USER_ANSWER
-                                                    , IS_SUCCESS)
-        VALUES ( #{userNo}
-               , #{dictationQuestionNo}
-               , #{dictationSessionNo}
-               , #{userAnswer}
-               , #{isSuccess})
-    </insert>
+  <!--
+  /**
+   * 받아쓰기 이력 생성
+   * @param dictationQuestionLog 받아쓰기 이력
+   */
+   insertDictationQuestionLogLog(DictationQuestionLog dictationQuestionLog)
+   -->
+  <insert id="insertDictationQuestionLog" parameterType="DictationQuestionLog">
+    INSERT INTO KUKOKUK_DICTATION_QUESTION_LOGS (
+          USER_NO
+         ,DICTATION_QUESTION_NO
+         ,DICTATION_SESSION_NO
+         ,USER_ANSWER
+         ,TRY_COUNT
+         ,IS_SUCCESS
+    ) VALUES (
+         #{userNo}
+        ,#{dictationQuestionNo}
+        ,#{dictationSessionNo}
+        ,#{userAnswer}
+        ,#{tryCount}
+        ,#{isSuccess}
+    )
+  </insert>
 
-    <!--
-    /**
-     * 식별자 받아쓰기 힌트 사용 여부
-     * @param dictationQuestionLogNo 식별자
-     * @param userHint 힌트 사용 여부
-     */
-     updateHintUsed(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("userHint") String userHint)
-     -->
-    <update id="updateHintUsed" parameterType="DictationQuestionLog">
-        UPDATE
-            KUKOKUK_DICTATION_QUESTION_LOGS
-        SET USER_HINT = #{userHint}
-        WHERE DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
-    </update>
+  <!--
+  /**
+   * 식별자 받아쓰기 힌트 사용 여부
+   * @param dictationQuestionLogNo 식별자
+   * @param userHint 힌트 사용 여부
+   */
+   updateHintUsed(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("userHint") String userHint)
+   -->
+  <update id="updateHintUsed" parameterType="DictationQuestionLog">
+    UPDATE
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    SET
+        USER_HINT = #{userHint}
+    WHERE
+        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+  </update>
 
-    <!--
-    /**
-     * 식별자 받아쓰기 정답 여부
-     * @param dictationQuestionLogNo 식별자
-     * @param isSuccess 정답 여부
-     */
-     updateIsSuccess(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("isSuccess") String isSuccess)
-     -->
-    <update id="updateIsSuccess">
-        UPDATE
-            KUKOKUK_DICTATION_QUESTION_LOGS
-        SET isSuccess = #{isSuccess}
-        WHERE DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
-    </update>
+  <!--
+   /**
+   * 정답 제출 버튼을 눌렀을 때 제출문장, 시도 누적 횟수, 정답 여부 반영
+   * @param dictationQuestionLoglog 받아쓰기 문제 풀이 이력
+   */
+  updateDictationQuestionLog(DictationQuestionLog dictationQuestionLog)
+   -->
+  <update id="updateDictationQuestionLog">
+    UPDATE
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    SET
+       IS_SUCCESS = #{isSuccess}
+      ,TRY_COUNT = #{tryCount}
+      ,USER_ANSWER = #{userAnswer}
+    WHERE
+       DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+  </update>
 
-    <!--
-    /**
-     * 식별자 받아쓰기 시도 횟수
-     * @param dictationQuestionLogNo 식별자
-     */
-     updateTryCount(@Param("dictationQuestionLogNo") int dictationQuestionLogNo
-     -->
-    <update id="updateTryCount">
-        UPDATE
-            KUKOKUK_DICTATION_QUESTION_LOGS
-        SET TRY_COUNT = TRY_COUNT + 1
-        WHERE DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
-    </update>
+  <!--
+  /**
+   * 받아쓰기 문제 세트 맞은 문제 개수 조회
+   * @param dictationSessionNo 받아쓰기 문제 세트 번호
+   * @return 맞은 문제 개수
+   */
+   getCountCorrectAnswers(@Param("dictationSessionNo") int dictationSessionNo)
+  -->
+  <select id="getCountCorrectAnswers" resultType="int">
+    SELECT
+        COUNT(*)
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
+    AND
+        IS_SUCCESS = 'Y'
+  </select>
 
-    <!--
-    /**
-     * 받아쓰기 문제 세트 맞은 문제 개수 조회
-     * @param dictationSessionNo 받아쓰기 문제 세트 번호
-     * @return 맞은 문제 개수
-     */
-     getcountCorrectAnswers(@Param("dictationSessionNo") int dictationSessionNo)
-    -->
-    <select id="getcountCorrectAnswers" resultType="int">
-        SELECT COUNT(*)
-        FROM KUKOKUK_DICTATION_QUESTION_LOGS
-        WHERE DICTATION_SESSION_NO = #{dictationSessionNo}
-          AND IS_SUCCESS = 'Y'
-    </select>
+  <!--
+  /**
+   * 받아쓰기 문제 세트 사용한 힌트 수 조회
+   * @param dictationSessionNo 받아쓰기 문제 세트 번호
+   * @return 사용한 힌트 개수
+   */
+   getCountHintsUsed(@Param("dictationSessionNo") int dictationSessionNo)
+   -->
+  <select id="getCountHintsUsed" resultType="int">
+    SELECT
+        COUNT(*)
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
+    AND
+        USED_HINT = 'Y'
+  </select>
 
-    <!--
-    /**
-     * 받아쓰기 문제 세트 사용한 힌트 수 조회
-     * @param dictationSessionNo 받아쓰기 문제 세트 번호
-     * @return 사용한 힌트 개수
-     */
-     getcountHintsUsed(@Param("dictationSessionNo") int dictationSessionNo)
-     -->
-    <select id="getcountHintsUsed" resultType="int">
-        SELECT COUNT(*)
-        FROM KUKOKUK_DICTATION_QUESTION_LOGS
-        WHERE DICTATION_SESSION_NO = #{dictationSessionNo}
-          AND USED_HINT = 'Y'
-    </select>
+  <!--
+  /**
+   * 특정 세트 번호와 문제 번호에 해당하는 받아쓰기 문제 풀이 이력을 조회
+   * @param dictationSessionNo 문제 세트 번호
+   * @param dictationQuestionNo 문제 번호
+   * @return 해당 받아쓰기 세트에 대한 문제 풀이 이력 (없으면 null)
+   */
+  DictationQuestionLog getLogBySessionAndQuestion(@Param("dictationSessionNo") int dictationSessionNo, @Param("dictationQuestionNo") int dictationQuestionNo);
+  -->
+  <select id="getLogBySessionAndQuestion" resultType="DictationQuestionLog">
+    SELECT *
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
+      AND
+        DICTATION_QUESTION_NO = #{dictationQuestionNo}
+  </select>
 
+  <!--
+   /**
+   * 받아쓰기 세트 번호에 해당하는 받아쓰기 문제 풀이 이력 조회
+   * @param dictationSessionNo 문제 세트 번호
+   * @return 받아쓰기 문제 풀이 이력 내용
+   */
+  List<DictationQuestionLogResponse> getDictationQuestionLogBySessionNo(int dictationSessionNo);
+  -->
+  <select id="getDictationQuestionLogBySessionNo" resultType="DictationQuestionLog">
+    SELECT
+       L.DICTATION_QUESTION_NO
+      ,Q.CORRECT_ANSWER
+      ,L.USER_ANSWER
+      ,L.TRY_COUNT
+      ,L.USED_HINT
+      ,L.IS_SUCCESS
+      ,L.CREATED_DATE
+    FROM
+      KUKOKUK_DICTATION_QUESTION_LOGS L
+    JOIN
+      KUKOKUK_DICTATION_QUESTIONS Q
+    ON
+      L.DICTATION_QUESTION_NO = Q.DICTATION_QUESTION_NO
+    WHERE
+      L.DICTATION_SESSION_NO = #{dictationSessionNo}
+    ORDER BY
+      L.CREATED_DATE ASC
+  </select>
 </mapper>
