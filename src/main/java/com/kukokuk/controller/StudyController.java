@@ -1,6 +1,7 @@
 package com.kukokuk.controller;
 
 import com.kukokuk.dto.MainStudyViewDto;
+import com.kukokuk.dto.StudyCompleteViewDto;
 import com.kukokuk.dto.StudyEssayViewDto;
 import com.kukokuk.dto.StudyProgressViewDto;
 import com.kukokuk.security.SecurityUser;
@@ -46,7 +47,16 @@ public class StudyController {
     }
 
     @GetMapping("/{dailyStudyNo}/complete")
-    public String studyComplete(@PathVariable("dailyStudyNo") int dailyStudyNo) {
+    public String studyComplete(
+        @PathVariable("dailyStudyNo") int dailyStudyNo,
+        @AuthenticationPrincipal SecurityUser securityUser,
+        Model model) {
+
+        StudyCompleteViewDto dto = studyService.getStudyCompleteView(dailyStudyNo, securityUser.getUser().getUserNo());
+
+        model.addAttribute("data", dto);
+        model.addAttribute("dailyStudyNo", dailyStudyNo);
+
         return "study/complete";
     }
 

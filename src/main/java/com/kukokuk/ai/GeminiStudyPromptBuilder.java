@@ -100,15 +100,13 @@ public class GeminiStudyPromptBuilder {
             - 잘한 점을 최소 2가지 이상, 구체적 근거와 함께 제시하세요.
             - 부족한 점과 개선 방법을 구체적으로 제안하세요.
             - 학생 수준에 맞춰 문학적·비판적 사고를 자극하는 질문을 1~2개 포함하세요.
-            - 정답률, 논리성, 표현력에 대해 5점 만점으로 평가하세요.
             
             [출력 요구사항]
             - JSON 최상위 키는 오직 "sections" 하나만.
             - 각 section은 {type, icon, title, items[]} 형식.
-            - type은 summary | positives | improvements | questions | scores | custom 등 자유롭게 사용.
+            - type은 summary | positives | improvements | questions | custom 등 자유롭게 사용.
             - items는 반드시 배열이며, 각 요소는 최소 {text}를 포함.
             - 필요 시 tags/metric/value/max 등의 필드를 선택적으로 추가 가능.
-            - 점수는 type="scores" 섹션의 items에 {metric, value, max}로 표현(예: {"metric":"정확성","value":4,"max":5}).
             - 마크다운/코드펜스/불필요한 텍스트 없이 **JSON만 출력**.
             - 한국어로 작성.
             
@@ -122,6 +120,7 @@ public class GeminiStudyPromptBuilder {
               "sections": [
                 {
                   "type": "summary",
+                  "icon": "title에 맞는 icon"
                   "title": "총평",
                   "items": [ { "text": "..." } ]
                 }
