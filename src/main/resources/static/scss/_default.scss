@@ -56,6 +56,15 @@
         max-width: var(--centerContentWidth); /* 디테일 컨텐츠 최대 사이즈 */
         margin: auto;
     }
+
+    .center_content_wrap {
+        width: var(--mainContentWidth);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--largeGap);
+        padding: var(--containerPadding) 0;
+    }
 }
 
 #main-content {
@@ -825,6 +834,10 @@
     display: none;
 }
 
+.cursor_pointer {
+    cursor: pointer;
+}
+
 .d_flex {
     width: 100%;
     display: flex;
@@ -926,6 +939,10 @@
     background-color: var(--lightGrayColor);
 }
 
+.bg_blue {
+    background-color: var(--blueColor);
+}
+
 /* font */
 .small_font {
     font-size: var(--smallFontSize);
@@ -971,6 +988,11 @@
     font-size: var(--pageTitleFontSize);
     font-weight: 700;
     color: var(--darkGreenColor);
+
+    .emoji {
+        position: relative;
+        top: -4px;           /* 살짝 위로 이동 (필요에 따라 값 조절) */
+    }
 }
 
 /* base.html의 자식요소 (content) 컨테이너 */
@@ -978,6 +1000,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--baseGap);
+
+    &.large_gap {
+        gap: var(--largeGap);
+    }
 }
 
 /* 도전과제에서 힌트아이템 획득시 표현할 버튼 */
@@ -1058,4 +1084,31 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+/* 버튼에 빤딱이는 하이라이트를 주고 싶을 때 추가 */
+.highlight {
+    position: relative; /* ::before로 하이라이트 레이어를 버튼 안에 절대위치로 배치하기 위해 부모를 기준으로 삼음 */
+    overflow: hidden; /* 버튼 밖으로 하이라이트 효과가 튀어나가지 않도록 잘라냄 */
+
+    &:before {
+        content: '';  /* 가상의 하이라이트 레이어를 만들기 위해 필수 */
+        position: absolute; /* 버튼 내부에 절대 위치 배치 */
+        top: 0;
+        left: -75%; /* 시작 위치를 버튼 왼쪽 바깥쪽에서 시작 */
+        width: 50%; /* 하이라이트 레이어의 너비 (너무 넓으면 번쩍거림 과해짐) */
+        height: 100%;
+        background: linear-gradient( /* 빛이 지나가는 효과를 주기 위한 그라디언트 */
+                120deg,
+                rgba(255, 255, 255, 0) 0%, /* 시작: 약간 흐린 흰색 */
+                rgba(255, 255, 255, 0.5) 50%,  /* 중간: 강한 흰색 (빛의 중심) */
+                rgba(255, 255, 255, 0) 100%  /* 끝: 다시 흐린 흰색 */
+        );
+        animation: shine 2s infinite; /* 빛이 지나가는 애니메이션 반복 */
+    }
+}
+
+@keyframes shine {
+    0% { left: -75%; } /* 시작 시 빛 레이어가 왼쪽 바깥에서 시작 */
+    100% { left: 125%; } /* 끝날 때 오른쪽 바깥으로 이동 */
 }
