@@ -105,7 +105,7 @@
     .component_title {
         font-size: var(--largeFontSize);
         font-weight: bold;
-        padding-bottom: var(--smallPadding);
+        padding-bottom: var(--tinyGap);
     }
 
     /* 리스트 컴포넌트의 리스트 부분 */
@@ -147,6 +147,33 @@
     font-size: var(--titleFontSize);
     font-weight: bold;
     text-align: center;
+}
+
+/* bar gauge */
+.bar_gauge {
+    width: 100%;
+    height: 9px;
+    font-size: var(--smallFontSize);
+    background-color: var(--lightGrayColor);
+    border-radius: var(--bdrs);
+    border: 1px solid var(--borderColor);
+    position: relative;
+
+    .gauge {
+        max-width: 100%;
+        height: 100%;
+        background-color: var(--yellowColor);
+        border-radius: var(--bdrs);
+    }
+
+    .gauge_info {
+        display: inline-block;
+        font-size: var(--smallFontSize);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
 }
 
 /* error page */
@@ -675,6 +702,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    min-width: max-content;
     padding: var(--smallPadding);
     border-radius: var(--bdrs);
     border: 1px solid var(--subColor);

@@ -6,6 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+// 삭제 예정
 public class DailyQuestDto {
 
     private int dailyQuestNo;
@@ -14,5 +15,6 @@ public class DailyQuestDto {
 
     private DailyQuestUser dailyQuestUser; // 선택적: 상세 정보 필요 시
     private boolean isSuccessed; // 버튼 상태용
+    
 }
 

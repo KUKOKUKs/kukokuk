@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice(basePackages = "com.kukokuk.controller")
 public class ControllerExceptionHandler {
 
+    // 공통 예외 처리 구조 생성
     private String buildErrorPage(HttpServletResponse response, Model model,
         int status, String error, String message) {
         response.setStatus(status);
@@ -41,13 +42,14 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public String handlerRuntimeException(RuntimeException ex, HttpServletResponse response,
         Model model) {
-        return buildErrorPage(response, model, 500, "Runtime Error", ex.getMessage());
+        return buildErrorPage(response, model, 500, "Runtime Error", "예기치 못한 오류가 발생했습니다." + ex.getMessage());
     }
 
     // @Valid, @Validated 실패 시 처리 (요청 값에 대해 유효성 검사를 통과하지 못한 경우)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public String handleBadRequest(MethodArgumentNotValidException ex, HttpServletResponse response,
         Model model) {
-        return buildErrorPage(response, model, 400, "Bad Request", "입력 값이 올바르지 않습니다.");
+        return buildErrorPage(response, model, 400, "Bad Request", "입력 값이 올바르지 않습니다." + ex.getMessage());
     }
+
 }

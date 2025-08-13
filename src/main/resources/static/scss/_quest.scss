@@ -2,5 +2,13 @@
     .component_info {
         background-color: var(--subColor);
         border-radius: var(--bdrs);
+
+        .list_info {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: var(--tinyGap);
+        }
     }
 }
+

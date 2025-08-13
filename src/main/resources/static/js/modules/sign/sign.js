@@ -10,6 +10,7 @@ import {
     regExEmail,
     regExNickname,
     regExPassword,
+    validateBirthDate,
     validateDate
 } from '../../utils/validation-util.js';
 import {debounce} from '../../utils/debounce-util.js';
@@ -28,8 +29,6 @@ $(document).ready(() => {
     const $registerName = $registerForm.find("input[name='name']"); // name input
     const $registerBirthDate = $registerForm.find("input[name='birthDate']"); // birthDate input
     const $registerNickname = $registerForm.find("input[name='nickname']"); // nickname input
-    let isValidName = false; // 이름 유효성 검사 여부
-    let isValidBirthDate = false; // 생년월일 유효성 검사 여부
 
     // 회원가입 폼 제출 이벤트 발생 시 유효성 검사 후 제출
     $registerForm.submit(function (e) {
@@ -68,7 +67,7 @@ $(document).ready(() => {
         clearInputErrorMessage($registerNickname); // 에러 메세지 초기화
 
         try {
-            const isDuplicated = await checkNicknameDuplicate(username);
+            const isDuplicated = await checkNicknameDuplicate(nickname);
             console.log("handleNicknameInput 실행 결과: ", isDuplicated);
             isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
 
@@ -162,14 +161,12 @@ $(document).ready(() => {
     $registerName.on("input blur", function () {
         clearInputErrorMessage($registerName); // 에러 메세지 초기화
         isValid = false; // 폼 내부 인풋 유효성 검증 플래그
-        isValidName = false; // 인풋 유효성 검증 플래그
         const val = $(this).val();
         
         if (val === "") {
             addInputErrorMessage($registerName, "이름을 입력해 주세요");
         }  else {
-            isValidName = true;
-            isValid = isValidBirthDate;
+            isValid = validateBirthDate($registerBirthDate.val());
         }
 
         // 제출 버튼 활성화/비활성화 설정
@@ -180,7 +177,6 @@ $(document).ready(() => {
     $registerBirthDate.on("input blur", function () {
         clearInputErrorMessage($registerBirthDate); // 에러 메세지 초기화
         isValid = false; // 폼 내부 인풋 유효성 검증 플래그
-        isValidBirthDate = false; // 인풋 유효성 검증 플래그
 
         // 숫자가 아닌 값이 입력될 경우 실시간 제거
         const original = $(this).val();
@@ -212,9 +208,8 @@ $(document).ready(() => {
                     addInputErrorMessage($registerBirthDate, "유효한 생년월일이 아닙니다");
                 } else {
                     const formattedDate = `${y}-${m}-${d}`;
-                    $(this).val(formattedDate);
-                    isValidBirthDate = true;
-                    isValid = isValidName;
+                    $registerBirthDate.val(formattedDate);
+                    isValid = $registerName.val() !== "";
                 }
             } else {
                 addInputErrorMessage($registerBirthDate, "유효한 생년월일이 아닙니다");
