@@ -71,7 +71,7 @@ public class DictationController {
 
         // 1) 현재 사용자 번호
         int userNo = securityUser.getUser().getUserNo();
-        log.info("사용자 번호: {}", userNo);
+        log.info("startDictation() 사용자 번호: {}", userNo);
 
         // 2) 새 문제 10개로 교체
         dictationQuestions.clear();
@@ -127,7 +127,7 @@ public class DictationController {
         int tryCount = 0;
         // 인덱스 범위 안 해당 문제 로그 dto 확인
         if (dictationQuestionLogDtoList != null
-            && questionIndex >= 0 && questionIndex < dictationQuestionLogDtoList.size()
+            && questionIndex < dictationQuestionLogDtoList.size()
             && dictationQuestionLogDtoList.get(questionIndex) != null) {
             // dto 확인 후 그 문제 세션에 담긴 시도횟수 가져오기
             tryCount = dictationQuestionLogDtoList.get(questionIndex).getTryCount();
