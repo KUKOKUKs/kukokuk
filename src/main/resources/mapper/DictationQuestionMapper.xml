@@ -3,83 +3,118 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DictationQuestionMapper">
 
-    <resultMap id="dictationQuestionResultMap" type="DictationQuestion">
+    <resultMap id="DictationQuestionResultMap" type="DictationQuestion">
         <id property="dictationQuestionNo" column="DICTATION_QUESTION_NO"/>
-        <result property="dictationSessionNo" column="DICTATION_SESSION_NO"/>
         <result property="correctAnswer" column="CORRECT_ANSWER"/>
         <result property="hint1" column="HINT1"/>
         <result property="hint2" column="HINT2"/>
         <result property="hint3" column="HINT3"/>
+        <result property="createdDate" column="CREATED_DATE"/>
     </resultMap>
 
     <!--
     /**
-     * 세트 번호로 문제 전체 가져오기
-     * @param dictationSessionNo 세트 번호
-     * @return 문제 리스트
+     * 받아쓰기 문장 중복 검사
+     * @param sentence 받아쓰기 문장
+     * @return 0(아니다), 1(맞다)
      */
-     List<DictationQuestion> getQuestionsBySessionNo(int dictationSessionNo)
-     -->
-    <select id="getQuestionsBySessionNo" resultMap="dictationQuestionResultMap">
-        SELECT DICTATION_QUESTION_NO
-             , DICTATION_SESSION_NO
-             , CORRECT_ANSWER
-             , HINT1
-             , HINT2
-             , HINT3
-        FROM KUKOKUK_DICTATION_QUESTIONS
-        WHERE DICTATION_SESSION_NO = #{dictationSessionNo}
-        ORDER BY DICTATION_QUESTION_NO
-    </select>
-
-    <!--
-    /**
-     * 랜덤 문제 가져오기
-     * @param limit 문제 가져올 개수
-     * @return 문제 가져오기
-     */
-     List<DictationQuestion> getRandomQuestions(int limit)
-     -->
-    <select id="getRandomQuestions" resultMap="dictationQuestionResultMap">
-        SELECT DICTATION_QUESTION_NO
-             , DICTATION_SESSION_NO
-             , CORRECT_ANSWER
-             , HINT1
-             , HINT2
-             , HINT3
-        FROM KUKOKUK_DICTATION_QUESTIONS
-        ORDER BY RAND()
-            LIMIT #{limit}
+    int isDuplicateCorrectAnswer(String sentence);
+    -->
+    <select id="isDuplicateCorrectAnswer" resultType="int">
+        SELECT EXISTS(
+            SELECT 1
+            FROM
+                KUKOKUK_DICTATION_QUESTIONS
+            WHERE
+                CORRECT_ANSWER = #{sentence}
+        )
     </select>
 
     <!--
      /**
-     * 받아쓰기 문제 수정
-     * @param dictationQuestion 받아쓰기 문제
+     * 받아쓰기 문제를 생성한다.
+     * @param dictationQuestion 문제 번호
      */
-    updateDictationQuestion(DictationQuestion dictationQuestion)
-    -->
-    <update id="updateDictationQuestion" parameterType="DictationQuestion">
-        UPDATE
-            KUKOKUK_DICTATION_QUESTIONS
-        SET CORRECT_ANSWER = #{correctAnswer}
-          , HINT1          = #{hint1}
-          , HINT2          = #{hint2}
-          , HINT3          = #{hint3}
-        WHERE DICTATION_QUESTION_NO = #{dictationQuestionNo}
-    </update>
+    void insertDictationQuestion(DictationQuestion dictationQuestion);
+     -->
+    <insert id="insertDictationQuestion" parameterType="DictationQuestion">
+        INSERT INTO KUKOKUK_DICTATION_QUESTIONS (
+        CORRECT_ANSWER
+        , HINT1
+        , HINT2
+        , HINT3
+        ) VALUES (
+       #{correctAnswer}
+       , #{hint1}
+       , #{hint2}
+       , #{hint3}
+        )
+    </insert>
+
+
 
     <!--
-    /**
-     * 받아쓰기 문제 삭제
+     /** 받아쓰기 문제 번호로 받아쓰기 문제와 힌트들 가져오기
+       * @param dictationQuestionNo 문제 번호
+       * @return 받아쓰기 문제, 힌트1, 힌트2, 힌트3
+       */
+      DictationQuestion getDictationQuestionByDictationQuestionNo(int dictationQuestionNo);
+     -->
+    <select id="getDictationQuestionByDictationQuestionNo" resultMap="DictationQuestionResultMap">
+        SELECT
+            DICTATION_QUESTION_NO
+             , CORRECT_ANSWER
+             , HINT1
+             , HINT2
+             , HINT3
+             , CREATED_DATE
+        FROM
+            KUKOKUK_DICTATION_QUESTIONS
+        WHERE
+            DICTATION_QUESTION_NO = #{dictationQuestionNo}
+    </select>
+
+    <!--
+     /**
+     * 받아쓰기 문제 번호로 정답문장 가져오기
      * @param dictationQuestionNo 문제 번호
+     * @return 정답 문장
      */
-    deleteDictationQuestion(int dictationQuestionNo)
-    -->
-    <delete id="deleteDictationQuestion" parameterType="int">
-        DELETE
+    String getCorrectAnswerByQuestionNo(int dictationQuestionNo);
+     -->
+    <select id="getCorrectAnswerByQuestionNo" resultType="String">
+        SELECT CORRECT_ANSWER
         FROM KUKOKUK_DICTATION_QUESTIONS
         WHERE DICTATION_QUESTION_NO = #{dictationQuestionNo}
-    </delete>
+    </select>
+
+
+    <!--
+     /**
+     * 사용자에게 아직 출제되지 않은 받아쓰기 문제 중에서
+     * 랜덤하게 지정한 개수만큼 문제를 조회하는 메서드
+     *
+     * @param userNo 문제를 푼 이력이 있는 사용자 번호
+     * @param count 조회할 문제 개수
+     * @return 사용자가 풀지 않은 문제 리스트
+     */
+    List<DictationQuestion> getRandomDictationQuestionsExcludeUser(
+        @Param("userNo") int userNo,
+        @Param("count") int count
+    -->
+    <select id="getRandomDictationQuestionsExcludeUser" resultMap="DictationQuestionResultMap">
+        SELECT dq.DICTATION_QUESTION_NO
+             , dq.CORRECT_ANSWER
+             , dq.HINT1
+             , dq.HINT2
+             , dq.HINT3
+        FROM KUKOKUK_DICTATION_QUESTIONS dq
+        WHERE dq.DICTATION_QUESTION_NO
+                  NOT IN (SELECT dql.DICTATION_QUESTION_NO
+                          FROM KUKOKUK_DICTATION_QUESTION_LOGS dql
+                          WHERE dql.USER_NO = #{userNo})
+        ORDER BY RAND()
+            LIMIT #{count}
+    </select>
 
 </mapper>
