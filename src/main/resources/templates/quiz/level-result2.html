@@ -3,20 +3,20 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/layout/center}">
 
-<div layout:fragment="content" class="result-detail-container" style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
+<div layout:fragment="content" class="result-detail-container">
 
-    <h2 style="text-align: center;">단계별 퀴즈 결과 상세</h2>
+    <h2 class="result-title">단계별 퀴즈 결과 상세</h2>
 
-    <div style="margin: 20px 0; text-align: center;">
+    <div class="result-summary">
         <p><strong>총 문항 수:</strong> <span th:text="${summary.totalQuestion}">0</span>개</p>
         <p><strong>정답 수:</strong> <span th:text="${summary.correctAnswers}">0</span>개</p>
         <p><strong>선택한 난이도:</strong> <span th:text="${difficulty}">-</span></p>
         <p><strong>문제 유형:</strong> <span th:text="${questionType}">-</span></p>
     </div>
 
-    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+    <table class="result-table">
         <thead>
-        <tr style="background-color: #f0f0f0;">
+        <tr>
             <th>#</th>
             <th>문제</th>
             <th>선택한 보기</th>
@@ -35,27 +35,36 @@
             </td>
             <td th:text="${result.successAnswer}">2</td>
             <td>
-                <span th:if="${result.isSuccess == 'Y'}" style="color: green;">정답</span>
-                <span th:unless="${result.isSuccess == 'Y'}" style="color: red;">오답</span>
+                <span th:if="${result.isSuccess == 'Y'}" class="answer-correct">정답</span>
+                <span th:unless="${result.isSuccess == 'Y'}" class="answer-wrong">오답</span>
             </td>
             <td>
                 <button type="button" class="bookmark-btn"
                         th:data-quiz-no="${result.quizNo}"
                         th:data-bookmarked="${result.bookmarked == 'Y'}"
-                        th:attr="aria-label=${result.bookmarked == 'Y' ? '북마크 해제' : '북마크 등록'}"
-                        style="background: none; border: none; font-size: 20px; cursor: pointer;">
-                    <span th:if="${result.bookmarked == 'Y'}" style="color: #e74c3c;">&#10084;</span>
-                    <span th:unless="${result.bookmarked == 'Y'}" style="color: #b2bec3;">&#9825;</span>
+                        th:attr="aria-label=${result.bookmarked == 'Y' ? '북마크 해제' : '북마크 등록'}">
+
+                    <!-- 북마크 상태에 따라 아이콘 변경 -->
+                    <iconify-icon
+                        th:if="${result.bookmarked == 'Y'}"
+                        icon="emojione:red-heart"
+                        style="font-size: 1.5rem;"></iconify-icon>
+
+                    <iconify-icon
+                        th:unless="${result.bookmarked == 'Y'}"
+                        icon="emojione-monotone:red-heart"
+                        style="font-size: 1.5rem;"></iconify-icon>
                 </button>
             </td>
         </tr>
         </tbody>
     </table>
 
-    <div style="text-align: center; margin-top: 30px;">
+    <div class="result-footer">
         <a href="/" class="btn white">홈으로</a>
     </div>
 </div>
+
 
 <th:block layout:fragment="script">
     <script src="/js/modules/quiz/bookmark.js"></script>

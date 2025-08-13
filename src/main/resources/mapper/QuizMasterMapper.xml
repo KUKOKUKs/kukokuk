@@ -145,15 +145,21 @@
         WHERE QUIZ_NO = #{quizNo}
     </select>
 
-    <select id="getDifficultyAndQuestionTypeBySessionNo" resultType="com.kukokuk.dto.QuizLevelResultDto">
-    SELECT
-        qm.DIFFICULTY ,
-        qm.QUESTION_TYPE
-    FROM KUKOKUK_QUIZ_RESULTS qr
-             JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
-    WHERE qr.SESSION_NO = #{sessionNo}
-    LIMIT 1
-</select>
+    <!--
+     * 세션 번호로 DIFFICULTY와 QUESTION_TYPE을 조회한다.
+     * @param sessionNo 세션 번호
+     * @return QuizLevelResultDto
+    -->
+    <select id="getDifficultyAndQuestionTypeBySessionNo"
+        resultType="com.kukokuk.dto.QuizLevelResultDto">
+        SELECT
+            qm.DIFFICULTY AS difficulty,
+            qm.QUESTION_TYPE AS questionType
+        FROM KUKOKUK_QUIZ_RESULTS qr
+                 JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
+        WHERE qr.SESSION_NO = #{sessionNo}
+        LIMIT 1
+    </select>
     <!--
      * 여러 퀴즈 번호에 해당하는 퀴즈 정보 조회
      * @param quizNos 퀴즈 번호 리스트

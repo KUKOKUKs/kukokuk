@@ -3,42 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <title>북마크 퀴즈</title>
-    <link rel="stylesheet" href="/css/quiz/bookmark-list.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 </head>
 <body>
 <div class="bookmark-container">
     <h1 class="bookmark-title">내가 북마크한 퀴즈</h1>
 
+    <!-- 북마크 없을 때 -->
     <div class="bookmark-empty-msg" th:if="${#lists.isEmpty(quizList)}">
         아직 북마크한 퀴즈가 없습니다.
     </div>
 
+    <!-- 북마크 리스트 -->
     <div class="bookmark-grid" th:if="${!#lists.isEmpty(quizList)}">
         <div class="quiz-card" th:each="quiz : ${quizList}">
+
+            <!-- 문제 제목 + 북마크 버튼 -->
             <div class="quiz-header">
-                <span class="quiz-number" th:text="'#' + ${quiz.quizNo}"></span>
+                <div class="quiz-question" th:text="${quiz.question}"></div>
                 <button type="button"
                         class="bookmark-btn"
                         th:data-quiz-no="${quiz.quizNo}"
-                        data-bookmarked="true">
-                    <span style="color: #e74c3c;">&#10084;</span>
+                        data-bookmarked="true"
+                        aria-label="북마크 해제">
+                    <iconify-icon icon="emojione:red-heart" style="font-size: 1.5rem;"></iconify-icon>
                 </button>
             </div>
 
-            <!-- 문제 -->
-            <div class="text-toggle">
-                <div class="text-content quiz-question" th:text="${quiz.question}"></div>
-                <button type="button" class="toggle-btn">더보기</button>
-            </div>
-
-            <!-- 보기 -->
-            <div class="text-toggle">
-                <div class="text-content quiz-options">
+            <!-- 보기 (기본 숨김 + 더보기 버튼) -->
+            <div class="quiz-options-wrap">
+                <div class="quiz-options hidden">
                     <ol>
-                        <li th:text="${quiz.option1}"></li>
-                        <li th:text="${quiz.option2}"></li>
-                        <li th:text="${quiz.option3}"></li>
-                        <li th:text="${quiz.option4}"></li>
+                        <li th:text="'1. ' + ${quiz.option1}"></li>
+                        <li th:text="'2. ' + ${quiz.option2}"></li>
+                        <li th:text="'3. ' + ${quiz.option3}"></li>
+                        <li th:text="'4. ' + ${quiz.option4}"></li>
                     </ol>
                 </div>
                 <button type="button" class="toggle-btn">더보기</button>
@@ -54,6 +55,7 @@
     </div>
 </div>
 
-<script src="/js/quiz/bookmark-list.js"></script>
+<!-- 스크립트 -->
+<script src="/js/modules/quiz/bookmark.js"></script>
 </body>
 </html>

@@ -1,9 +1,11 @@
-@use 'quiz';
 @use 'common';
 @use 'default';
 @use 'nav';
 @use 'profile';
 @use 'sign';
 @use 'study';
-@use 'speed';
 @use 'level';
+@use 'quiz';
+@use 'quiz-result';
+@use 'quiz-detail-result';
+@use 'bookmark';

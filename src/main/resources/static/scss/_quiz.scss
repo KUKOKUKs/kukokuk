@@ -1,20 +1,178 @@
+/* ===============================
+   Quiz 공통 스타일 (기존 변수만 사용)
+   =============================== */
+
 /* 라디오 버튼 숨기기 */
 .btn input[type="radio"] {
     position: absolute;
     opacity: 0;
+    pointer-events: none; /* 클릭 방지 */
 }
 
-/* 기본 상태 - 흰색 버튼 */
-.btn.white {
+.btn.level-select {
     border-color: var(--borderColor);
-    background-color: var(--primaryColor);
+    background-color: #fff;
     color: var(--primaryColor);
+    transition: all var(--trst);
 }
 
 /* 선택된 상태 유지 */
-.btn.white:has(input[type="radio"]:checked) {
-    background-color: var(--subColor);
-    border-color: var(--subColor);
+.btn.level-select:has(input[type="radio"]:checked) {
+    background-color: var(--primaryColor);
+    border-color: var(--primaryColor);
+    color: #fff;
+}
+
+/* hover 시 효과 */
+.btn.level-select:hover {
+    border-color: var(--primaryColor);
+    color: var(--primaryColor);
+    background-color: var(--lightGrayColor);
+}
+
+.quiz-container {
+    position: relative;
+    max-width: var(--centerContentWidth);
+    margin: 0 auto;
+    padding: var(--basePadding);
+}
+
+.quiz-title {
+    text-align: center;
+    font-size: var(--titleFontSize);
+    font-weight: bold;
+    margin-bottom: var(--baseGap);
+}
+
+#quiz-timer {
+    font-weight: bold;
     color: var(--primaryColor);
 }
 
+/* 스피드 퀴즈 타이머 진행바 */
+.level_info.timer_progress {
+    width: 100%;
+    margin: var(--smallGap) 0;
+}
+
+.timer_level_bar {
+    position: relative;
+    width: 100%;
+    height: var(--tabHeight);
+    background-color: var(--lightGrayColor);
+    border-radius: var(--bdrs);
+    overflow: hidden;
+}
+
+/* 실제 채워지는 부분 */
+.timer_experience_point {
+    height: 100%;
+    width: 100%;
+    background-color: var(--yellowColor);
+    transition: width linear, background-color var(--trst);
+}
+
+/* 타이머 종료 색상 변경 */
+.timer_experience_point.after_quiz {
+    background-color: var(--redColor);
+}
+
+/* 마커 */
+.timer_level_bar .quiz_marker {
+    position: absolute;
+    top: calc(var(--tinyGap) * -1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-50%);
+}
+.timer_level_bar .quiz_marker .line {
+    width: var(--tinyIcon);
+    height: var(--largeIcon);
+    background-color: var(--darkGreenColor);
+    border-radius: var(--bdrs);
+}
+.timer_level_bar .quiz_marker .label {
+    font-size: var(--baseFontSize);
+    margin-top: var(--tinyGap);
+    font-weight: bold;
+}
+
+#quiz-question {
+    margin-bottom: var(--baseGap);
+    font-size: var(--largeFontSize);
+    font-weight: bold;
+    text-align: center;
+}
+
+#quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--smallGap);
+}
+
+.quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--largeGap);
+}
+
+.quiz-nav button {
+    flex: 1;
+}
+
+.quiz-nav button:first-child {
+    margin-right: var(--tinyGap);
+}
+
+.quiz-nav button:last-child {
+    margin-left: var(--tinyGap);
+}
+
+/* 모달 공통 스타일 */
+#submit-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 999;
+    background: var(--dimmedColor);
+    align-items: center;
+    justify-content: center;
+}
+
+#submit-modal .modal-inner {
+    background: #fff;
+    padding: var(--modalPadding);
+    border-radius: var(--bdrs);
+    box-shadow: var(--bxsh);
+    min-width: var(--modalWidth);
+    text-align: center;
+}
+
+/* 북마크 버튼 */
+.quiz-bookmark-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--tinyGap) var(--smallGap);
+    border: var(--thinBorder);
+    border-radius: var(--bdrs);
+    background-color: #fff;
+    color: var(--primaryColor);
+    font-size: var(--subFontSize);
+    cursor: pointer;
+    transition: all var(--trst);
+
+    &[data-bookmarked="true"] {
+        background-color: var(--primaryColor);
+        color: #fff;
+        border-color: var(--primaryColor);
+    }
+
+    &:hover {
+        background-color: var(--lightGrayColor);
+        border-color: var(--primaryColor);
+        color: var(--primaryColor);
+    }
+}
