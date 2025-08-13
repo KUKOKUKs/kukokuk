@@ -942,6 +942,11 @@
     font-size: var(--pageTitleFontSize);
     font-weight: 700;
     color: var(--darkGreenColor);
+
+    .emoji {
+        position: relative;
+        top: -4px;           /* 살짝 위로 이동 (필요에 따라 값 조절) */
+    }
 }
 
 /* base.html의 자식요소 (content) 컨테이너 */
@@ -949,6 +954,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--baseGap);
+
+    &.large_gap {
+        gap: var(--largeGap);
+    }
 }
 
 /* 도전과제에서 힌트아이템 획득시 표현할 버튼 */
