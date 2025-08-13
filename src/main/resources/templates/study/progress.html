@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/center}">
+      layout:decorate="~{layout/center}"
+      th:with="title='학습하기'">
 <div layout:fragment="content">
 
   <!-- 학습진행바 -->
@@ -32,7 +33,7 @@
 <!--    </th:block>-->
   </div>
 
-  <!-- 카드 넘기는 버튼 -->
+  <!--/* 카드 넘기는 버튼 */-->
   <div class="btn_list daily_study">
     <button class="btn white" id="prev-btn">이전</button>
     <button class="btn white" id="next-btn">다음</button>

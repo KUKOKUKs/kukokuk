@@ -28,40 +28,6 @@
   </insert>
 
   <!--
-    /**
-   * 받아쓰기 문제 풀이 이력 식별자 번호로 받아쓰기 문제 번호 조회
-   * @param dictationQuestionLogNo 식별자
-   * @return 받아쓰기 문제 번호
-   */
-  int getQuestionNoByLogNo(int dictationQuestionLogNo);
-   -->
-  <select id="getQuestionNoByLogNo" resultType="int">
-    SELECT
-        DICTATION_QUESTION_NO
-    FROM
-        KUKOKUK_DICTATION_QUESTION_LOGS
-    WHERE
-        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
-  </select>
-
-  <!--
-   /**
-   * 식별자로 시도 횟수 조회
-   * @param dictationQuestionLogNo 식별자
-   * @return 시도 횟수
-   */
-  int getTryCount(int dictationQuestionLogNo);
-   -->
-  <select id="getTryCount" resultType="int">
-    SELECT
-        TRY_COUNT
-    FROM
-        KUKOKUK_DICTATION_QUESTION_LOGS
-    WHERE
-        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
-  </select>
-
-  <!--
   /**
    * 식별자 받아쓰기 힌트 사용 여부
    * @param dictationQuestionLogNo 식별자

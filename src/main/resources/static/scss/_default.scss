@@ -42,6 +42,15 @@
         max-width: var(--centerContentWidth); /* 디테일 컨텐츠 최대 사이즈 */
         margin: auto;
     }
+
+    .center_content_wrap {
+        width: var(--mainContentWidth);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--largeGap);
+        padding: var(--containerPadding) 0;
+    }
 }
 
 #main-content {
@@ -596,6 +605,10 @@
     display: none;
 }
 
+.cursor_pointer {
+    cursor: pointer;
+}
+
 .d_flex {
     width: 100%;
     display: flex;
@@ -683,6 +696,10 @@
 
 .bg_light_gray {
     background-color: var(--lightGrayColor);
+}
+
+.bg_blue {
+    background-color: var(--blueColor);
 }
 
 /* font */

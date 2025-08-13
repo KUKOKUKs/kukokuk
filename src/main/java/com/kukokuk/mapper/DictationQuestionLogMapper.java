@@ -16,20 +16,6 @@ public interface DictationQuestionLogMapper {
   void insertDictationQuestionLog(DictationQuestionLog dictationQuestionLog);
 
   /**
-   * 받아쓰기 문제 풀이 이력 식별자 번호로 받아쓰기 문제 번호 조회
-   * @param dictationQuestionLogNo 식별자
-   * @return 받아쓰기 문제 번호
-   */
-  int getQuestionNoByLogNo(int dictationQuestionLogNo);
-
-  /**
-   * 식별자로 시도 횟수 조회
-   * @param dictationQuestionLogNo 식별자
-   * @return 시도 횟수
-   */
-  int getTryCount(int dictationQuestionLogNo);
-
-  /**
    * 식별자로 받아쓰기 힌트 사용 여부 반영
    * @param dictationQuestionLogNo 식별자
    * @param userHint 힌트 사용 여부

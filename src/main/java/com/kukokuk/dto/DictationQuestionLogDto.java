@@ -10,5 +10,5 @@ public class DictationQuestionLogDto {
     private String userAnswer;           // 제출문장
     private int tryCount;                // 시도횟수
     private String isSuccess;            // ENUM('Y','N')
-
+    private String usedHint;             // ENUM('Y','N')
 }

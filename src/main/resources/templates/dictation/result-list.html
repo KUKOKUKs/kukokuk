@@ -1,15 +1,7 @@
 <!DOCTYPE html>
 <!--suppress XmlUnusedNamespaceDeclaration -->
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/common/head :: head-fragment}"></head>
-
-<body>
-<main class="main">
-    <!-- contents -->
-    <div layout:fragment="content" class="content center">
+<html layout:decorate="~{/layout/center}" th:with="title='받아쓰기 결과 목록'">
+    <div layout:fragment="content">
 
         <h1>받아쓰기 세트 결과</h1>
 
@@ -29,12 +21,21 @@
             <tbody>
             <tr th:each="result : ${results}">
                 <td th:text="${result.dictationSessionNo}"></td>
-                <td th:text="${#dates.format(result.startDate, 'yyyy-MM-dd HH:mm')}"></td>
-                <td th:text="${#dates.format(result.endDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <span th:text="${#dates.format(result.startDate, 'yyyy-MM-dd')}"></span><br>
+                    <span th:text="${#dates.format(result.startDate, 'HH:mm')}"></span>
+                </td>
+                <td>
+                    <span th:text="${#dates.format(result.endDate, 'yyyy-MM-dd')}"></span><br>
+                    <span th:text="${#dates.format(result.endDate, 'HH:mm')}"></span>
+                </td>
                 <td th:text="${result.correctScore}"></td>
                 <td th:text="${result.correctCount}"></td>
                 <td th:text="${result.hintUsedCount}"></td>
-                <td th:text="${#dates.format(result.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <span th:text="${#dates.format(result.createdDate, 'yyyy-MM-dd')}"></span><br>
+                    <span th:text="${#dates.format(result.createdDate, 'HH:mm')}"></span>
+                </td>
                 <td>
                     <button class="btn btn-outline-primary btn-sm load-logs-btn"
                             th:attr="data-sessionno=${result.dictationSessionNo}">
@@ -47,7 +48,6 @@
         </table>
 
     </div>
-</main>
 
 <th:block layout:fragment="script">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

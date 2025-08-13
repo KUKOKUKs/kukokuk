@@ -1,91 +1,65 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/center}" th:with="title='받아쓰기'">
 <div layout:fragment="content">
-    <div class="content center base_gap" style="display: flex; flex-direction: column; align-items: center; gap: 2rem; min-height: 100vh; padding: 2rem;">
-        div.
+    <form th:action="@{/dictation/submit-answer}" method="post">
+        <div class="center_content_wrap">
+            <div th:replace="~{fragments/sign/step-bar :: step-fragment(${dictationQuestions.size()}, ${questionIndex + 1})}"></div>
 
-        <!-- 문제+버튼 박스 -->
-        <div class="component box_shadow large_font"
-             style="width: 100%; max-width: 600px; padding: 2rem; position: relative; display: flex; flex-direction: column;">
-
-            <!-- 상단 바: 문제 번호 + 버튼 2개 -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <span style="font-size: var(--smallFontSize); color: var(--grayColor);">
-          문제 번호: <span th:text="${index}">1</span>
-        </span>
-
-                <div style="display: flex; gap: 0.5rem;">
-                    <button type="button"
-                            class="btn small white"
-                            th:attr="data-text=${question.correctAnswer}"
-                            onclick="speakFromData(this)">
-                        🔊 듣기
-                    </button>
-
-                    <button type="button" id="toggleAnswerBtn" class="btn small white" onclick="toggleAnswer()">
-                        정답 보기
-                    </button>
+            <div class="question_container blue">
+                <div class="question_info">
+                    <button type="button" class="question_title_info" th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">
+                        <span class="speaker_icon">
+                            <iconify-icon icon="fluent:speaker-2-16-regular"></iconify-icon>
+                        </span>
+                        <span class="question_title"
+                              th:text="'문제 ' + (${questionIndex} + 1) + '번'"></span>
+                      </button>
+                    <div class="hint_btns">
+                        <button type="button"
+                                id="HintBtn1"
+                                class="hint_btn"
+                                th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">띄어<br>쓰기</button>
+                        <button type="button"
+                                id="HintBtn2"
+                                class="hint_btn"
+                                th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">초성<br>나열</button>
+                        <button type="button"
+                                id="HintBtn3"
+                                class="hint_btn"
+                                th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">첫<br>글자</button>
+                    </div>
+                </div>
+                <div class="question_info justify_content_center bg_blue">
+                    <div class="square_info">
+                    </div>
                 </div>
             </div>
 
-            <!-- 문제 내용 (숨김 상태) -->
-            <p id="answerText" th:text="'정답: ' + ${question.correctAnswer}" style="display: none; text-align: center; margin-top: 1rem;"></p>
+            <div class="question_container yellow">
+                <div class="answer_info">
+                    <label for="user-answer" class="question_title_info color_primary">
+                        <span class="question_title">받아쓰기</span>
+                    </label>
+                        <input type="text" name="userAnswer" id="user-answer" required />
+                </div>
+            </div>
+
+            <div class="answer_btn_list">
+                <button type="button"
+                        id="AnswerBtn"
+                        class="btn white"
+                        th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">
+                    정답 보기
+                </button>
+                <button type="submit" class="btn primary">
+                    제출(<span th:text="${triesLeft}">2</span>)
+                </button>
+            </div>
         </div>
-
-        <!-- 정답 입력 폼 박스 -->
-        <form th:action="@{/dictation/submit-answer}" method="post" class="component box_shadow"
-              style="width: 100%; max-width: 600px; padding: 2rem;">
-            <input type="hidden" th:name="index" th:value="${index}" />
-
-            <div class="d_flex justify_content_between align_end" style="gap: 1rem;">
-                <div style="flex: 1;">
-                    <input type="text"
-                           name="userAnswer"
-                           placeholder="정답을 입력하세요"
-                           th:value="${answer}"
-                           class="input_info one_input"
-                           style="font-size: var(--largeFontSize); padding: 1rem; border: var(--thinBorder); border-radius: var(--bdrs);" />
-                </div>
-                <div>
-                    <button type="submit" class="btn primary large_font" style="padding: 0.75rem 1.5rem;">제출</button>
-                </div>
-            </div>
-        </form>
-    </div>
+    </form>
 </div>
 
-<!-- 📢 음성 스크립트 -->
 <th:block layout:fragment="script">
-    <script>
-      function speakFromData(btn) {
-        const text = btn.getAttribute("data-text");
-        if (!text) {
-          console.warn("읽을 텍스트가 없습니다.");
-          return;
-        }
-        console.log("음성으로 읽을 문장:", text);
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ko-KR';
-        speechSynthesis.cancel();
-        speechSynthesis.speak(utterance);
-      }
-    </script>
-
-    <script>
-      function toggleAnswer() {
-        const answerElem = document.getElementById("answerText");
-        const btn = document.getElementById("toggleAnswerBtn");
-        if (answerElem.style.display === "none") {
-          answerElem.style.display = "block";
-          btn.textContent = "정답 숨기기";
-        } else {
-          answerElem.style.display = "none";
-          btn.textContent = "정답 보기";
-        }
-      }
-    </script>
-
+    <script type="module" th:src="@{/js/modules/dictation/dictation.js}"></script>
 </th:block>
-
-</body>
 </html>
