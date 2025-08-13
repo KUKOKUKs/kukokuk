@@ -4,16 +4,17 @@
       layout:decorate="~{/layout/base}" th:with="menu='quiz', title='단계별 퀴즈 설정'">
 
 <head>
-    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/main.css"/>
 </head>
-
+<body>
 <div layout:fragment="content">
     <div id="main-content" class="d_flex column base_gap">
         <div>
             <h1 class="content_title">단계별 퀴즈 설정</h1>
         </div>
 
-        <form id="levelQuizForm" th:action="@{/quiz/level}" method="get" class="d_flex column base_gap">
+        <form id="levelQuizForm" th:action="@{/quiz/level}" method="get"
+              class="d_flex column base_gap">
 
             <!-- 난이도 선택 -->
             <div>
@@ -62,5 +63,9 @@
     <div id="sub-content">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
     </div>
+
 </div>
+<script type="module" src="/js/modules/quiz/level-select.js"></script>
+</body>
 </html>
+

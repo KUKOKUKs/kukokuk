@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/layout/base}" th:with="menu='quiz', title='게임하기'">
-
 <div layout:fragment="content">
     <div id="main-content" class="d_flex column base_gap">
         <div>
@@ -30,5 +29,4 @@
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
     </div>
 </div>
-
 </html>

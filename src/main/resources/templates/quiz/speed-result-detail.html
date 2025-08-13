@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/layout/center}">
-
+<head>
+</head>
 <body class="result-page">
 <div class="result-page-wrapper">
     <div layout:fragment="content" class="result-detail-container">
@@ -30,7 +31,8 @@
                 <td th:text="${result.question}">문제 내용</td>
                 <td>
                     <span th:if="${result.selectedChoice == 0}">시간 초과</span>
-                    <span th:if="${result.selectedChoice != 0}" th:text="${result.selectedChoice}">-</span>
+                    <span th:if="${result.selectedChoice != 0}"
+                          th:text="${result.selectedChoice}">-</span>
                 </td>
                 <td th:text="${result.successAnswer}">2</td>
                 <td>

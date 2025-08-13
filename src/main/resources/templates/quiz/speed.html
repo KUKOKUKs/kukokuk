@@ -1,13 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>스피드 퀴즈</title>
-    <link rel="stylesheet" href="/css/main.css"/>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-</head>
-<body>
-<div class="quiz-container">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/center}">
+<div layout:fragment="content" class="quiz-container">
     <h1 class="quiz-title">스피드 퀴즈</h1>
 
     <!-- 남은 문제 수 / 타이머 -->
@@ -30,15 +25,16 @@
 
     <!-- 보기 -->
     <div id="quiz-options"></div>
+
+    <!-- 결과 제출 폼 -->
+    <form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
 </div>
 
-<form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
-
-<!-- 퀴즈 리스트 Thymeleaf로 JSON 주입 -->
-<script th:inline="javascript">
-    let quizzes = /*[[${quizList}]]*/ [];
-</script>
-
-<script type="module" src="/js/modules/quiz/speed.js"></script>
-</body>
+<!-- 페이지 전용 스크립트 -->
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        let quizzes = /*[[${quizList}]]*/ [];
+    </script>
+    <script th:src="@{/js/modules/quiz/speed.js}"></script>
+</th:block>
 </html>
