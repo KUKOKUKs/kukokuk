@@ -1,12 +1,69 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/base}" th:with="menu='home'">
+<html layout:decorate="~{/layout/base}"
+      th:with="menu='home',
+          loggedIn=${#authorization.expression('isAuthenticated()')},
+          d=${loggedIn ? #authentication.principal?.user?.studyDifficulty : null},
+          s=${loggedIn ? #authentication.principal?.user?.currentSchool : null},
+          g=${loggedIn ? #authentication.principal?.user?.currentGrade : null},
+          ready=${d != null and s != null and g != null}">
+
 <div layout:fragment="content">
-    <div id="main-content">
-        메인 컨텐츠
+    <div id="main-content" class="main_container large_gap">
+        <div class="main_content_container">
+            <div class="page_title "> <span class="emoji">📖</span> 오늘의 학습하기 </div>
+            <div class="study_list_container">
+                <!-- 일일학습 카드가 동적으로 추가되는 부분 -->
+
+                <!--/* 로그인 되어있지 않은 경우 */-->
+                <th:block th:if="${!loggedIn}">
+                    <div class="daily_study_card no_cursor center">
+                        <div class="study_info">
+                            <div class="study_title">로그인하고 학습을 시작해보세요!</div>
+                            <div class="study_content">
+                                AI 기반 학습 서비스를 경험하려면 먼저 로그인하세요.
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+
+                <!--/* 로그인 되어있고 학습수준이 설정되어 있지 않은 경우*/-->
+                <th:block th:if="${loggedIn and !ready}">
+                    <button class="modal-study-level-btn btn white">
+                        학습수준 설정하고 일일학습하기
+                    </button>
+                </th:block>
+            </div>
+        </div>
+        <div class="main_content_container">
+            <div class="page_title "> <span class="emoji">🎮</span> 게임하기 </div>
+            <div class="square_container">
+                <a href="/quiz/speed" class="square_component">
+                    <span class="square_text">스피드퀴즈</span>
+                    <span class="square_emoji">⚡</span>
+                </a>
+                <a href="/quiz/level-select" class="square_component">
+                    <span class="square_text">단계별퀴즈</span>
+                    <span class="square_emoji">📚</span>
+                </a>
+                <a href="/dictation/start" class="square_component">
+                    <span class="square_text">받아쓰기</span>
+                    <span class="square_emoji">✍️</span>
+                </a>
+            </div>
+        </div>
     </div>
 
     <div id="sub-content">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
     </div>
+
 </div>
+
+<th:block layout:fragment="script">
+    <!--/* 로그인 되어있고 학습수준이 설정되어 있은 경우*/-->
+    <th:block th:if="${loggedIn and ready}">
+        <!--/* 학습 목록을 요청 */-->
+        <script type="module" th:src="@{/js/modules/main/main.js}"></script>
+    </th:block>
+</th:block>
 </html>
