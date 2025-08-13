@@ -27,7 +27,7 @@ public class GeminiStudyPromptBuilder {
           4. 카드 생성 후, 아래와 같은 형식의 객관식 퀴즈 4개를 생성해주세요:
              - question: 문제 내용
              - options: 보기 4개 (문자열 배열)
-             - answer: 정답 보기 번호 (int)
+             - answer: 정답 보기 번호 (int 1~4)
           5. 마지막으로 서술형 퀴즈 1개를 생성해주세요:
              - question: 서술형 질문
              - evaluation_points: 채점 기준 목록

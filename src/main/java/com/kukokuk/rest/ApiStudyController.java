@@ -122,6 +122,9 @@ public class ApiStudyController {
                     status = log.getStatus(); // "IN_PROGRESS", "COMPLETED" 중 하나라고 가정
                 }
 
+                // dailyStudyEssayQuizLogNo 가 null이 아니면 서술형퀴즈완료여부 true로 설정
+                boolean essayQuizCompleted = dto.getDailyStudyEssayQuizLogNo() != null;
+
                 return DailyStudySummaryResponse.builder()
                     .dailyStudyNo(study.getDailyStudyNo())
                     .title(study.getTitle())
@@ -133,6 +136,7 @@ public class ApiStudyController {
                     .school(material.getSchool())
                     .grade(material.getGrade())
                     .sequence(material.getSequence())
+                    .essayQuizCompleted(essayQuizCompleted)
                     .build();
             })
             .toList();
