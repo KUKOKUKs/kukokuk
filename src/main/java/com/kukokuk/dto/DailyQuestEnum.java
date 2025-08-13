@@ -15,7 +15,7 @@ import lombok.Getter;
 public enum DailyQuestEnum {
 
     STUDY_LEARNING(1, "STUDY", "일일학습 한챕터 완료", ProgressType.COUNT, 1),
-    STUDY_WRITTEN(2, "ESSAY", "일일학습 서술형 퀴즈 1회 완료", ProgressType.COUNT, 1),
+    STUDY_ESSAY(2, "ESSAY", "일일학습 서술형 퀴즈 1회 완료", ProgressType.COUNT, 1),
     QUIZ_SPEED(3, "QUIZ", "스피드 퀴즈 3회 플레이", ProgressType.COUNT, 3),
     QUIZ_STEP(4, "QUIZ", "단계별 퀴즈 1회 플레이", ProgressType.COUNT, 1),      // 여기 추가
     DICTATION_PLAY(5, "DICTATION", "받아쓰기 1회 플레이", ProgressType.COUNT, 1),
