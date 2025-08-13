@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Log4j2
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
@@ -105,9 +106,9 @@ public class QuizController {
         model.addAttribute("questionType", levelResult.getQuestionType());
 
         if ("level".equals(summary.getQuizMode())) {
-            return "quiz/level-result1";
+            return "quiz/level-result";
         }
-        return "quiz/speed-result1";
+        return "quiz/speed-result";
     }
 
     // [공통] 퀴즈 결과 상세 페이지 렌더링
@@ -126,9 +127,9 @@ public class QuizController {
         model.addAttribute("questionType", levelResult.getQuestionType());
 
         if ("level".equals(summary.getQuizMode())) {
-            return "quiz/level-result2";
+            return "quiz/level-result-detail";
         }
-        return "quiz/speed-result2";
+        return "quiz/speed-result-detail";
     }
 
     // [스피드 퀴즈] 문제 10개 조회
@@ -163,7 +164,7 @@ public class QuizController {
      * @param model 뷰 모델
      * @return 북마크 목록 뷰 이름
      */
-    @GetMapping("/bookmark-list")
+    @GetMapping("/bookmark")
     public String bookmarkListPage(
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
