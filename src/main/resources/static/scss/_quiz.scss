@@ -51,14 +51,14 @@
 
 /* 스피드 퀴즈 타이머 진행바 */
 .level_info.timer_progress {
+    margin: 10px 0;
     width: 100%;
-    margin: var(--smallGap) 0;
 }
 
 .timer_level_bar {
-    position: relative;
+    position: relative; /* 위치 기준 */
     width: 100%;
-    height: var(--tabHeight);
+    height: 20px;
     background-color: var(--lightGrayColor);
     border-radius: var(--bdrs);
     overflow: hidden;
@@ -67,9 +67,10 @@
 /* 실제 채워지는 부분 */
 .timer_experience_point {
     height: 100%;
-    width: 100%;
     background-color: var(--yellowColor);
-    transition: width linear, background-color var(--trst);
+    border-radius: var(--bdrs);
+    transition: width 0.4s ease-in-out, /* study_progress와 동일한 transition */
+    background-color 0.3s ease;
 }
 
 /* 타이머 종료 색상 변경 */
