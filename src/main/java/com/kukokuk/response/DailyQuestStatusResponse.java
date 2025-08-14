@@ -3,6 +3,7 @@ package com.kukokuk.response;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.ibatis.type.Alias;
 
 /*
@@ -11,6 +12,7 @@ import org.apache.ibatis.type.Alias;
  */
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @Alias("DailyQuestStatusResponse")
 public class DailyQuestStatusResponse {

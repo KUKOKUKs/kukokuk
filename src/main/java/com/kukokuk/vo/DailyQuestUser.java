@@ -4,10 +4,12 @@ import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.ibatis.type.Alias;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @Alias("DailyQuestUser")
 public class DailyQuestUser {

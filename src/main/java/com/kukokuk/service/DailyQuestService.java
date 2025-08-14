@@ -1,6 +1,7 @@
 package com.kukokuk.service;
 
 import com.kukokuk.dto.DailyQuestProgressAggDto;
+import com.kukokuk.dto.ExpLogProcessingDto;
 import com.kukokuk.exception.AppException;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyQuestUserMapper;
@@ -28,7 +29,7 @@ public class DailyQuestService {
     private final ModelMapper modelMapper;
     private final DailyQuestMapper dailyQuestMapper;
 
-    public void insertExpLogWithQDailyQuest() {
+    public void insertExpLogWithQDailyQuest(ExpLogProcessingDto expLogProcessingDto) {
 
     }
 
@@ -86,6 +87,7 @@ public class DailyQuestService {
 
             // 5-3. 일일 도전과제 완료 이력 테이블 번호 및 보상 수령 여부 추출
             DailyQuestUser completeQuest = completeQuestMap.get(quest.getDailyQuestNo());
+            log.info("completeQuest: {}", completeQuest);
             Integer dailyQuestUserNo = completeQuest != null ? completeQuest.getDailyQuestUserNo() : null;
             String isObtained = completeQuest != null ? completeQuest.getIsObtained() : null;
 

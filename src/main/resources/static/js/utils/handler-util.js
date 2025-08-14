@@ -1,4 +1,4 @@
-import {getStudyDifficultyList} from "../modules/study/study-api.js";
+import {apiGetStudyDifficultyList} from "../modules/study/study-api.js";
 
 const questLinkByContentType = {
     "STUDY": "/study",
@@ -47,7 +47,7 @@ export async function setStudyDifficultyList($studyDifficultyElement) {
     if (!studyDifficultyList) {
         // 값이 없을 경우
         try {
-            studyDifficultyList = await getStudyDifficultyList(); // 비동기로 단계별 설명 리스트 요청
+            studyDifficultyList = await apiGetStudyDifficultyList(); // 비동기로 단계별 설명 리스트 요청
 
             if (!studyDifficultyList) {
                 console.log("학습 단계 정보 비동기 요청 반환 값이 없습니다.");

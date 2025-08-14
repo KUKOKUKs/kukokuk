@@ -1,7 +1,10 @@
 // noinspection ES6UnusedImports
 
 import {validateLoginForm} from './sign-form-validator.js';
-import {checkNicknameDuplicate, checkUsernameDuplicate} from './sign-api.js';
+import {
+    apiCheckNicknameDuplicate,
+    apiCheckUsernameDuplicate,
+} from './sign-api.js';
 import {
     addInputErrorMessage,
     clearInputErrorMessage
@@ -44,7 +47,7 @@ $(document).ready(() => {
         clearInputErrorMessage($registerEmail); // 에러 메세지 초기화
 
         try {
-            const isDuplicated = await checkUsernameDuplicate(username);
+            const isDuplicated = await apiCheckUsernameDuplicate(username);
             console.log("handleEmailInput 실행 결과: ", isDuplicated);
             isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
 
@@ -67,7 +70,7 @@ $(document).ready(() => {
         clearInputErrorMessage($registerNickname); // 에러 메세지 초기화
 
         try {
-            const isDuplicated = await checkNicknameDuplicate(nickname);
+            const isDuplicated = await apiCheckNicknameDuplicate(nickname);
             console.log("handleNicknameInput 실행 결과: ", isDuplicated);
             isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
 
