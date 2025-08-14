@@ -22,7 +22,7 @@ public interface DailyStudyMapper {
      * @return 조회된 사용자의 일일학습 자료 리스트
      *         + 사용자가 학습중인 학습자료면 이력까지 함께 조회
      */
-    public List<UserStudyRecommendationDto> getDailyStudiesByUser(@Param("userNo") int userNo,
+    List<UserStudyRecommendationDto> getDailyStudiesByUser(@Param("userNo") int userNo,
         @Param("userInfo") Map<String, Object> userInfo,
         @Param("condition") Map<String, Object> condition);
 

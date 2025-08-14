@@ -14,7 +14,7 @@ import {
 } from '../../utils/handler-util.js';
 import {regExNickname, validateDate} from '../../utils/validation-util.js';
 
-$(document).ready(() => {
+$(document).ready(function () {
     // 프로필 설정 관련
     const $userProfileImgUpdateForm = $("#profile-img-update-form"); // 프로필 이미지 업데이트 폼
     const $userProfileImgDeleteForm = $("#profile-img-delete-form"); // 프로필 이미지 삭제 폼
@@ -179,13 +179,13 @@ $(document).ready(() => {
     // 단계별 설명 리스트 모달창 열기
     const $modalStudyDifficultyInfoBtn = $("#modal-study-difficulty-info-btn"); // 모달창 열기 버튼
     const $modalStudyDifficultyInfo = $("#modal-study-difficulty-info"); // 모달창
-    $modalStudyDifficultyInfoBtn.click(function () {
+    $modalStudyDifficultyInfoBtn.click(async function () {
         if ($modalStudyDifficultyInfo.length) {
             // 해당 모달창 요소가 있을 경우 열기
             $modalStudyDifficultyInfo.show();
 
             // 모달창 단계별 설명 리스트 추가
-            setStudyDifficultyList($modalUserUpdateStudyDifficultyInfoElement);
+            await setStudyDifficultyList($modalUserUpdateStudyDifficultyInfoElement);
         }
     });
 });
