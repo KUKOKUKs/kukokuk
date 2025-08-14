@@ -57,18 +57,34 @@
         max-width: var(--centerContentWidth); /* 디테일 컨텐츠 최대 사이즈 */
         margin: auto;
     }
+
+    .center_content_wrap {
+        width: var(--mainContentWidth);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--largeGap);
+        padding: var(--containerPadding) 0;
+    }
 }
 
 #main-content {
     width: 100%;
     max-width: var(--mainContentWidth); /* 컨텐츠 사이즈 */
     padding: var(--containerPadding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
+
 }
 
 #sub-content {
     width: 100%;
     max-width: var(--subContentWidth);
     padding: var(--containerPadding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
 }
 
 .container {
@@ -95,25 +111,34 @@
     border-radius: var(--bdrs);
     border: var(--baseBorder);
 
+    /* 컴포넌트의 좌상단에 위치할 컴포넌트 title */
+    .component_title {
+        font-size: var(--largeFontSize);
+        font-weight: bold;
+        padding-bottom: var(--tinyGap);
+    }
+
+    /* 리스트 컴포넌트의 리스트 부분 */
     .component_list_container {
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: var(--tinyGap);
+    }
 
-        /* 컴포넌트의 좌상단에 위치할 컴포넌트 title */
-        .component_title {
-            align-content: center;
-            font-size: var(--largeFontSize);
-            font-weight: 700;
+    /* 리스트 요소 */
+    .component_info {
+        padding: var(--smallPadding);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--smallGap);
 
-        }
+        &.small {
+            font-size: var(--smallFontSize);
 
-        /* 리스트 컴포넌트의 리스트 부분 */
-        .component_list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            border-top: var(--baseBorder);
+            &.with_icon {
+                padding: var(--smallComponentWithIconPadding);
+            }
         }
     }
 }
@@ -132,6 +157,33 @@
     font-size: var(--titleFontSize);
     font-weight: bold;
     text-align: center;
+}
+
+/* bar gauge */
+.bar_gauge {
+    width: 100%;
+    height: 9px;
+    font-size: var(--smallFontSize);
+    background-color: var(--lightGrayColor);
+    border-radius: var(--bdrs);
+    border: 1px solid var(--borderColor);
+    position: relative;
+
+    .gauge {
+        max-width: 100%;
+        height: 100%;
+        background-color: var(--yellowColor);
+        border-radius: var(--bdrs);
+    }
+
+    .gauge_info {
+        display: inline-block;
+        font-size: var(--smallFontSize);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
 }
 
 /* error page */
@@ -558,6 +610,10 @@
         transform: translate(-50%, -50%);
         transition: margin-top var(--trst);
         overflow: hidden;
+        
+        .btn_list {
+            background-color: #fff;
+        }
 
         .modal_top {
             width: 100%;
@@ -641,7 +697,6 @@
 /* button */
 .btn_list {
     width: 100%;
-    background-color: #fff;
     display: flex;
     align-items: center;
     gap: var(--smallGap);
@@ -658,7 +713,6 @@
             width: 25%;
         }
     }
-
 }
 
 .btn {
@@ -666,6 +720,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    min-width: max-content;
     padding: var(--smallPadding);
     border-radius: var(--bdrs);
     border: 1px solid var(--subColor);
@@ -788,33 +843,37 @@
     display: none;
 }
 
+.cursor_pointer {
+    cursor: pointer;
+}
+
 .d_flex {
     width: 100%;
     display: flex;
+}
 
-    &.column {
-        flex-direction: column; /* 세로형 */
-    }
+.column {
+    flex-direction: column; /* 세로형 */
+}
 
-    &.justify_content_center {
-        justify-content: center; /* 중앙 정렬 */
-    }
+.justify_content_center {
+    justify-content: center; /* 중앙 정렬 */
+}
 
-    &.justify_content_between {
-        justify-content: space-between; /* 양끝 정렬 */
-    }
+.justify_content_between {
+    justify-content: space-between; /* 양끝 정렬 */
+}
 
-    &.justify_content_end {
-        justify-content: flex-end;
-    }
+.align_center {
+    align-items: center; /* 수직/수평 정렬 */
+}
 
-    &.align_center {
-        align-items: center; /* 수직/수평 정렬 */
-    }
+.justify_content_end {
+    justify-content: flex-end;
+}
 
-    &.align_end {
-        align-items: flex-end; /* 끝 정렬 */
-    }
+.align_end {
+    align-items: flex-end; /* 끝 정렬 */
 }
 
 .base_gap {
@@ -889,6 +948,10 @@
     background-color: var(--lightGrayColor);
 }
 
+.bg_blue {
+    background-color: var(--blueColor);
+}
+
 /* font */
 .small_font {
     font-size: var(--smallFontSize);
@@ -934,6 +997,11 @@
     font-size: var(--pageTitleFontSize);
     font-weight: 700;
     color: var(--darkGreenColor);
+
+    .emoji {
+        position: relative;
+        top: -4px;           /* 살짝 위로 이동 (필요에 따라 값 조절) */
+    }
 }
 
 /* base.html의 자식요소 (content) 컨테이너 */
@@ -941,6 +1009,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--baseGap);
+
+    &.large_gap {
+        gap: var(--largeGap);
+    }
 }
 
 /* 도전과제에서 힌트아이템 획득시 표현할 버튼 */

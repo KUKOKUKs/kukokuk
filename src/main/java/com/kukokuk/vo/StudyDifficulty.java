@@ -14,4 +14,5 @@ public class StudyDifficulty {
     private int studyDifficultyNo;
     private String explanation;
     private String promptText;
+
 }

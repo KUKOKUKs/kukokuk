@@ -1,5 +1,16 @@
 import {getStudyDifficultyList} from "../modules/study/study-api.js";
 
+const questLinkByContentType = {
+    "STUDY": "/study",
+    "ESSAY": "/study",
+    "QUIZ": "/quiz",
+    "DICTATION": "/quiz"
+}
+
+export function replaceQuestLinkByContentType(contentType) {
+    return questLinkByContentType[contentType];
+}
+
 // 1~3, 1~6  학년 옵션 생성
 export const elementarySchool = setGradeOptions(6);
 export const middleSchool = setGradeOptions(3);

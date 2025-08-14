@@ -1,5 +1,6 @@
 package com.kukokuk;
 
+import com.kukokuk.service.DictationService;
 import com.kukokuk.service.QuizService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -13,12 +14,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class KukokukApplication {
 
     public static void main(String[] args) {
-        ApplicationContext context = SpringApplication.run(KukokukApplication.class, args);
+       ApplicationContext context = SpringApplication.run(KukokukApplication.class, args);
 
-        // QuizService Bean 꺼내기
+       /* // QuizService Bean 꺼내기
         QuizService quizService = context.getBean(QuizService.class);
 
-        /*// 퀴즈 유형별 200개씩 생성 : 처음 플랫폼 시작시 1회만 가동하면 됨
+        DictationService dictationService = context.getBean(DictationService.class);
+
+        dictationService.insertGenerateAiQuestions(3); */
+     /*   // 퀴즈 유형별 100개씩 생성
         quizService.insertRandomQuizBulk(200);*/
     }
 }

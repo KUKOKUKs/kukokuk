@@ -18,3 +18,22 @@ export async function getStudyDifficultyList() {
         apiErrorProcessByXhr(xhr.responseJSON);
     }
 }
+
+export async function getDailyStudies(rows) {
+    console.log("getDailyStudies() api 요청 실행");
+    try {
+        const response = await $.ajax({
+            method: 'GET',
+            url: '/api/studies',
+            contentType: 'application/json',
+            data: {'rows': rows},
+            dataType: 'json',
+        });
+
+        console.log("getDailyStudies() api 요청 response: ", response);
+        return response.data;
+    } catch (xhr) {
+        apiErrorProcessByXhr(xhr.responseJSON);
+    }
+
+}

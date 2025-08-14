@@ -56,22 +56,23 @@
                     </div>
                 </div>
                 <div class="percent_info">
-                    <span class="experience_points_info" th:text="|(${user.experiencePoints}/${user.maxExp})|">(0/100)</span>
+                    <span class="experience_points_info" th:text="|(${user.experiencePoints}/${user.maxExp})|">(0/101)</span>
                     <span class="percent" th:text="${percent}">0%</span>
                 </div>
             </div>
 
-            <div class="level_bar">
-                <div class="experience_point" th:style="|width: ${percent};|"></div>
+            <div class="bar_gauge">
+                <div class="gauge" th:style="|width: ${percent};|"></div>
             </div>
         </div>
 
-        <div class="learning_level_info">
-            <div class="learning_info">
+        <div th:if="${menu == 'study'} or ${menu == 'home'}"
+            class="learning_level_info">
+            <div class="component_info small with_icon">
                 <p class="learning_level" th:if="${user.currentSchool != null}"
                    th:text="|${user.currentSchool} ${user.currentGrade}학년 / ${user.studyDifficulty}단계|">초등 1학년 / 1단계</p>
                 <p class="learning_level" th:if="${user.currentSchool == null}">시작할 진도와 단계를 선택해 주세요</p>
-                <button type="button" id="modal-study-level-btn" class="btn small white">설정</button>
+                <button type="button" class="btn small white modal-study-level-btn">설정</button>
             </div>
         </div>
 

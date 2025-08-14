@@ -102,12 +102,12 @@ public class SecurityConfig {
                         , "/login"                      // 로그인
                         , "/register/**"                // 회원가입
                         , "/api/users/duplicate/**"     // 사용자 username, nickname 중복확인 요청 (회원가입, 프로필수정 페이지에서 사용)
+                        , "/api/daily-quests/basic"     // 미인증 시 기본 일일도전과제 리스트 요청
                         , "/access-denied"              // 접근권한 제한 페이지
                         , "/css/**"                     // css
                         , "/js/**"                      // javascript
                         , "/images/**"                  // 정적 이미지 경로
-                        , "/study/test"
-                        , "/api/studies/difficulties"
+                        , "/api/studies/difficulties"   // 학습 수준 조회
                     ).permitAll();
 
                 // DevTools, 브라우저 프록시 확장기능 요청 시 허용(개발환경만 적용)
