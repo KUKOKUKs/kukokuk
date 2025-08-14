@@ -468,7 +468,7 @@ public class StudyService {
      * parseMaterialJobs 테이블에서 목록을 조회해서 반환
      */
     public List<MaterialParseJob> getMaterialParseJobs() {
-        int rows = 10;
+        int rows = 100;
 
         List<MaterialParseJob> jobs = materialParseJobMapper.getParseJobsWithMaterial(rows);
 

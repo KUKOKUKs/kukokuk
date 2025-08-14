@@ -1,4 +1,4 @@
-import {apiGetDailyStudies} from "../study/study-api";
+import {apiGetDailyStudies} from "../study/study-api.js";
 
 $(document).ready(async () => {
     const $studyListContainer = $('.study_list_container');

@@ -36,6 +36,7 @@
     aspect-ratio: 1 / 1;
     background: url("/images/kukokuk_symbol_logo.png") 0 0 no-repeat;
     background-size: contain;
+    cursor: pointer;
 }
 
 .main {
@@ -186,6 +187,7 @@
         height: 100%;
         background-color: var(--yellowColor);
         border-radius: var(--bdrs);
+        transition: width var(--trst), background-color var(--trst); // background-color 변경되면 ease룰 실행
     }
 
     .gauge_info {
@@ -195,6 +197,29 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+    }
+
+    .marker {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+
+        .line {
+            width: 3px;
+            height: 18px;
+            background-color: var(--darkGreenColor);
+            border-radius: var(--bdrs);
+        }
+
+        .label {
+            width: max-content;
+            font-size: var(--subFontSize);
+            position: absolute;
+            top: 100%;
+        }
     }
 }
 
@@ -270,6 +295,10 @@
     align-items: center;
     gap: var(--baseGap);
     border-radius: var(--bdrs);
+
+    &.justify_content_center {
+        justify-content: center;
+    }
 }
 
 .form_input_list {
@@ -663,6 +692,10 @@
                 position: absolute;
                 left: 0;
                 bottom: 0;
+            }
+
+            &.small {
+                min-height: var(--modalSmallHeight);
             }
         }
     }

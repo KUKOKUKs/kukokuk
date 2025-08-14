@@ -1,4 +1,4 @@
-import {apiGetStudyDifficultyList} from "../modules/study/study-api";
+import {apiGetStudyDifficultyList} from "../modules/study/study-api.js";
 
 const questLinkByContentType = {
     "STUDY": "/study",
