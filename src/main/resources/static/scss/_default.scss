@@ -36,6 +36,7 @@
     aspect-ratio: 1 / 1;
     background: url("/images/kukokuk_symbol_logo.png") 0 0 no-repeat;
     background-size: contain;
+    cursor: pointer;
 }
 
 .main {
@@ -205,6 +206,10 @@
     align-items: center;
     gap: var(--baseGap);
     border-radius: var(--bdrs);
+
+    &.justify_content_center {
+        justify-content: center;
+    }
 }
 
 .form_input_list {
@@ -594,6 +599,10 @@
                 position: absolute;
                 left: 0;
                 bottom: 0;
+            }
+
+            &.small {
+                min-height: var(--modalSmallHeight);
             }
         }
     }
