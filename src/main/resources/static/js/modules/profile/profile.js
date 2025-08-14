@@ -1,7 +1,7 @@
 // noinspection ES6UnusedImports
 
 import {validateProfileForm} from './profile-form-validator.js';
-import {checkNicknameDuplicate} from '../sign/sign-api.js';
+import {apiCheckNicknameDuplicate,} from '../sign/sign-api.js';
 import {
     addInputErrorMessage,
     clearInputErrorMessage
@@ -83,7 +83,7 @@ $(document).ready(function () {
     // nickname 중복 체크
     async function handleNicknameInput(nickname) {
         clearInputErrorMessage($userUpdateNickname); // 에러 메세지 초기화
-        const isDuplicated = await checkNicknameDuplicate(nickname);
+        const isDuplicated = await apiCheckNicknameDuplicate(nickname);
         console.log("handleNicknameInput 실행 결과: ", isDuplicated);
 
         const isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용

@@ -137,6 +137,19 @@
 
             &.with_icon {
                 padding: var(--smallComponentWithIconPadding);
+
+                .btn {
+                    width: var(--baseIcon);
+                    min-width: var(--baseIcon);
+                    max-height: var(--smallIcon);
+                    min-height: var(--smallIcon);
+                    box-sizing: content-box;
+
+                    img {
+                        width: var(--smallIcon);
+                        height: var(--smallIcon);
+                    }
+                }
             }
         }
     }

@@ -52,7 +52,6 @@
              , CREATED_DATE             AS createdDate
         FROM KUKOKUK_DAILY_QUEST_USERS
         WHERE USER_NO = #{userNo}
-            AND IS_OBTAINED = 'Y'
             AND CREATED_DATE &gt;= CURDATE()
             AND CREATED_DATE &lt;  CURDATE() + INTERVAL 1 DAY
         ORDER BY DAILY_QUEST_USER_NO
