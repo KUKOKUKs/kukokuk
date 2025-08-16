@@ -69,8 +69,12 @@ public class UserController {
 
         try {
             FileValidationUtils.validateProfileImage(file); // 파일 유효성 검사
-            userService.updateUserProfileImage(file, securityUser.getUser().getUserNo()); // 파일 저장 및 DB 업데이트 요청
-            redirectAttributes.addFlashAttribute("success", "프로필 이미지가 수정되었습니다.");
+
+            // 파일 저장 및 DB 업데이트 요청
+            userService.updateUserProfileImage(file, securityUser.getUser().getUserNo());
+            redirectAttributes.addFlashAttribute(
+                "success", "프로필 이미지가 수정되었습니다."
+            );
         } catch (IllegalArgumentException | IllegalStateException | AppException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
@@ -95,7 +99,8 @@ public class UserController {
 
     // 프로필 수정 요청
     @PostMapping("/profile")
-    public String profileModify(@Validated(UserModifyCheck.class) @ModelAttribute("userUpdateForm") UserForm form
+    public String profileModify(
+        @Validated(UserModifyCheck.class) @ModelAttribute("userUpdateForm") UserForm form
         , @AuthenticationPrincipal SecurityUser securityUser
         , BindingResult errors
         , RedirectAttributes redirectAttributes) {
@@ -135,7 +140,9 @@ public class UserController {
             return "user/profile/form";
         }
 
-        redirectAttributes.addFlashAttribute("success", "프로필 정보가 수정되었습니다.");
+        redirectAttributes.addFlashAttribute(
+            "success", "프로필 정보가 수정되었습니다."
+        );
         return "redirect:/user/profile";
     }
 

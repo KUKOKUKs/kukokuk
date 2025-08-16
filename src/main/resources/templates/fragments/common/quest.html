@@ -2,7 +2,15 @@
 <html>
 <div th:fragment="quest-fragment" id="quest-container" class="component"
     th:attr="data-logged-in=${#authorization.expression('isAuthenticated()')}">
-    <div class="component_title">일일도전과제</div>
+    <div class="component_title">
+        일일도전과제
+        <div class="sub_title_info">
+            <div class="info">
+                <span id="success-text"></span>
+                (<span id="success-count"></span>/<span id="total-count"></span>)
+            </div>
+        </div>
+    </div>
 
     <div class="component_list_container quest_list_container"></div>
 

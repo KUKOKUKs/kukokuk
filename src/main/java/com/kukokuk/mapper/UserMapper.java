@@ -9,12 +9,6 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
 
     /**
-     * 사용자 경험치 추가 및 레벨업
-     * @param user 사용자 정보
-     */
-    void updateUserExperienceAndLevelUp(User user);
-
-    /**
      * 사용자 힌드 개수 -1 업데이트
      * @param userNo 사용자 번호
      */

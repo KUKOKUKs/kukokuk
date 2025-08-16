@@ -5,9 +5,12 @@ import com.kukokuk.dto.ExpLogProcessingDto;
 import com.kukokuk.exception.AppException;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyQuestUserMapper;
+import com.kukokuk.mapper.UserMapper;
 import com.kukokuk.response.DailyQuestStatusResponse;
+import com.kukokuk.security.SecurityUtil;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
+import com.kukokuk.vo.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +30,48 @@ public class DailyQuestService {
 
     private final DailyQuestUserMapper dailyQuestUserMapper; // 삭제 예정
     private final ModelMapper modelMapper;
+    private final UserMapper userMapper;
     private final DailyQuestMapper dailyQuestMapper;
 
     public void insertExpLogWithQDailyQuest(ExpLogProcessingDto expLogProcessingDto) {
 
+    }
+
+    /**
+     * 사용자의 일일 도전과제 완료로 해당 일일 도전과제의 보상 획득 처리
+     * @param dailyQuestUserNo 완료된 일일 도전과제 번호
+     * @param userNo 사용자 번호
+     * @return 업데이트 후 사용자 힌트 개수
+     */
+    @Transactional
+    public int updateDailyQuestUserObtained(int dailyQuestUserNo, int userNo) {
+        log.info("updateDailyQuestUserObtained() 서비스 실행");
+
+        // 퀘스트 완료 내역 번호로 사용자의 오늘 퀘스트 완료 내역 가져오기
+        DailyQuestUser savedDailyQuestUser = dailyQuestMapper.getDailyQuestUserByDailyQuestUserNo(dailyQuestUserNo, userNo);
+
+        if (savedDailyQuestUser == null) {
+            // 잘 못된 요청에 의한 내역이 없을 경우
+            throw new AppException("오늘은 이 도전과제를 완료하지 않았습니다.");
+        } else if ("Y".equals(savedDailyQuestUser.getIsObtained())) {
+            // 중복된 요청일 경우
+            throw new AppException("해당 보상은 이미 수령하였습니다.");
+        }
+
+        // 해당 완료된 일일 도전과제 보상 수령 처리
+        savedDailyQuestUser.setIsObtained("Y");
+        dailyQuestMapper.updateDailyQuestUserObtained(savedDailyQuestUser);
+        
+        // 해당 완료된 일일 도전과제 보상 수령으로 사용자 힌트 개수 증가 처리
+        userMapper.updateUserHintCountPlus(userNo);
+
+        // 업데이트된 사용자 정보 조회하여 시큐리티 사용자 정보 갱신
+        // principal로 표현식을 사용하는 html에 적용되도록 함
+        User updatedUser = userMapper.getUserByUserNoWithRoleNames(userNo);
+        SecurityUtil.updateAuthentication(updatedUser);
+
+        // 업데이트 후 힌트 개수 반환
+        return updatedUser.getHintCount();
     }
 
     /**
@@ -68,6 +109,7 @@ public class DailyQuestService {
         //  - 일일 도전과제 완료 테이블에 외래키로 사용되는 일일 도전과제 번호를 key로 설정
         Map<Integer, DailyQuestUser> completeQuestMap = dailyQuestMapper.getDailyQuestUserByUserNo(userNo).stream()
             .collect(Collectors.toMap(DailyQuestUser::getDailyQuestNo, Function.identity()));
+        log.info("completeQuestMap: {}", completeQuestMap);
 
         // 4. 최종 응답 리스트를 생성 (미리 용량을 dailyQuests 크기로 잡아 약간의 메모리/성능 이점)
         List<DailyQuestStatusResponse> result = new ArrayList<>(dailyQuests.size());

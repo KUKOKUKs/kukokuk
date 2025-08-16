@@ -48,6 +48,7 @@ public class UserService {
                 userMapper.updateUserProfileImage(userNo, null);
 
                 // 업데이트된 사용자 정보 조회하여 시큐리티 사용자 정보 갱신
+                // principal로 표현식을 사용하는 html에 적용되도록 함
                 User updatedUser = getUserByUserNoWithRoleNames(userNo);
                 SecurityUtil.updateAuthentication(updatedUser);
             } catch (IOException ioException) {
@@ -107,6 +108,7 @@ public class UserService {
             userMapper.updateUserProfileImage(userNo, profileFilename);
 
             // 업데이트된 사용자 정보 조회하여 시큐리티 사용자 정보 갱신
+            // principal로 표현식을 사용하는 html에 적용되도록 함
             User updatedUser = getUserByUserNoWithRoleNames(userNo);
             SecurityUtil.updateAuthentication(updatedUser);
         } catch (DataAccessException e) {
@@ -119,28 +121,6 @@ public class UserService {
             }
             throw new AppException("데이터베이스 작업 중 오류가 발생했습니다.\n다시 시도해 주세요.");
         }
-    }
-
-    /**
-     * 사용자 경험치 업데이트
-     * @param user 사용자 정보
-     * @param addExp 추가할 경험치
-     */
-    public void updateUserExperienceAndLevelUp(User user, int addExp) {
-        log.info("updateUserExperienceAndLevelUp() 서비스 실행");
-
-        int newExp = user.getExperiencePoints() + addExp; // 추가할 경험치를 포함한 경험치
-        user.setExperiencePoints(newExp);
-
-        if (newExp >= user.getMaxExp()) {
-            // newExp가 현재 maxExp(다음 레벨 진입점)과 같거나 클 경우
-            user.setLevel(user.getLevel() + 1); // 레벨업 적용
-        }
-        userMapper.updateUserExperienceAndLevelUp(user);
-
-        // 업데이트된 사용자 정보 조회하여 시큐리티 사용자 정보 갱신
-        User updatedUser = getUserByUserNoWithRoleNames(user.getUserNo());
-        SecurityUtil.updateAuthentication(updatedUser);
     }
 
     /**
@@ -174,6 +154,7 @@ public class UserService {
         userMapper.updateUser(user);
 
         // 업데이트된 사용자 정보 조회하여 시큐리티 사용자 정보 갱신
+        // principal로 표현식을 사용하는 html에 적용되도록 함
         User updatedUser = getUserByUserNoWithRoleNames(userNo);
         SecurityUtil.updateAuthentication(updatedUser);
     }

@@ -26,6 +26,19 @@ public class ApiDailyQuestController {
 
     private final DailyQuestService dailyQuestService;
 
+    // 사용자의 완료된 일일 도전과제 보상 획득 처리 및 획득 후 힌트 개수 요청
+    @PutMapping("/{dailyQuestUserNo}/obtain")
+    public ResponseEntity<ApiResponse<Integer>> dailyQuestObtainReward(
+        @PathVariable("dailyQuestUserNo") int dailyQuestUserNo
+        , @AuthenticationPrincipal SecurityUser securityUser) {
+        log.info("dailyQuestGetHint() 컨트롤러 실행");
+        int currentHintCount = dailyQuestService.updateDailyQuestUserObtained(
+            dailyQuestUserNo
+            , securityUser.getUser().getUserNo()
+        );
+        return ResponseEntityUtils.ok(currentHintCount);
+    }
+
     // 미인증 시 사용될 모든 퀘스트 목록 조회 요청
     @GetMapping("/basic")
     public ResponseEntity<ApiResponse<List<DailyQuest>>> dailyQuestBasic() {
