@@ -24,13 +24,13 @@ public class ExpProcessingService {
     private final ExpService expService;
     private final DailyQuestUserService dailyQuestUserService;
     private final UserService userService;
-
+    
     /**
      * 컨텐츠별 경험치 획득 처리
      * 경험치 획득 이력 추가,
      * 사용자 누적 경험치, 조건에 따라 레벨 업데이트
      * 일일 도전과제 관련 컨텐츠 일 경우 추가 로직 수행
-     * @param expProcessingDto 컨텐츠별 경험치 획득 정보
+     * @param expProcessingDto 컨텐츠별 경험치 획득 정보 및 퀘스트 정보
      */
     @Transactional
     public void expProcessing(ExpProcessingDto expProcessingDto) {
@@ -56,15 +56,17 @@ public class ExpProcessingService {
         userService.updateUser(updateUser);
 
         // 일일 도전과제 컨텐츠 타입 체크
-        DailyQuestEnum dailyQuestEnum = DailyQuestEnum.getByType(contentType);
-        if (dailyQuestEnum == null) return; // 일일 도전과제가 아닌 경우 종료
+        Integer dailyQuestNo = expProcessingDto.getDailyQuestNo(); // 전달받은 객체에서 가져오기
+        DailyQuestEnum dailyQuestEnum = DailyQuestEnum.getByDailyQuestNo(dailyQuestNo); // Enum 확인
 
-        // 일일 도전과제 컨텐츠 일 경우
-        int questNo = dailyQuestEnum.getDailyQuestNo(); // 퀘스트 번호
-            
-        // 일일 도전과제 완료 내역 조회
+        // 일일 도전과제가 아닌 경우 종료
+        // dailyQuestNo가 잘못입력되었거나 null일 경우 
+        // dailyQuestEnum가 null이거나 타입이 expProcessingDto의 contentType과 일치하지 않을 경우
+        if (dailyQuestEnum == null || !dailyQuestEnum.getType().equals(contentType)) return;
+
+        // 일일 도전과제 컨텐츠 일 경우 완료 내역 조회
         DailyQuestUser savedDailyQuestUser = dailyQuestUserService
-                                            .getDailyQuestUserByQuestNoAndUserNo(questNo, userNo);
+                                            .getDailyQuestUserByQuestNoAndUserNo(dailyQuestNo, userNo);
         if (savedDailyQuestUser != null) return; // 일일 도전과제 완료 내역이 이미 있을 경우 종료
 
         // 일일 도전과제 완료 내역이 없을 경우
@@ -80,7 +82,7 @@ public class ExpProcessingService {
         // 일일 도전과제 완료 조건에 부합했을 경우 완료 내역 등록
         if (isQuestCompleted) {
             DailyQuestUser dailyQuestUser = DailyQuestUser.builder()
-                .dailyQuestNo(questNo)
+                .dailyQuestNo(dailyQuestNo)
                 .userNo(userNo)
                 .build();
             dailyQuestUserService.insertDailyQuestUser(dailyQuestUser);

@@ -23,8 +23,9 @@ public class ExpProcessingDto {
      */
 
     private int userNo;             // 사용자 번호
-    private String contentType;     // 컨텐츠 타입
+    private String contentType;     // 컨텐츠 타입(추후 다른 컨텐츠가 추가가 되더라도 사용 가능)
     private Integer contentNo;      // 컨텐츠 이력 테이블 식별자 값
     private Integer expGained;      // 획득한 경험치
+    private Integer dailyQuestNo;   // 일일 도전과제 관련 컨텐츠일 경우 추가(아닐경우 null)
 
 }

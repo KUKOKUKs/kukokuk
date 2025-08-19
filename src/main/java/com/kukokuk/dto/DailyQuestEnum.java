@@ -18,8 +18,8 @@ public enum DailyQuestEnum {
     STUDY_ESSAY(2, "ESSAY", "일일학습 서술형 퀴즈 1회 완료", ProgressType.COUNT, 1),
     QUIZ_SPEED(3, "SPEED", "스피드 퀴즈 3회 플레이", ProgressType.COUNT, 3),
     QUIZ_LEVEL(4, "LEVEL", "단계별 퀴즈 1회 플레이", ProgressType.COUNT, 1),
-    DICTATION_PLAY(5, "DICTATION_PLAY", "받아쓰기 1회 플레이", ProgressType.COUNT, 1),
-    DICTATION_EXP(6, "DICTATION_EXP", "받아쓰기로 경험치 200EXP 획득", ProgressType.EXP, 200);
+    DICTATION_PLAY(5, "DICTATION", "받아쓰기 1회 플레이", ProgressType.COUNT, 1),
+    DICTATION_EXP(6, "DICTATION", "받아쓰기로 경험치 200EXP 획득", ProgressType.EXP, 200);
 
     private final int dailyQuestNo;             // 일일도전과제 식별값
     private final String type;                  // 일일도전과제 타이틀
@@ -34,15 +34,15 @@ public enum DailyQuestEnum {
     }
 
     // 불변 Map 초기화
-    private static final Map<String, DailyQuestEnum> BY_TYPE =
+    private static final Map<Integer, DailyQuestEnum> BY_NO =
         Collections.unmodifiableMap(
             Arrays.stream(values())
-                .collect(Collectors.toMap(DailyQuestEnum::getType, e -> e))
+                .collect(Collectors.toMap(DailyQuestEnum::getDailyQuestNo, e -> e))
         );
 
-    // 타입으로 Enum 조회
-    public static DailyQuestEnum getByType(String type) {
-        return BY_TYPE.get(type); // 존재하지 않으면 null 반환
+    // 퀘스트번호로 Enum 조회
+    public static DailyQuestEnum getByDailyQuestNo(int dailyQuestNo) {
+        return BY_NO.get(dailyQuestNo); // 존재하지 않으면 null 반환
     }
 
 }
