@@ -1,6 +1,8 @@
 package com.kukokuk.vo;
 
 import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,8 +11,10 @@ import org.apache.ibatis.type.Alias;
 
 @Getter
 @Setter
+@Builder
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @Alias("DailyQuestUser")
 public class DailyQuestUser {
 

@@ -7,16 +7,16 @@ import {apiErrorProcessByXhr} from '../../utils/api-error-util.js';
  * @param dailyQuestUserNo 일일 도전과제 완료 내역 번호
  * @returns 업데이트 후 힌트 개수
  */
-export async function apiPutDailyQuestObtainReward(dailyQuestUserNo) {
-    console.log("apiPutDailyQuestObtainReward() api 요청 실행");
+export async function apiPutDailyQuestUserObtainReward(dailyQuestUserNo) {
+    console.log("apiPutDailyQuestUserObtainReward() api 요청 실행");
     try {
         const response = await $.ajax({
             method: "PUT",
-            url: `/api/daily-quests/${dailyQuestUserNo}/obtain`,
+            url: `/api/daily-quest-user/${dailyQuestUserNo}/obtain`,
             dataType: "json",
         });
 
-        console.log("apiPutDailyQuestObtainReward() api 요청 response: ", response);
+        console.log("apiPutDailyQuestUserObtainReward() api 요청 response: ", response);
         return response.data;
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);

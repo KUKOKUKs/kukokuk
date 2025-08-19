@@ -1,16 +1,12 @@
 package com.kukokuk.service;
 
-import com.kukokuk.dto.DailyQuestProgressAggDto;
-import com.kukokuk.dto.ExpLogProcessingDto;
+import com.kukokuk.dto.ExpAggregateDto;
 import com.kukokuk.exception.AppException;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyQuestUserMapper;
-import com.kukokuk.mapper.UserMapper;
 import com.kukokuk.response.DailyQuestStatusResponse;
-import com.kukokuk.security.SecurityUtil;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
-import com.kukokuk.vo.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,54 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor // 초기화 되지않은 final 필드나, @NonNull 이 붙은 필드에 대해 생성자를 생성
 public class DailyQuestService {
 
-    private final DailyQuestUserMapper dailyQuestUserMapper; // 삭제 예정
     private final ModelMapper modelMapper;
-    private final UserMapper userMapper;
     private final DailyQuestMapper dailyQuestMapper;
 
-    public void insertExpLogWithQDailyQuest(ExpLogProcessingDto expLogProcessingDto) {
+    private final DailyQuestUserMapper dailyQuestUserMapper; // 삭제 예정
 
-    }
-
-    /**
-     * 사용자의 일일 도전과제 완료로 해당 일일 도전과제의 보상 획득 처리
-     * @param dailyQuestUserNo 완료된 일일 도전과제 번호
-     * @param userNo 사용자 번호
-     * @return 업데이트 후 사용자 힌트 개수
-     */
-    @Transactional
-    public int updateDailyQuestUserObtained(int dailyQuestUserNo, int userNo) {
-        log.info("updateDailyQuestUserObtained() 서비스 실행");
-
-        // 퀘스트 완료 내역 번호로 사용자의 오늘 퀘스트 완료 내역 가져오기
-        DailyQuestUser savedDailyQuestUser = dailyQuestMapper.getDailyQuestUserByDailyQuestUserNo(dailyQuestUserNo, userNo);
-
-        if (savedDailyQuestUser == null) {
-            // 잘 못된 요청에 의한 내역이 없을 경우
-            throw new AppException("오늘은 이 도전과제를 완료하지 않았습니다.");
-        } else if ("Y".equals(savedDailyQuestUser.getIsObtained())) {
-            // 중복된 요청일 경우
-            throw new AppException("해당 보상은 이미 수령하였습니다.");
-        }
-
-        // 해당 완료된 일일 도전과제 보상 수령 처리
-        savedDailyQuestUser.setIsObtained("Y");
-        dailyQuestMapper.updateDailyQuestUserObtained(savedDailyQuestUser);
-        
-        // 해당 완료된 일일 도전과제 보상 수령으로 사용자 힌트 개수 증가 처리
-        userMapper.updateUserHintCountPlus(userNo);
-
-        // 업데이트된 사용자 정보 조회하여 시큐리티 사용자 정보 갱신
-        // principal로 표현식을 사용하는 html에 적용되도록 함
-        User updatedUser = userMapper.getUserByUserNoWithRoleNames(userNo);
-        SecurityUtil.updateAuthentication(updatedUser);
-
-        // 업데이트 후 힌트 개수 반환
-        return updatedUser.getHintCount();
-    }
+    private final ExpService expService;
+    private final DailyQuestUserService dailyQuestUserService;
 
     /**
      * 모든 퀘스트 정보 목록 조회
@@ -95,19 +53,19 @@ public class DailyQuestService {
         // 1. 모든 일일 도전과제를 조회
         //  - DailyQuest는 KUKOKUK_DAILY_QUESTS 테이블과 1:1 매핑되는 도메인 객체
         //  - 이 리스트를 기준으로 사용자별 진행도/보상여부를 뒤에서 결합
-        List<DailyQuest> dailyQuests = dailyQuestMapper.getDailyQuests();
+        List<DailyQuest> dailyQuests = getDailyQuests();
 
         // 2. 오늘 경험치 획득 로그를 콘텐츠 타입(content_type)별로 집계
-        //  - DailyQuestProgressAggDto contentType 기준으로 SUM(EXP_GAINED), COUNT(*)를 담는 DTO
+        //  - ExpAggregateDto contentType 기준으로 SUM(EXP_GAINED), COUNT(*)를 담는 DTO
         //  - 쿼리에서 날짜 필터(CURDATE() ~ CURDATE()+1)를 적용해 '오늘'만 집계하여 불필요한 후처리 방지
-        // 2-1. 집계 결과를 (contentType → DailyQuestProgressAggDto) 맵으로 전환
+        // 2-1. 집계 결과를 (contentType → ExpAggregateDto) 맵으로 전환
         //  - 이후 반복 처리에서 contentType 키로 O(1)에 집계를 조회하기 위함(성능/가독성 ↑)
-        Map<String, DailyQuestProgressAggDto> progressAggMap = dailyQuestMapper.getDailyQuestProgressAggByUserNo(userNo).stream()
-            .collect(Collectors.toMap(DailyQuestProgressAggDto::getContentType, Function.identity()));
+        Map<String, ExpAggregateDto> ExpAggMap = expService.getTodayExpAggregateByUserNo(userNo).stream()
+            .collect(Collectors.toMap(ExpAggregateDto::getContentType, Function.identity()));
 
         // 3. 사용자의 일일 도전과제 완료된 목록(보상 수령 여부 포함) 조회
         //  - 일일 도전과제 완료 테이블에 외래키로 사용되는 일일 도전과제 번호를 key로 설정
-        Map<Integer, DailyQuestUser> completeQuestMap = dailyQuestMapper.getDailyQuestUserByUserNo(userNo).stream()
+        Map<Integer, DailyQuestUser> completeQuestMap = dailyQuestUserService.getDailyQuestUserByUserNo(userNo).stream()
             .collect(Collectors.toMap(DailyQuestUser::getDailyQuestNo, Function.identity()));
         log.info("completeQuestMap: {}", completeQuestMap);
 
@@ -117,7 +75,7 @@ public class DailyQuestService {
         // 5. 모든 일일 도전과제를 하나씩 집계 일일도전과제/목표량/완료 번호/보상 수령 여부를 결합해 응답 DTO 생성
         for (DailyQuest quest : dailyQuests) {
             // 5-1. 현재 퀘스트의 content_type으로 오늘 집계 가져오기
-            DailyQuestProgressAggDto agg = progressAggMap.get(quest.getContentType());
+            ExpAggregateDto agg = ExpAggMap.get(quest.getContentType());
 
             // 5-2. 진행도(progressValue) 계산 규칙:
             //  - EXP형(quest.getPoint() != null): 오늘 획득한 경험치 총합(expSum)을 사용

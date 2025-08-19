@@ -7,15 +7,15 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserMapper {
-
+    
     /**
-     * 사용자 힌드 개수 -1 업데이트
+     * 사용자 힌트 개수 -1 업데이트
      * @param userNo 사용자 번호
      */
     void updateUserHintCountMinus(int userNo);
-
+    
     /**
-     * 사용자 힌드 개수 +1 업데이트
+     * 사용자 힌트 개수 +1 업데이트
      * @param userNo 사용자 번호
      */
     void updateUserHintCountPlus(int userNo);
@@ -63,18 +63,18 @@ public interface UserMapper {
     User getUserByUsernameWithRoleNames(String username);
 
     /**
-     * 사용자 이메일로 사용자 정보 조회
-     * @param username 사용자 이메일
-     * @return 사용자 정보
+     * 이메일 중복 여부
+     * @param usernam 이메일
+     * @return 1=중복 / 0 = 중복X
      */
-    User getUserByUsername(String username);
-
+    int isDuplicatedByUsername(String username);
+    
     /**
-     * 사용자 닉네임으로 사용자 정보 조회
-     * @param nickname 사용자 닉네임
-     * @return 사용자 정보
+     * 닉네임 중복 여부
+     * @param nickname 닉네임
+     * @return 1=중복 / 0 = 중복X
      */
-    User getUserByNickname(String nickname);
+    int isDuplicatedByNickname(String nickname);
 
     /**
      * 사용자 번호로 사용자 정보 조회

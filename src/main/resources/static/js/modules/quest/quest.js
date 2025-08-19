@@ -1,6 +1,6 @@
 import {
     apiGetDailyQuestList,
-    apiPutDailyQuestObtainReward
+    apiPutDailyQuestUserObtainReward
 } from "./quest-api.js";
 import {replaceQuestLinkByContentType} from "../../utils/handler-util.js";
 
@@ -63,7 +63,8 @@ $(document).ready(async function () {
                 $qusetTotalCount.text(dailyQuestList.length); // 일일 도전과제 총 개수 입력
                 $qusetSuccessCount.text(successCount); // 완료된 도전과제 개수 입력
 
-                if (successCount >= totalCount) { // 모든 도전과제 완료 시 표시
+                // 모든 도전과제 완료 시
+                if (successCount >= totalCount) {
                     $qusetSuccessText.text("완료");
                     $questContainer.find(".component_title").addClass("pd_0");
                 }
@@ -97,8 +98,8 @@ $(document).ready(async function () {
         $this.addClass("disabled"); // 중복 클릭 방지
 
         try {
-            const response = await apiPutDailyQuestObtainReward(dailyQuestUserNo);
-            console.log("apiPutDailyQuestObtainReward() 실행 결과: ", response);
+            const response = await apiPutDailyQuestUserObtainReward(dailyQuestUserNo);
+            console.log("apiPutDailyQuestUserObtainReward() 실행 결과: ", response);
 
             if (response) {
                 // 정상 응답 시 해당 퀘스트 리스트 제거 및 프로필 힌트 개수 업데이트
@@ -106,6 +107,7 @@ $(document).ready(async function () {
                 getHintCountAction(response);
                 successCount++;
 
+                // 모든 도전과제 완료 시
                 if (successCount >= totalCount) {
                     $qusetSuccessText.text("완료");
                     $questContainer.find(".component_title").addClass("pd_0");
@@ -114,7 +116,7 @@ $(document).ready(async function () {
         } catch (error) {
             console.error(error);
             alert("보상 획득에 실패했습니다. 다시 시도해 주세요.");
-            location.reload();
+            // location.reload();
         }
     });
     

@@ -10,6 +10,47 @@ import org.apache.ibatis.annotations.Param;
 public interface DailyQuestUserMapper {
 
     /**
+     * 사용자의 퀘스트 완료 내역 수정(보상 수령 여부)
+     * 식별자, 사용자번호에 대한 조건처리가 필요하여
+     * DailyQuestUser 객체로 처리
+     * @param dailyQuestUser 사용자의 퀘스트 완료 내역 정보
+     */
+    void updateDailyQuestUserObtained(DailyQuestUser dailyQuestUser);
+
+    /**
+     * 사용자 번호와 퀘스트 번호로 오늘 퀘스트 완료 내역 조회
+     * @param dailyQuestNo 퀘스트 번호
+     * @param userNo 사용자 번호
+     * @return 오늘 퀘스트 완료 내역 정보
+     */
+    DailyQuestUser getDailyQuestUserByQuestNoAndUserNo(@Param("dailyQuestNo") int dailyQuestNo
+        , @Param("userNo") int userNo);
+
+    /**
+     * 퀘스트 완료 내역 번호로 사용자의 오늘 퀘스트 완료 내역 조회
+     * @param dailyQuestUserNo 퀘스트 완료 내역 번호
+     * @param userNo 사용자 번호
+     * @return 퀘스트 완료 내역
+     */
+    DailyQuestUser getDailyQuestUserByDailyQuestUserNo(@Param("dailyQuestUserNo") int dailyQuestUserNo
+        , @Param("userNo") int userNo);
+
+    /**
+     * 사용자의 일일도전과제 완료된 목록 조회
+     * @param userNo 사용자 번호
+     * @return 사용자의 일일도전과제 완료된 목록
+     */
+    List<DailyQuestUser> getDailyQuestUserByUserNo(int userNo);
+
+    /**
+     * 퀘스트 완료 내역 등록
+     * @param dailyQuestUser 퀘스트 완료 내역
+     */
+    void insertDailyQuestUser(DailyQuestUser dailyQuestUser);
+
+    /* ********************* 아래 삭제 예정 ********************* */
+
+    /**
      * 특정 사용자의 일일 도전과제 수행 목록을 조건에 따라 조회
      *
      * @param userNo    사용자번호
@@ -34,11 +75,6 @@ public interface DailyQuestUserMapper {
      * @param dailyQuestUserNo 일일 도전과제 수행 식별자
      */
     void updateIsObtained(int dailyQuestUserNo);
-
-    /**
-     * 도전과제를 달성한 후, 사용자의 도전과제 달성 이력을 생성
-     */
-    void insertDailyQuestUser(DailyQuestUser dailyQuestUser);
 
     /**
      * 이 쿼리를 수행하는 날짜에 존재하는 사용자의 해당 도전과제에 대한 이력 조회
