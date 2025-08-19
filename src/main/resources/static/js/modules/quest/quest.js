@@ -9,11 +9,10 @@ $(document).ready(async function () {
     const $questContainer = $("#quest-container"); // 일일 도전과제 컴포넌트 요소
     const isLoggedIn = $questContainer.data("logged-in"); // 인증 상태
     const $questListContainer = $(".quest_list_container");
-    const $qusetSuccessText = $("#success-text"); // 모든 일일 도전과제 완료 시 문구 노출 요소
     const $qusetTotalCount = $("#total-count"); // 일일 도전과제 총 개수 요소
     const $qusetSuccessCount = $("#success-count"); // 완료된 일일 도전과제 개수 요소
-    let successCount = 0; // 일일 도전과제 완료 개수
     let totalCount = 0; // 일일 도전과제 개수
+    let rewardClaimedCount = 0; // 보상 수령 개수
 
     // 사용자에 대한 모든 퀘스트와 진행도 및 보상 획득 여부
     // 정보를 포함한 목록 조회 요청하여 리스트 추가
@@ -26,7 +25,7 @@ $(document).ready(async function () {
             const dailyQuestList = await apiGetDailyQuestList(isLoggedIn);
             totalCount = dailyQuestList.length; // 일일 도전과제 개수 취합
 
-            let constent = "";
+            let content = "";
             for (let quest of dailyQuestList) {
                 const isExpType = quest.expType; // 퀘스트 타입(경험치, 횟수)
                 const totalScore = !isExpType ? quest.count : quest.point; // 퀘스트 완료 조건
@@ -36,9 +35,9 @@ $(document).ready(async function () {
                 const isSucceed = progressValue >= totalScore; // 완료된 퀘스트인지 체크
                 const isObtained = quest.isObtained != null && quest.isObtained == "Y"; // 보상 수령 여부
 
-                if (isSucceed) successCount++; // 완료된 퀘스트 개수 취합
+                if (isObtained) rewardClaimedCount++; // 보상 수령 개수 취합
 
-                constent += !isObtained
+                content += !isObtained
                     ? `<div class="component_info small with_icon">
                             <div class="list_info">
                                 <p class="list_info">${quest.contentText}</p>
@@ -58,19 +57,17 @@ $(document).ready(async function () {
                             }
                         </div>`
                     : "";
-
-
-                $qusetTotalCount.text(dailyQuestList.length); // 일일 도전과제 총 개수 입력
-                $qusetSuccessCount.text(successCount); // 완료된 도전과제 개수 입력
-
-                // 모든 도전과제 완료 시
-                if (successCount >= totalCount) {
-                    $qusetSuccessText.text("완료");
-                    $questContainer.find(".component_title").addClass("pd_0");
-                }
             }
 
-            $questListContainer.html(constent); // 퀘스트리스트 추가
+            if (rewardClaimedCount === totalCount) {
+                // 보상 수령건이 모든 퀘스트 수와 같다면 모든 퀘스트 완료+보상수령으로 판단
+                $questContainer.remove();
+            } else {
+                // 퀘스트리스트 추가
+                $questListContainer.html(content);
+                $qusetTotalCount.text(totalCount); // 일일 도전과제 총 개수 입력
+                $qusetSuccessCount.text(rewardClaimedCount); // 완료된 도전과제 개수 입력
+            }
         } catch (error) {
             console.error("일일 도전과제 리스트 요청 실패: ", error.message);
             $questListContainer.html(
@@ -105,18 +102,20 @@ $(document).ready(async function () {
                 // 정상 응답 시 해당 퀘스트 리스트 제거 및 프로필 힌트 개수 업데이트
                 $this.closest(".component_info").remove();
                 getHintCountAction(response);
-                successCount++;
 
-                // 모든 도전과제 완료 시
-                if (successCount >= totalCount) {
-                    $qusetSuccessText.text("완료");
-                    $questContainer.find(".component_title").addClass("pd_0");
+                // 보상 수령 카운트 증가
+                rewardClaimedCount++;
+                $qusetSuccessCount.text(rewardClaimedCount);
+
+                if (rewardClaimedCount === totalCount) {
+                    // 보상 수령건이 모든 퀘스트 수와 같다면 모든 퀘스트 완료+보상수령으로 판단
+                    $questContainer.remove();
                 }
             }
         } catch (error) {
             console.error(error);
             alert("보상 획득에 실패했습니다. 다시 시도해 주세요.");
-            // location.reload();
+            location.reload();
         }
     });
     
