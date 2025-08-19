@@ -7,8 +7,8 @@ import {apiErrorProcessByXhr} from '../../utils/api-error-util.js';
  * @param username username
  * @returns boolean true=중복, false=중복아님
  */
-export async function checkUsernameDuplicate(username) {
-    console.log("checkUsernameDuplicate() api 요청 실행", username);
+export async function apiCheckUsernameDuplicate(username) {
+    console.log("apiCheckUsernameDuplicate() api 요청 실행", username);
     try {
         const response = await $.ajax({
             method: "GET",
@@ -16,6 +16,8 @@ export async function checkUsernameDuplicate(username) {
             data: { username },
             dataType: "json",
         });
+
+        console.log("apiCheckUsernameDuplicate() api 요청 response: ", response);
         return response.data;
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);
@@ -27,8 +29,8 @@ export async function checkUsernameDuplicate(username) {
  * @param nickname nickname
  * @returns boolean true=중복, false=중복아님
  */
-export async function checkNicknameDuplicate(nickname) {
-    console.log("checkNicknameDuplicate() api 요청 실행", nickname);
+export async function apiCheckNicknameDuplicate(nickname) {
+    console.log("apiCheckNicknameDuplicate() api 요청 실행", nickname);
     try {
         const response = await $.ajax({
             method: "GET",
@@ -36,6 +38,8 @@ export async function checkNicknameDuplicate(nickname) {
             data: { nickname },
             dataType: "json",
         });
+
+        console.log("apiCheckNicknameDuplicate() api 요청 response: ", response);
         return response.data;
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);

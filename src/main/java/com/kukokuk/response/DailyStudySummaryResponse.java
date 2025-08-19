@@ -23,4 +23,5 @@ public class DailyStudySummaryResponse {
     private String school;              // "초등" 또는 "중등"
     private int grade;                  // 학년
     private int sequence;               // 학년 내 자료 순서
+    private boolean essayQuizCompleted; // 사용자의 서술형 퀴즈 완료 여부
 }

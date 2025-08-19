@@ -36,6 +36,7 @@
     aspect-ratio: 1 / 1;
     background: url("/images/kukokuk_symbol_logo.png") 0 0 no-repeat;
     background-size: contain;
+    cursor: pointer;
 }
 
 .main {
@@ -56,18 +57,34 @@
         max-width: var(--centerContentWidth); /* 디테일 컨텐츠 최대 사이즈 */
         margin: auto;
     }
+
+    .center_content_wrap {
+        width: var(--mainContentWidth);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--largeGap);
+        padding: var(--containerPadding) 0;
+    }
 }
 
 #main-content {
     width: 100%;
     max-width: var(--mainContentWidth); /* 컨텐츠 사이즈 */
     padding: var(--containerPadding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
+
 }
 
 #sub-content {
     width: 100%;
     max-width: var(--subContentWidth);
     padding: var(--containerPadding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
 }
 
 .container {
@@ -94,25 +111,47 @@
     border-radius: var(--bdrs);
     border: var(--baseBorder);
 
+    /* 컴포넌트의 좌상단에 위치할 컴포넌트 title */
+    .component_title {
+        font-size: var(--largeFontSize);
+        font-weight: bold;
+        padding-bottom: var(--tinyGap);
+    }
+
+    /* 리스트 컴포넌트의 리스트 부분 */
     .component_list_container {
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: var(--tinyGap);
+    }
 
-        /* 컴포넌트의 좌상단에 위치할 컴포넌트 title */
-        .component_title {
-            align-content: center;
-            font-size: var(--largeFontSize);
-            font-weight: 700;
+    /* 리스트 요소 */
+    .component_info {
+        padding: var(--smallPadding);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--smallGap);
 
-        }
+        &.small {
+            font-size: var(--smallFontSize);
 
-        /* 리스트 컴포넌트의 리스트 부분 */
-        .component_list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            border-top: var(--baseBorder);
+            &.with_icon {
+                padding: var(--smallComponentWithIconPadding);
+
+                .btn {
+                    width: var(--baseIcon);
+                    min-width: var(--baseIcon);
+                    max-height: var(--smallIcon);
+                    min-height: var(--smallIcon);
+                    box-sizing: content-box;
+
+                    img {
+                        width: var(--smallIcon);
+                        height: var(--smallIcon);
+                    }
+                }
+            }
         }
     }
 }
@@ -131,6 +170,57 @@
     font-size: var(--titleFontSize);
     font-weight: bold;
     text-align: center;
+}
+
+/* bar gauge */
+.bar_gauge {
+    width: 100%;
+    height: 9px;
+    font-size: var(--smallFontSize);
+    background-color: var(--lightGrayColor);
+    border-radius: var(--bdrs);
+    border: 1px solid var(--borderColor);
+    position: relative;
+
+    .gauge {
+        max-width: 100%;
+        height: 100%;
+        background-color: var(--yellowColor);
+        border-radius: var(--bdrs);
+        transition: width var(--trst), background-color var(--trst); // background-color 변경되면 ease룰 실행
+    }
+
+    .gauge_info {
+        display: inline-block;
+        font-size: var(--smallFontSize);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .marker {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+
+        .line {
+            width: 3px;
+            height: 18px;
+            background-color: var(--darkGreenColor);
+            border-radius: var(--bdrs);
+        }
+
+        .label {
+            width: max-content;
+            font-size: var(--subFontSize);
+            position: absolute;
+            top: 100%;
+        }
+    }
 }
 
 /* error page */
@@ -205,6 +295,10 @@
     align-items: center;
     gap: var(--baseGap);
     border-radius: var(--bdrs);
+
+    &.justify_content_center {
+        justify-content: center;
+    }
 }
 
 .form_input_list {
@@ -553,6 +647,10 @@
         transform: translate(-50%, -50%);
         transition: margin-top var(--trst);
         overflow: hidden;
+        
+        .btn_list {
+            background-color: #fff;
+        }
 
         .modal_top {
             width: 100%;
@@ -595,6 +693,10 @@
                 left: 0;
                 bottom: 0;
             }
+
+            &.small {
+                min-height: var(--modalSmallHeight);
+            }
         }
     }
 
@@ -632,7 +734,6 @@
 /* button */
 .btn_list {
     width: 100%;
-    background-color: #fff;
     display: flex;
     align-items: center;
     gap: var(--smallGap);
@@ -649,7 +750,6 @@
             width: 25%;
         }
     }
-
 }
 
 .btn {
@@ -657,6 +757,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    min-width: max-content;
     padding: var(--smallPadding);
     border-radius: var(--bdrs);
     border: 1px solid var(--subColor);
@@ -779,33 +880,37 @@
     display: none;
 }
 
+.cursor_pointer {
+    cursor: pointer;
+}
+
 .d_flex {
     width: 100%;
     display: flex;
+}
 
-    &.column {
-        flex-direction: column; /* 세로형 */
-    }
+.column {
+    flex-direction: column; /* 세로형 */
+}
 
-    &.justify_content_center {
-        justify-content: center; /* 중앙 정렬 */
-    }
+.justify_content_center {
+    justify-content: center; /* 중앙 정렬 */
+}
 
-    &.justify_content_between {
-        justify-content: space-between; /* 양끝 정렬 */
-    }
+.justify_content_between {
+    justify-content: space-between; /* 양끝 정렬 */
+}
 
-    &.justify_content_end {
-        justify-content: flex-end;
-    }
+.align_center {
+    align-items: center; /* 수직/수평 정렬 */
+}
 
-    &.align_center {
-        align-items: center; /* 수직/수평 정렬 */
-    }
+.justify_content_end {
+    justify-content: flex-end;
+}
 
-    &.align_end {
-        align-items: flex-end; /* 끝 정렬 */
-    }
+.align_end {
+    align-items: flex-end; /* 끝 정렬 */
 }
 
 .base_gap {
@@ -880,6 +985,10 @@
     background-color: var(--lightGrayColor);
 }
 
+.bg_blue {
+    background-color: var(--blueColor);
+}
+
 /* font */
 .small_font {
     font-size: var(--smallFontSize);
@@ -925,6 +1034,11 @@
     font-size: var(--pageTitleFontSize);
     font-weight: 700;
     color: var(--darkGreenColor);
+
+    .emoji {
+        position: relative;
+        top: -4px;           /* 살짝 위로 이동 (필요에 따라 값 조절) */
+    }
 }
 
 /* base.html의 자식요소 (content) 컨테이너 */
@@ -932,6 +1046,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--baseGap);
+
+    &.large_gap {
+        gap: var(--largeGap);
+    }
 }
 
 /* 도전과제에서 힌트아이템 획득시 표현할 버튼 */
@@ -1012,4 +1130,31 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+/* 버튼에 빤딱이는 하이라이트를 주고 싶을 때 추가 */
+.highlight {
+    position: relative; /* ::before로 하이라이트 레이어를 버튼 안에 절대위치로 배치하기 위해 부모를 기준으로 삼음 */
+    overflow: hidden; /* 버튼 밖으로 하이라이트 효과가 튀어나가지 않도록 잘라냄 */
+
+    &:before {
+        content: '';  /* 가상의 하이라이트 레이어를 만들기 위해 필수 */
+        position: absolute; /* 버튼 내부에 절대 위치 배치 */
+        top: 0;
+        left: -75%; /* 시작 위치를 버튼 왼쪽 바깥쪽에서 시작 */
+        width: 50%; /* 하이라이트 레이어의 너비 (너무 넓으면 번쩍거림 과해짐) */
+        height: 100%;
+        background: linear-gradient( /* 빛이 지나가는 효과를 주기 위한 그라디언트 */
+                120deg,
+                rgba(255, 255, 255, 0) 0%, /* 시작: 약간 흐린 흰색 */
+                rgba(255, 255, 255, 0.5) 50%,  /* 중간: 강한 흰색 (빛의 중심) */
+                rgba(255, 255, 255, 0) 100%  /* 끝: 다시 흐린 흰색 */
+        );
+        animation: shine 2s infinite; /* 빛이 지나가는 애니메이션 반복 */
+    }
+}
+
+@keyframes shine {
+    0% { left: -75%; } /* 시작 시 빛 레이어가 왼쪽 바깥에서 시작 */
+    100% { left: 125%; } /* 끝날 때 오른쪽 바깥으로 이동 */
 }

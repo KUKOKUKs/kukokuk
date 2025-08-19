@@ -31,6 +31,7 @@
     --centerContentWidth: 800px;
     --modalWidth: 400px;
     --modalHeight: 450px;
+    --modalSmallHeight: 200px;
     --navWidth: 250px;
     --baseIcon: 30px;
     --smallIcon: 16px;
@@ -51,6 +52,7 @@
     --inputPadding: 27px 15px 8px;
     --modalPadding: 16px;
     --modalPaddingBottom: 80px;
+    --smallComponentWithIconPadding: 0.45em 0.45em 0.45em 0.9em;
 
     --baseBorder: 2px solid var(--borderColor);
     --thinBorder: 1px solid var(--borderColor);
@@ -61,7 +63,7 @@
 
     --baseGap: 1.25rem;
     --smallGap: 10px;
-    --tinyGap: 5px;
+    --tinyGap: 0.3em;
     --largeGap: 46px;
 }
 

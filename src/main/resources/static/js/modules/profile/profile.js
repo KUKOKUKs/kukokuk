@@ -1,7 +1,7 @@
 // noinspection ES6UnusedImports
 
 import {validateProfileForm} from './profile-form-validator.js';
-import {checkNicknameDuplicate} from '../sign/sign-api.js';
+import {apiCheckNicknameDuplicate,} from '../sign/sign-api.js';
 import {
     addInputErrorMessage,
     clearInputErrorMessage
@@ -14,7 +14,7 @@ import {
 } from '../../utils/handler-util.js';
 import {regExNickname, validateDate} from '../../utils/validation-util.js';
 
-$(document).ready(() => {
+$(document).ready(function () {
     // 프로필 설정 관련
     const $userProfileImgUpdateForm = $("#profile-img-update-form"); // 프로필 이미지 업데이트 폼
     const $userProfileImgDeleteForm = $("#profile-img-delete-form"); // 프로필 이미지 삭제 폼
@@ -83,7 +83,7 @@ $(document).ready(() => {
     // nickname 중복 체크
     async function handleNicknameInput(nickname) {
         clearInputErrorMessage($userUpdateNickname); // 에러 메세지 초기화
-        const isDuplicated = await checkNicknameDuplicate(nickname);
+        const isDuplicated = await apiCheckNicknameDuplicate(nickname);
         console.log("handleNicknameInput 실행 결과: ", isDuplicated);
 
         const isValid = !isDuplicated; // true=중복, false=중복이 아니므로 !로 적용
@@ -179,13 +179,13 @@ $(document).ready(() => {
     // 단계별 설명 리스트 모달창 열기
     const $modalStudyDifficultyInfoBtn = $("#modal-study-difficulty-info-btn"); // 모달창 열기 버튼
     const $modalStudyDifficultyInfo = $("#modal-study-difficulty-info"); // 모달창
-    $modalStudyDifficultyInfoBtn.click(function () {
+    $modalStudyDifficultyInfoBtn.click(async function () {
         if ($modalStudyDifficultyInfo.length) {
             // 해당 모달창 요소가 있을 경우 열기
             $modalStudyDifficultyInfo.show();
 
             // 모달창 단계별 설명 리스트 추가
-            setStudyDifficultyList($modalUserUpdateStudyDifficultyInfoElement);
+            await setStudyDifficultyList($modalUserUpdateStudyDifficultyInfoElement);
         }
     });
 });

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html layout:decorate="~{/layout/center}" th:with="title='받아쓰기'">
+<div layout:fragment="content">
+    <form th:action="@{/dictation/submit-answer}" method="post">
+        <div class="center_content_wrap">
+            <div th:replace="~{fragments/sign/step-bar :: step-fragment(${dictationQuestions.size()}, ${questionIndex + 1})}"></div>
+
+            <div class="question_container blue">
+                <div class="question_info">
+                    <button type="button" class="question_title_info" th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">
+                        <span class="speaker_icon">
+                            <iconify-icon icon="fluent:speaker-2-16-regular"></iconify-icon>
+                        </span>
+                        <span class="question_title"
+                              th:text="'문제 ' + (${questionIndex} + 1) + '번'"></span>
+                      </button>
+                    <div class="hint_btns">
+                        <button type="button"
+                                id="HintBtn1"
+                                class="hint_btn"
+                                th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">띄어<br>쓰기</button>
+                        <button type="button"
+                                id="HintBtn2"
+                                class="hint_btn"
+                                th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">초성<br>나열</button>
+                        <button type="button"
+                                id="HintBtn3"
+                                class="hint_btn"
+                                th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">첫<br>글자</button>
+                    </div>
+                </div>
+                <div class="question_info justify_content_center bg_blue">
+                    <div class="square_info">
+                    </div>
+                </div>
+            </div>
+
+            <div class="question_container yellow">
+                <div class="answer_info">
+                    <label for="user-answer" class="question_title_info color_primary">
+                        <span class="question_title">받아쓰기</span>
+                    </label>
+                        <input type="text" name="userAnswer" id="user-answer" required />
+                </div>
+            </div>
+
+            <div class="answer_btn_list">
+                <button type="button"
+                        id="AnswerBtn"
+                        class="btn white"
+                        th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">
+                    정답 보기
+                </button>
+                <button type="submit" class="btn primary">
+                    제출(<span th:text="${triesLeft}">2</span>)
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="module" th:src="@{/js/modules/dictation/dictation.js}"></script>
+</th:block>
+</html>
