@@ -9,8 +9,8 @@ import org.apache.ibatis.type.Alias;
 @Getter
 @Setter
 @NoArgsConstructor
-@Alias("ExpLogs")
-public class ExpLogs {
+@Alias("ExpLog")
+public class ExpLog {
 
     private int expLogNo;           // 경험치 로그 번호
     private int userNo;             // 경험치 획득한 사용자

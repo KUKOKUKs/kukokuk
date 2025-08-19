@@ -1,7 +1,6 @@
 package com.kukokuk.controller;
 
 import com.kukokuk.dto.UserForm;
-import com.kukokuk.exception.UserFormException;
 import com.kukokuk.service.UserService;
 import com.kukokuk.validation.EmailCheck;
 import com.kukokuk.validation.NicknameCheck;
@@ -69,11 +68,11 @@ public class UserRegisterController {
         }
 
         // username 중복 체크
-        try {
-            userService.duplicateUserByUsername(form.getUsername());
-        } catch (UserFormException e) {
-            log.info("processEmail() duplicateUserByUsername UserRegisterException {}", e.getMessage());
-            errors.rejectValue(e.getField(), "duplicated", e.getMessage());
+        boolean isDuplicatedUsername = userService.isDuplicatedByUsername(form.getUsername());
+        log.info("processEmail() isDuplicatedUsername: {}", isDuplicatedUsername);
+
+        if (isDuplicatedUsername) {
+            errors.rejectValue("username", "duplicated", "이미 사용중인 이메일입니다.");
             model.addAttribute("hasError", true); // 에러 플래그 전달
             return "user/register/email";
         }
@@ -176,29 +175,27 @@ public class UserRegisterController {
         }
 
         // nickname 중복 체크
-        try {
-            userService.duplicateUserByNickname(form.getNickname());
-        } catch (UserFormException e) {
-            log.info("processNickname() duplicateUserByNickname UserRegisterException {}", e.getMessage());
-            errors.rejectValue(e.getField(), "duplicated", e.getMessage());
+        boolean isDuplicatedNickname = userService.isDuplicatedByNickname(form.getNickname());
+        log.info("processNickname() isDuplicatedByNickname: {}", isDuplicatedNickname);
+
+        if (isDuplicatedNickname) {
+            errors.rejectValue("nickname", "duplicated", "이미 사용중인 닉네임입니다.");
+            model.addAttribute("hasError", true); // 에러 플래그 전달
             return "user/register/nickname";
         }
 
-        // username, nickname 중복 체크 후 사용자, 사용자 권한 등록 요청
-        try {
-            userService.registerUser(form);
-        } catch (UserFormException e) {
-            log.info("processProfile() UserFormException {}", e.getMessage());
-            errors.rejectValue(e.getField(), "duplicated", e.getMessage());
+        // 폼 입력하는 동안 다른 사용자의 가입이 있을 경우를 대비하여
+        // 중복 재확인(username)
+        boolean isDuplicatedUsername = userService.isDuplicatedByUsername(form.getUsername());
+        log.info("processNickname() isDuplicatedUsername: {}", isDuplicatedUsername);
 
-            // 각 오류 필드로 이동
-            if ("username".equals(e.getField())) {
-                return "user/register/email";
-            }
-            if ("nickname".equals(e.getField())) {
-                return "user/register/nickname";
-            }
+        if (isDuplicatedUsername) {
+            errors.rejectValue("username", "duplicated", "이미 사용중인 이메일입니다.");
+            model.addAttribute("hasError", true); // 에러 플래그 전달
+            return "user/register/email";
         }
+        
+        userService.registerUser(form); // 사용자, 권한 등록 요청
 
         return "redirect:/register/complete"; // 성공 시 회원가입 성공 페이지로 리다이렉트
     }
