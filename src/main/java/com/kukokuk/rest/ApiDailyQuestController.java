@@ -26,15 +26,6 @@ public class ApiDailyQuestController {
 
     private final DailyQuestService dailyQuestService;
 
-    // 미인증 시 사용될 모든 퀘스트 목록 조회 요청
-    @GetMapping("/basic")
-    public ResponseEntity<ApiResponse<List<DailyQuest>>> dailyQuestBasic() {
-        log.info("dailyQuestBasic() 컨트롤러 실행");
-        return ResponseEntityUtils.ok(
-            dailyQuestService.getDailyQuests()
-        );
-    }
-
     // 사용자 번호로 모든 퀘스트와 진행도 및 보상 획득여부 정보를 포함한 목록 조회 요청
     @GetMapping
     public ResponseEntity<ApiResponse<List<DailyQuestStatusResponse>>> dailyQuestList(
@@ -45,7 +36,16 @@ public class ApiDailyQuestController {
         );
     }
 
-    /**
+    // 미인증 시 사용될 모든 퀘스트 목록 조회 요청
+    @GetMapping("/basic")
+    public ResponseEntity<ApiResponse<List<DailyQuest>>> dailyQuestBasic() {
+        log.info("dailyQuestBasic() 컨트롤러 실행");
+        return ResponseEntityUtils.ok(
+            dailyQuestService.getDailyQuests()
+        );
+    }
+
+    /** 삭제 예정
      * 사용자가 도전과제를 완료한 후 힌트 아이템 버튼을 클릭시,
      * 도전과제의 보상(힌트)을 획득하는 API
      * 즉, daily_quest_users 테이블의 IS_OBTAINED를 “Y”로 변경하는 API

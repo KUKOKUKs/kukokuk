@@ -116,6 +116,19 @@
         font-size: var(--largeFontSize);
         font-weight: bold;
         padding-bottom: var(--tinyGap);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .sub_title_info {
+            font-size: var(--smallFontSize);
+            color: var(--grayColor);
+
+            /* 더 작은 글씨가 필요할 경우 */
+            .info {
+                font-size: var(--smallFontSize);
+            }
+        }
     }
 
     /* 리스트 컴포넌트의 리스트 부분 */
@@ -875,6 +888,15 @@
     }
 }
 
+#hint-count {
+    display: inline-block;
+    transition: transform var(--trst);
+
+    &.action {
+        transform: scale(1.5);
+    }
+}
+
 /* display */
 .d_none {
     display: none;
@@ -1039,62 +1061,6 @@
         position: relative;
         top: -4px;           /* 살짝 위로 이동 (필요에 따라 값 조절) */
     }
-}
-
-/* base.html의 자식요소 (content) 컨테이너 */
-.main_container {
-    display: flex;
-    flex-direction: column;
-    gap: var(--baseGap);
-
-    &.large_gap {
-        gap: var(--largeGap);
-    }
-}
-
-/* 도전과제에서 힌트아이템 획득시 표현할 버튼 */
-.hint_icon_btn {
-    border: 2px solid var(--borderColor);
-    border-radius: var(--bdrs);
-    height: 100%;
-    padding: 4px;
-    font-size: var(--baseIcon);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &.deactive {
-        cursor: default;
-        img {
-            filter: grayscale(100%);
-        }
-    }
-
-    &.active {
-        cursor: pointer;
-        box-shadow: var(--insetBxsh);
-        img {
-            filter: none;
-        }
-    }
-
-    &.small {
-        width: var(--smallIcon);
-        min-width: var(--smallIcon);
-        height: var(--smallIcon);
-        font-size: var(--smallIcon);
-    }
-}
-
-/* 힌트를 획득한 후 보여줄 이이콘 스타일 */
-.hint_obtained_icon {
-    color: var(--redColor);
-    height: 100%;
-    padding: 4px;
-    font-size: var(--baseIcon);
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 /*

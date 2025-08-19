@@ -2,11 +2,11 @@ package com.kukokuk.controller;
 
 import com.kukokuk.dto.UserForm;
 import com.kukokuk.exception.AppException;
-import com.kukokuk.exception.UserFormException;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.UserService;
 import com.kukokuk.util.FileValidationUtils;
 import com.kukokuk.validation.UserModifyCheck;
+import com.kukokuk.vo.User;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Objects;
@@ -34,8 +34,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserService userService;
     private final ModelMapper modelMapper;
+    private final UserService userService;
 
     // 세션에 바인딩할 폼 객체 초기화
     @ModelAttribute("userUpdateForm")
@@ -69,8 +69,12 @@ public class UserController {
 
         try {
             FileValidationUtils.validateProfileImage(file); // 파일 유효성 검사
-            userService.updateUserProfileImage(file, securityUser.getUser().getUserNo()); // 파일 저장 및 DB 업데이트 요청
-            redirectAttributes.addFlashAttribute("success", "프로필 이미지가 수정되었습니다.");
+
+            // 파일 저장 및 DB 업데이트 요청
+            userService.updateUserProfileImage(file, securityUser.getUser().getUserNo());
+            redirectAttributes.addFlashAttribute(
+                "success", "프로필 이미지가 수정되었습니다."
+            );
         } catch (IllegalArgumentException | IllegalStateException | AppException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
@@ -95,7 +99,8 @@ public class UserController {
 
     // 프로필 수정 요청
     @PostMapping("/profile")
-    public String profileModify(@Validated(UserModifyCheck.class) @ModelAttribute("userUpdateForm") UserForm form
+    public String profileModify(
+        @Validated(UserModifyCheck.class) @ModelAttribute("userUpdateForm") UserForm form
         , @AuthenticationPrincipal SecurityUser securityUser
         , BindingResult errors
         , RedirectAttributes redirectAttributes) {
@@ -126,16 +131,29 @@ public class UserController {
             return "user/profile/form"; // 유효성 검증 실패 시 다시 입력 페이지
         }
 
-        // nickname 중복 체크 후 사용자 정보 업데이트 요청
-        try {
-            userService.updateUser(form, securityUser.getUser().getUserNo());
-        } catch (UserFormException e) {
-            log.info("profileModify() UserFormException {}", e.getMessage());
-            errors.rejectValue(e.getField(), "duplicated", e.getMessage());
-            return "user/profile/form";
+        // 사용자 닉네임과 폼에 입력된 닉네임이 다를 경우(닉네임 변경 요청으로 판단)
+        if (!form.getNickname().equals(securityUser.getUser().getNickname())) {
+            log.info("profileModify() 닉네임 변경으로 중복검사 실행");
+
+            // 폼에 입력된 닉네임으로 중복 확인
+            boolean isDuplicatedNickname = userService.isDuplicatedByNickname(form.getNickname());
+            log.info("profileModify() isDuplicatedByNickname: {}", isDuplicatedNickname);
+
+            if (isDuplicatedNickname) {
+                errors.rejectValue("nickname", "duplicated", "이미 사용중인 닉네임입니다.");
+                return "user/profile/form";
+            }
         }
 
-        redirectAttributes.addFlashAttribute("success", "프로필 정보가 수정되었습니다.");
+        // 프로필 정보 수정 요청
+        User updateUser = modelMapper.map(form, User.class);
+        updateUser.setUserNo(securityUser.getUser().getUserNo());
+        userService.updateUser(updateUser);
+
+        redirectAttributes.addFlashAttribute(
+            "success", "프로필 정보가 수정되었습니다."
+        );
+
         return "redirect:/user/profile";
     }
 
@@ -153,9 +171,12 @@ public class UserController {
         log.info("studyLevel() 요청 path: {}", path);
 
         // 사용자 정보 업데이트 요청
-        userService.updateUser(form, securityUser.getUser().getUserNo());
+        User updateUser = modelMapper.map(form, User.class);
+        updateUser.setUserNo(securityUser.getUser().getUserNo());
+        userService.updateUser(updateUser);
 
         // 클라이언트에서 요청 보낸 페이지로 리다이렉트
         return "redirect:" + (path != null ? path : "/");
     }
+
 }

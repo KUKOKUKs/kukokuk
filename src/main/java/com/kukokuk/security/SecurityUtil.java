@@ -19,6 +19,7 @@ public class SecurityUtil {
 
         // 새로운 Principal(SecurityUser) 생성
         SecurityUser newPrincipal = new SecurityUser(updatedUser);
+        newPrincipal.eraseCredentials(); // password 지우기(null 처리)
 
         // 새로운 Authentication 객체 생성
         UsernamePasswordAuthenticationToken newAuth =

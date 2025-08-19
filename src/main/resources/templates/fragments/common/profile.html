@@ -52,7 +52,7 @@
                         <div class="hint_icon">
                             <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
                         </div>
-                        <span class="hint_count" th:text="|x ${user.hintCount}|">x 0</span>
+                        <span class="hint_count">x <span id="hint-count" th:text="${user.hintCount}">0</span></span>
                     </div>
                 </div>
                 <div class="percent_info">
