@@ -1,7 +1,7 @@
 package com.kukokuk.security;
 
-import com.kukokuk.service.UserService;
-import com.kukokuk.vo.User;
+import com.kukokuk.domain.user.service.UserService;
+import com.kukokuk.domain.user.vo.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,6 +1,5 @@
 package com.kukokuk.response;
 
-import com.kukokuk.vo.DailyStudy;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

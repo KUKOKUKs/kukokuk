@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@MapperScan("com.kukokuk.mapper")
+@MapperScan("com.kukokuk.domain")
 @EnableScheduling
 public class KukokukApplication {
 

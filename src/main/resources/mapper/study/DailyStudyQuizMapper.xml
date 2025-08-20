@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.study.mapper.DailyStudyQuizMapper">
+
+    <resultMap id="DailyStudyQuizResultMap" type="DailyStudyQuiz">
+        <id column="DAILY_STUDY_QUIZ_NO" property="dailyStudyQuizNo"/>
+        <result column="QUESTION" property="question"/>
+        <result column="OPTION1" property="option1"/>
+        <result column="OPTION2" property="option2"/>
+        <result column="OPTION3" property="option3"/>
+        <result column="OPTION4" property="option4"/>
+        <result column="SUCCESS_ANSWER" property="successAnswer"/>
+        <result column="DAILY_STUDY_NO" property="dailyStudyNo"/>
+    </resultMap>
+
+    <!--
+      void insertDailyStudyQuiz(DailyStudyQuiz dailyStudyQuiz);
+    -->
+    <insert id="insertDailyStudyQuiz" parameterType="dailyStudyQuiz">
+        INSERT INTO KUKOKUK_DAILY_STUDY_QUIZZES
+        (DAILY_STUDY_NO, QUESTION, OPTION1, OPTION2, OPTION3, OPTION4, SUCCESS_ANSWER)
+        VALUES (#{dailyStudyNo},
+                #{question},
+                #{option1},
+                #{option2},
+                #{option3},
+                #{option4},
+                #{successAnswer})
+    </insert>
+
+    <!--
+      List<DailyStudyQuiz> getStudyQuizzesByDailyStudyNo(int dailyStudyNo);
+    -->
+    <select id="getStudyQuizzesByDailyStudyNo" resultMap="DailyStudyQuizResultMap">
+        SELECT DAILY_STUDY_QUIZ_NO,
+               QUESTION,
+               OPTION1,
+               OPTION2,
+               OPTION3,
+               OPTION4,
+               SUCCESS_ANSWER,
+               DAILY_STUDY_NO
+        FROM KUKOKUK_DAILY_STUDY_QUIZZES
+        WHERE DAILY_STUDY_NO = #{dailyStudyNo}
+        ORDER BY CREATED_DATE ASC
+    </select>
+
+    <!--
+     DailyStudyQuiz getStudyQuizByNo(int studyQuizNo);
+    -->
+    <select id="getStudyQuizByNo" resultMap="DailyStudyQuizResultMap">
+        SELECT DAILY_STUDY_QUIZ_NO,
+               QUESTION,
+               OPTION1,
+               OPTION2,
+               OPTION3,
+               OPTION4,
+               SUCCESS_ANSWER,
+               DAILY_STUDY_NO
+        FROM KUKOKUK_DAILY_STUDY_QUIZZES
+        WHERE DAILY_STUDY_QUIZ_NO = #{studyQuizNo}
+    </select>
+
+</mapper>

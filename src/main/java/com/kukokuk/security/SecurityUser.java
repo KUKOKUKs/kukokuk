@@ -1,6 +1,6 @@
 package com.kukokuk.security;
 
-import com.kukokuk.vo.User;
+import com.kukokuk.domain.user.vo.User;
 import java.io.Serial;
 import java.util.Collection;
 import lombok.Getter;

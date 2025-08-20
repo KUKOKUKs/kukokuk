@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.exp.mapper.ExpMapper">
+
+    <!--
+         * 사용자 경험치 획득 정보 등록
+         * @param expLog 사용자 경험치 획득 정보
+        void insertExpLog(ExpLog expLog);
+    -->
+    <insert id="insertExpLog" parameterType="ExpLog">
+        INSERT INTO KUKOKUK_EXP_LOGS ( CONTENT_TYPE
+                                     , CONTENT_NO
+                                     , EXP_GAINED
+                                     , USER_NO)
+        VALUES ( #{contentType}
+               , #{contentNo}
+               , #{expGained}
+               , #{userNo})
+    </insert>
+
+    <!--
+        * 사용자의 특정 컨텐츠 타입의 오늘에 대한 경험치 횟수 조회
+        * @param contentType 컨텐츠 타입
+        * @param userNo 사용자 번호
+        * @return 경험치 횟수
+        int getTodayCountExpByTypeWithUserNo(@Param("contentType") String contentType
+        , @Param("userNo") int userNo);
+    -->
+    <select id="getTodayCountExpByTypeWithUserNo" resultType="int">
+        SELECT
+             COUNT(*)             AS cnt
+        FROM KUKOKUK_EXP_LOGS
+        WHERE USER_NO = #{userNo}
+          AND CONTENT_TYPE = #{contentType}
+          AND CREATED_DATE &gt;= CURDATE()
+          AND CREATED_DATE &lt;  CURDATE() + INTERVAL 1 DAY
+        GROUP BY CONTENT_TYPE
+    </select>
+
+    <!--
+        * 사용자의 특정 컨텐츠 타입의 오늘에 대한 경험치 합계 조회
+        * @param contentType 컨텐츠 타입
+        * @param userNo 사용자 번호
+        * @return 경험치 합계
+        int getTodayTotalExpByTypeWithUserNo(@Param("contentType") String contentType
+        , @Param("userNo") int userNo);
+    -->
+    <select id="getTodayTotalExpByTypeWithUserNo" resultType="int">
+        SELECT
+             SUM(EXP_GAINED)      AS expSum
+        FROM KUKOKUK_EXP_LOGS
+        WHERE USER_NO = #{userNo}
+          AND CONTENT_TYPE = #{contentType}
+          AND CREATED_DATE &gt;= CURDATE()
+          AND CREATED_DATE &lt;  CURDATE() + INTERVAL 1 DAY
+        GROUP BY CONTENT_TYPE
+    </select>
+
+    <!--
+         * 사용자 번호로 오늘에 대한 경험치, 횟수 집계(content_type 별 집계)
+         * @param userNo 사용자 정보
+         * @return 오늘 경험치, 횟수 집계
+        List<ExpAggregateDto> getTodayExpAggregateByUserNo(int userNo);
+    -->
+    <select id="getTodayExpAggregateByUserNo" resultType="ExpAggregateDto">
+        SELECT
+            CONTENT_TYPE            AS contentType
+             , SUM(EXP_GAINED)      AS expSum
+             , COUNT(*)             AS cnt
+        FROM KUKOKUK_EXP_LOGS
+        WHERE USER_NO = #{userNo}
+          AND CREATED_DATE &gt;= CURDATE()
+          AND CREATED_DATE &lt;  CURDATE() + INTERVAL 1 DAY
+        GROUP BY CONTENT_TYPE
+    </select>
+
+</mapper>

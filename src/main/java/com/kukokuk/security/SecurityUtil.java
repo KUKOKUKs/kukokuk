@@ -1,6 +1,6 @@
 package com.kukokuk.security;
 
-import com.kukokuk.vo.User;
+import com.kukokuk.domain.user.vo.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
