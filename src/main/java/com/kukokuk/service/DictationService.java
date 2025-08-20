@@ -72,56 +72,55 @@ public class DictationService {
          String response = geminiClient.getGeminiResponse(prompt);
          log.info("response: {}", response);
 
-       try {
-           // [3] <sentences_json>...</sentences_json> 추출
-           Pattern pattern = Pattern.compile("<sentences_json>(.*?)</sentences_json>", Pattern.DOTALL);
-           Matcher matcher = pattern.matcher(response);
+           try {
+               // [3] <sentences_json>...</sentences_json> 추출
+               Pattern pattern = Pattern.compile("<sentences_json>(.*?)</sentences_json>", Pattern.DOTALL);
+               Matcher matcher = pattern.matcher(response);
 
-           if (!matcher.find()) {
-               throw new IllegalStateException("sentences_json 태그를 찾을 수 없습니다");
-           }
-
-           String jsonArrayString = matcher.group(1).trim(); // ["문장1", "문장2", ...]
-//           String jsonArrayString = "[\"갉락아아락갉\", \"강아지가 꼬리를 흔들며 나를 반겼다\", \"새들이 노래하는 숲속은 평화로웠다\", \"가을 하늘은 높고 구름 한 점 없었다\"]";
-
-           // [4] JSON 파싱
-           ObjectMapper objectMapper = new ObjectMapper();
-           List<String> sentences = objectMapper.readValue(jsonArrayString, new TypeReference<>() {});
-
-           // [5] 활용
-           for (String sentence : sentences) {
-               log.info("문장: {}", sentence);
-
-               // 앞뒤 공백 제거
-               sentence = sentence.trim();
-
-               // 중복 확인 (0이면 중복이 없으므로 기존 로직 실행, 아니면 failCount 증가)
-               if (dictationQuestionMapper.isDuplicateCorrectAnswer(sentence) == 0) {
-
-                   DictationQuestion question = new DictationQuestion();
-                   question.setCorrectAnswer(sentence);
-                   question.setHint1(getUnderlineHint(sentence));
-                   question.setHint2(getInitialConsonantsHint(sentence));
-                   question.setHint3(sentence.substring(0, 1));
-
-                   dictationQuestionMapper.insertDictationQuestion(question);
-
-                   log.info("문장 생성 완료 문장: {}", sentence);
-               } else {
-                   failCount++;
-                   log.info("failcount: {}", failCount);
+               if (!matcher.find()) {
+                   throw new IllegalStateException("sentences_json 태그를 찾을 수 없습니다");
                }
-           }
 
-           // failCount에 대해
-           if (failCount > 0) {
-               insertGenerateAiQuestionsWithExcludeList(failCount, jsonArrayString);
-           }
-           log.info("중복으로 저장 안 된 문장 개수: {}", failCount);
+               String jsonArrayString = matcher.group(1).trim(); // ["문장1", "문장2", ...]
 
-       } catch (DataAccessException | JsonProcessingException e) {
-           log.error("Gemini 응답 처리 중 오류 발생", e);
-           throw new AppException("응답 처리 중 오류 발생: " + e.getMessage());
+               // [4] JSON 파싱
+               ObjectMapper objectMapper = new ObjectMapper();
+               List<String> sentences = objectMapper.readValue(jsonArrayString, new TypeReference<>() {});
+
+               // [5] 활용
+               for (String sentence : sentences) {
+                   log.info("문장: {}", sentence);
+
+                   // 앞뒤 공백 제거
+                   sentence = sentence.trim();
+
+                   // 중복 확인 (0이면 중복이 없으므로 기존 로직 실행, 아니면 failCount 증가)
+                   if (dictationQuestionMapper.isDuplicateCorrectAnswer(sentence) == 0) {
+
+                       DictationQuestion question = new DictationQuestion();
+                       question.setCorrectAnswer(sentence);
+                       question.setHint1(getUnderlineHint(sentence));
+                       question.setHint2(getInitialConsonantsHint(sentence));
+                       question.setHint3(sentence.substring(0, 1));
+
+                       dictationQuestionMapper.insertDictationQuestion(question);
+
+                       log.info("문장 생성 완료 문장: {}", sentence);
+                   } else {
+                       failCount++;
+                       log.info("failcount: {}", failCount);
+                   }
+               }
+
+               // failCount에 대해
+               if (failCount > 0) {
+                   insertGenerateAiQuestionsWithExcludeList(failCount, jsonArrayString);
+               }
+               log.info("중복으로 저장 안 된 문장 개수: {}", failCount);
+
+           } catch (DataAccessException | JsonProcessingException e) {
+               log.error("Gemini 응답 처리 중 오류 발생", e);
+               throw new AppException("응답 처리 중 오류 발생: " + e.getMessage());
        }
     }
 
@@ -198,55 +197,55 @@ public class DictationService {
         // Gemini AI 서버에 프롬프트를 전송하고 응답을 받음
         String response = geminiClient.getGeminiResponse(prompt);
 
-        try {
-            // AI 응답에서 <sentences_json> ... </sentences_json> 태그 사이 내용을 추출하기 위해 정규식 패턴 생성
-            Pattern pattern = Pattern.compile("<sentences_json>(.*?)</sentences_json>", Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(response);
+            try {
+                // AI 응답에서 <sentences_json> ... </sentences_json> 태그 사이 내용을 추출하기 위해 정규식 패턴 생성
+                Pattern pattern = Pattern.compile("<sentences_json>(.*?)</sentences_json>", Pattern.DOTALL);
+                Matcher matcher = pattern.matcher(response);
 
-            // 만약 패턴에 맞는 태그가 없으면 예외 발생
-            if (!matcher.find()) {
-                throw new IllegalStateException("sentences_json 태그를 찾을 수 없습니다");
-            }
-
-            // 태그 내부 JSON 배열 문자열 추출 및 앞뒤 공백 제거
-            String jsonArrayString = matcher.group(1).trim();
-            log.info("jsonArrayString: {}", jsonArrayString);
-
-            // JSON 배열 문자열을 List<String> 타입으로 파싱
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<String> sentences = objectMapper.readValue(jsonArrayString, new TypeReference<>() {});
-
-            for (String sentence : sentences) {
-                log.info("문장: {}", sentence);
-
-                // 앞뒤 공백 제거
-                sentence = sentence.trim();
-
-                // 중복 확인 (0이면 중복이 없으므로 기존 로직 실행, 아니면 failCount 증가)
-                if (dictationQuestionMapper.isDuplicateCorrectAnswer(sentence) == 0) {
-
-                    DictationQuestion question = new DictationQuestion();
-                    question.setCorrectAnswer(sentence);
-                    question.setHint1(getUnderlineHint(sentence));
-                    question.setHint2(getInitialConsonantsHint(sentence));
-                    question.setHint3(sentence.substring(0, 1));
-
-                    dictationQuestionMapper.insertDictationQuestion(question);
-                } else {
-                    failCount++;
-                    log.info("failCount: {}", failCount);
+                // 만약 패턴에 맞는 태그가 없으면 예외 발생
+                if (!matcher.find()) {
+                    throw new IllegalStateException("sentences_json 태그를 찾을 수 없습니다");
                 }
-            }
 
-            // failCount에 대해
-            if (failCount > 0) {
-                log.info("2nd 중복검사 실행");
-                insertGenerateAiQuestionsWithExcludeList(failCount, jsonArrayString);
-            }
+                // 태그 내부 JSON 배열 문자열 추출 및 앞뒤 공백 제거
+                String jsonArrayString = matcher.group(1).trim();
+                log.info("jsonArrayString: {}", jsonArrayString);
 
-        } catch (DataAccessException | JsonProcessingException e) {
-            log.error("Gemini 2nd 응답 처리 중 오류 발생", e);
-            throw new AppException("2nd 응답 처리 중 오류 발생: " + e.getMessage());
+                // JSON 배열 문자열을 List<String> 타입으로 파싱
+                ObjectMapper objectMapper = new ObjectMapper();
+                List<String> sentences = objectMapper.readValue(jsonArrayString, new TypeReference<>() {});
+
+                for (String sentence : sentences) {
+                    log.info("문장: {}", sentence);
+
+                    // 앞뒤 공백 제거
+                    sentence = sentence.trim();
+
+                    // 중복 확인 (0이면 중복이 없으므로 기존 로직 실행, 아니면 failCount 증가)
+                    if (dictationQuestionMapper.isDuplicateCorrectAnswer(sentence) == 0) {
+
+                        DictationQuestion question = new DictationQuestion();
+                        question.setCorrectAnswer(sentence);
+                        question.setHint1(getUnderlineHint(sentence));
+                        question.setHint2(getInitialConsonantsHint(sentence));
+                        question.setHint3(sentence.substring(0, 1));
+
+                        dictationQuestionMapper.insertDictationQuestion(question);
+                    } else {
+                        failCount++;
+                        log.info("failCount: {}", failCount);
+                    }
+                }
+
+                // failCount에 대해
+                if (failCount > 0) {
+                    log.info("2nd 중복검사 실행");
+                    insertGenerateAiQuestionsWithExcludeList(failCount, jsonArrayString);
+                }
+
+            } catch (DataAccessException | JsonProcessingException e) {
+                log.error("Gemini 2nd 응답 처리 중 오류 발생", e);
+                throw new AppException("2nd 응답 처리 중 오류 발생: " + e.getMessage());
         }
     }
 
@@ -260,28 +259,34 @@ public class DictationService {
      */
     @Transactional
     public List<DictationQuestion> getDictationQuestionsByUserNo(int userNo, int count) {
+        log.info("getDictationQuestionsByUserNo 서비스 실행");
 
-        // 1. 사용자 기준, 푼 문제는 제외하고 10문제 가져오기
-        List<DictationQuestion> questions = dictationQuestionMapper.getRandomDictationQuestionsExcludeUser(
-            userNo, 10);
+            try {
+                // 1. 사용자 기준, 푼 문제는 제외하고 10문제 가져오기
+                List<DictationQuestion> questions = dictationQuestionMapper.getRandomDictationQuestionsExcludeUser(
+                    userNo, 10);
 
-        // 2. 10문제 보다 부족한 문제 수세기 (예: 4개 부족)
-        if (questions.size() < count) {
-            int toCreate = count - questions.size();
+                // 2. 10문제 보다 부족한 문제 수세기 (예: 4개 부족)
+                if (questions.size() < count) {
+                    int toCreate = count - questions.size();
 
-            // 3. 부족한 수 만큼 새로운 문제 생성 (예: 4개 생성)
-            insertGenerateAiQuestions(toCreate);
+                    // 3. 부족한 수 만큼 새로운 문제 생성 (예: 4개 생성)
+                    insertGenerateAiQuestions(toCreate);
 
-            // 4. 새로 생성한 문제 중에서도 사용자 기준으로 푼 문제는 다시 제외하고 가져오기 (예: 새로 생성된 4개 가져옴)
-            List<DictationQuestion> additional = dictationQuestionMapper.getRandomDictationQuestionsExcludeUser(
-                userNo, toCreate);
+                    // 4. 새로 생성한 문제 중에서도 사용자 기준으로 푼 문제는 다시 제외하고 가져오기 (예: 새로 생성된 4개 가져옴)
+                    List<DictationQuestion> additional = dictationQuestionMapper.getRandomDictationQuestionsExcludeUser(
+                        userNo, toCreate);
 
-            // 5. 기존에 가져온 문제 리스트에 추가 (예: 새로 생성된 4개 합쳐서 questions에 집어넣어 10개 만들기)
-            questions.addAll(additional);
+                    // 5. 기존에 가져온 문제 리스트에 추가 (예: 새로 생성된 4개 합쳐서 questions에 집어넣어 10개 만들기)
+                    questions.addAll(additional);
+                }
+
+                return questions;
+
+            } catch (DataAccessException e) {
+                log.info("getDictationQuestionsByUserNo 예외처리 실행");
+                throw new AppException("10문제를 불러오지 못했습니다.");
         }
-
-
-        return questions;
     }
 
     /**
@@ -293,34 +298,37 @@ public class DictationService {
     @Transactional
     public void insertDictationSessionResult(Integer dictationSessionNo, int userNo, Date startDate,
         Date endDate) {
-
         log.info("insertDictationSessionResult 서비스 실행");
         if (dictationSessionNo == null) {
             log.info("insertDictationSessionResult 예외처리 실행");
             throw new AppException("문제를 불러오지 못했습니다.");
         }
 
-        // 1. 정답 개수 조회
-        int correctCount = dictationQuestionLogMapper.getCountCorrectAnswers(dictationSessionNo);
+            try {
+                // 1. 정답 개수 조회
+                int correctCount = dictationQuestionLogMapper.getCountCorrectAnswers(
+                    dictationSessionNo);
 
-        // 2. 힌트 사용 횟수 조회
-        int hintUsedCount = dictationQuestionLogMapper.getCountHintsUsed(dictationSessionNo);
+                // 2. 힌트 사용 횟수 조회
+                int hintUsedCount = dictationQuestionLogMapper.getCountHintsUsed(dictationSessionNo);
 
-        // 5. 점수 계산
-        int correctScore = correctCount * 10;
+                // 5. 점수 계산
+                int correctScore = correctCount * 10;
 
-        // 6. 세션 저장
-        DictationSession session = new DictationSession();
-        session.setDictationSessionNo(dictationSessionNo); // 외부에서 받은 세션 번호 사용
-        session.setUserNo(userNo);
-        session.setStartDate(startDate);
-        session.setEndDate(endDate);
-        session.setCorrectCount(correctCount);
-        session.setHintUsedCount(hintUsedCount);
-        session.setCorrectScore(correctScore);
+                // 6. 세션 저장
+                DictationSession session = new DictationSession();
+                session.setDictationSessionNo(dictationSessionNo); // 외부에서 받은 세션 번호 사용
+                session.setUserNo(userNo);
+                session.setStartDate(startDate);
+                session.setEndDate(endDate);
+                session.setCorrectCount(correctCount);
+                session.setHintUsedCount(hintUsedCount);
+                session.setCorrectScore(correctScore);
 
-        dictationSessionMapper.updateDictationSessionResult(session);
-
+                dictationSessionMapper.updateDictationSessionResult(session);
+            } catch (DataAccessException e) {
+                throw new AppException("결과를 저장하지 못했습니다.");
+        }
     }
 
     /**
@@ -333,36 +341,55 @@ public class DictationService {
     @Transactional
     public void insertSubmitAnswer(int userNo, int dictationSessionNo, int dictationQuestionNo,
         String userAnswer, String usedHint, int tryCount) {
+        log.info("insertSubmitAnswer 서비스 실행");
+        if (dictationSessionNo <= 0 || dictationQuestionNo <= 0) {
+            throw new AppException("이력 저장에 실패하였습니다");
+        }
 
-        // 1. 정답 문장 가져오기
-        String correctAnswer = dictationQuestionMapper.getCorrectAnswerByQuestionNo(
-            dictationQuestionNo);
+            try {
+                // 1. 정답 문장 가져오기
+                String correctAnswer = dictationQuestionMapper.getCorrectAnswerByQuestionNo(
+                    dictationQuestionNo);
 
-        // 2. 기존 제출 이력 확인
-        DictationQuestionLog existingLog = dictationQuestionLogMapper.getLogBySessionAndQuestion(
-            dictationSessionNo, dictationQuestionNo);
+                // 2. 기존 제출 이력 확인
+                DictationQuestionLog existingLog = dictationQuestionLogMapper.getLogBySessionAndQuestion(
+                    dictationSessionNo, dictationQuestionNo);
 
-        // 3. 제출 이력 저장
-        if (existingLog == null) {
-            // 첫 제출 → INSERT
-            DictationQuestionLog newLog = new DictationQuestionLog();
-            newLog.setUserNo(userNo);                                                       // 사용자 번호
-            newLog.setDictationSessionNo(dictationSessionNo);                               // 문제 세트 번호
-            newLog.setDictationQuestionNo(dictationQuestionNo);                             // 문제 번호
-            newLog.setUserAnswer(userAnswer);                                               // 사용자 제출 답안
-            newLog.setTryCount(tryCount);                                                   // 첫 시도
-            newLog.setIsSuccess(insertIsCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N");    // 정답 여부
-            newLog.setUsedHint(usedHint);                                                   // 힌트 사용 여부
+                // 3. 제출 이력 저장
+                if (existingLog == null) {
+                    // 첫 제출 → INSERT
+                    DictationQuestionLog newLog = new DictationQuestionLog();
+                    newLog.setUserNo(
+                        userNo);                                                       // 사용자 번호
+                    newLog.setDictationSessionNo(
+                        dictationSessionNo);                               // 문제 세트 번호
+                    newLog.setDictationQuestionNo(
+                        dictationQuestionNo);                             // 문제 번호
+                    newLog.setUserAnswer(
+                        userAnswer);                                               // 사용자 제출 답안
+                    newLog.setTryCount(
+                        tryCount);                                                   // 첫 시도
+                    newLog.setIsSuccess(
+                        insertIsCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N");    // 정답 여부
+                    newLog.setUsedHint(
+                        usedHint);                                                   // 힌트 사용 여부
 
-            dictationQuestionLogMapper.insertDictationQuestionLog(newLog);
-        } else {
-            // 두 번째 제출 → UPDATE
-            existingLog.setUserAnswer(userAnswer);                                           // 새로 제출한 답안
-            existingLog.setTryCount(existingLog.getTryCount() + 1);                          // 시도 횟수 증가
-            existingLog.setIsSuccess(insertIsCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N");// 정답 여부 판정
-            existingLog.setUsedHint(usedHint);                                               // 힌트 사용 여부 갱신
+                    dictationQuestionLogMapper.insertDictationQuestionLog(newLog);
+                } else {
+                    // 두 번째 제출 → UPDATE
+                    existingLog.setUserAnswer(
+                        userAnswer);                                           // 새로 제출한 답안
+                    existingLog.setTryCount(
+                        existingLog.getTryCount() + 1);                          // 시도 횟수 증가
+                    existingLog.setIsSuccess(
+                        insertIsCorrectAnswer(userAnswer, correctAnswer) ? "Y" : "N");// 정답 여부 판정
+                    existingLog.setUsedHint(
+                        usedHint);                                               // 힌트 사용 여부 갱신
 
-            dictationQuestionLogMapper.updateDictationQuestionLog(existingLog);
+                    dictationQuestionLogMapper.updateDictationQuestionLog(existingLog);
+                }
+            } catch (DataAccessException e) {
+                throw new AppException("답안을 저장하지 못했습니다.");
         }
     }
 
@@ -375,6 +402,7 @@ public class DictationService {
      * @return 두 문장이 같으면 true (정답), 다르면 false (오답)
      */
     public boolean insertIsCorrectAnswer(String userAnswer, String correctAnswer) {
+        log.info("insertIsCorrectAnswer 서비스 실행");
         // 제출문장, 정답문장 두 문장 모두 NULL이 아니게 예외처리
         if (userAnswer == null || correctAnswer == null) {
             return false;
@@ -404,12 +432,23 @@ public class DictationService {
      * @return 생성된 받아쓰기 세트
      */
     public int createDictationSession(int userNo) {
-        DictationSession session = new DictationSession();
-        session.setUserNo(userNo);
-        session.setStartDate(new Date());
-        session.setEndDate(new Date());
-        dictationSessionMapper.insertDictationSession(session);
-        return session.getDictationSessionNo(); // MyBatis에서 자동 채번되어 들어간다고 가정
+        log.info("createDictationSession 서비스 실행");
+
+            try {
+                DictationSession session = new DictationSession();
+                session.setUserNo(userNo);
+                session.setStartDate(new Date());
+                session.setEndDate(new Date());
+                dictationSessionMapper.insertDictationSession(session);
+
+                if (session.getDictationSessionNo() == 0) {
+                    log.info("createDictationSession 자동으로 세션번호 추가 실패 또는 세션 번호 없음");
+                    throw new AppException("세션번호 예외처리에 의해 문제 세트를 생성하지 못했습니다.");
+                }
+                return session.getDictationSessionNo(); // MyBatis에서 자동 채번되어 들어간다고 가정
+            } catch (DataAccessException e) {
+                throw new AppException("문제 세트를 생성하지 못했습니다.");
+        }
     }
 
     public List<DictationSession> getResultsByUserNo(int userNo) {
@@ -457,7 +496,7 @@ public class DictationService {
             throw new AppException("문제 세트를 불러오지 못했습니다.");
         }
 
-        try{
+        try {
             return dictationSessionMapper.getDictationSessionByDictationSessionNo(dictationSessionNo);
         } catch (DataAccessException e) {
             log.info("getDictationSessionByDictationSessionNo 예외처리 실행");
@@ -470,6 +509,8 @@ public class DictationService {
         List<DictationQuestion> dictationQuestions,
         List<DictationQuestionLogDto> dictationQuestionLogDtoList) {
 
+        log.info("insertDictationQuestionLogDto 실행");
+
         for (int i = 0; i < dictationQuestions.size(); i++) {
             DictationQuestion q = dictationQuestions.get(i);
             DictationQuestionLogDto dto = dictationQuestionLogDtoList.get(i);
@@ -477,7 +518,7 @@ public class DictationService {
             String userAnswer = dto.getUserAnswer();
             String isSuccess  = dto.getIsSuccess();
             int tryCount      = dto.getTryCount();
-            String usedHint   = (dto.getUsedHint() != null) ? dto.getUsedHint() : "N";
+            String usedHint   = "Y".equals(dto.getUsedHint()) ? "Y" : "N";
 
             log.info("[saveDictationLogs] 문제{}: 문제 번호: {}, 제출문장: {}, 맞춤 여부: {}, 시도 횟수: {}, 힌트 사용: {}",
                 i + 1, q.getDictationQuestionNo(), userAnswer, isSuccess, tryCount, usedHint);
