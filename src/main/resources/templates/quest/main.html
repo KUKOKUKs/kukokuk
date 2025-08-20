@@ -14,12 +14,13 @@
                     <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">2025-08-19</span>
                     <div class="sub_title_info">
                         <div class="info">
-                            (<span id="success-count" th:text="${obtainedCount}">보상 수령건</span>/<span id="total-count" th:text="${dailyQuestStatusDtos.size()}">퀘스트 개수</span>)
+                            (<span id="obtained-count" th:text="${obtainedCount}">보상 수령건</span>/<span id="total-count" th:text="${dailyQuestStatusDtos.size()}">퀘스트 개수</span>)
                         </div>
                     </div>
                 </div>
 
                 <div class="component_list_container quest_list_container"
+                     th:data-success-count="${successCount}"
                      th:data-obtained-count="${obtainedCount}">
                     <th:block th:each="quest : ${dailyQuestStatusDtos}">
                         <!--/* 일괄 획득 처리 시 미수령 건 폼 등록 */-->
@@ -55,9 +56,9 @@
                     </th:block>
                 </div>
 
-                <div class="pd_top_base">
-                    <span th:if="${obtainedCount >= dailyQuestStatusDtos.size()}" class="btn primary disabled">일괄 획득</span>
-                    <button th:unless="${obtainedCount >= dailyQuestStatusDtos.size()}" type="submit" class="btn primary">일괄 획득</button>
+                <div id="quest-form-btn-info" class="pd_top_base">
+                    <span th:if="${successCount == 0 || successCount == obtainedCount}" class="btn primary disabled">일괄 획득</span>
+                    <button th:if="${successCount > 0 && successCount > obtainedCount}" type="submit" id="batch-obtain-btn" class="btn primary">일괄 획득</button>
                 </div>
             </div>
         </form>
@@ -73,6 +74,6 @@
         alert("[[${success}]]");
     </script>
 
-    <script type="module" th:src="@{/js/modules/profile/profile.js}"></script>
+    <script type="module" th:src="@{/js/modules/quest/quest.js}"></script>
 </th:block>
 </html>

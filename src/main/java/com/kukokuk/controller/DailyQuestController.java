@@ -32,12 +32,18 @@ public class DailyQuestController {
         // 사용자의 모든 일일도전과제 현황 목록(일일도전과제목록, 진행도, 보상수령여부) 조회
         List<DailyQuestStatusDto> dailyQuestStatusDtos = dailyQuestService.getDailyQuestsStatus(securityUser.getUser().getUserNo());
 
+        // 완료된 일일 도전과제 개수 계산
+        int successCount = (int) dailyQuestStatusDtos.stream()
+            .filter(DailyQuestStatusDto::isSucceed)
+            .count();
+
         // isObtained == "Y"인 개수 계산
         int obtainedCount = (int) dailyQuestStatusDtos.stream()
             .filter(dto -> "Y".equals(dto.getIsObtained()))
             .count();
 
         model.addAttribute("dailyQuestStatusDtos", dailyQuestStatusDtos);
+        model.addAttribute("successCount", successCount);
         model.addAttribute("obtainedCount", obtainedCount);
 
         return "quest/main";
