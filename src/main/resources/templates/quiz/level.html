@@ -1,51 +1,49 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>단계별 퀴즈</title>
-    <link rel="stylesheet" href="/css/main.css" />
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-</head>
-<body>
-<div class="quiz-container">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/center}">
+<div layout:fragment="content" class="quiz-container">
     <h1 class="quiz-title">단계별 퀴즈</h1>
 
-    <!-- 진행 상황 표시 -->
-    <div id="quiz-progress-info">
-        <span id="quiz-current">1</span> / <span id="quiz-total">0</span>
-    </div>
+    <!-- 진행 상황 / 힌트 / 진행률 -->
+    <div class="quiz_step_container d_flex column small_gap">
+        <!-- 진행 상황 -->
+        <div id="quiz-progress-info">
+            <span id="quiz-current">1</span> / <span id="quiz-total">0</span>
+        </div>
 
-    <!-- 힌트 버튼 -->
-    <button id="hint-btn" class="hint-btn">
-        힌트 <span id="hint-count">(0)</span>
-    </button>
+        <!-- 힌트 버튼 -->
+        <button id="hint-btn" class="hint-btn">
+            힌트 <span id="hint-count">(0)</span>
+        </button>
 
-    <!-- 진행률 바 -->
-    <div class="level_info timer_progress">
-        <div class="timer_level_bar">
-            <div class="timer_experience_point" id="timer-progress-bar"></div>
+        <!-- 진행률 바 -->
+        <div class="level_info timer_progress">
+            <div class="timer_level_bar">
+                <div class="timer_experience_point" id="timer-progress-bar"></div>
+            </div>
         </div>
     </div>
 
     <!-- 문제 -->
     <div id="quiz-question"></div>
+    <!-- 보기 -->
     <div id="quiz-options"></div>
 
-    <div class="quiz-nav">
+    <!-- 이전/다음 버튼 -->
+    <div class="btn_list">
         <button id="prev-btn" class="btn" type="button">이전</button>
         <button id="next-btn" class="btn blue" type="button">다음</button>
     </div>
+
+    <!-- 결과 제출용 폼 -->
+    <form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
 </div>
 
-<!-- 결과 제출용 폼 -->
-<form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
-
-<script th:inline="javascript">
-    let quizzes = /*[[${quizList}]]*/ [];
-    console.log("주입된 quizzes =", quizzes);
-</script>
-
-<script src="/js/modules/quiz/level.js"></script>
-</body>
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        let quizzes = /*[[${quizList}]]*/ [];
+    </script>
+    <script th:src="@{/js/modules/quiz/level.js}"></script>
+</th:block>
 </html>

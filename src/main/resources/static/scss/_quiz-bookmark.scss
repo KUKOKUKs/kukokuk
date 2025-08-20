@@ -1,5 +1,5 @@
 /* ===============================
-   북마크 퀴즈 리스트 스타일
+   북마크 퀴즈 리스트
    =============================== */
 
 .bookmark-container {
@@ -41,7 +41,7 @@
     gap: var(--smallGap);
 }
 
-/* 헤더 영역 */
+/* 헤더 */
 .quiz-header {
     display: flex;
     justify-content: space-between;
@@ -63,17 +63,12 @@
         transition: transform var(--trst);
         padding: 0;
 
-        &:hover {
-            transform: scale(1.1);
-        }
-
-        iconify-icon {
-            vertical-align: middle;
-        }
+        &:hover { transform: scale(1.1); }
+        iconify-icon { vertical-align: middle; }
     }
 }
 
-/* 보기 영역 */
+/* 보기 */
 .quiz-options-wrap {
     display: flex;
     flex-direction: column;
@@ -88,19 +83,12 @@
         ol {
             margin: 0;
             padding-left: 1.2em;
-            li {
-                margin-bottom: var(--tinyGap);
-                line-height: 1.4;
-            }
+            li { margin-bottom: var(--tinyGap); line-height: 1.4; }
         }
     }
 
-    /* 숨김 상태 */
-    .hidden {
-        display: none;
-    }
+    .hidden { display: none; }
 
-    /* 더보기 버튼 */
     .toggle-btn {
         align-self: flex-end;
         background: none;
@@ -110,13 +98,11 @@
         cursor: pointer;
         padding: 0;
 
-        &:hover {
-            text-decoration: underline;
-        }
+        &:hover { text-decoration: underline; }
     }
 }
 
-/* 메타 정보 */
+/* 메타 */
 .quiz-meta {
     display: flex;
     flex-wrap: wrap;

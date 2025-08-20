@@ -98,6 +98,7 @@ public class StudyService {
         1. 사용자의 이전 학습 이력 목록
         2. 학습탭의 일일 도전과제 목록 + 사용자의 일일 도전과제 수행 정보 (아이템 획득 여부)
      */
+    @Transactional(readOnly = true) // 읽기 전용: 불필요한 트랜잭션 오버헤드 줄이기
     public MainStudyViewDto getMainStudyView(SecurityUser securityUser) {
         MainStudyViewDto dto = new MainStudyViewDto();
 
@@ -333,7 +334,7 @@ public class StudyService {
      * @return DB에 저장된 학습자료 (DailyStudy)
      * @throws JsonProcessingException 호출하는 부분에서 try-catch 처리
      */
-    @Transactional
+    @Transactional(rollbackFor = {JsonProcessingException.class})
     public DailyStudy insertDailyStudyWithOtherComponents(GeminiStudyResponse response, int dailyStudyMaterialNo, int studyDifficultyNo)
         throws JsonProcessingException {
         // 학습자료(DailyStudy) DB에 추가
@@ -426,6 +427,7 @@ public class StudyService {
     * @param request
     * @return
     */
+    @Transactional
     public ParseMaterialResponse createMaterial(ParseMaterialRequest request) {
         ParseMaterialResponse parseMaterialResponse = new ParseMaterialResponse();
 
@@ -451,14 +453,23 @@ public class StudyService {
             // 각 에듀넷 링크를 PARSE_JOB_STATUS 테이블에 저장
             materialParseJobMapper.insertParseJob(materialParseJob);
 
-            // Redis에 넣을 JSON 형태의 메시지 생성 (jobId + url 포함)
-            String jobPayload = String.format("{\"jobNo\":%d,\"url\":\"%s\"}",
-                materialParseJob.getMaterialParseJobNo(),
-                fileUrl);
+            try {
+                // Redis에 넣을 JSON 형태의 메시지 생성 (jobId + url 포함)
+                String jobPayload = String.format("{\"jobNo\":%d,\"url\":\"%s\"}",
+                    materialParseJob.getMaterialParseJobNo(),
+                    fileUrl);
 
-            // 레디스에 URL 하나씩 푸시
-            ListOperations<String, String> listOperations = stringRedisTemplate.opsForList();
-            listOperations.rightPush("parse:queue", jobPayload);
+                // 레디스에 URL 하나씩 푸시
+                ListOperations<String, String> listOperations = stringRedisTemplate.opsForList();
+                listOperations.rightPush("parse:queue", jobPayload);
+            } catch (Exception e) {
+                log.error("Redis push 실패: jobNo={}, url={}, error={}",
+                    materialParseJob.getMaterialParseJobNo(), fileUrl, e.getMessage());
+
+                // 레디스 푸시실패시 해당 job을 Failed로 표시
+                materialParseJobMapper.updateParseJobStatusToFailed(materialParseJob.getMaterialParseJobNo(),
+                    e.getMessage());
+            }
         }
 
         return parseMaterialResponse;
@@ -484,6 +495,7 @@ public class StudyService {
      *         4. 일일학습 퀴즈 목록
      *         5. 사용자의 일일학습 퀴즈 이력 목록
      */
+    @Transactional(readOnly = true)
     public StudyProgressViewDto getStudyProgressView(int dailyStudyNo, int userNo) {
         StudyProgressViewDto dto = new StudyProgressViewDto();
 
@@ -536,6 +548,7 @@ public class StudyService {
      * @param userNo
      * @return
      */
+    @Transactional
     public DailyStudyLog createDailyStudyLog(int dailyStudyNo, int userNo) {
 
         // 이미 존재하는 학습이력이 있는지 확인
@@ -557,7 +570,13 @@ public class StudyService {
         return dailyStudyLogMapper.getStudyLogByNo(log.getDailyStudyLogNo());
     }
 
-
+    /**
+     * 해당 사용자의 해당 학습자료에 대한 이력 수정
+     * @param dailyStudyLogNo
+     * @param userNo
+     * @return
+     */
+    @Transactional
     public DailyStudyLogResponse updateDailyStudyLog(int dailyStudyLogNo, UpdateStudyLogRequest updateStudyLogRequest, int userNo) {
         log.info("updateStudyLogRequest 서비스 실행");
 
@@ -617,6 +636,7 @@ public class StudyService {
      * @param userNo
      * @return
      */
+    @Transactional
     public DailyStudyQuizLog createStudyQuizLog(StudyQuizLogRequest studyQuizLogRequest, int userNo) {
         log.info("createStudyQuizLog 서비스 실행");
 
@@ -650,6 +670,13 @@ public class StudyService {
         return dailyStudyQuizLogMapper.getStudyQuizLogsByNo(dailyStudyQuizLog.getDailyStudyQuizLogNo());
     }
 
+    /**
+     * 학습퀴즈이력 수정
+     * @param studyQuizLogNo
+     * @param studyQuizLogRequest
+     * @return
+     */
+    @Transactional
     public DailyStudyQuizLog updateStudyQuizLog(int studyQuizLogNo, StudyQuizLogRequest studyQuizLogRequest, int userNo) {
         log.info("updateStudyQuizLog 서비스 실행");
 
@@ -677,6 +704,7 @@ public class StudyService {
      * 학습수준 목록을 조회
      * @return
      */
+    @Transactional(readOnly = true)
     public List<StudyDifficulty> getStudyDifficulties() {
         return studyDifficultyMapper.getDifficulties();
     }
@@ -686,6 +714,7 @@ public class StudyService {
      * @param dailyStudyNo
      * @param userNo
      */
+    @Transactional(readOnly = true)
     public StudyEssayViewDto getStudyEssayView(int dailyStudyNo, Integer userNo) {
         log.info("getStudyEssayView 서비스 실행");
 
@@ -710,6 +739,7 @@ public class StudyService {
      * @param userNo
      * @return
      */
+    @Transactional
     public DailyStudyEssayQuizLog createStudyEssayQuizLog(EssayQuizLogRequest request, int userNo) {
         log.info("createStudyEssayQuizLog 서비스 실행");
 
@@ -737,6 +767,7 @@ public class StudyService {
      * @param userNo
      * @return
      */
+    @Transactional
     public DailyStudyEssayQuizLog updateStudyEssayQuizLog(int dailyStudyEssayQuizLogNo ,EssayQuizLogRequest request, int userNo) {
         log.info("updateStudyEssayQuizLog 서비스 실행");
 
@@ -754,10 +785,13 @@ public class StudyService {
     }
 
     /**
+     * 사용자의 학습 수준에 맞게 논술형퀴즈 AI 피드백을 생성 및 DB에 반영
      * @param essayQuizLog
+     * @param studyDifficultyNo
      * @return
      */
-    public GeminiEssayResponse generateAiFeedback(DailyStudyEssayQuizLog essayQuizLog, int studyDifficultyNo) {
+    public GeminiEssayResponse generateAiFeedback(DailyStudyEssayQuizLog essayQuizLog,
+        int studyDifficultyNo) {
         log.info("generateAiFeedback 서비스 메소드 실행");
 
         // 이력에 존재하는 서술형 퀴즈 번호로 서술형퀴즈 조회 (질문 컬럼 조회 목적)
@@ -782,9 +816,9 @@ public class StudyService {
         String contentJsonOnly = content.substring(content.indexOf("{"),
             content.lastIndexOf("}") + 1);
 
-        // JSON 응답데이터를 essayQuizLog의 aiFeedback필드에 업데이트
-        essayQuizLog.setAiFeedback(contentJsonOnly);
-        dailyStudyEssayQuizMapper.updateStudyEssayQuizLog(essayQuizLog);
+        // JSON 응답데이터를 essayQuizLog의 aiFeedback필드에 업데이트하는 메소드 호출
+        // 트랜잭션 처리를 위해 DB 접근 작업 별도 분리
+        updateAiFeedback(essayQuizLog, contentJsonOnly);
 
         // try문 범위 고민
         GeminiEssayResponse geminiEssayResponse = null;
@@ -795,19 +829,33 @@ public class StudyService {
                 GeminiEssayResponse.class);
 
         } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
-            // 오류처리 추가
+            log.error("Gemini 응답 파싱 실패: {}", e.getMessage());
+            throw new AppException("응답: " + contentJsonOnly);
         }
 
         return geminiEssayResponse;
     }
 
     /**
-     * 학습 완료 화면에서
+     * 논술형퀴즈에서 생성된 AI 피드백을 DB에 업데이트하는 메소드
+     * @param essayQuizLog
+     * @param contentJsonOnly
+     */
+    @Transactional
+    public void updateAiFeedback(DailyStudyEssayQuizLog essayQuizLog, String contentJsonOnly) {
+        log.info("updateAiFeedback 서비스 메소드 실행");
+        
+        essayQuizLog.setAiFeedback(contentJsonOnly);
+        dailyStudyEssayQuizMapper.updateStudyEssayQuizLog(essayQuizLog);
+    }
+
+    /**
+     * 학습 완료 화면에 필요한 데이터 조회
      * @param dailyStudyNo
      * @param userNo
      * @return
      */
+    @Transactional(readOnly = true)
     public StudyCompleteViewDto getStudyCompleteView(int dailyStudyNo, int userNo) {
         log.info("getStudyCompleteView 서비스 메소드 실행");
 
