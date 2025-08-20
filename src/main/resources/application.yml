@@ -32,11 +32,9 @@ mybatis:
   mapper-locations: classpath:mapper/**/*.xml
 
   # Type Alias 패키지 설정
-  # 패키지 구조 변경 완료 후 com.kukokuk.vo,com.kukokuk.dto 삭제
   type-aliases-package:
     com.kukokuk.domain.*.vo,
-    com.kukokuk.domain.*.dto,
-    com.kukokuk.vo,com.kukokuk.dto
+    com.kukokuk.domain.*.dto
 
   configuration:
     # NULL 값 처리 방식
