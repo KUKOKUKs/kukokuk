@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<div th:fragment="modal-study-exit-fragment"
+    id="modal-study-exit"
+     class="modal_wrap">
+    <div id="modal_dimmed" class="dimmed modal_close"></div>
+    <div class="modal_container">
+        <div class="modal_top">
+            <p class="modal_title">학습종료</p>
+            <button type="button" class="modal_close_btn modal_close">
+                <iconify-icon icon="basil:cancel-outline"></iconify-icon>
+            </button>
+        </div>
+
+        <!--/* modal content */-->
+        <div class="modal_info small form_wrap justify_content_center">
+            <div class="info_text">
+                학습을 종료하고 메인화면으로 돌아가시겠습니까? <br>
+                <span style="color: var(--grayColor)"> (학습 진행도는 저장됩니다)</span>
+            </div>
+            <div class="btn_list">
+                <button class="btn primary modal_close">학습으로 돌아가기</button>
+                <a href="/study" class="btn white">홈으로</a>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

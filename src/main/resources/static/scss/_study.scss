@@ -4,15 +4,6 @@
     border-radius: var(--bdrs);
 }
 
-.list_info {
-    margin-bottom: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.padding {
-    margin: 1rem;
-}
-
 .study_list_container {
     display: flex;
     flex-direction: column;
@@ -139,6 +130,7 @@
     flex-direction: column;
     gap: var(--smallGap);
     font-size: var(--largeFontSize);
+    overflow-y: auto;
 
 
     &.center {
@@ -318,6 +310,10 @@
     justify-content: center;
 
     &.answer {
+        font-weight: 500;
+        color: var(--blackColor);
+        font-size: 1.2em;
+        font-family: sans-serif;
         border-color: var(--grayColor);
         min-height: 300px;
         resize: vertical;
@@ -438,7 +434,7 @@
         padding-top: 0;
         padding-left: 0;
         padding-right: 0;
-        overflow-y: scroll;
+        overflow-y: auto;
         overflow-x: hidden;
         transition: width var(--trst);
 

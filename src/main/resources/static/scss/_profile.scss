@@ -3,6 +3,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--baseGap);
+
+    .learning_level_info {
+        background-color: var(--subColor);
+        border-radius: var(--bdrs);
+    }
 }
 
 .welcome_info {
@@ -81,19 +86,6 @@
         }
     }
 
-    .level_bar {
-        width: 100%;
-        height: 5px;
-        border-radius: var(--bdrs);
-        border: 1px solid var(--borderColor);
-
-        .experience_point {
-            height: 100%;
-            background-color: var(--yellowColor);
-            border-radius: var(--bdrs);
-        }
-    }
-
     &.study_list {
         .level_bar {
             height: 10px;
@@ -108,58 +100,12 @@
         margin: 32px 0;
         width: 100%;
 
-        .level_bar {
-            height: 20px;
-            position: relative; // 자식이 absolute일 때 위치 기준
-
-            .experience_point {
-                transition: width 0.4s ease-in-out, // width가 변경되면 ease-in-out 을 실행
-                            background-color 0.3s ease; // background-color 변경되면 ease룰 실행
-
-                &.after_quiz {
-                    background-color: var(--redColor);
-                }
-            }
-
-            .quiz_marker {
-                position: absolute;
-                top: -2px; // 기본 위치가 level_bar아래이므로
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                transform: translateX(-50%); // line을 가운데로 정렬
-
-                .line {
-                    width: 3px;
-                    height: 24px;
-                    background-color: var(--darkGreenColor);
-                    border-radius: var(--bdrs);
-                }
-
-                .label {
-                    font-size: var(--baseFontSize);
-                    margin-top: 2px;
-                    font-weight: 600;
-                }
-            }
+        .after_quiz {
+            background-color: var(--redColor);
         }
-
-
-}
-}
-
-.learning_level_info {
-    .learning_info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--smallGap);
-        font-size: var(--smallFontSize);
-        padding: 0.3em 0.3em 0.3em 0.63em;
-        border-radius: var(--bdrs);
-        background-color: var(--subColor);
     }
 }
+
 
 /* 프로필 페이지 */
 .profile_img_container {

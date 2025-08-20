@@ -8,10 +8,16 @@ import org.apache.ibatis.annotations.Mapper;
 public interface DailyQuestMapper {
 
     /**
+     * 모든 퀘스트 정보 목록 조회
+     * @return 퀘스트 정보 목록
+     */
+    List<DailyQuest> getDailyQuests();
+
+    /** 삭제 예정
      * 특정 컨텐츠 타입의 일일도전과제 목록을 조회
      * @param contentType 컨텐츠타입 ("STUDY", "QUIZ", "DICTATION")
      * @return 조회된 일일 도전과제(DailyQuest) 리스트
      */
     List<DailyQuest> getDailyQuestByContentType(String contentType);
-    
+
 }

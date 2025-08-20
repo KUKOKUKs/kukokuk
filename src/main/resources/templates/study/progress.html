@@ -12,10 +12,10 @@
 
     <!-- 학습진행바 -->
     <div class="level_info study_progress">
-        <div class="level_bar">
+        <div class="bar_gauge">
             <!--/* 퀴즈는 항상 4개 */-->
-            <div class="experience_point"></div>
-            <div class="quiz_marker">
+            <div class="gauge"></div>
+            <div class="marker">
                 <div class="line"></div>
                 <div class="label">퀴즈</div>
             </div>
@@ -96,7 +96,7 @@
      * 렌더링 시점에 퀴즈 마커의 위치를 정하는 함수
      */
     function renderQuizMarkerPosition() {
-        const $quizMarker = $('.quiz_marker');
+        const $quizMarker = $('.marker');
 
         const progressStepCount = totalCount - 1; // 진행률 기준 칸 수 (startInfo 제외)
         const markerPercent = (quizInfoIndex / progressStepCount) * 100;
@@ -150,6 +150,36 @@
     }
 
     /**
+     * 강조 변환 함수 (마크다운 스타일 → HTML 태그)
+     */
+    function applyStrong(text) {
+        if (typeof text !== 'string') return text;
+        return text.replace(/\*\*(.+?)\*\*/g, '<strong class="strong">$1</strong>');
+    }
+
+    /**
+     * 강조 변환 함수를 재귀적으로 모든 요소에 적용
+     * @param content
+     * @returns {*|{}}
+     */
+    function deepApplyStrong(content) {
+        if (Array.isArray(content)) {
+            // 배열이면 각 요소에 재귀 호출
+            return content.map(item => deepApplyStrong(item));
+        } else if (typeof content === 'object' && content !== null) {
+            // 객체면 모든 key를 순회하면서 재귀 호출
+            const newObj = {};
+            for (const key in content) {
+                newObj[key] = deepApplyStrong(content[key]);
+            }
+            return newObj;
+        } else {
+            // 문자열 또는 기타 타입일 경우
+            return applyStrong(content);
+        }
+    }
+
+    /**
      * 현재 인덱스에 해당하는 학습 카드를 화면에 렌더링하는 함수
      */
     function renderCard(index) {
@@ -160,29 +190,26 @@
 
         // 현재 인덱스의 카드 데이터 추출
         const card = cards[index];
-        const content = JSON.parse(card.content); // JSON 문자열형식의 content를 JSON으로 파싱
-        console.log(content);
+        let content = JSON.parse(card.content); // JSON 문자열형식의 content를 JSON으로 파싱
+
+        // 강조 변환 처리 (** -> <strong>)
+        content = deepApplyStrong(content);
 
         // 현재 카드의 제목을 title 스타일을 가진 div 태그로 렌더링
-        const $titleDiv = $('<div>').addClass('title');
-        $titleDiv.text(card.title);
+        const $titleDiv = $('<div>').addClass('title').text(card.title);
         $studyCardDiv.append($titleDiv);
 
         // 현재 카드의 내용 (JSON 리스트)를 순회하면서 타입에 따라 다른 태그로 렌더링
         content.forEach(item => {
             const $div = $('<div>').addClass(item.type); // div태그를 하나 만들고, 타입에 맞는 클래스 부여
 
-            // **텍스트**를 strong 태그로 변환
-            const rawContent = typeof item.content === 'string' ? item.content : '';
-            const parsedContent = rawContent.replace(/\*\*(.*?)\*\*/g, '<strong class="strong">$1</strong>');
-
             // paragraph이면 기본 p태그 삽입
             if (item.type === 'paragraph') {
-                $div.html(`<p>${parsedContent}</p>`);
+                $div.html(`<p>${item.content}</p>`);
             }
             // quote 타입이면 인용
             else if (item.type === 'quote') {
-                const quoteStyled = parsedContent.replace(/[“”"]/g, '<span class="double_quote">$&</span>');
+                const quoteStyled = item.content.replace(/[“”"]/g, '<span class="double_quote">$&</span>');
                 console.log(quoteStyled);
 
                 // HTML에 그대로 출력 (큰따옴표 유지)
@@ -194,11 +221,8 @@
             else if (item.type === 'list') {
                 const $ul = $('<ul class="custom_list">');
                 item.content.forEach(((text, idx) => {
-                    // item.content가 list형식이므로 parsedContent 사용 불가. 추가적으로 변환 작업
-                    const parsed = text.replace(/\*\*(.*?)\*\*/g, '<strong class="strong">$1</strong>');
-
                     // li 태그 생성
-                    const $li = $('<li class="custom_list_item">').html(parsed).attr('data-index', idx + 1);
+                    const $li = $('<li class="custom_list_item">').html(text).attr('data-index', idx + 1);
 
                     $ul.append($li);
                 }));
@@ -206,21 +230,31 @@
             }
             // definition 타입이면 : 기준으로 정의와 설명을 구분
             else if (item.type === 'definition') {
-                const parts = parsedContent.split(':');
+                // ':' 또는 '.' 둘 중 하나로 split
+                const parts = item.content.split(/[:.]/);
+
+                // 빈 문자열 제거
+                const cleanedParts = parts.map(p => p.trim()).filter(p => p.length > 0);
+
                 // 만약 definition 타입의 content에 :가 없는 경우
-                if (parts.length < 2) {
-                    $div.html(`<p>${parsedContent}</p>`);
-                } else {
-                    $div.html(
-                        `<p><strong class="definition_term">${parts[0]}</strong>: ${parts[1]}</p>`);
-                }
+                let html = '';
+                cleanedParts.forEach((part, index) => {
+                    if (index % 2 === 0) {
+                        // 짝수 인덱스: 용어
+                        html += `<strong class="definition_term">${part}</strong>`;
+                    } else {
+                        // 홀수 인덱스: 설명 (앞에 구분자 추가)
+                        html += `: ${part}<br>`;
+                    }
+                });
+                $div.html(`<p>${html}</p>`);
             }
             // example 타입이면 텍스트앞에 '예시' 문구 추가
             else if (item.type === 'example') {
                 $div.html(`<p>
                                 <strong class="example_label">
                                     예시
-                                </strong>: ${parsedContent}
+                                </strong>: ${item.content}
                             </p>`);
             }
             // table 타입이면 표 추가구현
@@ -641,7 +675,7 @@
      * quiz 안내 화면은 화면이긴 하지만 진행률 전체 구간 수에도 포함하지 않음
      */
     function renderProgressBar() {
-        $experiencePoint = $('.experience_point');
+        $experiencePoint = $('.gauge');
 
         const progressStepCount = totalCount - 1; // startInfo 화면만 제외
         let progressStepIndex = currentIndex // 진행률 계산용 인덱스

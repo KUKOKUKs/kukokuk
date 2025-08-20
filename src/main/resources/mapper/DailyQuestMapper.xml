@@ -4,8 +4,22 @@
 <mapper namespace="com.kukokuk.mapper.DailyQuestMapper">
 
     <!--
-      List<DailyQuest> getDailyQuestByContentType(String contentType);
+         * 모든 퀘스트 정보 목록 조회
+         * @return 모든 퀘스트 정보 목록
+        List<DailyQuestStatusResponse> getDailyQuests();
     -->
+    <select id="getDailyQuests" resultType="DailyQuest">
+        SELECT
+            DAILY_QUEST_NO          AS dailyQuestNo
+             , CONTENT_TYPE         AS contentType
+             , CONTENT_TEXT         AS contentText
+             , POINT                AS point
+             , COUNT                AS count
+        FROM KUKOKUK_DAILY_QUESTS
+        ORDER BY DAILY_QUEST_NO
+    </select>
+
+    <!--삭제 예정-->
     <resultMap id="DailyQuestResultMap" type="DailyQuest">
         <id property="dailyQuestNo" column="DAILY_QUEST_NO"/>
         <result property="contentType" column="CONTENT_TYPE"/>
@@ -19,35 +33,4 @@
         WHERE CONTENT_TYPE = #{contentType}
     </select>
 
-    <!--
-      List<DailyQuestUser> getDailyQuestUserByUserNo(@Param("userNo") int userNo,
-            @Param("condition") Map<String, Object> condition);
-    -->
-    <resultMap id="DailyQuestUserResultMap" type="DailyQuestUser">
-        <id property="dailyQuestUserNo" column="DAILY_QUEST_USER_NO"/>
-        <result property="dailyQuestNo" column="DAILY_QUEST_NO"/>
-        <result property="userNo" column="USER_NO"/>
-        <result property="isObtained" column="IS_OBTAINED"/>
-        <result property="createdDate" column="CREATED_DATE"/>
-    </resultMap>
-    <select id="getDailyQuestUserByUserNo" resultMap="DailyQuestUserResultMap">
-        SELECT
-        U.DAILY_QUEST_USER_NO,
-        U.DAILY_QUEST_NO,
-        U.IS_OBTAINED,
-        U.CREATED_DATE,
-        U.USER_NO
-        FROM
-        KUKOKUK_DAILY_QUEST_USERS U
-        JOIN KUKOKUK_DAILY_QUESTS Q
-        ON U.DAILY_QUEST_NO = Q.DAILY_QUEST_NO
-        WHERE
-        U.USER_NO = #{userNo}
-        <if test="condition.contentType != null">
-            AND Q.CONTENT_TYPE = #{condition.contentType}
-        </if>
-        <if test="condition.completedDate != null">
-            AND DATE(U.CREATED_DATE) = DATE(#{condition.completedDate})
-        </if>
-    </select>
 </mapper>

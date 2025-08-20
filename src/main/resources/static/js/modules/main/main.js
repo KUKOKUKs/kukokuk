@@ -1,4 +1,4 @@
-import {getDailyStudies} from "../study/study-api.js";
+import {apiGetDailyStudies} from "../study/study-api.js";
 
 $(document).ready(async () => {
     const $studyListContainer = $('.study_list_container');
@@ -6,7 +6,7 @@ $(document).ready(async () => {
     await renderDailyStudy();
 
     async function renderDailyStudy(username) {
-        const studyList = await getDailyStudies(1);
+        const studyList = await apiGetDailyStudies(1);
 
         studyList.forEach((study, index) => {
             // 학습 상태에 따라 표현할 텍스트 설정
@@ -65,8 +65,8 @@ $(document).ready(async () => {
                                         <div class="study_tag_list">${tagHtml}</div>
                                     </div>
                                     <div class="level_info study_list">
-                                        <div class="level_bar">
-                                            <div class="experience_point" style="width: ${study.progressRate}%"></div>
+                                        <div class="bar_gauge">
+                                            <div class="gauge" style="width: ${study.progressRate}%"></div>
                                         </div>
                                     </div>
                                     ${buttons}

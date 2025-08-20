@@ -65,10 +65,21 @@
         <div th:replace="~{fragments/common/footer :: footer-fragment}"></div>
     </div>
 
+    <div th:replace="~{fragments/modal/modal-study-exit :: modal-study-exit-fragment}"></div>
+
     <script>
         $('.side_bar_icon').click(function() {
             $('.nav_wrap').toggleClass('collapsed');
         })
+
+        const $logo = $('.symbol_logo');
+        const $modalExit = $('#modal-study-exit');
+        $logo.click(function() {
+            if ($modalExit.length) {
+                // 해당 모달창 요소가 있을 경우 열기
+                $modalExit.show();
+            }
+        });
     </script>
 </div>
 </html>
