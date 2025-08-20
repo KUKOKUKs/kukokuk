@@ -4,7 +4,7 @@ import com.kukokuk.dto.ExpAggregateDto;
 import com.kukokuk.exception.AppException;
 import com.kukokuk.mapper.DailyQuestMapper;
 import com.kukokuk.mapper.DailyQuestUserMapper;
-import com.kukokuk.response.DailyQuestStatusResponse;
+import com.kukokuk.response.DailyQuestStatusDto;
 import com.kukokuk.vo.DailyQuest;
 import com.kukokuk.vo.DailyQuestUser;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class DailyQuestService {
      * @return 모든 일일도전과제 현황 목록
      */
     @Transactional(readOnly = true) // 읽기 전용 트랜잭션: 성능 최적화, 실수로 쓰기 방지
-    public List<DailyQuestStatusResponse> getDailyQuestsStatus(int userNo) {
+    public List<DailyQuestStatusDto> getDailyQuestsStatus(int userNo) {
         log.info("getDailyQuestsStatus() 서비스 실행");
 
         // 1. 모든 일일 도전과제를 조회
@@ -70,7 +70,7 @@ public class DailyQuestService {
         log.info("completeQuestMap: {}", completeQuestMap);
 
         // 4. 최종 응답 리스트를 생성 (미리 용량을 dailyQuests 크기로 잡아 약간의 메모리/성능 이점)
-        List<DailyQuestStatusResponse> result = new ArrayList<>(dailyQuests.size());
+        List<DailyQuestStatusDto> result = new ArrayList<>(dailyQuests.size());
 
         // 5. 모든 일일 도전과제를 하나씩 집계 일일도전과제/목표량/완료 번호/보상 수령 여부를 결합해 응답 DTO 생성
         for (DailyQuest quest : dailyQuests) {
@@ -93,13 +93,13 @@ public class DailyQuestService {
 
             // 5-4. 응답용 DTO를 구성
             //  - DailyQuest + 진행도(progressValue) + 보상여부(isObtained)
-            DailyQuestStatusResponse dailyQuestStatusResponse = modelMapper.map(quest, DailyQuestStatusResponse.class);
-            dailyQuestStatusResponse.setProgressValue(progressValue);
-            dailyQuestStatusResponse.setDailyQuestUserNo(dailyQuestUserNo);
-            dailyQuestStatusResponse.setIsObtained(isObtained);
+            DailyQuestStatusDto dailyQuestStatusDto = modelMapper.map(quest, DailyQuestStatusDto.class);
+            dailyQuestStatusDto.setProgressValue(progressValue);
+            dailyQuestStatusDto.setDailyQuestUserNo(dailyQuestUserNo);
+            dailyQuestStatusDto.setIsObtained(isObtained);
 
             // 5-5. 최종 응답 리스트에 추가
-            result.add(dailyQuestStatusResponse);
+            result.add(dailyQuestStatusDto);
         }
 
         // 6. 모든 퀘스트에 대해 사용자 진행도/보상여부가 결합된 DTO 리스트를 반환

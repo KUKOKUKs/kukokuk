@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.mapper.DailyQuestUserMapper">
+    
+    <!--
+         * 사용자의 퀘스트 완료 내역 일괄(보상 수령 여부) 업데이트
+         * @param dailyQuestUserBatchDto 일괄처리할 퀘스트 완료 내역 정보
+         * @return 업데이트된 행의 수
+        int updateDailyQuestUserBatch(DailyQuestUserBatchDto dailyQuestUserBatchDto);
+    -->
+    <update id="updateDailyQuestUserBatch" parameterType="DailyQuestUserBatchDto">
+        UPDATE
+            KUKOKUK_DAILY_QUEST_USERS
+        SET
+            IS_OBTAINED = #{isObtained}
+        WHERE USER_NO = #{userNo}
+            AND DAILY_QUEST_USER_NO IN
+            <foreach item="dailyQuestUserNo" collection="dailyQuestUserNos" open="(" separator="," close=")">
+                #{dailyQuestUserNo}
+            </foreach>
+            AND IS_OBTAINED = 'N'
+    </update>
 
     <!--
          * 사용자의 퀘스트 완료 내역 수정(보상 수령 처리)
@@ -13,10 +32,9 @@
         UPDATE
             KUKOKUK_DAILY_QUEST_USERS
         SET
-            UPDATED_DATE = CURRENT_TIMESTAMP
-          , IS_OBTAINED = #{isObtained}
+            IS_OBTAINED = #{isObtained}
         WHERE DAILY_QUEST_USER_NO = #{dailyQuestUserNo}
-          AND USER_NO = #{userNo}
+            AND USER_NO = #{userNo}
     </update>
 
     <!-- 퀘스트 완료 내역 resultMap -->
@@ -45,9 +63,9 @@
              , CREATED_DATE
         FROM KUKOKUK_DAILY_QUEST_USERS
         WHERE USER_NO = #{userNo}
-          AND DAILY_QUEST_NO = #{dailyQuestNo}
-          AND CREATED_DATE &gt;= CURDATE()
-          AND CREATED_DATE &lt;  CURDATE() + INTERVAL 1 DAY
+            AND DAILY_QUEST_NO = #{dailyQuestNo}
+            AND CREATED_DATE &gt;= CURDATE()
+            AND CREATED_DATE &lt;  CURDATE() + INTERVAL 1 DAY
     </select>
 
     <!--
@@ -67,9 +85,9 @@
              , CREATED_DATE
         FROM KUKOKUK_DAILY_QUEST_USERS
         WHERE DAILY_QUEST_USER_NO = #{dailyQuestUserNo}
-          AND USER_NO = #{userNo}
-          AND CREATED_DATE &gt;= CURDATE()
-          AND CREATED_DATE &lt;  CURDATE() + INTERVAL 1 DAY
+            AND USER_NO = #{userNo}
+            AND CREATED_DATE &gt;= CURDATE()
+            AND CREATED_DATE &lt;  CURDATE() + INTERVAL 1 DAY
     </select>
 
     <!--
@@ -87,8 +105,8 @@
              , CREATED_DATE
         FROM KUKOKUK_DAILY_QUEST_USERS
         WHERE USER_NO = #{userNo}
-          AND CREATED_DATE &gt;= CURDATE()
-          AND CREATED_DATE &lt;  CURDATE() + INTERVAL 1 DAY
+            AND CREATED_DATE &gt;= CURDATE()
+            AND CREATED_DATE &lt;  CURDATE() + INTERVAL 1 DAY
         ORDER BY DAILY_QUEST_USER_NO
     </select>
 

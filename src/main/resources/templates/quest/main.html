@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html layout:decorate="~{/layout/base}" th:with="title='일일 도전과제', menu='quest'">
+<div layout:fragment="content">
+    <div class="form_component">
+        <h1 class="content_title">일일 도전과제</h1>
+
+        <form class="form_wrap container pd_0"
+              id="daily-quest-form"
+              method="post"
+              th:action="@{/daily-quest-user/obtain}">
+            <div class="component thin_border">
+                <div class="component_title">
+                    <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">2025-08-19</span>
+                    <div class="sub_title_info">
+                        <div class="info">
+                            (<span id="success-count" th:text="${obtainedCount}">보상 수령건</span>/<span id="total-count" th:text="${dailyQuestStatusDtos.size()}">퀘스트 개수</span>)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component_list_container quest_list_container"
+                     th:data-obtained-count="${obtainedCount}">
+                    <th:block th:each="quest : ${dailyQuestStatusDtos}">
+                        <!--/* 일괄 획득 처리 시 미수령 건 폼 등록 */-->
+                        <input th:if="${quest.isSucceed() && !quest.isObtained()}" type="hidden" name="dailyQuestUserNo" th:value="${quest.getDailyQuestUserNo()}">
+
+                        <div class="component_info small with_icon"
+                             th:classappend="${quest.isObtained() ? 'disabled' : ''}">
+                            <div class="list_info">
+                                <p th:text="${quest.getContentText()}">퀘스트 내용</p>
+                                <div class="bar_gauge">
+                                    <div class="gauge" th:style="|width: ${quest.getScorePercent()};|"></div>
+                                    <span class="gauge_info" th:text="|${quest.getCurrentValue()} / ${quest.getTotalScore()}|">진행량/완료조건</span>
+                                </div>
+                            </div>
+
+                            <!--/* 퀘스트 미수행 */-->
+                            <a th:if="${!quest.isSucceed()}"
+                               th:href="${quest.getDailyQuestLink()}" class="btn small white">이동</a>
+
+                            <!--/* 퀘스트 수행 완료 / 보상 미수령 */-->
+                            <button th:if="${quest.isSucceed() && !quest.isObtained()}"
+                                    type="button"
+                                    class="btn small white get_hint_btn"
+                                    th:data-daily-quest-user-no="${quest.getDailyQuestUserNo()}">
+                                <img src="/images/favicon-32x32.png" alt="get hints">
+                            </button>
+
+                            <!--/* 퀘스트 수행 완료 / 보상 수령 */-->
+                            <span th:if="${quest.isSucceed() && quest.isObtained()}" class="btn small white disabled">
+                                <img src="/images/favicon-32x32.png" alt="get hints">
+                            </span>
+                        </div>
+                    </th:block>
+                </div>
+
+                <div class="pd_top_base">
+                    <span th:if="${obtainedCount >= dailyQuestStatusDtos.size()}" class="btn primary disabled">일괄 획득</span>
+                    <button th:unless="${obtainedCount >= dailyQuestStatusDtos.size()}" type="submit" class="btn primary">일괄 획득</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script th:if="${error != null}">
+        alert("[[${error}]]");
+    </script>
+
+    <script th:if="${success != null}">
+        alert("[[${success}]]");
+    </script>
+
+    <script type="module" th:src="@{/js/modules/profile/profile.js}"></script>
+</th:block>
+</html>

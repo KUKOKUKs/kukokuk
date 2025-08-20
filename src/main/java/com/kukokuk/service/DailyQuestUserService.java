@@ -1,5 +1,6 @@
 package com.kukokuk.service;
 
+import com.kukokuk.dto.DailyQuestUserBatchDto;
 import com.kukokuk.exception.AppException;
 import com.kukokuk.mapper.DailyQuestUserMapper;
 import com.kukokuk.vo.DailyQuestUser;
@@ -19,6 +20,36 @@ public class DailyQuestUserService {
     private final DailyQuestUserMapper dailyQuestUserMapper;
 
     private final UserService userService;
+
+    /**
+     * 사용자의 일일 도전과제 완료로 도전과제의 일괄 보상 획득 처리
+     * @param dailyQuestUserNos 보상 획득 처리할 식별자 값 리스트
+     * @param userNo 사용자 번호
+     * @return 업데이트된 행의 수
+     */
+    public int updateDailyQuestUserBatch(List<Integer> dailyQuestUserNos, int userNo) {
+        log.info("updateDailyQuestUserBatch() 서비스 실행");
+
+        // 일괄 처리를 위한 DTO 빌더
+        DailyQuestUserBatchDto dailyQuestUserBatchDto = DailyQuestUserBatchDto.builder()
+            .dailyQuestUserNos(dailyQuestUserNos)
+            .userNo(userNo)
+            .isObtained("Y")
+            .build();
+
+        // 일괄 업데이트 및 업데이트된 행의 수 요청
+        int updatedCount = dailyQuestUserMapper.updateDailyQuestUserBatch(dailyQuestUserBatchDto);
+
+        if (updatedCount == 0) {
+            throw new AppException("수령할 수 있는 보상이 없습니다.");
+        }
+        
+        // 사용자 힌트 개수 증가
+        userService.updateUserHintCountPlus(updatedCount, userNo);
+
+        return updatedCount;
+    }
+
 
     /**
      * 사용자의 일일 도전과제 완료로 해당 일일 도전과제의 보상 획득 처리

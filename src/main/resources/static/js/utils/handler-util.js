@@ -1,18 +1,5 @@
 import {apiGetStudyDifficultyList} from "../modules/study/study-api.js";
 
-const questLinkByContentType = {
-    "STUDY": "/study",
-    "ESSAY": "/study",
-    "SPEED": "/quiz",
-    "LEVEL": "/quiz",
-    "DICTATION": "/quiz"
-}
-
-// 일일 도전과제 해당 타입의 경로 설정
-export function replaceQuestLinkByContentType(contentType) {
-    return questLinkByContentType[contentType];
-}
-
 // 1~3, 1~6  학년 옵션 생성
 export const elementarySchool = setGradeOptions(6);
 export const middleSchool = setGradeOptions(3);

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <div th:fragment="quest-fragment" id="quest-container" class="component"
-    th:attr="data-logged-in=${#authorization.expression('isAuthenticated()')}">
+    th:data-logged-in="${#authorization.expression('isAuthenticated()')}">
     <div class="component_title">
         일일도전과제
         <div class="sub_title_info">
             <div class="info">
-                (<span id="success-count"></span>/<span id="total-count"></span>)
+                (<span id="obtained-count"></span>/<span id="total-count"></span>)
             </div>
         </div>
     </div>

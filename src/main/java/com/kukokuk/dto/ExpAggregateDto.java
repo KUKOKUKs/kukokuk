@@ -14,7 +14,7 @@ import org.apache.ibatis.type.Alias;
 @Alias("ExpAggregateDto")
 public class ExpAggregateDto {
 
-    private String contentType;     // ENUM("QUIZ", "DICTATION", "TWENTY", "STUDY", "ESSAY")
+    private String contentType;     // ENUM
     private Integer expSum;         // SUM(EXP_GAINED) 경험치 합
     private Integer cnt;            // COUNT(*) 횟수
 

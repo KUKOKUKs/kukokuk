@@ -33,24 +33,22 @@ public class UserService {
     private final UserMapper userMapper;
 
     /**
-     * 사용자 힌트 개수 -1 업데이트
-     * @param userNo 사용자 번호
-     */
-    public void updateUserHintCountMinus(int userNo) {
-        log.info("updateUserHintCountMinus() 서비스 실행");
-        userMapper.updateUserHintCountMinus(userNo);
-
-        // 현재 로그인 사용자의 Authentication 갱신
-        updateAuthentication(userNo);
-    }
-
-    /**
      * 사용자 힌트 개수 +1 업데이트
      * @param userNo 사용자 번호
      */
     public void updateUserHintCountPlus(int userNo) {
         log.info("updateUserHintCountPlus() 서비스 실행");
-        userMapper.updateUserHintCountPlus(userNo);
+        userMapper.updateUserHintCountPlus(1, userNo);
+    }
+
+    /**
+     * 전달받은 힌트 개수를 사용자 힌트 개수에 더하여 업데이트
+     * @param hintCount 추가할 힌트 개수
+     * @param userNo 사용자 번호
+     */
+    public void updateUserHintCountPlus(int hintCount, int userNo) {
+        log.info("updateUserHintCountPlus({}) 서비스 실행", hintCount);
+        userMapper.updateUserHintCountPlus(hintCount, userNo);
 
         // 현재 로그인 사용자의 Authentication 갱신
         updateAuthentication(userNo);
