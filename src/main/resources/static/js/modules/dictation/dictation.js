@@ -96,23 +96,23 @@ $(document).ready(() => {
 
     // 2. 문제 번호를 인자로 넘겨 getDictationQuestionApi 함수 실행
     async function getDictationQuestionApi(dictationQuestionNo) {
-        console.log("요청 시작: /api/dictation/question", dictationQuestionNo);
+            console.log("요청 시작: /api/dictation/question", dictationQuestionNo);
 
-        try {
-            const response = await $.ajax({
-                url: '/api/dictation/question',
-                method: 'GET',
-                data: {dictationQuestionNo},
-                dataType: 'json'
-            });
-            questionInformation = response.data;
-            return questionInformation;
+            try {
+                const response = await $.ajax({
+                    url: '/api/dictation/question',
+                    method: 'GET',
+                    data: {dictationQuestionNo},
+                    dataType: 'json'
+                });
+                questionInformation = response.data;
+                return questionInformation;
 
-        } catch (err) {
-            console.error("에러 발생", err);
+            } catch (err) {
+                console.error("에러 발생", err);
+            }
         }
-    }
-});
+    });
 
     // 사각형 안에 단어 하나씩 입력하는 로직
     function showAnswerInSquares(answer) {
@@ -131,4 +131,22 @@ $(document).ready(() => {
         console.log("[dictation.js] loaded");
 
 
-    };
+    $(".hint_btn").on("click", function () {
+        const dictationQuestionNo = $(this).attr("data-question-no");
+
+        const token  = $('meta[name="_csrf"]').attr('content');
+        const header = $('meta[name="_csrf_header"]').attr('content');
+
+        $.ajax({
+            url: "/api/dictation/use-hint",
+            type: "POST",
+            data: { dictationQuestionNo },
+            dataType: "json",
+            success: function (res) {
+                if (res.success) {
+                    console.log(res.message); // "성공"
+                }
+            }
+        });
+    });
+};

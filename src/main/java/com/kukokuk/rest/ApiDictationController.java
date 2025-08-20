@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Log4j2
 @RestController
@@ -36,6 +37,22 @@ public class ApiDictationController {
         log.info("questionApi() 컨트롤러 실행");
         DictationQuestion dictationQuestion = dictationService.getDictationQuestionByQuestionNo(dictationQuestionNo);
         return ResponseEntityUtils.ok(dictationQuestion);
+    }
+
+    @PostMapping("/use-hint")
+    public ResponseEntity<ApiResponse<Void>> useHint(@RequestParam Integer dictationQuestionNo,
+        @SessionAttribute(value = "dictationQuestionLogDto", required = false) List<DictationQuestionLogDto> dictationQuestionLogDtoList) {
+
+        log.info("[/use-hint] 요청 받음 - dictationQuestionNo: {}", dictationQuestionNo);
+
+        for (DictationQuestionLogDto dictationQuestionLogDto : dictationQuestionLogDtoList) {
+            if (dictationQuestionLogDto.getDictationQuestionNo() == dictationQuestionNo) {
+                dictationQuestionLogDto.setUsedHint("Y");
+                log.info("usedHint: {}", dictationQuestionLogDto.getUsedHint());
+                break;
+            }
+        }
+        return ResponseEntityUtils.ok("힌트 사용 완료");
     }
 
     /**
