@@ -41,7 +41,7 @@ public class QuizController {
     private final QuizBookmarkService quizBookmarkService; // ★추가
 
     //[퀴즈 선택페이지]뷰이동
-    @GetMapping("/main")
+    @GetMapping
     public String viewMain(){
         log.info("[확인] viewMain() 페이지 컨트롤러 실행");
         return "quiz/main";

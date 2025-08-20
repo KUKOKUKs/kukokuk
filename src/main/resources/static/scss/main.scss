@@ -4,11 +4,10 @@
 @use 'profile';
 @use 'sign';
 @use 'study';
-@use 'level';
 @use 'quest';
-@use 'quiz';
+@use 'quiz-common';
 @use 'quiz-result';
-@use 'quiz-detail-result';
-@use 'bookmark';
+@use "quiz-play";
+@use "quiz-bookmark";
 @use 'main-page';
 @use 'question';

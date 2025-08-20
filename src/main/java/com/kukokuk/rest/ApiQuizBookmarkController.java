@@ -26,20 +26,15 @@ public class ApiQuizBookmarkController {
     @PostMapping("/{quizNo}")
     public ApiResponse<Void> addBookmark(@PathVariable int quizNo,
         @AuthenticationPrincipal SecurityUser securityUser) {
-        int userNo = securityUser.getUser().getUserNo();
-        boolean success = quizBookmarkService.insertBookmark(userNo, quizNo);
-        return success
-            ? ApiResponse.success("북마크 성공")
-            : ApiResponse.fail(400, "북마크 실패");
+        quizBookmarkService.insertBookmark(securityUser.getUser().getUserNo(), quizNo);
+        return ApiResponse.success("북마크 성공");
     }
+
 
     @DeleteMapping("/{quizNo}")
     public ApiResponse<Void> removeBookmark(@PathVariable int quizNo,
         @AuthenticationPrincipal SecurityUser securityUser) {
-        int userNo = securityUser.getUser().getUserNo();
-        boolean success = quizBookmarkService.deleteBookmark(userNo, quizNo);
-        return success
-            ? ApiResponse.success("북마크 해제 성공")
-            : ApiResponse.fail(400, "북마크 해제 실패");
+        quizBookmarkService.deleteBookmark(securityUser.getUser().getUserNo(), quizNo);
+        return ApiResponse.success("북마크 해제 성공");
     }
 }

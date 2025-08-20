@@ -51,10 +51,12 @@ $(document).ready(function () {
 
             // 보기 버튼 생성
             const $btn = $(`
-                <button class="btn white" type="button" data-choice="${i}">
-                    <span class="choice-no">${i}.</span> ${optionText}
+                 <button class="btn white" type="button" data-choice="${i}">
+                <span class="choice-no">${i}.</span>
+                <span class="choice-text">${optionText}</span>
                 </button>
             `);
+
 
             // 이미 선택된 경우 selected 클래스 추가
             if (isSelected) {

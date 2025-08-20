@@ -1,0 +1,99 @@
+/* ===============================
+   Quiz 공통 스타일
+   =============================== */
+
+/* 라디오 버튼 숨기기 */
+.btn input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.btn.level-select {
+    border-color: var(--borderColor);
+    background-color: #fff;
+    color: var(--primaryColor);
+    transition: all var(--trst);
+}
+
+/* 선택된 상태 유지 */
+.btn.level-select:has(input[type="radio"]:checked) {
+    background-color: var(--primaryColor);
+    border-color: var(--primaryColor);
+    color: #fff;
+}
+
+/* hover */
+.btn.level-select:hover {
+    border-color: var(--primaryColor);
+    color: var(--primaryColor);
+    background-color: var(--lightGrayColor);
+}
+
+.quiz_container {
+    width: var(--subContentWidth);
+    padding: var(--containerPadding) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
+}
+
+.quiz_title {
+    text-align: center;
+    font-size: var(--titleFontSize);
+    font-weight: bold;
+    margin-bottom: var(--baseGap);
+}
+
+#quiz-timer {
+    font-weight: bold;
+    color: var(--primaryColor);
+}
+
+/* 스피드 퀴즈 타이머 */
+.level_info.timer_progress {
+    margin: 10px 0;
+    width: 100%;
+}
+
+.timer_level_bar {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    background-color: var(--lightGrayColor);
+    border-radius: var(--bdrs);
+    overflow: hidden;
+}
+
+.timer_experience_point {
+    height: 100%;
+    background-color: var(--yellowColor);
+    border-radius: var(--bdrs);
+    transition: width 0.4s ease-in-out,
+    background-color 0.3s ease;
+}
+
+.timer_experience_point.after_quiz {
+    background-color: var(--redColor);
+}
+
+/* 마커 */
+.timer_level_bar .quiz_marker {
+    position: absolute;
+    top: calc(var(--tinyGap) * -1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-50%);
+}
+.timer_level_bar .quiz_marker .line {
+    width: var(--tinyIcon);
+    height: var(--largeIcon);
+    background-color: var(--darkGreenColor);
+    border-radius: var(--bdrs);
+}
+.timer_level_bar .quiz_marker .label {
+    font-size: var(--baseFontSize);
+    margin-top: var(--tinyGap);
+    font-weight: bold;
+}
