@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.study.mapper.DailyStudyLogMapper">
+    <resultMap id="DailyStudyLogResultMap" type="DailyStudyLog">
+        <id column="DAILY_STUDY_LOG_NO" property="dailyStudyLogNo"/>
+        <result column="USER_NO" property="userNo"/>
+        <result column="DAILY_STUDY_NO" property="dailyStudyNo"/>
+        <result column="STUDIED_CARD_COUNT" property="studiedCardCount"/>
+        <result column="COMPLETED_DATE" property="completedDate"/>
+        <result column="STATUS" property="status"/>
+        <result column="CREATED_DATE" property="createdDate"/>
+        <result column="UPDATED_DATE" property="updatedDate"/>
+    </resultMap>
+
+    <resultMap id="DailyStudyLogWithStudyResultMap" type="DailyStudyLog">
+        <id column="DAILY_STUDY_LOG_NO" property="dailyStudyLogNo"/>
+        <result column="USER_NO" property="userNo"/>
+        <result column="DAILY_STUDY_NO" property="dailyStudyNo"/>
+        <result column="STUDIED_CARD_COUNT" property="studiedCardCount"/>
+        <result column="COMPLETED_DATE" property="completedDate"/>
+        <result column="STATUS" property="status"/>
+        <result column="CREATED_DATE" property="createdDate"/>
+        <result column="UPDATED_DATE" property="updatedDate"/>
+        <association property="dailyStudy" javaType="DailyStudy">
+            <id column="DAILY_STUDY_NO" property="dailyStudyNo"/>
+            <result column="TITLE" property="title" />
+            <result column="CARD_COUNT" property="cardCount"/>
+        </association>
+    </resultMap>
+    <!--
+        public List<DailyStudyLog> getStudyLogsByUserNo(@Param("userNo") int userNo,
+        @Param("condition") Map<String, Object> condition);
+    -->
+
+    <select id="getStudyLogsWithStudyByUserNo" resultMap="DailyStudyLogWithStudyResultMap">
+        SELECT
+            L.DAILY_STUDY_LOG_NO,
+            L.USER_NO,
+            L.DAILY_STUDY_NO,
+            L.STUDIED_CARD_COUNT,
+            L.COMPLETED_DATE,
+            L.STATUS,
+            L.CREATED_DATE,
+            L.UPDATED_DATE,
+            S.TITLE,
+            S.CARD_COUNT
+        FROM
+            KUKOKUK_DAILY_STUDY_LOGS L
+            JOIN KUKOKUK_DAILY_STUDIES S
+            ON L.DAILY_STUDY_NO = S.DAILY_STUDY_NO
+        WHERE
+            L.USER_NO = #{userNo}
+        <if test="condition.status != null">
+            <choose>
+                <when test="condition.status == 'inProgress'">
+                    AND L.STATUS = 'IN_PROGRESS'
+                </when>
+                <when test="condition.status == 'completed'">
+                    AND L.STATUS = 'COMPLETED'
+                </when>
+            </choose>
+        </if>
+
+        <if test="condition.order != null">
+            <choose>
+                <when test="condition.order == 'updatedDate'">
+                    ORDER BY
+                        L.UPDATED_DATE
+                </when>
+            </choose>
+        </if>
+
+        <if test="condition.rows != null">
+            <choose>
+                <when test="condition.offset != null">
+                    LIMIT #{condition.offset}, #{condition.rows}
+                </when>
+                <otherwise>
+                    LIMIT 0, #{condition.rows}
+                </otherwise>
+            </choose>
+        </if>
+    </select>
+
+    <!--
+    DailyStudyLog getStudyLogByUserNoAndDailyStudyNo(@Param("userNo") int userNo, @Param("dailyStudyNo") int dailyStudyNo);
+    -->
+    <select id="getStudyLogByUserNoAndDailyStudyNo" resultMap="DailyStudyLogResultMap">
+        SELECT
+            DAILY_STUDY_LOG_NO,
+            USER_NO,
+            DAILY_STUDY_NO,
+            STUDIED_CARD_COUNT,
+            COMPLETED_DATE,
+            STATUS,
+            CREATED_DATE,
+            UPDATED_DATE
+        FROM
+            KUKOKUK_DAILY_STUDY_LOGS
+        WHERE
+            USER_NO = #{userNo}
+            AND DAILY_STUDY_NO = #{dailyStudyNo}
+    </select>
+
+    <!--
+     void createStudyLog(DailyStudyLog dailyStudyLog);
+    -->
+    <insert id="createStudyLog" parameterType="DailyStudyLog"
+        useGeneratedKeys="true" keyColumn="DAILY_STUDY_LOG_NO" keyProperty="dailyStudyLogNo">
+            INSERT INTO
+                KUKOKUK_DAILY_STUDY_LOGS
+                (
+                 DAILY_STUDY_NO,
+                 USER_NO
+                )
+            VALUES
+                (
+                 #{dailyStudyNo},
+                 #{userNo}
+                )
+    </insert>
+
+    <!--
+    DailyStudyLog getStudyLogByNo(int dailyStudyLogNo);
+    -->
+    <select id="getStudyLogByNo" resultMap="DailyStudyLogResultMap">
+        SELECT
+            DAILY_STUDY_LOG_NO,
+            USER_NO,
+            DAILY_STUDY_NO,
+            STUDIED_CARD_COUNT,
+            COMPLETED_DATE,
+            STATUS,
+            CREATED_DATE,
+            UPDATED_DATE
+        FROM
+            KUKOKUK_DAILY_STUDY_LOGS
+        WHERE
+            DAILY_STUDY_LOG_NO = #{dailyStudyLogNo}
+    </select>
+
+    <!--
+     void updateStudyLog(DailyStudyLog updateLog);
+    -->
+    <update id="updateStudyLog" parameterType="DailyStudyLog">
+        UPDATE
+            KUKOKUK_DAILY_STUDY_LOGS
+        SET
+            UPDATED_DATE = NOW()
+
+            <!-- null이 아닌 필드만 변경 -->
+            <if test="studiedCardCount != null">
+                , STUDIED_CARD_COUNT = #{studiedCardCount}
+            </if>
+
+            <if test="status != null">
+                , STATUS = #{status}
+            </if>
+
+            <if test="status == 'COMPLETED'">
+                , COMPLETED_DATE = NOW()
+            </if>
+        WHERE
+            DAILY_STUDY_LOG_NO = #{dailyStudyLogNo}
+    </update>
+
+</mapper>

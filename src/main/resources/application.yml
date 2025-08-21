@@ -27,16 +27,14 @@ spring:
     # 유효성 순차 검증
     fail-fast: true
 
-  # env 관련 설정 추가
-  config:
-    import: optional:file:.env[.properties]
-
 mybatis:
   # Mapper XML 파일 위치
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:mapper/**/*.xml
 
   # Type Alias 패키지 설정
-  type-aliases-package: com.kukokuk.vo,com.kukokuk.dto
+  type-aliases-package:
+    com.kukokuk.domain.*.vo,
+    com.kukokuk.domain.*.dto
 
   configuration:
     # NULL 값 처리 방식
