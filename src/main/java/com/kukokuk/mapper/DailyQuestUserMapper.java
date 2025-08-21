@@ -1,5 +1,6 @@
 package com.kukokuk.mapper;
 
+import com.kukokuk.dto.DailyQuestUserBatchDto;
 import com.kukokuk.vo.DailyQuestUser;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,13 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface DailyQuestUserMapper {
+
+    /**
+     * 사용자의 퀘스트 완료 내역 일괄(보상 수령 여부) 업데이트
+     * @param dailyQuestUserBatchDto 일괄처리할 퀘스트 완료 내역 정보
+     * @return 업데이트된 행의 수
+     */
+    int updateDailyQuestUserBatch(DailyQuestUserBatchDto dailyQuestUserBatchDto);
 
     /**
      * 사용자의 퀘스트 완료 내역 수정(보상 수령 여부)

@@ -1,7 +1,7 @@
 package com.kukokuk.rest;
 
 import com.kukokuk.response.ApiResponse;
-import com.kukokuk.response.DailyQuestStatusResponse;
+import com.kukokuk.response.DailyQuestStatusDto;
 import com.kukokuk.response.ResponseEntityUtils;
 import com.kukokuk.security.SecurityUser;
 import com.kukokuk.service.DailyQuestService;
@@ -28,7 +28,7 @@ public class ApiDailyQuestController {
 
     // 사용자 번호로 모든 퀘스트와 진행도 및 보상 획득여부 정보를 포함한 목록 조회 요청
     @GetMapping
-    public ResponseEntity<ApiResponse<List<DailyQuestStatusResponse>>> dailyQuestList(
+    public ResponseEntity<ApiResponse<List<DailyQuestStatusDto>>> dailyQuestList(
         @AuthenticationPrincipal SecurityUser securityUser) {
         log.info("dailyQuestList() 컨트롤러 실행");
         return ResponseEntityUtils.ok(

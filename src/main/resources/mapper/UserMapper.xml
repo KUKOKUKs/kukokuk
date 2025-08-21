@@ -4,26 +4,16 @@
 <mapper namespace="com.kukokuk.mapper.UserMapper">
 
     <!--
-        * 사용자 힌드 개수 -1 업데이트
-        * @param userNo 사용자 번호
-        void updateUserHintCountMinus(int userNo);
-    -->
-    <update id="updateUserHintCountMinus">
-        UPDATE
-            KUKOKUK_USERS
-        SET HINT_COUNT = IF(HINT_COUNT > 0, HINT_COUNT - 1, 0)
-        WHERE USER_NO = #{userNo}
-    </update>
-
-    <!--
-        * 사용자 힌드 개수 +1 업데이트
-        * @param userNo 사용자 번호
-        void updateUserHintCountPlus(int userNo);
+         * 전달받은 힌트 개수를 사용자 힌트 개수에 더하여 업데이트
+         * @param hintCount 추가할 힌트 개수
+         * @param userNo 사용자 번호
+        void updateUserHintCountPlus(@Param("hintCount") int hintCount
+            , @Param("userNo") int userNo);
     -->
     <update id="updateUserHintCountPlus">
         UPDATE
             KUKOKUK_USERS
-        SET HINT_COUNT = HINT_COUNT + 1
+        SET HINT_COUNT = HINT_COUNT + #{hintCount}
         WHERE USER_NO = #{userNo}
     </update>
 

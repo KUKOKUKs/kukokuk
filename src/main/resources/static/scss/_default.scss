@@ -780,11 +780,6 @@
     cursor: pointer;
     transition: border-color var(--trst), color var(--trst), background-color var(--trst);
 
-    &.disabled {
-        pointer-events: none;
-        opacity: .5;
-    }
-
     &.small {
         width: max-content;
         font-size: var(--smallFontSize);
@@ -906,6 +901,11 @@
     cursor: pointer;
 }
 
+.disabled {
+    pointer-events: none;
+    opacity: .5;
+}
+
 .d_flex {
     width: 100%;
     display: flex;
@@ -971,6 +971,10 @@
     &.sub {
         border-color: var(--subColor);
     }
+}
+
+.thin_border {
+    border-width: 1px;
 }
 
 .border_radius {
