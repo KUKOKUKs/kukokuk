@@ -4,18 +4,18 @@
       layout:decorate="~{/layout/center}">
 <head>
 </head>
-<body class="result-page">
-<div class="result-page-wrapper">
-    <div layout:fragment="content" class="result-detail-container">
+<body class="result_page">
+<div class="result_page_wrapper">
+    <div layout:fragment="content" class="result_detail_container">
 
-        <h2 class="result-title">스피드 퀴즈 결과 상세</h2>
+        <h2 class="result_title">스피드 퀴즈 결과 상세</h2>
 
-        <div class="result-summary">
+        <div class="result_summary">
             <p><strong>총 문항 수:</strong> <span th:text="${summary.totalQuestion}">0</span>개</p>
             <p><strong>총 소요 시간:</strong> <span th:text="${summary.totalTimeSec}">0</span>초</p>
         </div>
 
-        <table class="result-table">
+        <table class="result_table">
             <thead>
             <tr>
                 <th>#</th>
@@ -36,14 +36,14 @@
                 </td>
                 <td th:text="${result.successAnswer}">2</td>
                 <td>
-                    <span th:if="${result.isSuccess == 'Y'}" class="answer-correct">정답</span>
-                    <span th:unless="${result.isSuccess == 'Y'}" class="answer-wrong">오답</span>
+                    <span th:if="${result.isSuccess == 'Y'}" class="answer_correct">정답</span>
+                    <span th:unless="${result.isSuccess == 'Y'}" class="answer_wrong">오답</span>
                 </td>
             </tr>
             </tbody>
         </table>
 
-        <div class="result-footer">
+        <div class="result_footer">
             <a href="/" class="btn white">홈으로</a>
         </div>
 

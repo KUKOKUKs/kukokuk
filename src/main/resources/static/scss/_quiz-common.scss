@@ -1,5 +1,6 @@
 /* ===============================
    Quiz 공통 스타일
+   (quiz-common.scss)
    =============================== */
 
 /* 라디오 버튼 숨기기 */
@@ -9,7 +10,7 @@
     pointer-events: none;
 }
 
-.btn.level-select {
+.btn.level_select {
     border-color: var(--borderColor);
     background-color: #fff;
     color: var(--primaryColor);
@@ -17,14 +18,14 @@
 }
 
 /* 선택된 상태 유지 */
-.btn.level-select:has(input[type="radio"]:checked) {
+.btn.level_select:has(input[type="radio"]:checked) {
     background-color: var(--primaryColor);
     border-color: var(--primaryColor);
     color: #fff;
 }
 
 /* hover */
-.btn.level-select:hover {
+.btn.level_select:hover {
     border-color: var(--primaryColor);
     color: var(--primaryColor);
     background-color: var(--lightGrayColor);
@@ -45,7 +46,7 @@
     margin-bottom: var(--baseGap);
 }
 
-#quiz-timer {
+#quiz_timer {
     font-weight: bold;
     color: var(--primaryColor);
 }
