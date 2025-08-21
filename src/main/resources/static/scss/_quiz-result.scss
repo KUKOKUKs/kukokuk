@@ -66,7 +66,7 @@
 }
 
 /* 정답/오답 표시 */
-.answer_correct { color: var(--primaryColor); font-weight: bold; }
+.answer_correct { color: var(--darkGreenColor); font-weight: bold; }
 .answer_wrong   { color: var(--redColor); font-weight: bold; }
 
 /* 푸터 버튼 영역 */
@@ -75,14 +75,31 @@
     margin-top: var(--largeGap);
 
     .btn.white {
-        border: var(--thinBorder);
+        border: 2px solid var(--darkGreenColor);
         background-color: #fff;
-        color: var(--primaryColor);
+        color: var(--darkGreenColor);
+        font-weight: 600;
         padding: var(--smallPadding) var(--basePadding);
         border-radius: var(--bdrs);
         transition: var(--trst);
 
-        &:hover { background-color: var(--subColor); }
+        &:hover {
+            background-color: var(--lightGrayColor);
+        }
+    }
+
+    .btn.primary {
+        border: 2px solid var(--darkGreenColor);
+        background-color: var(--darkGreenColor);
+        color: #fff;
+        font-weight: 600;
+        padding: var(--smallPadding) var(--basePadding);
+        border-radius: var(--bdrs);
+        transition: var(--trst);
+
+        &:hover {
+            background-color: var(--primaryColor); // hover 시 기존 primary 강조
+        }
     }
 }
 
@@ -102,7 +119,7 @@
     font-size: var(--pageTitleFontSize);
     font-weight: bold;
     margin-bottom: 20px;
-    color: var(--primaryColor);
+    color: var(--darkGreenColor);
 }
 
 /* 요약 통계 영역 */

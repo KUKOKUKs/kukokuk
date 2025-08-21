@@ -21,7 +21,6 @@
 }
 
 .quiz_question {
-    margin-top: var(--baseGap);      /* 문제 위쪽 공간 */
     width: 100%;
     height: 150px;
     display: flex;
@@ -29,9 +28,9 @@
     justify-content: center;
     text-align: center;
     padding: var(--basePadding);
-    font-size: var(--largeFontSize);
+    font-size: var(--pageTitleFontSize);
     font-weight: bold;
-    line-height: 1.5;
+    line-height: 1.2;
     word-break: keep-all;
     overflow-wrap: break-word;
 }
