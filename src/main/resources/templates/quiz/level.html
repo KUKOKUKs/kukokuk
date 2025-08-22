@@ -2,18 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/layout/center}">
-<div layout:fragment="content" class="quiz-container">
-    <h1 class="quiz-title">단계별 퀴즈</h1>
+
+<div layout:fragment="content" class="quiz_play_container">
+    <h1 class="quiz_title">단계별 퀴즈</h1>
 
     <!-- 진행 상황 / 힌트 / 진행률 -->
     <div class="quiz_step_container d_flex column small_gap">
         <!-- 진행 상황 -->
-        <div id="quiz-progress-info">
+        <div id="quiz-progress-info" class="quiz_progress_info">
             <span id="quiz-current">1</span> / <span id="quiz-total">0</span>
         </div>
 
         <!-- 힌트 버튼 -->
-        <button id="hint-btn" class="hint-btn">
+        <button id="hint-btn" class="hint_btn">
             힌트 <span id="hint-count">(0)</span>
         </button>
 
@@ -26,9 +27,10 @@
     </div>
 
     <!-- 문제 -->
-    <div id="quiz-question"></div>
+    <div id="quiz-question" class="quiz_question"></div>
+
     <!-- 보기 -->
-    <div id="quiz-options"></div>
+    <div id="quiz-options" class="quiz_options"></div>
 
     <!-- 이전/다음 버튼 -->
     <div class="btn_list">

@@ -1,43 +1,59 @@
 /* ===============================
-   퀴즈 풀이 화면 (play.scss)
+   퀴즈 풀이 화면 (quiz-play.scss)
    =============================== */
+.quiz_play_container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: var(--bdrs);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
+}
 
-#quiz-question {
-    width: 100%;          /* 컨테이너 폭 전부 사용 */
-    height: 150px;        /* 고정 높이 */
+.quiz_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--baseGap);   /* 타이머와 문제 간격 확보 */
+}
+
+.quiz_question {
+    width: 100%;
+    height: 150px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: var(--basePadding);
-    box-sizing: border-box;
-    font-size: var(--largeFontSize);
+    font-size: var(--pageTitleFontSize);
     font-weight: bold;
-    line-height: 1.5;
+    line-height: 1.2;
     word-break: keep-all;
     overflow-wrap: break-word;
 }
-#quiz-options {
+
+
+.quiz_options {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;     /* 버튼들을 중앙 정렬 */
+    align-items: center;
     gap: var(--smallGap);
 }
 
-#quiz-options .btn {
+.quiz_options .btn {
     display: flex;
     align-items: flex-start;
     gap: 8px;
-
-    width: 800px;            /* 🔥 버튼 폭 고정 */
-    max-width: 100%;         /* 화면이 좁아지면 줄어듦 */
+    width: 800px;
+    max-width: 100%;
     min-height: 60px;
     padding: var(--smallPadding) var(--basePadding);
-
     text-align: left;
     justify-content: flex-start;
-
     white-space: normal;
     word-break: break-word;
     box-sizing: border-box;
@@ -57,24 +73,13 @@
     }
 }
 
-
-.quiz-container {
-    width: 100%;
-    max-width: var(--centerContentWidth); /* 최대 폭 제한 (예: 800px) */
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--baseGap);
-    padding: var(--containerPadding) 0;
-
-    .hint-btn {
-        background: var(--primaryColor);
-        color: var(--subColor);
-        font-size: var(--subFontSize);
-        border-radius: var(--largeIcon);
-        padding: var(--tinyGap) var(--smallGap);
-        border: none;
-        box-shadow: 0 var(--tinyGap) var(--smallGap) rgba(25, 118, 210, 0.08);
-        margin-top: var(--smallGap);
-    }
+.hint_btn {
+    background: var(--primaryColor);
+    color: var(--subColor);
+    font-size: var(--subFontSize);
+    border-radius: var(--largeIcon);
+    padding: var(--tinyGap) var(--smallGap);
+    border: none;
+    box-shadow: 0 var(--tinyGap) var(--smallGap) rgba(25, 118, 210, 0.08);
+    margin-top: var(--smallGap);
 }
