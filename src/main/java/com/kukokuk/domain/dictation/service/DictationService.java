@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kukokuk.ai.GeminiClient;
 import com.kukokuk.common.exception.AppException;
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
+import com.kukokuk.domain.dictation.dto.DictationResultLogDto;
 import com.kukokuk.domain.dictation.mapper.DictationQuestionLogMapper;
 import com.kukokuk.domain.dictation.mapper.DictationQuestionMapper;
 import com.kukokuk.domain.dictation.mapper.DictationSessionMapper;
@@ -451,28 +452,23 @@ public class DictationService {
         }
     }
 
+    /**
+     * 받아쓰기 세트 조회
+     * @param userNo 사용자 번호
+     * @return 받아쓰기 세트
+     */
     public List<DictationSession> getResultsByUserNo(int userNo) {
         return dictationSessionMapper.getDictationSessionResultsByUserNo(userNo);
     }
 
-    public List<DictationQuestionLog> getLogsBySessionNo(int dictationSessionNo) {
-        List<DictationQuestionLog> logs = dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(
-            dictationSessionNo);
-
-        // 이거 추가하면 됨 (stream도 필요 없음)
-        if (logs == null) {
-            return new ArrayList<>();
-        }
-
-        // 직접 for문으로 null 제거
-        List<DictationQuestionLog> cleaned = new ArrayList<>();
-        for (DictationQuestionLog log : logs) {
-            if (log != null) {
-                cleaned.add(log);
-            }
-        }
-
-        return cleaned;
+    /**
+     * 받아쓰기 세트의 이력 조회
+     * @param dictationSessionNo 문제 세트 번호
+     * @param userNo 사용자 번호
+     * @return 받아쓰기 세트의 이력
+     */
+    public List<DictationResultLogDto> getLogsBySessionNo(int dictationSessionNo, int userNo) {
+        return dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo, userNo);
     }
 
     public DictationQuestion getDictationQuestionByQuestionNo(Integer dictationQuestionNo) {
