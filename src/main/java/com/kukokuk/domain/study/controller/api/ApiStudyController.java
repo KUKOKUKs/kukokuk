@@ -2,6 +2,8 @@ package com.kukokuk.domain.study.controller.api;
 
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
+import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
+import com.kukokuk.domain.study.dto.ParseMaterialRequest;
 import com.kukokuk.domain.study.dto.UserStudyRecommendationDto;
 import com.kukokuk.domain.study.service.StudyService;
 import com.kukokuk.domain.study.vo.DailyStudy;
@@ -10,16 +12,14 @@ import com.kukokuk.domain.study.vo.DailyStudyLog;
 import com.kukokuk.domain.study.vo.DailyStudyMaterial;
 import com.kukokuk.domain.study.vo.DailyStudyQuizLog;
 import com.kukokuk.domain.study.vo.StudyDifficulty;
-import com.kukokuk.request.CreateStudyLogRequest;
-import com.kukokuk.request.EssayQuizLogRequest;
-import com.kukokuk.request.ParseMaterialRequest;
-import com.kukokuk.request.StudyQuizLogRequest;
-import com.kukokuk.request.UpdateStudyLogRequest;
-import com.kukokuk.response.DailyStudyLogResponse;
-import com.kukokuk.response.DailyStudySummaryResponse;
-import com.kukokuk.response.EssayQuizLogResponse;
-import com.kukokuk.response.GeminiEssayResponse;
-import com.kukokuk.response.ParseMaterialResponse;
+import com.kukokuk.domain.study.dto.CreateStudyLogRequest;
+import com.kukokuk.domain.study.dto.StudyQuizLogRequest;
+import com.kukokuk.domain.study.dto.UpdateStudyLogRequest;
+import com.kukokuk.domain.study.dto.DailyStudyLogResponse;
+import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
+import com.kukokuk.domain.study.dto.EssayQuizLogResponse;
+import com.kukokuk.domain.study.dto.GeminiEssayResponse;
+import com.kukokuk.domain.study.dto.ParseMaterialResponse;
 import com.kukokuk.security.SecurityUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -232,7 +232,8 @@ public class ApiStudyController {
     public ResponseEntity<ApiResponse<EssayQuizLogResponse>> createEssayQuizLog(@RequestBody EssayQuizLogRequest essayQuizLogRequest,
         @AuthenticationPrincipal SecurityUser securityUser) {
 
-        DailyStudyEssayQuizLog essayQuizLog = studyService.createStudyEssayQuizLog(essayQuizLogRequest, securityUser.getUser().getUserNo());
+        DailyStudyEssayQuizLog essayQuizLog = studyService.createStudyEssayQuizLog(
+            essayQuizLogRequest, securityUser.getUser().getUserNo());
 
         EssayQuizLogResponse response = modelMapper.map(essayQuizLog, EssayQuizLogResponse.class);
 
@@ -246,12 +247,13 @@ public class ApiStudyController {
      *   "userAnswer": "유저가 작성한 답변" }
      */
     @PutMapping("/essays/logs/{essayQuizLogNo}")
-    public ResponseEntity<ApiResponse<EssayQuizLogResponse>> createEssayQuizLog(
+    public ResponseEntity<ApiResponse<EssayQuizLogResponse>> updateEssayQuizLog(
         @PathVariable("essayQuizLogNo") int essayQuizLogNo,
         @RequestBody EssayQuizLogRequest essayQuizLogRequest,
         @AuthenticationPrincipal SecurityUser securityUser) {
 
-        DailyStudyEssayQuizLog essayQuizLog = studyService.updateStudyEssayQuizLog(essayQuizLogNo, essayQuizLogRequest, securityUser.getUser().getUserNo());
+        DailyStudyEssayQuizLog essayQuizLog = studyService.updateStudyEssayQuizLog(essayQuizLogNo,
+            essayQuizLogRequest, securityUser.getUser().getUserNo());
 
         EssayQuizLogResponse response = modelMapper.map(essayQuizLog, EssayQuizLogResponse.class);
 

@@ -6,7 +6,7 @@ import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.domain.study.mapper.DailyStudyMaterialMapper;
 import com.kukokuk.domain.study.mapper.MaterialParseJobMapper;
 import com.kukokuk.domain.study.vo.DailyStudyMaterial;
-import com.kukokuk.response.PyParseMaterialResponse;
+import com.kukokuk.domain.study.dto.PyParseMaterialResponse;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

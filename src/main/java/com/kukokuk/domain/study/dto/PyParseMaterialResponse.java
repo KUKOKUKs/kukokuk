@@ -1,10 +1,10 @@
-package com.kukokuk.response;
+package com.kukokuk.domain.study.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * PYTHON 서버에 edunet/parse-materials 요청으로 응답받은 데이터를 담는 responseDTO
+ * PYTHON 서버에 edunet/parse-materials 요청으로 응답받은 데이터를 담는 response Dto
  */
 @Getter
 @Setter
