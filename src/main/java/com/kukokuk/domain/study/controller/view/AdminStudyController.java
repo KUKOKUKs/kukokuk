@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/admin/studies")
 @RequiredArgsConstructor
-public class AdminController {
+public class AdminStudyController {
 
     private final StudyService studyService;
 
