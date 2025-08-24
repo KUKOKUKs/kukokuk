@@ -45,6 +45,7 @@ public class QuizProcessService {
             totalQuestion == 0 ? 0f : summary.getTotalTimeSec() / totalQuestion);
         summary.setPercentile(0);
 
+        // 세션 insert (sessionNo 채워짐)
         quizSessionSummaryService.insertQuizSessionSummary(summary);
         int sessionNo = summary.getSessionNo();
         log.info("[세션 저장 완료] sessionNo={}", sessionNo);
@@ -88,11 +89,15 @@ public class QuizProcessService {
         summary.setAverageTimePerQuestion(
             totalQuestion == 0 ? 0f : summary.getTotalTimeSec() / totalQuestion);
 
-        int sameGroupTotal = quizSessionSummaryMapper.getCountSameSessions(correctAnswers);
-        int slowerCount = quizSessionSummaryMapper.getCountSlowerSessions(correctAnswers,
-            summary.getAverageTimePerQuestion());
-        int percentile = (sameGroupTotal == 0) ? 0
-            : (int) (((sameGroupTotal - slowerCount) / (float) sameGroupTotal) * 100);
+        // 퍼센타일 계산 방식 (전체 기준)
+        int betterCount = quizSessionSummaryMapper.getCountBetterSessions(
+            summary.getCorrectAnswers(),
+            summary.getAverageTimePerQuestion()
+        );
+        int totalCount = quizSessionSummaryMapper.getTotalSessionCount();
+
+        int percentile = (totalCount == 0) ? 0
+            : (int)(((totalCount - betterCount) / (float) totalCount) * 100);
 
         summary.setPercentile(percentile);
         quizSessionSummaryMapper.updateQuizSessionSummary(summary);

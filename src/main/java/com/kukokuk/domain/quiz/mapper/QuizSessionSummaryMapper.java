@@ -37,20 +37,19 @@ public interface QuizSessionSummaryMapper {
         @Param("userNo") int userNo);
 
     /**
-     * 같은 정답 수(correctAnswers)를 가진 세션 수를 조회한다.
+     * 나보다 성적이 좋은(정답 수가 많거나, 정답 수는 같고 시간이 더 짧은) 세션 수를 조회한다.
      *
-     * @param correctAnswers 정답 개수
-     * @return 해당 정답 수를 가진 세션 수
+     * @param correctAnswers 내 정답 수
+     * @param averageTime    내 평균 풀이 시간
+     * @return 나보다 앞선 세션 수
      */
-    int getCountSameSessions(int correctAnswers);
+    int getCountBetterSessions(@Param("correctAnswers") int correctAnswers,
+        @Param("averageTime") float averageTime);
 
     /**
-     * 같은 정답 수이면서 평균 시간이 나보다 긴 세션 수를 조회한다.
+     * 전체 세션 수를 조회한다.
      *
-     * @param correctAnswers 정답 개수
-     * @param averageTime    평균 소요 시간
-     * @return 나보다 느린 세션 수
+     * @return 전체 세션 수
      */
-    int getCountSlowerSessions(@Param("correctAnswers") int correctAnswers,
-        @Param("averageTime") float averageTime);
+    int getTotalSessionCount();
 }
