@@ -17,6 +17,7 @@ import com.kukokuk.domain.quest.vo.DailyQuest;
 import com.kukokuk.domain.quest.vo.DailyQuestUser;
 import com.kukokuk.domain.quiz.dto.QuizWithLogDto;
 import com.kukokuk.domain.study.dto.DailyQuestDto;
+import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
 import com.kukokuk.domain.study.dto.MainStudyViewDto;
 import com.kukokuk.domain.study.dto.ParseMaterialRequest;
 import com.kukokuk.domain.study.dto.StudyCompleteViewDto;
@@ -278,6 +279,53 @@ public class StudyService {
 
         // 4단게 : 최종 학습원본데이터_학습자료_학습이력DTO 를 컨트롤러에 전달
         return userStudyRecommendationDtos;
+    }
+
+    /**
+     * UserStudyRecommendationDto 리스트를 DailyStudySummaryResponse 리스트로 변환한다.
+     *
+     * 변환 과정에서 다음과 같은 추가 처리를 수행한다:
+     * - DailyStudyLog 정보를 기반으로 학습 상태(status)와 진행률(progressRate) 계산
+     * - 서술형 퀴즈 로그 번호(dailyStudyEssayQuizLogNo)가 존재하면 essayQuizCompleted를 true로 설정
+     * @param dtos
+     * @return API 응답용 DailyStudySummaryResponse 리스트
+     */
+    public List<DailyStudySummaryResponse> mapToDailyStudySummaryResponse(List<UserStudyRecommendationDto> dtos) {
+        return dtos.stream()
+            .filter(dto -> dto.getDailyStudy() != null)
+            .map(dto -> {
+                DailyStudy study = dto.getDailyStudy();
+                DailyStudyLog log = dto.getDailyStudyLog();
+                DailyStudyMaterial material = dto.getDailyStudyMaterial();
+
+                int totalCardCount = study.getCardCount();
+                int studiedCardCount = (log != null && log.getStudiedCardCount() != null) ? log.getStudiedCardCount() : 0;
+                int progressRate =
+                    (totalCardCount == 0) ? 0 : (int) ((studiedCardCount * 100.0) / totalCardCount);
+
+                String status = "NOT_STARTED";
+                if (log != null) {
+                    status = log.getStatus(); // "IN_PROGRESS", "COMPLETED" 중 하나라고 가정
+                }
+
+                // dailyStudyEssayQuizLogNo 가 null이 아니면 서술형퀴즈완료여부 true로 설정
+                boolean essayQuizCompleted = dto.getDailyStudyEssayQuizLogNo() != null;
+
+                return DailyStudySummaryResponse.builder()
+                    .dailyStudyNo(study.getDailyStudyNo())
+                    .title(study.getTitle())
+                    .explanation((study.getExplanation()))
+                    .cardCount(totalCardCount)
+                    .status(status)
+                    .studiedCardCount(studiedCardCount)
+                    .progressRate(progressRate)
+                    .school(material.getSchool())
+                    .grade(material.getGrade())
+                    .sequence(material.getSequence())
+                    .essayQuizCompleted(essayQuizCompleted)
+                    .build();
+            })
+            .toList();
     }
 
     /**
