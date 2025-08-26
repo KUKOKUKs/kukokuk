@@ -105,41 +105,7 @@ public class ApiStudyController {
             securityUser.getUser(), rows);
 
         // UserStudyRecommendationDto에서 응답에 필요한 정보만 반환하도록 ResponseDTO에 매핑
-        List<DailyStudySummaryResponse> responses = dtos.stream()
-            .filter(dto -> dto.getDailyStudy() != null)
-            .map(dto -> {
-                DailyStudy study = dto.getDailyStudy();
-                DailyStudyLog log = dto.getDailyStudyLog();
-                DailyStudyMaterial material = dto.getDailyStudyMaterial();
-
-                int totalCardCount = study.getCardCount();
-                int studiedCardCount = (log != null && log.getStudiedCardCount() != null) ? log.getStudiedCardCount() : 0;
-                int progressRate =
-                    (totalCardCount == 0) ? 0 : (int) ((studiedCardCount * 100.0) / totalCardCount);
-
-                String status = "NOT_STARTED";
-                if (log != null) {
-                    status = log.getStatus(); // "IN_PROGRESS", "COMPLETED" 중 하나라고 가정
-                }
-
-                // dailyStudyEssayQuizLogNo 가 null이 아니면 서술형퀴즈완료여부 true로 설정
-                boolean essayQuizCompleted = dto.getDailyStudyEssayQuizLogNo() != null;
-
-                return DailyStudySummaryResponse.builder()
-                    .dailyStudyNo(study.getDailyStudyNo())
-                    .title(study.getTitle())
-                    .explanation((study.getExplanation()))
-                    .cardCount(totalCardCount)
-                    .status(status)
-                    .studiedCardCount(studiedCardCount)
-                    .progressRate(progressRate)
-                    .school(material.getSchool())
-                    .grade(material.getGrade())
-                    .sequence(material.getSequence())
-                    .essayQuizCompleted(essayQuizCompleted)
-                    .build();
-            })
-            .toList();
+        List<DailyStudySummaryResponse> responses = studyService.mapToDailyStudySummaryResponse(dtos);
 
         return ResponseEntityUtils.ok("사용자 맞춤 학습자료 목록 조회 성공", responses);
     }
