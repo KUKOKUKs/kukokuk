@@ -77,7 +77,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--baseGap);
-
 }
 
 #sub-content {
@@ -100,11 +99,9 @@
     width: 100%;
     font-size: var(--titleFontSize);
     font-weight: bold;
-
-    .emoji {
-        position: relative;
-        top: -4px;           /* 살짝 위로 이동 (필요에 따라 값 조절) */
-    }
+    display: flex;
+    align-items: center;
+    gap: var(--tinyGap);
 }
 
 .container {
@@ -127,14 +124,14 @@
 
 .component {
     width: 100%;
-    padding: var(--basePadding);
+    padding: var(--smallPadding);
     border-radius: var(--bdrs);
     border: var(--baseBorder);
+    box-shadow: var(--bxsh);
 
     /* 컴포넌트의 좌상단에 위치할 컴포넌트 title */
     .component_title {
         font-size: var(--largeFontSize);
-        padding-bottom: var(--tinyGap);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -152,13 +149,6 @@
             font-weight: normal;
             color: var(--grayColor);
         }
-    }
-
-    /* 리스트 컴포넌트의 리스트 부분 */
-    .component_list_container {
-        display: flex;
-        flex-direction: column;
-        gap: var(--tinyGap);
     }
 
     /* 리스트 요소 */
@@ -181,17 +171,34 @@
                     max-height: var(--smallIcon);
                     min-height: var(--smallIcon);
                     box-sizing: content-box;
-
-                    img {
-                        width: var(--smallIcon);
-                        height: var(--smallIcon);
-                    }
                 }
             }
         }
     }
 }
 
+/* base gap list */
+.base_list_component {
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
+}
+
+/* tiny gap list */
+.tiny_list_component {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tinyGap);
+}
+
+/* grid list */
+.grid_list_component {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--smallGap);
+}
+
+/* 로그인/회원가입 페이지에서 확인 가능함  */
 .form_component {
     width: 100%;
     max-width: var(--subContentWidth);
@@ -326,6 +333,7 @@
     align-items: center;
     gap: var(--baseGap);
     border-radius: var(--bdrs);
+    position: relative;
 
     &.justify_content_center {
         justify-content: center;
@@ -378,8 +386,8 @@
         }
 
         input {
-            height: 22px;
-            line-height: 22px;
+            height: 30px;
+            line-height: 30px;
             font-size: var(--baseFontSize);
             position: relative;
             z-index: 1;
@@ -390,10 +398,9 @@
             width: 100%;
             padding: 0 15px;
             font-size: var(--baseFontSize);
-            line-height: 22px;
             color: var(--grayColor);
             position: absolute;
-            top: 18px;
+            top: 16px;
             left: 0;
             z-index: 1;
             transition: top var(--trst), font-size var(--trst);
@@ -449,7 +456,7 @@
             .input_title,
             .input_error {
                 font-size: var(--smallFontSize);
-                top: 0.5em;
+                top: 5px;
                 transform: none;
                 pointer-events: none;
             }
@@ -474,7 +481,7 @@
             .radio_input {
                 width: 100%;
                 height: 100%;
-                border-right: var(--thinBorder);
+                border-right: var(--baseBorder);
                 transition: background-color var(--trst);
 
                 &:last-child {
@@ -538,7 +545,7 @@
     display: flex;
     align-items: center;
     border-radius: var(--bdrs) var(--bdrs) 0 0;
-    border: var(--thinBorder);
+    border: var(--baseBorder);
     border-bottom: none;
     overflow: hidden;
     position: relative;
@@ -546,13 +553,13 @@
     .tab_btn {
         width: 100%;
         height: var(--tabHeight);
-        border-bottom: var(--thinBorder);
+        border-bottom: var(--baseBorder);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: var(--smallFontSize);
         color: var(--grayColor);
-        border-right: var(--thinBorder);
+        border-right: var(--baseBorder);
         cursor: pointer;
         position: relative;
 
@@ -605,7 +612,7 @@
             color: var(--primaryColor);
             background-color: #fff;
             border-bottom-color: transparent;
-            border-left: var(--thinBorder);
+            border-left: var(--baseBorder);
             border-radius: var(--bdrs) var(--bdrs) 0 0;
 
             .active {
@@ -685,12 +692,12 @@
 
         .modal_top {
             width: 100%;
-            border-bottom: var(--thinBorder);
+            border-bottom: var(--baseBorder);
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: var(--smallGap);
-            padding: var(--modalPadding);
+            padding: var(--modalTitlePadding);
 
             .modal_title {
                 font-size: var(--baseFontSize);
@@ -715,14 +722,18 @@
             min-height: var(--modalHeight);
             max-height: var(--modalHeight);
             padding: var(--modalPadding);
-            padding-bottom: var(--modalPaddingBottom);
+            justify-content: space-between;
             overflow-y: auto;
 
-            .btn_list {
-                padding: var(--modalPadding);
-                position: absolute;
-                left: 0;
-                bottom: 0;
+            &:has(.btn_list) {
+                padding-bottom: 0;
+
+                .btn_list {
+                    padding: var(--modalPadding) 0;
+                    position: sticky;
+                    left: 0;
+                    bottom: 0;
+                }
             }
 
             &.small {
@@ -850,6 +861,10 @@
     &.blink {
         animation: blink-color 2s infinite;
     }
+
+    img {
+        width: var(--smallIconImage);
+    }
 }
 
 @keyframes blink-color {
@@ -880,18 +895,6 @@
         height: var(--smallIcon);
         font-size: var(--smallIcon);
     }
-
-    &.tiny {
-        width: var(--tinyIcon);
-        min-width: var(--tinyIcon);
-        height: var(--tinyIcon);
-        font-size: var(--tinyIcon);
-    }
-
-    &.primary {
-        color: var(--primaryColor);
-    }
-
 }
 
 .hints_info {
@@ -940,51 +943,55 @@
 }
 
 .column {
-    flex-direction: column; /* 세로형 */
+    flex-direction: column !important; /* 세로형 */
 }
 
 .justify_content_center {
-    justify-content: center; /* 중앙 정렬 */
+    justify-content: center !important; /* 중앙 정렬 */
 }
 
 .justify_content_between {
-    justify-content: space-between; /* 양끝 정렬 */
+    justify-content: space-between !important; /* 양끝 정렬 */
 }
 
 .align_center {
-    align-items: center; /* 수직/수평 정렬 */
+    align-items: center !important; /* 수직/수평 정렬 */
 }
 
 .justify_content_end {
-    justify-content: flex-end;
+    justify-content: flex-end !important;
 }
 
 .align_end {
-    align-items: flex-end; /* 끝 정렬 */
+    align-items: flex-end !important; /* 끝 정렬 */
 }
 
 .base_gap {
-    gap: var(--baseGap); /* 기본 gap */
+    gap: var(--baseGap) !important; /* 기본 gap */
 }
 
 .small_gap {
-    gap: var(--smallGap); /* 작은 gap */
+    gap: var(--smallGap) !important; /* 작은 gap */
 }
 
 .tiny_gap {
-    gap: var(--tinyGap); /* 작은 gap */
+    gap: var(--tinyGap) !important; /* 작은 gap */
 }
 
 .large_gap {
-    gap: var(--largeGap); /* 큰 gap */
+    gap: var(--largeGap) !important; /* 큰 gap */
 }
 
 .pd_0 {
-    padding: 0;
+    padding: 0 !important;
+}
+
+.pd_base {
+    padding: var(--basePadding) !important;
 }
 
 .pd_top_base {
-    padding-top: var(--basePadding);
+    padding-top: var(--basePadding) !important;
 }
 
 /* border */
@@ -999,10 +1006,6 @@
     &.sub {
         border-color: var(--subColor);
     }
-}
-
-.thin_border {
-    border-width: 1px;
 }
 
 .border_radius {

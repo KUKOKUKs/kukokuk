@@ -5,7 +5,7 @@
          sec:authorize="isAuthenticated()"
          th:with="user=${#authentication.principal.user}
                 , profileFilename=${user.profileFilename}">
-        <h1 class="content_title tac">프로필</h1>
+        <h1 class="content_title justify_content_center">프로필</h1>
 
         <div class="profile_img_container">
             <form method="post"

@@ -10,7 +10,7 @@
                   id="daily-quest-form"
                   method="post"
                   th:action="@{/daily-quest-user/obtain}">
-                <div class="component">
+                <div class="component tiny_list_component">
                     <div class="component_title">
                         <span class="title_info" th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">2025-08-19</span>
                         <div class="small_info">
@@ -18,7 +18,7 @@
                         </div>
                     </div>
 
-                    <div class="component_list_container quest_list_container"
+                    <div class="tiny_list_component quest_list_container"
                          th:data-success-count="${successCount}"
                          th:data-obtained-count="${obtainedCount}">
                         <th:block th:each="quest : ${dailyQuestStatusDtos}">

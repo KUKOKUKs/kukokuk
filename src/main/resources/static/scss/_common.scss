@@ -34,11 +34,10 @@
     --modalSmallHeight: 200px;
     --navWidth: 250px;
     --baseIcon: 30px;
-    --smallIcon: 16px;
-    --tinyIcon: 10px;
+    --smallIcon: 14px;
     --largeIcon: 40px;
     --profileThumbnail: 80px;
-    --inputHeight: 60px;
+    --inputHeight: 54px;
     --tabHeight: 40px;
     --modalInfoTitleWidth: 50px;
 
@@ -49,15 +48,14 @@
     --basePadding: 18px;
     --smallPadding: 0.75em;
     --tinyPadding: 0.3em;
-    --inputPadding: 27px 15px 8px;
+    --inputPadding: 19px 15px 5px;
     --modalPadding: 16px;
-    --modalPaddingBottom: 80px;
-    --smallComponentWithIconPadding: 0.45em 0.45em 0.45em 0.9em;
+    --modalTitlePadding: 10px var(--modalPadding);
+    --smallComponentWithIconPadding: 0.4em 0.4em 0.4em 0.7em;
 
-    --baseBorder: 2px solid var(--borderColor);
-    --thinBorder: 1px solid var(--borderColor);
+    --baseBorder: 1px solid var(--borderColor);
     --bdrs: 7px;
-    --bxsh: 3px 3px 7px rgba(0, 0, 0, .07);
+    --bxsh: 2px 2px 10px rgba(0, 0, 0, .05);
     --insetBxsh: inset -1px -1px 1px rgba(0, 0, 0, .25);
     --trst: .2s ease-in-out;
 
@@ -65,6 +63,9 @@
     --smallGap: 10px;
     --tinyGap: 0.3em;
     --largeGap: 46px;
+
+    /* size */
+    --smallIconImage: 20px;
 }
 
 html, body, div, span, applet, object, iframe,

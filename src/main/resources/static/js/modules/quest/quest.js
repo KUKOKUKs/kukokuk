@@ -18,8 +18,8 @@ $(document).ready(async function () {
 
     // 사용자에 대한 모든 퀘스트와 진행도 및 보상 획득 여부
     // 정보를 포함한 목록 조회 요청하여 리스트 추가
-    async function setDailyQuestList() {
-        console.log("setDailyQuestList() 실행");
+    async function renderDailyQuestList() {
+        console.log("renderDailyQuestList() 실행");
 
         // 모든 퀘스트와 진행도 및 보상 획득여부 목록 조회 요청
         // 미인증 시 기본 모든 퀘스트 정보만 요청
@@ -93,7 +93,7 @@ $(document).ready(async function () {
 
     // 일일 도전과제 컴포넌트 fragment로 사용되는 곳에서만 수행
     if ($questContainer.length) {
-        await setDailyQuestList(); // 실행
+        await renderDailyQuestList(); // 실행
     }
 
     // 일일 도전과제 보상 관련

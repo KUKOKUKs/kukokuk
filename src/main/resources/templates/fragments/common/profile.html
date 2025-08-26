@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<div th:fragment="profile-fragment" id="profile-container" class="component">
+<div th:fragment="profile-fragment" id="profile-container" class="component base_list_component">
     <th:block sec:authorize="!isAuthenticated()">
         <p class="welcome_info">
             AI가 추천하는 맞춤 국어 학습 자료와<br>

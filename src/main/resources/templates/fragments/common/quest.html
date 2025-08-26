@@ -6,7 +6,7 @@
     <form th:if="${isAuth}"
           th:data-logged-in="${isAuth}"
           id="quest-container"
-          class="component"
+          class="component tiny_list_component"
           method="post"
           th:action="@{/daily-quest-user/obtain}">
         <th:block th:replace="~{fragments/common/quest :: quest-body}"></th:block>
@@ -16,7 +16,7 @@
     <div th:if="${!isAuth}"
          th:data-logged-in="${isAuth}"
          id="quest-container"
-         class="component">
+         class="component tiny_list_component">
         <th:block th:replace="~{fragments/common/quest :: quest-body}"></th:block>
     </div>
 
@@ -50,6 +50,6 @@
         <div id="batch-obtain-btn-info"></div>
     </div>
 
-    <div class="component_list_container quest_list_container"></div>
+    <div class="tiny_list_component quest_list_container"></div>
 </th:block>
 </html>
