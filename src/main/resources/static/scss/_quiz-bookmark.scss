@@ -1,21 +1,23 @@
 /* ===============================
    북마크 퀴즈 리스트
+   bookmark.scss
    =============================== */
 
-.bookmark-container {
+.bookmark_container {
     max-width: var(--centerContentWidth);
     margin: 0 auto;
     padding: var(--containerPadding);
 }
 
-.bookmark-title {
+.bookmark_title {
     font-size: var(--pageTitleFontSize);
     font-weight: bold;
     text-align: center;
     margin-bottom: var(--largePadding);
+    color: var(--darkGreenColor);
 }
 
-.bookmark-empty-msg {
+.bookmark_empty_msg {
     text-align: center;
     font-size: var(--largeFontSize);
     color: var(--grayColor);
@@ -23,14 +25,14 @@
 }
 
 /* 카드 그리드 */
-.bookmark-grid {
+.bookmark_grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--baseGap);
 }
 
 /* 퀴즈 카드 */
-.quiz-card {
+.quiz_card {
     background-color: #fff;
     border: var(--baseBorder);
     border-radius: var(--bdrs);
@@ -42,12 +44,12 @@
 }
 
 /* 헤더 */
-.quiz-header {
+.quiz_header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 
-    .quiz-question {
+    .quiz_question {
         font-weight: bold;
         font-size: var(--largeFontSize);
         color: var(--blackColor);
@@ -56,25 +58,33 @@
         padding-right: var(--smallGap);
     }
 
-    .bookmark-btn {
+    .bookmark_btn {
         background: none;
-        border: none;
+        border: 2px solid transparent;
+        border-radius: 50%;
         cursor: pointer;
-        transition: transform var(--trst);
+        transition: all var(--trst);
         padding: 0;
 
-        &:hover { transform: scale(1.1); }
-        iconify-icon { vertical-align: middle; }
+        &:hover {
+            transform: scale(1.1);
+            border-color: var(--darkGreenColor);
+        }
+
+        iconify-icon {
+            vertical-align: middle;
+            color: var(--darkGreenColor);
+        }
     }
 }
 
 /* 보기 */
-.quiz-options-wrap {
+.quiz_options_wrap {
     display: flex;
     flex-direction: column;
     gap: var(--tinyGap);
 
-    .quiz-options {
+    .quiz_options {
         background-color: var(--lightGrayColor);
         border-radius: var(--bdrs);
         padding: var(--smallPadding);
@@ -83,27 +93,33 @@
         ol {
             margin: 0;
             padding-left: 1.2em;
-            li { margin-bottom: var(--tinyGap); line-height: 1.4; }
+
+            li {
+                margin-bottom: var(--tinyGap);
+                line-height: 1.4;
+                color: var(--blackColor);
+            }
         }
     }
 
     .hidden { display: none; }
 
-    .toggle-btn {
+    .toggle_btn {
         align-self: flex-end;
         background: none;
         border: none;
         font-size: var(--subFontSize);
-        color: var(--blueColor);
+        color: var(--darkGreenColor);
         cursor: pointer;
         padding: 0;
+        font-weight: 600;
 
         &:hover { text-decoration: underline; }
     }
 }
 
 /* 메타 */
-.quiz-meta {
+.quiz_meta {
     display: flex;
     flex-wrap: wrap;
     gap: var(--smallGap);
@@ -114,5 +130,6 @@
         background-color: var(--lightGrayColor);
         padding: var(--tinyPadding) var(--smallPadding);
         border-radius: var(--bdrs);
+        font-weight: 500;
     }
 }

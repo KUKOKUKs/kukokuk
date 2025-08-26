@@ -160,5 +160,4 @@ $(document).ready(async function () {
         // 일정 시간 지난 후 제거
         setTimeout(() => $profileHintCount.removeClass("action"), 200);
     }
-
 });

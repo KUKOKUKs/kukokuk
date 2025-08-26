@@ -8,23 +8,23 @@
     <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 </head>
 <body>
-<div class="bookmark-container">
-    <h1 class="bookmark-title">내가 북마크한 퀴즈</h1>
+<div class="bookmark_container">
+    <h1 class="bookmark_title">내가 북마크한 퀴즈</h1>
 
     <!-- 북마크 없을 때 -->
-    <div class="bookmark-empty-msg" th:if="${#lists.isEmpty(quizList)}">
+    <div class="bookmark_empty_msg" th:if="${#lists.isEmpty(quizList)}">
         아직 북마크한 퀴즈가 없습니다.
     </div>
 
     <!-- 북마크 리스트 -->
-    <div class="bookmark-grid" th:if="${!#lists.isEmpty(quizList)}">
-        <div class="quiz-card" th:each="quiz : ${quizList}">
+    <div class="bookmark_grid" th:if="${!#lists.isEmpty(quizList)}">
+        <div class="quiz_card" th:each="quiz : ${quizList}">
 
             <!-- 문제 제목 + 북마크 버튼 -->
-            <div class="quiz-header">
-                <div class="quiz-question" th:text="${quiz.question}"></div>
+            <div class="quiz_header">
+                <div class="quiz_question" th:text="${quiz.question}"></div>
                 <button type="button"
-                        class="bookmark-btn"
+                        class="bookmark_btn"
                         th:data-quiz-no="${quiz.quizNo}"
                         data-bookmarked="true"
                         aria-label="북마크 해제">
@@ -33,8 +33,8 @@
             </div>
 
             <!-- 보기 (기본 숨김 + 더보기 버튼) -->
-            <div class="quiz-options-wrap">
-                <div class="quiz-options hidden">
+            <div class="quiz_options_wrap">
+                <div class="quiz_options hidden">
                     <ol>
                         <li th:text="'1. ' + ${quiz.option1}"></li>
                         <li th:text="'2. ' + ${quiz.option2}"></li>
@@ -42,11 +42,11 @@
                         <li th:text="'4. ' + ${quiz.option4}"></li>
                     </ol>
                 </div>
-                <button type="button" class="toggle-btn">더보기</button>
+                <button type="button" class="toggle_btn">더보기</button>
             </div>
 
             <!-- 정답/난이도/유형 -->
-            <div class="quiz-meta">
+            <div class="quiz_meta">
                 <span th:text="'정답: ' + ${quiz.successAnswer}"></span>
                 <span th:text="'난이도: ' + ${quiz.difficulty}"></span>
                 <span th:text="'유형: ' + ${quiz.questionType}"></span>

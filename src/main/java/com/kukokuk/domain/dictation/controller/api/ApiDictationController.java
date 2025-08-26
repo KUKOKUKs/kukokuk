@@ -3,13 +3,16 @@ package com.kukokuk.domain.dictation.controller.api;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
+import com.kukokuk.domain.dictation.dto.DictationResultLogDto;
 import com.kukokuk.domain.dictation.service.DictationService;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationQuestionLog;
+import com.kukokuk.security.SecurityUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,10 +64,15 @@ public class ApiDictationController {
      * @return 해당 세트에 대한 문제 풀이 이력 목록
      */
     @GetMapping("/results/{sessionNo}/logs")
-    public ResponseEntity<ApiResponse<List<DictationQuestionLog>>> getLogs(
-        @PathVariable("sessionNo") int dictationSessionNo) {
-        log.info("세트번호: {}", dictationSessionNo);
-        List<DictationQuestionLog> logs = dictationService.getLogsBySessionNo(dictationSessionNo);
+    public ResponseEntity<ApiResponse<List<DictationResultLogDto>>> getLogs(
+        @PathVariable("sessionNo") int dictationSessionNo,
+        @AuthenticationPrincipal SecurityUser securityUser) {
+
+        int userNo = securityUser.getUser().getUserNo();
+        log.info("세트번호: {}, 사용자: {}", dictationSessionNo, userNo);
+
+        List<DictationResultLogDto> logs = dictationService.getLogsBySessionNo(dictationSessionNo, userNo);
+
         log.info("이력 조회 성공 - 총 {}개 로그 반환", logs.size());
         return ResponseEntity.ok(ApiResponse.success(logs));
     }

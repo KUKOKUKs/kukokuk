@@ -258,7 +258,8 @@ public class DictationController {
      * @return 결과 목록을 보여주는 HTML (result-list.html)
      */
     @GetMapping("/results")
-    public String showAllResults(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
+    public String showAllResults(@AuthenticationPrincipal SecurityUser securityUser,
+        Model model) {
         int userNo = securityUser.getUser().getUserNo();
         log.info("사용자 번호: {}", userNo);
         List<DictationSession> results = dictationService.getResultsByUserNo(userNo);

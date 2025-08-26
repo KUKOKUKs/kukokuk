@@ -1,11 +1,11 @@
-package com.kukokuk.response;
+package com.kukokuk.domain.study.dto;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
+ * 사용자 맞춤 학습자료 목록 조회 요청의 응답으로 전달하는 response Dto
  */
 @Getter
 @Setter
