@@ -50,36 +50,7 @@
     </div>
 
 <th:block layout:fragment="script">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-      $(document).on('click', '.load-logs-btn', function () {
-        const sessionNo = $(this).data('sessionno');  // 소문자 주의
-        loadLogs(sessionNo, this);
-      });
-
-      function loadLogs(sessionNo, btn) {
-        $.get(`/api/dictation/results/${sessionNo}/logs`, function (logs) {
-          console.log("서버 응답 logs:", logs); // 디버깅용
-
-          let html = "";
-          for (let log of logs.data) {
-            html += `
-        <div class="border p-2 mb-2">
-            <p><strong>문제 번호:</strong> ${log.dictationQuestionNo}</p>
-            <p><strong>정답:</strong> ${log.correctAnswer}</p>
-            <p><strong>제출:</strong> ${log.userAnswer}</p>
-            <p><strong>정답 여부:</strong> ${log.isSuccess}</p>
-            <p><strong>힌트 사용:</strong> ${log.usedHint}</p>
-            <p><strong>시도 횟수:</strong> ${log.tryCount}</p>
-            <p><strong>제출 시각:</strong> ${log.createDate}</p>
-        </div>
-      `;
-          }
-
-          $(btn).siblings(".logs").html(html);
-        });
-      }
-    </script>
+    <script type="module" th:src="@{/js/modules/dictation/dictation-results.js}"></script>
 </th:block>
 
 </body>

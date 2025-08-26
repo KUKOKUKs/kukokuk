@@ -18,6 +18,7 @@ import com.kukokuk.domain.quest.vo.DailyQuestUser;
 import com.kukokuk.domain.quiz.dto.QuizWithLogDto;
 import com.kukokuk.domain.study.dto.DailyQuestDto;
 import com.kukokuk.domain.study.dto.MainStudyViewDto;
+import com.kukokuk.domain.study.dto.ParseMaterialRequest;
 import com.kukokuk.domain.study.dto.StudyCompleteViewDto;
 import com.kukokuk.domain.study.dto.StudyEssayViewDto;
 import com.kukokuk.domain.study.dto.StudyProgressViewDto;
@@ -43,13 +44,12 @@ import com.kukokuk.domain.study.vo.MaterialParseJob;
 import com.kukokuk.domain.study.vo.StudyDifficulty;
 import com.kukokuk.domain.user.mapper.UserMapper;
 import com.kukokuk.domain.user.vo.User;
-import com.kukokuk.request.EssayQuizLogRequest;
-import com.kukokuk.request.ParseMaterialRequest;
-import com.kukokuk.request.StudyQuizLogRequest;
-import com.kukokuk.request.UpdateStudyLogRequest;
-import com.kukokuk.response.DailyStudyLogResponse;
-import com.kukokuk.response.GeminiEssayResponse;
-import com.kukokuk.response.ParseMaterialResponse;
+import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
+import com.kukokuk.domain.study.dto.StudyQuizLogRequest;
+import com.kukokuk.domain.study.dto.UpdateStudyLogRequest;
+import com.kukokuk.domain.study.dto.DailyStudyLogResponse;
+import com.kukokuk.domain.study.dto.GeminiEssayResponse;
+import com.kukokuk.domain.study.dto.ParseMaterialResponse;
 import com.kukokuk.security.SecurityUser;
 import java.util.Date;
 import java.util.HashMap;
@@ -768,7 +768,8 @@ public class StudyService {
      * @return
      */
     @Transactional
-    public DailyStudyEssayQuizLog updateStudyEssayQuizLog(int dailyStudyEssayQuizLogNo ,EssayQuizLogRequest request, int userNo) {
+    public DailyStudyEssayQuizLog updateStudyEssayQuizLog(int dailyStudyEssayQuizLogNo ,
+        EssayQuizLogRequest request, int userNo) {
         log.info("updateStudyEssayQuizLog 서비스 실행");
 
         // 서술형퀴즈이력의 사용자와 현재사용자가 일치하지않으면 권한 에러 발생

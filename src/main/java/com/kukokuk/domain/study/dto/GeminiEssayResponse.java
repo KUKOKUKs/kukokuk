@@ -1,4 +1,4 @@
-package com.kukokuk.response;
+package com.kukokuk.domain.study.dto;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import java.util.List;
@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 논술형 퀴즈의 AI 피드백 요청 시 Gemini에게 받는 응답을 저장하는 Dto
+ */
 @Getter
 @Setter
 @NoArgsConstructor

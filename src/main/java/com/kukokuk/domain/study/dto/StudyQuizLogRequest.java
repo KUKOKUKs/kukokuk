@@ -1,11 +1,11 @@
-package com.kukokuk.request;
+package com.kukokuk.domain.study.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * 학습퀴즈 이력 생성 및 수정에서 사용하는 DTO
+ * 학습퀴즈 이력 생성/수정 시 전달받는 request Dto
  */
 @Getter
 @Setter

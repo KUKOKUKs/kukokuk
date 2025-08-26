@@ -1,9 +1,9 @@
 package com.kukokuk.domain.study.controller.api;
 
 import com.kukokuk.common.dto.ApiResponse;
+import com.kukokuk.domain.study.dto.ParseMaterialRequest;
 import com.kukokuk.domain.study.service.StudyService;
-import com.kukokuk.request.ParseMaterialRequest;
-import com.kukokuk.response.ParseMaterialResponse;
+import com.kukokuk.domain.study.dto.ParseMaterialResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

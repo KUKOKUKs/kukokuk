@@ -2,18 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/layout/center}">
-<div layout:fragment="content" class="result-detail-container">
+<div layout:fragment="content" class="result_detail_container">
 
-    <h2 class="result-title">단계별 퀴즈 결과 상세</h2>
+    <h2 class="result_title">단계별 퀴즈 결과 상세</h2>
 
-    <div class="result-summary">
+    <div class="result_summary">
         <p><strong>총 문항 수:</strong> <span th:text="${summary.totalQuestion}">0</span>개</p>
         <p><strong>정답 수:</strong> <span th:text="${summary.correctAnswers}">0</span>개</p>
         <p><strong>선택한 난이도:</strong> <span th:text="${difficulty}">-</span></p>
         <p><strong>문제 유형:</strong> <span th:text="${questionType}">-</span></p>
     </div>
 
-    <table class="result-table">
+    <table class="result_table">
         <thead>
         <tr>
             <th>#</th>
@@ -35,11 +35,11 @@
             </td>
             <td th:text="${result.successAnswer}">2</td>
             <td>
-                <span th:if="${result.isSuccess == 'Y'}" class="answer-correct">정답</span>
-                <span th:unless="${result.isSuccess == 'Y'}" class="answer-wrong">오답</span>
+                <span th:if="${result.isSuccess == 'Y'}" class="answer_correct">정답</span>
+                <span th:unless="${result.isSuccess == 'Y'}" class="answer_wrong">오답</span>
             </td>
             <td>
-                <button type="button" class="bookmark-btn"
+                <button type="button" class="bookmark_btn"
                         th:data-quiz-no="${result.quizNo}"
                         th:data-bookmarked="${result.bookmarked == 'Y'}"
                         th:attr="aria-label=${result.bookmarked == 'Y' ? '북마크 해제' : '북마크 등록'}">
@@ -60,11 +60,10 @@
         </tbody>
     </table>
 
-    <div class="result-footer">
+    <div class="result_footer">
         <a href="/" class="btn white">홈으로</a>
     </div>
 </div>
-
 
 <th:block layout:fragment="script">
     <script th:src="@{/js/modules/quiz/bookmark.js}"></script>
