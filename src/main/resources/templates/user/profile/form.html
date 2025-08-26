@@ -5,7 +5,7 @@
          sec:authorize="isAuthenticated()"
          th:with="user=${#authentication.principal.user}
                 , profileFilename=${user.profileFilename}">
-        <h1 class="content_title">프로필</h1>
+        <h1 class="content_title justify_content_center">프로필</h1>
 
         <div class="profile_img_container">
             <form method="post"
@@ -149,7 +149,7 @@
                 </div>
             </div>
 
-            <div class="btn_list">
+            <div class="btn_list sticky_bottom">
                 <a href="/" class="btn white">취소</a>
                 <button type="submit" id="submit-btn" class="btn primary">수정</button>
             </div>

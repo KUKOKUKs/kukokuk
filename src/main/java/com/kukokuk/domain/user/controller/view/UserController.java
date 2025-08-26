@@ -2,13 +2,13 @@ package com.kukokuk.domain.user.controller.view;
 
 import com.kukokuk.common.exception.AppException;
 import com.kukokuk.common.util.FileValidationUtils;
+import com.kukokuk.common.util.RequestPathUtils;
 import com.kukokuk.domain.user.dto.UserFormDto;
 import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.domain.user.validation.UserModifyCheck;
 import com.kukokuk.domain.user.vo.User;
 import com.kukokuk.security.SecurityUser;
 import jakarta.servlet.http.HttpServletRequest;
-import java.net.URI;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -165,10 +165,8 @@ public class UserController {
         log.info("studyLevel() 컨트롤러 실행");
 
         // 클라이언트에서 요청 보낸 페이지
-        String referer = request.getHeader("Referer");
-        URI uri = URI.create(referer);
-        String path = uri.getPath();
-        log.info("studyLevel() 요청 path: {}", path);
+        String pathAndQuery = RequestPathUtils.getRefererPathWithQuery(request);
+        log.info("studyLevel() 요청 경로: {}", pathAndQuery);
 
         // 사용자 정보 업데이트 요청
         User updateUser = modelMapper.map(form, User.class);
@@ -176,7 +174,7 @@ public class UserController {
         userService.updateUser(updateUser);
 
         // 클라이언트에서 요청 보낸 페이지로 리다이렉트
-        return "redirect:" + (path != null ? path : "/");
+        return "redirect:" + pathAndQuery;
     }
 
 }

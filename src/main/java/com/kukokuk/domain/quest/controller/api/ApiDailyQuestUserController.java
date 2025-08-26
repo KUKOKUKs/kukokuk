@@ -26,7 +26,7 @@ public class ApiDailyQuestUserController {
     public ResponseEntity<ApiResponse<Integer>> dailyQuestObtainReward(
         @PathVariable("dailyQuestUserNo") int dailyQuestUserNo
         , @AuthenticationPrincipal SecurityUser securityUser) {
-        log.info("dailyQuestGetHint() 컨트롤러 실행");
+        log.info("dailyQuestObtainReward() 컨트롤러 실행");
         int currentHintCount = dailyQuestUserService.updateDailyQuestUserObtained(
             dailyQuestUserNo
             , securityUser.getUser().getUserNo()

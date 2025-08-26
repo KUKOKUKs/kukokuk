@@ -1,18 +1,55 @@
 <!DOCTYPE html>
 <html>
-<div th:fragment="quest-fragment" id="quest-container" class="component"
-    th:data-logged-in="${#authorization.expression('isAuthenticated()')}">
+<th:block th:fragment="quest-fragment"
+          th:with="isAuth=${#authorization.expression('isAuthenticated()')}">
+    <!--/* 인증완료 */-->
+    <form th:if="${isAuth}"
+          th:data-logged-in="${isAuth}"
+          id="quest-container"
+          class="component tiny_list_component"
+          method="post"
+          th:action="@{/daily-quest-user/obtain}">
+        <th:block th:replace="~{fragments/common/quest :: quest-body}"></th:block>
+    </form>
+
+    <!--/* 미인증 */-->
+    <div th:if="${!isAuth}"
+         th:data-logged-in="${isAuth}"
+         id="quest-container"
+         class="component tiny_list_component">
+        <th:block th:replace="~{fragments/common/quest :: quest-body}"></th:block>
+    </div>
+
+    <th:block th:if="${isAuth}">
+        <script th:if="${error != null}">
+            alert("[[${error}]]");
+        </script>
+
+        <script th:if="${success != null}">
+            alert("[[${success}]]");
+        </script>
+    </th:block>
+
+    <script type="module" th:src="@{/js/modules/quest/quest.js}"></script>
+</th:block>
+
+<!--/* 일일 도전과제 컴포넌트 내용 */-->
+<th:block th:fragment="quest-body">
     <div class="component_title">
-        일일도전과제
-        <div class="sub_title_info">
-            <div class="info">
+        <div class="title_info">
+            일일도전과제
+            <div class="small_info">
                 (<span id="obtained-count"></span>/<span id="total-count"></span>)
             </div>
         </div>
+
+        <!--/*
+            퀘스트 페이지와 동일한 아이디로 컴포넌트와 같이 사용 할일이 없기에
+            함수 간편화를 위해 공통으로 사용
+        */-->
+        <div id="batch-obtain-btn-info"></div>
     </div>
 
-    <div class="component_list_container quest_list_container"></div>
-
-    <script type="module" th:src="@{/js/modules/quest/quest.js}"></script>
-</div>
+    <div class="tiny_list_component quest_list_container"></div>
+</th:block>
 </html>

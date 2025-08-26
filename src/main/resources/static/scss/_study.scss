@@ -18,7 +18,7 @@
 %list_item_common {
     display: flex;
     justify-content: space-between;
-    border-top: var(--thinBorder);
+    border-top: var(--baseBorder);
     align-items: center;
     padding: var(--basePadding) 0;
 
@@ -81,12 +81,7 @@
     padding: var(--basePadding);
     border-radius: var(--bdrs);
     border: var(--baseBorder);
-    cursor: pointer;
     min-height: 200px;
-
-    &.no_cursor {
-        cursor: default;
-    }
 
     &.center {
         justify-content: center;
