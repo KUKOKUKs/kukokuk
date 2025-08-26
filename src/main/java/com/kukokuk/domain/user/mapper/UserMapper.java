@@ -9,6 +9,14 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
 
     /**
+     * 전달받은 힌트 개수를 사용자 힌트 개수에서 차감하여 업데이트
+     * @param hintCount 추가할 힌트 개수
+     * @param userNo 사용자 번호
+     */
+    void updateUserHintCountMinus(@Param("hintCount") int hintCount
+        , @Param("userNo") int userNo);
+
+    /**
      * 전달받은 힌트 개수를 사용자 힌트 개수에 더하여 업데이트
      * @param hintCount 추가할 힌트 개수
      * @param userNo 사용자 번호
