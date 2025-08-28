@@ -1,15 +1,9 @@
 /* ===============================
    퀴즈 풀이 화면 (quiz-play.scss)
    =============================== */
-.quiz_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--baseGap);   /* 타이머와 문제 간격 확보 */
-}
-
 .quiz_play_container {
-    max-width: 800px;
+    width: 800px;
+    height: 700px;                /* 🔒 절대 고정 */
     margin: 20px auto;
     padding: 20px;
     background: #fff;
@@ -20,16 +14,22 @@
     flex-direction: column;
     gap: var(--baseGap);
 
-    height: 700px;          /* 🔥 전체 컨테이너 높이 고정 */
     box-sizing: border-box;
+    overflow: hidden;             /* 🔒 내부 스크롤 안생김 */
 }
 
-.quiz_question {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
+/* 헤더 */
+.quiz_header {
+    flex: 0 0 50px;               /* 🔒 항상 같은 높이 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    height: 150px;          /* 🔥 문제 영역 고정 */
+/* 문제 영역 */
+.quiz_question {
+    flex: 0 0 150px;              /* 🔒 문제 높이 고정 */
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -39,41 +39,44 @@
     font-size: var(--largeFontSize);
     font-weight: bold;
     line-height: 1.5;
+    color: var(--darkGreenColor);
 
-    white-space: normal;    /* 줄바꿈 허용 */
-    word-break: break-word; /* 긴 단어 줄바꿈 */
-    overflow-y: auto;       /* 🔥 넘치면 스크롤 */
+    white-space: normal;
+    word-break: break-word;
+
+    overflow: hidden;             /* 🔒 길면 잘라버림 */
+    text-overflow: ellipsis;      /* 🔒 ... 처리 */
 }
 
-
+/* 보기 영역 */
 .quiz_options {
-    width: 100%;
-    max-width: 800px;         /* 문제와 동일 폭 */
-    margin: 0 auto;           /* 가운데 정렬 */
+    flex: 1;                      /* 🔒 남은 공간 전부 사용 */
     display: flex;
     flex-direction: column;
     gap: var(--smallGap);
+    overflow: hidden;             /* 🔒 스크롤 ❌ */
 }
 
+/* 보기 버튼 */
 .quiz_options .btn {
-    width: 100%;              /* 항상 같은 폭 */
-    min-height: 80px;         /* 버튼 높이는 최소 보장 */
+    flex: 1;                      /* 🔒 보기 개수만큼 균등 분할 */
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
     padding: var(--smallPadding) var(--basePadding);
     text-align: left;
-    white-space: normal;      /* 줄바꿈 허용 */
-    word-break: break-word;   /* 긴 단어 줄바꿈 */
-    box-sizing: border-box;
 
-    .choice-no {
-        flex-shrink: 0;
-    }
+    font-size: var(--baseFontSize);
+    font-weight: 500;
 
-    .choice-text {
-        flex: 1;
-    }
+    white-space: normal;
+    word-break: break-word;
+
+    overflow: hidden;             /* 🔒 텍스트 넘치면 잘라냄 */
+    text-overflow: ellipsis;
+
+    .choice-no { flex-shrink: 0; }
+    .choice-text { flex: 1; }
 
     &.selected {
         background-color: var(--primaryColor);
@@ -82,6 +85,7 @@
     }
 }
 
+/* 힌트 버튼 */
 .hint_btn {
     background: var(--primaryColor);
     color: var(--subColor);

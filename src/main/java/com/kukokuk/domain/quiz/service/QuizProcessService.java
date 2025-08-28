@@ -89,20 +89,25 @@ public class QuizProcessService {
         summary.setAverageTimePerQuestion(
             totalQuestion == 0 ? 0f : summary.getTotalTimeSec() / totalQuestion);
 
-        // 퍼센타일 계산 방식 (전체 기준)
+        // 퍼센타일 계산 방식 (상위 몇 %에 속한다, 최소 1%)
         int betterCount = quizSessionSummaryMapper.getCountBetterSessions(
             summary.getCorrectAnswers(),
             summary.getAverageTimePerQuestion()
         );
         int totalCount = quizSessionSummaryMapper.getTotalSessionCount();
 
-        int percentile = (totalCount == 0) ? 0
-            : (int)(((totalCount - betterCount) / (float) totalCount) * 100);
+        int percentile = 0;
+        if (totalCount > 0) {
+            float ratio = (betterCount / (float) totalCount) * 100;
+            percentile = Math.round(ratio);
+            percentile = Math.max(1, percentile); // 최소 1% 보정
+        }
 
         summary.setPercentile(percentile);
         quizSessionSummaryMapper.updateQuizSessionSummary(summary);
 
-        log.info("[전체 처리 완료] 세션 {}, 정답 수: {}, 상위 퍼센트: {}", sessionNo, correctAnswers, percentile);
+        log.info("[전체 처리 완료] 세션 {}, 정답 수: {}, 상위 {}%에 속함",
+            sessionNo, correctAnswers, percentile);
 
         // 스피드 퀴즈 풀 유지
         maintainSpeedQuizPool();

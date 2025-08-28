@@ -89,9 +89,12 @@
     <select id="getCountBetterSessions" resultType="int">
         SELECT COUNT(*)
         FROM KUKOKUK_QUIZ_SESSION_SUMMARIES
-        WHERE CORRECT_ANSWERS &gt; #{correctAnswers}
-           OR (CORRECT_ANSWERS = #{correctAnswers}
-            AND AVERAGE_TIME_PER_QUESTION &lt; #{averageTime})
+        WHERE QUIZ_MODE = 'speed'
+          AND (
+            CORRECT_ANSWERS &gt; #{correctAnswers}
+                OR (CORRECT_ANSWERS = #{correctAnswers}
+                AND AVERAGE_TIME_PER_QUESTION &lt; #{averageTimePerQuestion})
+            )
     </select>
 
     <!--
@@ -101,5 +104,7 @@
     <select id="getTotalSessionCount" resultType="int">
         SELECT COUNT(*)
         FROM KUKOKUK_QUIZ_SESSION_SUMMARIES
+        WHERE QUIZ_MODE = 'speed'
     </select>
+
 </mapper>
