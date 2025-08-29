@@ -10,10 +10,10 @@
                   id="daily-quest-form"
                   method="post"
                   th:action="@{/daily-quest-user/obtain}">
-                <div class="component tiny_list_component">
+                <div class="component small_list_component">
                     <div class="component_title">
                         <span class="title_info" th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">2025-08-19</span>
-                        <div class="small_info">
+                        <div class="sub_title">
                             (<span id="obtained-count" th:text="${obtainedCount}">보상 수령건</span>/<span id="total-count" th:text="${dailyQuestStatusDtos.size()}">퀘스트 개수</span>)
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                         </th:block>
                     </div>
 
-                    <div id="batch-obtain-btn-info" class="pd_top_base">
+                    <div id="batch-obtain-btn-info">
                         <span th:if="${successCount == 0 || successCount == obtainedCount}" class="btn primary disabled">일괄 획득</span>
                         <button th:if="${successCount > 0 && successCount > obtainedCount}" type="submit" id="batch-obtain-btn" class="btn primary">일괄 획득</button>
                     </div>

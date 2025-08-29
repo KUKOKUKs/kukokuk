@@ -2,6 +2,7 @@ package com.kukokuk.common.advice;
 
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.exception.AppException;
+import com.kukokuk.common.exception.BadRequestException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -47,6 +48,12 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
         return buildResponse(403, "권한이 없습니다: " + ex.getMessage());
+    }
+
+    // 범용 요청값 오류 처리
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadRequest(BadRequestException ex) {
+        return buildResponse(400, "요청값이 올바르지 않습니다: " + ex.getMessage());
     }
 
 }

@@ -1,4 +1,3 @@
-
 import {apiGetDailyStudies} from "./study-api.js";
 import {renderStudyListCard} from "./study-renderer.js";
 
@@ -70,7 +69,7 @@ async function getDailyStudies(rows) {
  */
 function renderSetUpBtn() {
     $studyListContainer.append(`
-        <button class="modal-study-level-btn btn white">
+        <button class="modal_study_level_btn btn white">
         학습수준 설정하고 일일학습하기
         </button>
     `);

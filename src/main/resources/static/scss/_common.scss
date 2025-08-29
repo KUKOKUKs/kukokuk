@@ -5,7 +5,7 @@
     --titleFontSize: 26px;
     --smallFontSize: 0.8em;
     --largeFontSize: 1.2em;
-    --tinyFontSize: 11px;
+    --tinyFontSize: 0.65em;
 
     /* color palette */
     --primaryColor: #009b90;
@@ -19,6 +19,7 @@
     --blueColor: #2783D9;
     --borderColor: #d9d9d9;
     --dimmedColor: rgba(0, 0, 0, 0.3);
+    --baseBackGround: rgba(255, 255, 255, 0.5);
 
     /* element property */
     --logoWidth: 100px;
@@ -55,6 +56,7 @@
 
     --baseBorder: 1px solid var(--borderColor);
     --bdrs: 7px;
+    --tagBdrs: 2em;
     --bxsh: 2px 2px 10px rgba(0, 0, 0, .05);
     --insetBxsh: inset -1px -1px 1px rgba(0, 0, 0, .25);
     --trst: .2s ease-in-out;
@@ -142,6 +144,8 @@ body {
     font-size: var(--baseFontSize);
     line-height: 1.4;
     color: var(--blackColor);
+    background: url("/images/background-img.webp");
+    word-break: keep-all;
 }
 
 ol, ul {

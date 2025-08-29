@@ -6,7 +6,7 @@
     <form th:if="${isAuth}"
           th:data-logged-in="${isAuth}"
           id="quest-container"
-          class="component tiny_list_component"
+          class="component small_list_component"
           method="post"
           th:action="@{/daily-quest-user/obtain}">
         <th:block th:replace="~{fragments/common/quest :: quest-body}"></th:block>
@@ -16,7 +16,7 @@
     <div th:if="${!isAuth}"
          th:data-logged-in="${isAuth}"
          id="quest-container"
-         class="component tiny_list_component">
+         class="component small_list_component">
         <th:block th:replace="~{fragments/common/quest :: quest-body}"></th:block>
     </div>
 
@@ -38,7 +38,7 @@
     <div class="component_title">
         <div class="title_info">
             일일도전과제
-            <div class="small_info">
+            <div class="sub_title">
                 (<span id="obtained-count"></span>/<span id="total-count"></span>)
             </div>
         </div>

@@ -41,7 +41,8 @@
 
 .main {
     display: flex;
-    min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
 }
 
 /* content */
@@ -76,7 +77,8 @@
     padding: var(--containerPadding);
     display: flex;
     flex-direction: column;
-    gap: var(--baseGap);
+    gap: var(--largeGap);
+    overflow-y: auto;
 }
 
 #sub-content {
@@ -85,7 +87,8 @@
     padding: var(--containerPadding);
     display: flex;
     flex-direction: column;
-    gap: var(--baseGap);
+    gap: var(--largeGap);
+    overflow-y: auto;
 }
 
 .content_info {
@@ -125,56 +128,10 @@
 .component {
     width: 100%;
     padding: var(--smallPadding);
+    background-color: var(--baseBackGround);
     border-radius: var(--bdrs);
     border: var(--baseBorder);
     box-shadow: var(--bxsh);
-
-    /* 컴포넌트의 좌상단에 위치할 컴포넌트 title */
-    .component_title {
-        font-size: var(--largeFontSize);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .title_info {
-            font-weight: bold;
-            display: flex;
-            align-items: baseline;
-            gap: var(--tinyGap);
-        }
-
-        /* 더 작은 글씨가 필요할 경우 */
-        .small_info {
-            font-size: var(--tinyFontSize);
-            font-weight: normal;
-            color: var(--grayColor);
-        }
-    }
-
-    /* 리스트 요소 */
-    .component_info {
-        padding: var(--smallPadding);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--smallGap);
-
-        &.small {
-            font-size: var(--smallFontSize);
-
-            &.with_icon {
-                padding: var(--smallComponentWithIconPadding);
-
-                .btn {
-                    width: var(--baseIcon);
-                    min-width: var(--baseIcon);
-                    max-height: var(--smallIcon);
-                    min-height: var(--smallIcon);
-                    box-sizing: content-box;
-                }
-            }
-        }
-    }
 }
 
 /* base gap list */
@@ -182,6 +139,13 @@
     display: flex;
     flex-direction: column;
     gap: var(--baseGap);
+}
+
+/* small gap list */
+.small_list_component {
+    display: flex;
+    flex-direction: column;
+    gap: var(--smallGap);
 }
 
 /* tiny gap list */
@@ -194,8 +158,84 @@
 /* grid list */
 .grid_list_component {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--smallGap);
+
+    .grid_list {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: var(--smallGap);
+        transition: transform var(--trst);
+
+        .component_title {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .icon_btn {
+            align-self: flex-end;
+        }
+
+        &:hover {
+            transform: translateY(-3px);
+        }
+    }
+}
+
+.component_title {
+    font-size: var(--largeFontSize);
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title_info {
+        display: flex;
+        align-items: baseline;
+        gap: var(--tinyGap);
+    }
+
+    .sub_title {
+        font-size: var(--tinyFontSize);
+        font-weight: normal;
+        color: var(--grayColor);
+    }
+}
+
+.component_sub_title {
+    font-size: var(--baseFontSize);
+    color: var(--grayColor);
+}
+
+.component_info_text {
+    font-size: var(--subFontSize);
+    color: var(--grayColor);
+}
+
+/* 리스트 요소 */
+.component_info {
+    padding: var(--smallPadding);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--smallGap);
+
+    &.small {
+        font-size: var(--smallFontSize);
+
+        &.with_icon {
+            padding: var(--smallComponentWithIconPadding);
+
+            .btn {
+                width: var(--baseIcon);
+                min-width: var(--baseIcon);
+                max-height: var(--smallIcon);
+                min-height: var(--smallIcon);
+                box-sizing: content-box;
+            }
+        }
+    }
 }
 
 /* 로그인/회원가입 페이지에서 확인 가능함  */
@@ -685,10 +725,6 @@
         transform: translate(-50%, -50%);
         transition: margin-top var(--trst);
         overflow: hidden;
-        
-        .btn_list {
-            background-color: #fff;
-        }
 
         .modal_top {
             width: 100%;
@@ -788,10 +824,6 @@
         z-index: 1;
     }
 
-    &.column {
-        flex-direction: column; /* 수직 정렬 */
-    }
-
     &.daily_study {
         margin: var(--baseGap) 0;
         justify-content: space-between;
@@ -839,19 +871,6 @@
         background-color: #fff;
     }
 
-    &.dark {
-        border-color: var(--darkGreenColor);
-        background-color: var(--darkGreenColor);
-        color: #fff;
-    }
-
-    &.gray {
-        border: 2px solid var(--lightGrayColor);;
-        background-color: transparent;
-        color: var(--grayColor);
-        box-shadow: none;
-    }
-
     &:hover {
         border-color: var(--primaryColor);
         color: var(--primaryColor);
@@ -894,6 +913,13 @@
         min-width: var(--smallIcon);
         height: var(--smallIcon);
         font-size: var(--smallIcon);
+    }
+
+    &.large {
+        width: var(--largeIcon);
+        min-width: var(--largeIcon);
+        height: var(--largeIcon);
+        font-size: var(--largeIcon);
     }
 }
 
@@ -980,6 +1006,10 @@
 
 .large_gap {
     gap: var(--largeGap) !important; /* 큰 gap */
+}
+
+.w_100 {
+    width: 100%;
 }
 
 .pd_0 {
@@ -1085,30 +1115,42 @@
 
 /*
     로딩 표시를 위한 클래스
-    사용 예시
+    사용 예시(진행률 표시가 필요없다면 style --percent 미설정)
     <div class="loading_spinner">
         <div class="spinner"></div>
-        <div>AI 피드백 생성 중...</div>
+        <p class="info" style="--percent: 70%;">AI 피드백 생성 중...</p>
     </div>
  */
 .loading_spinner {
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     gap: var(--smallGap);
 
-    &.full_height {
-        height: 100%;
-        justify-content: center;
+    .spinner {
+        width: var(--titleFontSize);
+        height: var(--titleFontSize);
+        border: 2px solid var(--lightGrayColor);
+        border-top-color: var(--blueColor);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
     }
 
-    .spinner {
-        width: 32px;
-        height: 32px;
-        border: 3px solid var(--borderColor);
-        border-top-color: var(--primaryColor);
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
+    .info {
+        font-size: var(--subFontSize);
+        color: var(--grayColor);
+        background: linear-gradient(
+                to right,
+                var(--blueColor) 0%,
+                var(--blueColor) var(--percent),
+                var(--blackColor) var(--percent),
+                var(--blackColor) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 }
 
@@ -1118,34 +1160,7 @@
     }
 }
 
-/* 버튼에 빤딱이는 하이라이트를 주고 싶을 때 추가 */
 .highlight {
-    position: relative; /* ::before로 하이라이트 레이어를 버튼 안에 절대위치로 배치하기 위해 부모를 기준으로 삼음 */
-    overflow: hidden; /* 버튼 밖으로 하이라이트 효과가 튀어나가지 않도록 잘라냄 */
-
-    &:before {
-        content: '';  /* 가상의 하이라이트 레이어를 만들기 위해 필수 */
-        position: absolute; /* 버튼 내부에 절대 위치 배치 */
-        top: 0;
-        left: -75%; /* 시작 위치를 버튼 왼쪽 바깥쪽에서 시작 */
-        width: 50%; /* 하이라이트 레이어의 너비 (너무 넓으면 번쩍거림 과해짐) */
-        height: 100%;
-        background: linear-gradient( /* 빛이 지나가는 효과를 주기 위한 그라디언트 */
-                120deg,
-                rgba(255, 255, 255, 0) 0%, /* 시작: 약간 흐린 흰색 */
-                rgba(255, 255, 255, 0.5) 50%,  /* 중간: 강한 흰색 (빛의 중심) */
-                rgba(255, 255, 255, 0) 100%  /* 끝: 다시 흐린 흰색 */
-        );
-        animation: shine 2s infinite; /* 빛이 지나가는 애니메이션 반복 */
-    }
-}
-
-@keyframes shine {
-    0% { left: -75%; } /* 시작 시 빛 레이어가 왼쪽 바깥에서 시작 */
-    100% { left: 125%; } /* 끝날 때 오른쪽 바깥으로 이동 */
-}
-
-.highlight2 {
     position: relative;
     overflow: hidden;
 

@@ -52,19 +52,19 @@ export function renderStudyListCard(study, index) {
 
     // index가 0일때만 표시할 버튼 html구성
     const buttons = index === 0 ? `
-                                <div class="study_btn_list">
+                                <div class="btn_list column">
                                   <a href="/study/${study.dailyStudyNo}" class="btn dark">${statusText}</a>
                                   <a href="/study/${study.dailyStudyNo}/essay" class="btn white ${essayBtnClass}">AI 피드백 기반 논술형 퀴즈 풀기</a>
                                 </div>
                               ` : ``;
 
     // 최종적으로 조립된 학습 카드 HTML 반환
-    return  `<div class="daily_study_card ${index === 0 ? 'no_cursor' : ''}"
+    return  `<div class="component base_list_component daily_study_card ${index === 0 ? 'no_cursor' : ''}"
                 data-study-no="${study.dailyStudyNo}"
                 data-study-status="${statusText}"
                 data-essay-btn-class="${essayBtnClass}">
                 <div class="study_info">
-                    <div class="study_title">${study.title}</div>
+                    <div class="component_title">${study.title}</div>
                     <div class="study_content">${study.explanation ? study.explanation : ''}</div>
                     <div class="study_tag_list">${tagHtml}</div>
                 </div>
