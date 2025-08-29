@@ -42,7 +42,7 @@
         <form method="post"
               th:action="@{/user/profile}"
               th:object="${userUpdateForm}"
-              class="form_wrap container pd_0"
+              class="form_wrap container pd_top_bottom_0"
               id="profile-update-form">
             <input type="hidden" name="currentNickname" th:value="${userUpdateForm.nickname}">
 
@@ -149,7 +149,7 @@
                 </div>
             </div>
 
-            <div class="btn_list sticky_bottom">
+            <div class="btn_list">
                 <a href="/" class="btn white">취소</a>
                 <button type="submit" id="submit-btn" class="btn primary">수정</button>
             </div>
