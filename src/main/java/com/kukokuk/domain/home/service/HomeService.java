@@ -43,14 +43,14 @@ public class HomeService {
         // 준비 중
         studyJobStatusStore.update(jobId, status -> {
             status.setProgress(20);
-            status.setMessage("맞춤 학습 자료 준비 중");
+            status.setMessage("학습 이력 확인 중...");
         });
 
         try {
             // 학습 이력 확인
             studyJobStatusStore.update(jobId, status -> {
                 status.setProgress(40);
-                status.setMessage("학습 이력 확인 중");
+                status.setMessage("맞춤 학습 자료 생성 중...");
             });
 
             // 사용자의 수준과 진도에 맞는 추천 학습자료(DailyStudy) 목록을 조회하는 메소드 호출
@@ -60,7 +60,7 @@ public class HomeService {
             // 매핑 중
             studyJobStatusStore.update(jobId, status -> {
                 status.setProgress(80);
-                status.setMessage("맞춤 학습 자료 정리 중");
+                status.setMessage("맞춤 학습 자료 정리 중...");
             });
 
             // UserStudyRecommendationDto에서 응답에 필요한 정보만 반환하도록 ResponseDTO에 매핑

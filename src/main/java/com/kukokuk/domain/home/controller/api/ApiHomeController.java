@@ -68,7 +68,7 @@ public class ApiHomeController {
             .status("PROCESSING")
             .progress(0)
             .result(null)
-            .message("맞춤 학습 자료 요청 중")
+            .message("맞춤 학습 자료 요청 중...")
             .build();
         log.info("status: {}", status);
 
