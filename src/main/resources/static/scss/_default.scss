@@ -78,7 +78,7 @@
     padding: var(--containerPadding);
     display: flex;
     flex-direction: column;
-    gap: var(--largeGap);
+    gap: var(--baseGap);
     overflow-y: auto;
 }
 
@@ -88,7 +88,7 @@
     padding: var(--containerPadding);
     display: flex;
     flex-direction: column;
-    gap: var(--largeGap);
+    gap: var(--baseGap);
     overflow-y: auto;
 }
 
@@ -868,27 +868,25 @@
         background-color: #fff;
     }
 
-    &.blink {
-        animation: blink-color 2s infinite;
-    }
-
     img {
         width: var(--smallIconImage);
     }
 }
 
-@keyframes blink-color {
-    0%, 100% {
-        border-color: var(--borderColor);
-        background-color: #fff;
+/* 세로 토글 버튼 */
+.vertical_toggle_btn {
+    .arrow {
+        transition: transform var(--trst);
     }
-    50% {
-        border-color: var(--primaryColor);
-        background-color: var(--primaryColor);
-        color: #fff;
+
+    &.open {
+        .arrow {
+            transform: rotateX(180deg);
+        }
     }
 }
 
+/* 아이콘 버튼 */
 .icon_btn {
     width: var(--baseIcon);
     min-width: var(--baseIcon);
@@ -914,6 +912,7 @@
     }
 }
 
+/* 힌트 버튼 */
 .hints_info {
     display: flex;
     align-items: center;
@@ -1005,6 +1004,10 @@
 
 .pd_0 {
     padding: 0 !important;
+}
+
+.pb_0 {
+    padding-bottom: 0 !important;
 }
 
 .pd_top_bottom_0 {
@@ -1107,6 +1110,12 @@
 
 .color_white {
     color: #fff;
+}
+
+.text_ellipsis {
+    overflow: hidden;          /* 넘치는 내용 숨김 */
+    text-overflow: ellipsis;   /* 말줄임 (...) 처리 */
+    white-space: nowrap;       /* 한줄로 처리 */
 }
 
 /* 호버 효과 */
