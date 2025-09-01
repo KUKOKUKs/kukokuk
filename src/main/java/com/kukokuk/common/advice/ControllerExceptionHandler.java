@@ -1,6 +1,7 @@
 package com.kukokuk.common.advice;
 
 import com.kukokuk.common.exception.AppException;
+import com.kukokuk.common.exception.BadRequestException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataAccessException;
@@ -50,6 +51,13 @@ public class ControllerExceptionHandler {
     public String handleBadRequest(MethodArgumentNotValidException ex, HttpServletResponse response,
         Model model) {
         return buildErrorPage(response, model, 400, "Bad Request", "입력 값이 올바르지 않습니다." + ex.getMessage());
+    }
+
+    // 범용 요청값 오류 처리
+    @ExceptionHandler(BadRequestException.class)
+    public String handleBadRequest(BadRequestException ex, HttpServletResponse response,
+        Model model) {
+        return buildErrorPage(response, model, 400, "Bad Request", "요청값이 올바르지 않습니다." + ex.getMessage());
     }
 
 }
