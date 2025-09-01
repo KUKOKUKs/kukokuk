@@ -9,7 +9,7 @@
                     <span class="menu_icon">
                         <iconify-icon icon="fluent-color:home-16"></iconify-icon>
                     </span>
-                    <span>홈</span>
+                    <span>국어국 마당</span>
                 </a>
             </li>
             <li class="nav_menu">
@@ -18,7 +18,16 @@
                     <span class="menu_icon">
                         <iconify-icon icon="fluent-color:book-24"></iconify-icon>
                     </span>
-                    <span>학습하기</span>
+                    <span>오늘의 학습</span>
+                </a>
+            </li>
+            <li class="nav_menu">
+                <a href="/daily-quests" class="menu"
+                   th:classappend="${menu == 'quest'} ? 'active'">
+                    <span class="menu_icon">
+                        <iconify-icon icon="streamline-color:task-list-flat"></iconify-icon>
+                    </span>
+                    <span>오늘의 도전</span>
                 </a>
             </li>
             <li class="nav_menu">
@@ -27,16 +36,16 @@
                     <span class="menu_icon">
                         <iconify-icon icon="fluent-color:game-chat-20"></iconify-icon>
                     </span>
-                    <span>게임하기</span>
+                    <span>국어 놀이터</span>
                 </a>
             </li>
             <li class="nav_menu">
-                <a href="/daily-quests" class="menu"
-                    th:classappend="${menu == 'quest'} ? 'active'">
+                <a href="" class="menu"
+                   th:classappend="${menu == 'group'} ? 'active'">
                     <span class="menu_icon">
-                        <iconify-icon icon="streamline-color:task-list-flat"></iconify-icon>
+                        <iconify-icon icon="streamline-color:user-multiple-group-flat"></iconify-icon>
                     </span>
-                    <span>일일 도전과제</span>
+                    <span>우리반</span>
                 </a>
             </li>
             <li class="nav_menu">
@@ -45,7 +54,7 @@
                     <span class="menu_icon">
                         <iconify-icon icon="streamline-ultimate-color:ranking-stars-ribbon"></iconify-icon>
                     </span>
-                    <span>랭킹</span>
+                    <span>순위</span>
                 </a>
             </li>
             <li class="nav_menu">
@@ -71,7 +80,7 @@
                              th:src="@{/images/basic_profile_img.jpg}"
                              alt="profile thumbnail">
                     </span>
-                    <span>프로필</span>
+                    <span>내 정보</span>
                 </a>
             </li>
         </ul>

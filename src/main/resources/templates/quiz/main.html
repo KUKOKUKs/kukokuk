@@ -1,32 +1,63 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{/layout/base}" th:with="menu='quiz', title='게임하기'">
+      layout:decorate="~{/layout/base}" th:with="menu='quiz', title='국어 놀이터'">
 <div layout:fragment="content">
-    <div id="main-content" class="d_flex column base_gap">
-        <div>
-            <h1 class="content_title">게임하기</h1>
+    <div id="main-content">
+        <div class="content_info">
+            <div class="content_title">
+                <iconify-icon icon="fluent-color:game-chat-20"></iconify-icon>
+                국어 놀이터
+            </div>
+
+            <div class="grid_list_component column">
+                <a href="/quiz/speed" class="component grid_list elevate_on_hover">
+                    <div class="component_title">
+                        <p class="title_info column">
+                            스피드 퀴즈
+                            <span class="sub_title">
+                                제한 시간 내 문제를 풀고, 순위를 확인해 보세요!
+                            </span>
+                        </p>
+                    </div>
+                    <span class="icon_btn large">
+                        <iconify-icon icon="flat-color-icons:flash-on"></iconify-icon>
+                    </span>
+                </a>
+                <a href="/quiz/level-select" class="component grid_list elevate_on_hover">
+                    <div class="component_title">
+                        <p class="title_info column">
+                            단계별 퀴즈
+                            <span class="sub_title">
+                                단계별 문제를 풀며 실력을 키워보세요!
+                            </span>
+                        </p>
+                    </div>
+                    <span class="icon_btn large">
+                        <iconify-icon icon="token-branded:step"></iconify-icon>
+                    </span>
+                </a>
+                <a href="/dictation/start" class="component grid_list elevate_on_hover">
+                    <div class="component_title">
+                        <p class="title_info column">
+                            받아쓰기
+                            <span class="sub_title">
+                                AI가 생성한 문장을 듣고 받아쓰기에 도전해 보세요!
+                            </span>
+                        </p>
+                    </div>
+                    <span class="icon_btn large">
+                        <iconify-icon icon="flat-color-icons:voice-presentation"></iconify-icon>
+                    </span>
+                </a>
+            </div>
         </div>
-        <a href="/quiz/speed" class="btn game_menu d_flex column small_gap">
-            <p class="bold">스피드 퀴즈</p>
-            <p class="small_font">제한시간 내 풀어야 되는 퀴즈입니다.</p>
-        </a>
-        <a href="/quiz/level-select" class="btn game_menu d_flex column small_gap">
-            <p class="bold">단계별 퀴즈</p>
-            <p class="small_font">수준에 맞는 문제를 푸는 퀴즈입니다.</p>
-        </a>
-        <a href="/dictation/start" class="btn game_menu d_flex column small_gap">
-            <p class="bold">받아쓰기</p>
-            <p class="small_font">받아쓰기 설명입니다.</p>
-        </a>
-        <a href="/quiz/" class="btn game_menu d_flex column small_gap">
-            <p class="bold">스무고개</p>
-            <p class="small_font">Comming soon..</p>
-        </a>
     </div>
 
     <div id="sub-content">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
+        <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
+        <!--/* 게임하기 관련 내역 컴포넌트 컨텐츠 프레그먼트로 추가 */-->
     </div>
 </div>
 </html>

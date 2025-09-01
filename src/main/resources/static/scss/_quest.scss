@@ -1,5 +1,5 @@
 #quest-container {
-    max-height: 155px;       /* 처음에 1.5개 정도 보이게 */
+    max-height: 150px;       /* 처음에 1.5개 정도 보이게 */
     transition: max-height var(--trst);
 
     &.open {

@@ -8,11 +8,11 @@
                       and user.currentSchool != null
                       and user.currentGrade != null}">
 <div layout:fragment="content">
-    <div id="main-content" class="main_container">
+    <div id="main-content">
         <div class="content_info">
             <div class="content_title">
                 <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
-                오늘의 학습하기
+                오늘의 학습
             </div>
 
             <!--/* 로그인 되어있지 않은 경우 */-->
@@ -39,13 +39,21 @@
             <!--/* 로그인 되었고 학습 진도/단계 설정까지 완료된 경우 컨텐츠 추가 */-->
             <div class="study_list_container"
                  th:if="${isAuth and isSetStudyLevel}"
-                 th:data-is-study-level-set="${isAuth and isSetStudyLevel}"></div>
+                 th:data-is-study-level-set="${isAuth and isSetStudyLevel}">
+                <!--/* 요청 기본 UI 세팅 */-->
+                <div class="component base_list_component">
+                    <div class="loading_spinner pd_base">
+                        <div class="spinner"></div>
+                        <p class="info" style="--percent: 0%;">맞춤 학습 자료 요청 중...</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="content_info">
             <div class="content_title">
                 <iconify-icon icon="fluent-color:game-chat-20"></iconify-icon>
-                게임하기
+                국어 놀이터
             </div>
             <div class="grid_list_component">
                 <a href="/quiz/speed" class="component grid_list elevate_on_hover">

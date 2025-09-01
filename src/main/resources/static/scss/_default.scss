@@ -159,14 +159,18 @@
 /* grid list */
 .grid_list_component {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr); /* 한 라인 3분할 리스트 */
     gap: var(--smallGap);
+
+    &.column {
+        grid-template-columns: 1fr; /* 한 라인씩 세로형 리스트 */
+    }
 
     .grid_list {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        gap: var(--smallGap);
+        gap: var(--tinyGap);
 
         .component_title {
             flex-direction: column;
@@ -262,7 +266,6 @@
         height: 100%;
         background-color: var(--yellowColor);
         border-radius: var(--bdrs);
-        transition: width var(--trst), background-color var(--trst); // background-color 변경되면 ease룰 실행
     }
 
     .gauge_info {
@@ -294,6 +297,49 @@
             font-size: var(--subFontSize);
             position: absolute;
             top: 100%;
+        }
+    }
+}
+
+/* 타이머 */
+.timer_container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tinyGap);
+
+    .timer_component {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--baseGap);
+
+        .timer_info {
+            display: flex;
+            align-items: center;
+            gap: var(--tinyGap);
+        }
+
+        .icon {
+            font-size: var(--titleFontSize);
+        }
+
+        .info {
+            color: var(--grayColor);
+            font-size: var(--smallFontSize);
+            font-weight: bold;
+        }
+    }
+
+    &.warning {
+        .gauge {
+            background-color: var(--redColor);
+        }
+
+        .timer_component {
+            .timer {
+                font-size: var(--baseFontSize);
+                color: var(--redColor);
+            }
         }
     }
 }
@@ -896,6 +942,20 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+}
+
+/* 아이콘 */
+.icon  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.base {
+        width: var(--baseIcon);
+        min-width: var(--baseIcon);
+        height: var(--baseIcon);
+        font-size: var(--baseIcon);
+    }
 
     &.small {
         width: var(--smallIcon);

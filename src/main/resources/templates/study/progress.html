@@ -4,12 +4,9 @@
       layout:decorate="~{layout/center}">
 
 <!--/* 학습 진행화면에서 표시할 네비바 */-->
-<div id="study-nav-fragment" layout:fragment="fixed-nav-fragment">
-    <div th:replace="~{fragments/common/study-nav :: study-nav-fragment(data=${data})}"></div>
-</div>
+<div layout:fragment="fixed-nav-fragment" th:replace="~{fragments/study/study-nav :: study-nav-fragment(data=${data})}"></div>
 
 <div layout:fragment="content">
-
     <!-- 학습진행바 -->
     <div class="level_info study_progress">
         <div class="bar_gauge">
