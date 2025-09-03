@@ -58,15 +58,6 @@
         max-width: var(--centerContentWidth); /* 디테일 컨텐츠 최대 사이즈 */
         margin: 0 auto;
     }
-
-    .center_content_wrap {
-        width: var(--mainContentWidth);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--largeGap);
-        padding: var(--containerPadding) 0;
-    }
 }
 
 #main-content {
@@ -1056,12 +1047,12 @@
 .hints_info {
     display: flex;
     align-items: center;
+    gap: var(--tinyGap);
 
     .hint_icon {
-        width: var(--baseIcon);
-        min-width: var(--baseIcon);
-        height: var(--baseIcon);
-        padding: 5px;
+        width: var(--titleFontSize);
+        min-width: var(--titleFontSize);
+        height: var(--titleFontSize);
     }
 
     .hint_count {

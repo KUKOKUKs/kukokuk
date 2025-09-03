@@ -1,10 +1,50 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/center}" th:with="title='받아쓰기'">
+<html layout:decorate="~{/layout/center}" th:with="title='받아쓰기', menu='quiz'">
 <div layout:fragment="content">
-    <form th:action="@{/dictation/submit-answer}" method="post">
-        <div class="center_content_wrap">
-            <div th:replace="~{fragments/sign/step-bar :: step-fragment(${dictationQuestions.size()}, ${questionIndex + 1})}"></div>
+    <form th:action="@{/dictation/submit-answer}"
+          method="post"
+          id="main-content">
+        <div class="content_info">
+            <div class="content_title justify_content_center">
+                <iconify-icon icon="flat-color-icons:voice-presentation"></iconify-icon>
+                받아쓰기
 
+                <div class="progress_end_btn quiz_end_btn">
+                    <button type="button" class="btn tiny">종료하기</button>
+                </div>
+            </div>
+
+            <div class="progress_container">
+                <div class="progress_component">
+                    <div class="progress_info">
+                        <span class="icon">
+                            <iconify-icon icon="fluent-color:chat-bubbles-question-16"></iconify-icon>
+                        </span>
+                        <p class="info">
+                            <span id="quiz-current" th:text="${questionIndex + 1}">0</span> / <span th:text="${dictationQuestions.size()}">0</span>
+                        </p>
+                    </div>
+                    <div class="progress_info">
+                        <span class="icon">
+                            <iconify-icon icon="fluent-color:clock-alarm-20"></iconify-icon>
+                        </span>
+                        <p id="quiz-timer" class="info timer">00 초</p>
+                    </div>
+                </div>
+
+                <div class="bar_gauge">
+                    <div class="gauge" th:style="|width: ${((questionIndex + 1) / dictationQuestions.size()) * 100}|%"></div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </form>
+
+
+    <div>
+        <div id="center_content">
             <div class="question_container blue">
                 <div class="question_info">
                     <button type="button" class="question_title_info" th:attr="data-question-no=${currentQuestion.dictationQuestionNo}">
@@ -56,7 +96,7 @@
                 </button>
             </div>
         </div>
-    </form>
+    </div>
 </div>
 
 <th:block layout:fragment="script">

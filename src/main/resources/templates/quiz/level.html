@@ -23,12 +23,12 @@
                         </p>
                     </div>
                     <div class="progress_info">
-                        <span class="icon">
-                            <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
-                        </span>
-                        <p class="info">
+                        <div class="hints_info">
+                            <div class="hint_icon">
+                                <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
+                            </div>
                             <span class="hint_count">x <span id="hint-count">0</span></span>
-                        </p>
+                        </div>
                     </div>
                 </div>
 
@@ -39,7 +39,6 @@
 
             <!--/* 문제 */-->
             <div class="component">
-                <div id="quiz-callout" class="callout">단어</div>
                 <p id="quiz-question" class="collout_info bold large_font tac"></p>
             </div>
 
