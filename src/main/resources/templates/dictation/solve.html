@@ -25,10 +25,12 @@
                         </p>
                     </div>
                     <div class="progress_info">
-                        <span class="icon">
-                            <iconify-icon icon="fluent-color:clock-alarm-20"></iconify-icon>
-                        </span>
-                        <p id="quiz-timer" class="info timer">00 초</p>
+                        <div class="hints_info">
+                            <div class="hint_icon">
+                                <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
+                            </div>
+                            <span class="hint_count">x <span id="hint-count">0</span></span>
+                        </div>
                     </div>
                 </div>
 
@@ -36,10 +38,12 @@
                     <div class="gauge" th:style="|width: ${((questionIndex + 1) / dictationQuestions.size()) * 100}|%"></div>
                 </div>
             </div>
-
-
-
         </div>
+
+
+
+
+
     </form>
 
 
