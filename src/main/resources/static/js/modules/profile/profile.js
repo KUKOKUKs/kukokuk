@@ -186,6 +186,11 @@ $(document).ready(function () {
 
             // 모달창 단계별 설명 리스트 추가
             await setStudyDifficultyList($modalUserUpdateStudyDifficultyInfoElement);
+
+            // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+            setTimeout(() => {
+                $modalStudyDifficultyInfo.addClass("open");
+            }, 10);
         }
     });
 });

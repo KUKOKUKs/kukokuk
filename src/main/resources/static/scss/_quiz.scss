@@ -1,0 +1,13 @@
+/* 보기 리스트 관련 */
+#quiz-options {
+    .option_btns {
+        border-radius: var(--bdrs);
+        background-color: var(--baseBackGround);
+        box-shadow: var(--bxsh);
+
+        &:hover {
+            font-weight: bold;
+            background-color: var(--subColor);
+        }
+    }
+}

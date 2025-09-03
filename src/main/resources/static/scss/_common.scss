@@ -146,6 +146,7 @@ body {
     color: var(--blackColor);
     background: url("/images/background-img.webp");
     word-break: keep-all;
+    overflow-wrap: break-word;
 }
 
 ol, ul {
