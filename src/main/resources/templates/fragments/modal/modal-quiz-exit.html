@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<div th:fragment="modal-study-exit-fragment"
-    id="modal-study-exit"
+<div th:fragment="modal-quiz-exit-fragment"
+     id="modal-quiz-exit"
      class="modal_wrap">
     <div id="modal_dimmed" class="dimmed modal_close"></div>
     <div class="modal_container">
@@ -15,12 +15,12 @@
         <!--/* modal content */-->
         <div class="modal_info small form_wrap">
             <div class="center_info">
-                <p>학습을 종료하시겠습니까?</p>
-                <p class="color_gray small_font">(학습 진행도는 저장됩니다)</p>
+                <p>종료하시겠습니까?</p>
+                <p class="color_gray small_font">(중간 저장되지 않습니다.)</p>
             </div>
             <div class="btn_list">
                 <button class="btn primary modal_close">취소</button>
-                <a href="/study" class="btn white">오늘의 학습으로</a>
+                <a href="/quiz" class="btn white">국어 놀이터로</a>
                 <a href="/" class="btn">마당으로</a>
             </div>
         </div>

@@ -1,71 +1,35 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{/layout/base}" th:with="menu='study'">
-<!--
-
--->
+<html layout:decorate="~{/layout/base}"
+      th:with="menu='study', title='오늘의 학습',
+      user=${#authentication.principal.user},
+      isSetStudyLevel=${user != null
+                      and user.studyDifficulty != null
+                      and user.currentSchool != null
+                      and user.currentGrade != null}">
 <div layout:fragment="content">
-    <!--  <button type="button" id="hint-item-btn" data-daily-quest-user-no="${}">힌트 획득</button>-->
+    <div id="main-content">
+        <div class="content_info">
+            <div class="content_title">
+                <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
+                오늘의 학습
+            </div>
 
-    <div id="main-content" class="main_container">
-        <div class="content_title"> 일일학습 목록</div>
-        <div class="study_list_container">
-            <!-- 일일학습 카드가 동적으로 추가되는 부분 -->
+            <!--/* 일일학습 카드가 동적으로 추가되는 부분 */-->
+            <div class="study_list_container" th:data-is-study-level-set="${isSetStudyLevel}"></div>
         </div>
     </div>
 
-    <!-- 서브콘텐츠 -->
-    <div id="sub-content" class="main_container">
-        <!-- 사용자 프로필 컴포넌트 -->
+    <div id="sub-content">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
-
-        <!-- 도전과제 리스트 컴포넌트 -->
-        <div class="component" id="daily-quest-list">
-            <div class="component_list_container">
-                <div class="component_title">
-                    도전과제
-                </div>
-                <div class="component_list">
-                    <div class="daily_quest_item" th:each="quest : ${data.dailyQuestDtos}">
-                        <span th:text="${quest.getContentText()}">오늘의 일일학습 완료하기</span>
-                        <div class="hint-btn-container">
-                            <!-- 사용자의 도전과제 수행 이력이 존재하지 않는 경우  -->
-                            <th:block th:if="${!quest.isSuccessed()}">
-                                <button class="hint_icon_btn deactive disabled">
-                                    <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
-                                </button>
-                            </th:block>
-                            <!-- 사용자의 도전과제 수행 이력이 존재하는 경우  -->
-                            <th:block th:if="${quest.isSuccessed()}">
-                                <!-- 사용자가 아이템을 획득하기 전일 경우 -->
-                                <th:block th:if="${quest.dailyQuestUser.isObtained == 'N'}">
-                                    <button class="hint_icon_btn active"
-                                            th:attr="data-quest-user-no=${quest.dailyQuestUser.dailyQuestUserNo}">
-                                        <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
-                                    </button>
-                                </th:block>
-                                <!-- 사용자가 아이템을 획득한 후일 경우 -->
-                                <th:block th:if="${quest.dailyQuestUser.isObtained == 'Y'}">
-                                    <div class="hint_obtained_icon">
-                                        <!-- 획득완료 아이콘으로 변경 -->
-                                        <iconify-icon icon="mingcute:check-fill"></iconify-icon>
-                                    </div>
-                                </th:block>
-                            </th:block>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
 
         <!-- 학습이력 리스트 컴포넌트 -->
-        <div class="component" id="study-history-list">
+        <div class="component small_list_component" id="study-history-list">
             <div class="component_list_container">
                 <div class="component_title">
-                    학습 히스토리
+                    <p class="title_info">학습 이력</p>
                 </div>
-                <div class="component_list">
+                <div class="tiny_list_component show_scroll component_list">
                     <div class="study_history_item" th:each="log : ${data.getDailyStudyLogs()}">
                         <div th:text="${log.dailyStudy.title}">일일학습 제목</div>
                         <div class="history_info"
@@ -81,7 +45,7 @@
                             <span th:if="${log.status == 'IN_PROGRESS'}"
                                   th:text="'(' + ${#dates.format(log.updatedDate, 'yyyy/MM/dd')} + ' ~)'">
               </span>
-                            <span class="icon_btn small">
+                            <span class="icon_btn icon small">
                 <iconify-icon icon="ep:arrow-right-bold"></iconify-icon>
               </span>
                         </div>
@@ -89,20 +53,18 @@
                 </div>
             </div>
         </div>
-
     </div>
-
-
-    <th:block layout:fragment="script">
-        <script th:inline="javascript">
-            // 사용자 인증정보로 부터 학습수준/진도를 객체로 저장, JS 에서 활용
-            const userInfo = {
-                difficulty: [[${#authentication?.principal?.user?.studyDifficulty}]],
-                school: [[${#authentication?.principal?.user?.currentSchool}]],
-                grade: [[${#authentication?.principal?.user?.currentGrade}]]
-            };
-        </script>
-        <script type="module" th:src="@{/js/modules/study/study-main.js}"></script>
-    </th:block>
 </div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        // 사용자 인증정보로 부터 학습수준/진도를 객체로 저장, JS 에서 활용
+        const userInfo = {
+            difficulty: [[${#authentication?.principal?.user?.studyDifficulty}]],
+            school: [[${#authentication?.principal?.user?.currentSchool}]],
+            grade: [[${#authentication?.principal?.user?.currentGrade}]]
+        };
+    </script>
+    <script type="module" th:src="@{/js/modules/study/study-main.js}"></script>
+</th:block>
 </html>

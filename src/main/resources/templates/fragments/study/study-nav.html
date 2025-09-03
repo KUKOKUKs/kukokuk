@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="study-nav-fragment(data)" class="nav_container nav_container_study">
     <div class="nav_wrap">
@@ -78,6 +77,11 @@
             if ($modalExit.length) {
                 // 해당 모달창 요소가 있을 경우 열기
                 $modalExit.show();
+
+                // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+                setTimeout(() => {
+                    $modalExit.addClass("open");
+                }, 10);
             }
         });
     </script>

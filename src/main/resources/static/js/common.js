@@ -25,7 +25,7 @@ $(document).ready(() => {
                 this.reset();
             });
             // 모달창 닫기
-            $modalAll.hide();
+            $modalAll.hide().removeClass("open");
         }
     });
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Log4j2
 @Controller
 @RequiredArgsConstructor
-public class ConmmonController {
+public class CommonController {
 
     // 메인 페이지
     @GetMapping("/")

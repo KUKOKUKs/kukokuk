@@ -1,10 +1,13 @@
 
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/base}" th:with="title='일일 도전과제', menu='quest'">
+<html layout:decorate="~{/layout/base}" th:with="title='오늘의 도전', menu='quest'">
 <div layout:fragment="content">
-    <div id="main-content" class="main_container">
+    <div id="main-content">
         <div class="content_info">
-            <h1 class="content_title">일일 도전과제</h1>
+            <h1 class="content_title">
+                <iconify-icon icon="streamline-color:task-list-flat"></iconify-icon>
+                오늘의 도전
+            </h1>
 
             <form class="container pd_0"
                   id="daily-quest-form"

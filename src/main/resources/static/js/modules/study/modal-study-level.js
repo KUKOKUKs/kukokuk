@@ -60,6 +60,11 @@ $(document).ready(async function () {
 
             // 모달창 단계별 설명 리스트 추가
             setStudyDifficultyList($modalStudyDifficultyInfoElement);
+
+            // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+            setTimeout(() => {
+                $modalStudyLevel.addClass("open");
+            }, 10);
         }
     });
 });
