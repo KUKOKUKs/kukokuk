@@ -5,7 +5,7 @@ $(document).ready(function () {
     let timeLeft = 10;
     let quizStartTime = Date.now();
 
-    const $timerContainer = $(".timer_container"); // 타이머 컨테이너 요소 - 수정 사항으로 추가됨
+    const $timerContainer = $(".progress_container"); // 타이머 컨테이너 요소 - 수정 사항으로 추가됨
     // const $quizTotal = $("#quiz-total"); // 컨트롤러에서 내려준 리스트의 size로 타임리프 th:text로 즉시 적용으로 선택자 불필요
     const $quizCurrent = $("#quiz-current");
     const $quizQuestion = $("#quiz-question");
@@ -105,7 +105,7 @@ $(document).ready(function () {
         // });
         // 타이머 초기화
         $timerContainer.removeClass("warning"); // 1번 적용
-        $quizTimer.text(timeLeft + " 초"); // 2번 적용
+        $quizTimer.text(totalTime + " 초"); // 2번 적용
 
         // reflow
         // void $timerBar[0].offsetWidth; // 이 부분은 왜 필요한건지 어떤 기능을 하는건지? // 제이쿼리 사용 시 필요없음

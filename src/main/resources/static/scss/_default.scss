@@ -130,35 +130,66 @@
 
     .callout {
         font-size: var(--subFontSize);
-        font-weight: bold;
         width: max-content;
         padding: 0.3em 0.6em;
-        background-color: var(--blueColor);
+        background-color: var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
         color: #fff;
         border-radius: var(--bdrs);
         box-shadow: var(--bxsh);
         position: absolute;
         top: 0;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateY(-50%);
+        transition: background-color var(--trst);
 
         &::after {
             content: "";
             display: inline-block;
             width: 0;
             height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 5px solid var(--blueColor);
-            position: absolute;
-            top: 100%;
+            top: 98%;
+        }
+
+        &.center {
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
+
+            &::after {
+                border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
+        &.left {
+            left: var(--basePadding);
+
+            &::after {
+                border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+                border-left: 10px solid transparent;
+                border-right: 0 solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+                position: absolute;
+                right: 0.3em;
+            }
+        }
+
+        &.right {
+            right: var(--basePadding);
+
+            &::after {
+                border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+                border-left: 0 solid var(--callout-color, var(--primaryColor));
+                border-right: 10px solid transparent;
+                position: absolute;
+                left: 0.3em;
+            }
         }
     }
 
     .collout_info {
-        padding: var(--tinyPadding) 0;
+        padding: var(--smallPadding) 0;
     }
 }
 
@@ -404,7 +435,7 @@
             background-color: var(--redColor);
         }
 
-        .timer_component {
+        .progress_component {
             .timer {
                 font-size: var(--baseFontSize);
                 color: var(--redColor);
@@ -1053,6 +1084,10 @@
         width: var(--titleFontSize);
         min-width: var(--titleFontSize);
         height: var(--titleFontSize);
+        font-size: var(--titleFontSize);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .hint_count {
@@ -1178,65 +1213,80 @@
 
 /* 그림자 효과 */
 .box_shadow {
-    box-shadow: var(--bxsh);
+    box-shadow: var(--bxsh) !important;
+}
+
+.box_shadow_none {
+    box-shadow: none !important;
 }
 
 /* background */
 .bg_none {
-    background: none;
+    background: none !important;
 }
 
 .bg_primary {
-    background-color: var(--primaryColor);
+    background-color: var(--primaryColor) !important;
 }
 
 .bg_sub {
-    background-color: var(--subColor);
+    background-color: var(--subColor) !important;
 }
 
 .bg_light_gray {
-    background-color: var(--lightGrayColor);
+    background-color: var(--lightGrayColor) !important;
 }
 
 .bg_blue {
-    background-color: var(--blueColor);
+    background-color: var(--blueColor) !important;
+}
+
+.bg_red {
+    background-color: var(--redColor) !important;
+}
+
+.bg_yellow {
+    background-color: var(--yellowColor) !important;
 }
 
 /* font */
 .small_font {
-    font-size: var(--smallFontSize);
+    font-size: var(--smallFontSize) !important;
 }
 
 .large_font {
-    font-size: var(--largeFontSize);
+    font-size: var(--largeFontSize) !important;
 }
 
 .titlt_font {
-    font-size: var(--titleFontSize);
+    font-size: var(--titleFontSize) !important;
 }
 
 .tac {
-    text-align: center;
+    text-align: center !important;
 }
 
 .bold {
-    font-weight: bold;
+    font-weight: bold !important;
 }
 
 .color_primary {
-    color: var(--primaryColor);
+    color: var(--primaryColor) !important;
 }
 
 .color_sub {
-    color: var(--subColor);
+    color: var(--subColor) !important;
 }
 
 .color_gray {
-    color: var(--grayColor);
+    color: var(--grayColor) !important;
 }
 
 .color_white {
-    color: #fff;
+    color: #fff !important;
+}
+.color_black {
+    color: var(--blackColor) !important;
 }
 
 .text_ellipsis {
@@ -1247,10 +1297,11 @@
 
 /* 호버 효과 */
 .elevate_on_hover {
-    transition: all var(--trst);
+    cursor: pointer;
+    transition: all var(--trst) !important;
 
     &:hover {
-        transform: translateY(-3px); /* 살짝 올라감 */
+        transform: translateY(-3px) !important; /* 살짝 올라감 */
     }
 }
 
