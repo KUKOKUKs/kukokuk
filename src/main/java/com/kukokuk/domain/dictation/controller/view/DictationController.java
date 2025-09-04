@@ -1,6 +1,5 @@
 package com.kukokuk.domain.dictation.controller.view;
 
-
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
 import com.kukokuk.domain.dictation.service.DictationService;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
