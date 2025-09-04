@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/center}" th:with="title='단계별 퀴즈', menu='quiz'">
+<html layout:decorate="~{/layout/center}"
+      th:with="title='단계별 퀴즈',
+      menu='quiz',
+      user=${#authentication.principal.user}">
 <div layout:fragment="content">
     <div id="main-content">
         <div class="content_info">
@@ -27,7 +30,7 @@
                             <div class="hint_icon">
                                 <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
                             </div>
-                            <span class="hint_count">x <span id="hint-count">0</span></span>
+                            <span class="hint_count">x <span id="hint-count" th:text="${user.hintCount}">0</span></span>
                         </div>
                     </div>
                 </div>
