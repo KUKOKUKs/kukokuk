@@ -1,3 +1,9 @@
+#study-history-container {
+    .study_history_info:hover {
+        color: var(--primaryColor);
+    }
+}
+
 .text_background {
     padding: var(--smallPadding);
     background-color: var(--subColor);

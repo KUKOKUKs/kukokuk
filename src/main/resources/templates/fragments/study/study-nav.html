@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
-<div th:fragment="study-nav-fragment(data)" class="nav_container nav_container_study">
+<html>
+<div th:fragment="study-nav-fragment(studyProgress)" class="nav_container nav_container_study">
     <div class="nav_wrap">
         <div>
             <div class="study_nav_header_info">
@@ -20,10 +19,10 @@
                     </div>
                     <ul class="nav_list study">
                         <li class="study_nav_list_item"
-                            th:each="card, state : ${data.cards}"
-                            th:attr="data-card-index=${state.count}">
+                            th:each="card, state : ${studyProgress.cards}"
+                            th:data-card-index="${state.count}">
                             <p th:text="|${state.count}. ${card.title}|" />
-                            <th:block th:if="${data.log != null && data.log.studiedCardCount >= state.count}">
+                            <th:block th:if="${studyProgress.log != null && studyProgress.log.studiedCardCount >= state.count}">
                                 <span class="study_item_icon ">
                                     <iconify-icon icon="icon-park-solid:check-one"></iconify-icon>
                                 </span>
@@ -37,7 +36,7 @@
                     </div>
                     <ul class="nav_list study">
                         <li class="study_nav_list_item"
-                            th:each="quiz, state : ${data.quizWithLogDtos}"
+                            th:each="quiz, state : ${studyProgress.quizWithLogDtos}"
                             th:attr="data-quiz-index=${state.count},
                                      data-quiz-no=${quiz.dailyStudyQuizNo}">
                             <p th:text="|퀴즈 ${state.count}|"></p>

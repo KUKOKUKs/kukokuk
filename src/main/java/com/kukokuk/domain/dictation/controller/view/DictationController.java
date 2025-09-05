@@ -141,6 +141,12 @@ public class DictationController {
         return "dictation/solve";
     }
 
+    /**
+     * 각 문제 힌트 사용 여부
+     * @param questionIndex 세션에 저장된 현재 인덱스
+     * @param dictationQuestionLogDtoList 세션에 저장된 이력 dto 목록
+     * @return 힌트 사용 여부
+     */
     @PostMapping("/use-hint")
     @ResponseBody
     public ResponseEntity<ApiResponse<Void>> useHint(
@@ -157,12 +163,17 @@ public class DictationController {
         return ResponseEntityUtils.ok("힌트 사용 완료");
     }
 
+    /**
+     * 정답 보기 버튼 누를 시
+     * @param questionIndex 세션에 저장된 현재 인덱스
+     * @param dictationQuestionLogDtoList 세션에 저장된 이력 dto 목록
+     * @return 현재 문제 오답 처리
+     */
     @PostMapping("/show-answer")
     @ResponseBody
     public ResponseEntity<ApiResponse<Void>> showAnswer(
         @ModelAttribute("questionIndex") int questionIndex,
-        @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
-        Model model
+        @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList
     ) {
         log.info("[@PostMapping(/show-answer)] showAnswer 실행 questionIndex: {}", questionIndex);
 
