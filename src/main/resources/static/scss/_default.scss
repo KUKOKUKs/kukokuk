@@ -19,8 +19,8 @@
 
     &.fixed {
         position: fixed;
-        top: var(--baseGap);
-        left: calc(var(--baseGap) + var(--baseFontSize));
+        top: var(--containerPadding);
+        left: calc(var(--basePadding) + var(--baseFontSize));
         z-index: 1;
     }
 
@@ -103,15 +103,10 @@
 }
 
 #footer {
-    position: sticky;
-    left: 0;
-    bottom: 0;
-    background: #fff;
+    padding: 0 var(--basePadding);
 
     .copyright {
         font-size: var(--smallFontSize);
-        padding-bottom: var(--baseGap);
-        padding-top: var(--largePadding);
     }
 }
 
@@ -260,7 +255,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        gap: var(--tinyGap);
+        gap: var(--smallGap);
         position: relative;
 
         .component_title {
@@ -286,7 +281,7 @@
                 background-color: var(--primaryColor);
                 color: #fff;
 
-                .component_title .sub_title {
+                .component_sub_title {
                     color: #fff;
                 }
             }
@@ -316,6 +311,7 @@
 
 .component_sub_title {
     font-size: var(--baseFontSize);
+    font-weight: normal;
     color: var(--grayColor);
 }
 
@@ -1103,10 +1099,8 @@
         width: var(--titleFontSize);
         min-width: var(--titleFontSize);
         height: var(--titleFontSize);
-        font-size: var(--titleFontSize);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        background: url("/images/kukokuk_symbol_logo.png") center no-repeat;
+        background-size: contain;
     }
 
     .hint_count {
@@ -1303,6 +1297,10 @@
 
 .color_gray {
     color: var(--grayColor) !important;
+}
+
+.color_red {
+    color: var(--redColor) !important;
 }
 
 .color_white {

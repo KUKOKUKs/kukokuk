@@ -1,63 +1,60 @@
 <!DOCTYPE html>
 <html>
-<div th:fragment="study-nav-fragment(studyProgress)" class="nav_container nav_container_study">
-    <div class="nav_wrap">
-        <div>
-            <div class="study_nav_header_info">
-                <div class="study_nav_header">
-                    <h1 class="symbol_logo"></h1>
-                    <span class="side_bar_icon">
-                        <iconify-icon icon="ri:side-bar-line"></iconify-icon>
-                    </span>
-                </div>
-            </div>
+<div th:fragment="study-nav-fragment(studyProgress)" class="nav_container study_nav_container">
+    <!--/* logo */-->
+    <h1 id="study_log_btn" class="logo fixed">
+        <span class="a11y-hidden">국어국</span>
+    </h1>
 
-            <div class="study_nav_list_container d_flex column base_gap">
-                <div class="study_nav_list study_nav_card_list">
-                    <div class="study_nav_list_title">
-                        학습
-                    </div>
-                    <ul class="nav_list study">
-                        <li class="study_nav_list_item"
-                            th:each="card, state : ${studyProgress.cards}"
-                            th:data-card-index="${state.count}">
-                            <p th:text="|${state.count}. ${card.title}|" />
-                            <th:block th:if="${studyProgress.log != null && studyProgress.log.studiedCardCount >= state.count}">
-                                <span class="study_item_icon ">
-                                    <iconify-icon icon="icon-park-solid:check-one"></iconify-icon>
+    <div class="nav_wrap">
+        <div class="nav_list">
+            <div class="study_nav_list study_nav_card_list">
+                <div class="study_nav_list_title">
+                    학습
+                </div>
+                <ul class="nav_list study">
+                    <li class="study_nav_list_item"
+                        th:each="card, state : ${studyProgress.cards}"
+                        th:data-card-index="${state.count}">
+                        <p th:text="|${state.count}. ${card.title}|" />
+                        <th:block th:if="${studyProgress.log != null && studyProgress.log.studiedCardCount >= state.count}">
+                            <span class="study_item_icon ">
+                                <iconify-icon icon="icon-park-solid:check-one"></iconify-icon>
+                            </span>
+                        </th:block>
+                    </li>
+                </ul>
+            </div>
+            <div class="study_nav_list study_nav_quiz_list">
+                <div class="study_nav_list_title">
+                    퀴즈
+                </div>
+                <ul class="nav_list study">
+                    <li class="study_nav_list_item"
+                        th:each="quiz, state : ${studyProgress.quizWithLogDtos}"
+                        th:attr="data-quiz-index=${state.count},
+                                 data-quiz-no=${quiz.dailyStudyQuizNo}">
+                        <p th:text="|퀴즈 ${state.count}|"></p>
+                        <th:block th:if="${quiz.dailyStudyQuizLog != null}">
+                            <th:block th:if="${'Y'.equals(quiz.dailyStudyQuizLog.isSuccess)}">
+                                <span class="study_item_icon">
+                                    <iconify-icon style="color: var(--primaryColor)" icon="rivet-icons:circle"></iconify-icon>
                                 </span>
                             </th:block>
-                        </li>
-                    </ul>
-                </div>
-                <div class="study_nav_list study_nav_quiz_list">
-                    <div class="study_nav_list_title">
-                        퀴즈
-                    </div>
-                    <ul class="nav_list study">
-                        <li class="study_nav_list_item"
-                            th:each="quiz, state : ${studyProgress.quizWithLogDtos}"
-                            th:attr="data-quiz-index=${state.count},
-                                     data-quiz-no=${quiz.dailyStudyQuizNo}">
-                            <p th:text="|퀴즈 ${state.count}|"></p>
-                            <th:block th:if="${quiz.dailyStudyQuizLog != null}">
-                                <th:block th:if="${'Y'.equals(quiz.dailyStudyQuizLog.isSuccess)}">
-                                    <span class="study_item_icon">
-                                        <iconify-icon style="color: var(--primaryColor)" icon="rivet-icons:circle"></iconify-icon>
-                                    </span>
-                                </th:block>
-                                <th:block th:if="${'N'.equals(quiz.dailyStudyQuizLog.isSuccess)}">
-                                    <span class="study_item_icon">
-                                        <iconify-icon icon="emojione-v1:cross-mark"></iconify-icon>
-                                    </span>
-                                </th:block>
+                            <th:block th:if="${'N'.equals(quiz.dailyStudyQuizLog.isSuccess)}">
+                                <span class="study_item_icon">
+                                    <iconify-icon icon="emojione-v1:cross-mark"></iconify-icon>
+                                </span>
                             </th:block>
-                        </li>
-                    </ul>
-                </div>
+                        </th:block>
+                    </li>
+                </ul>
             </div>
-
         </div>
+
+        <span class="side_bar_icon">
+            <iconify-icon icon="ri:side-bar-line"></iconify-icon>
+        </span>
 
         <!-- footer -->
         <div th:replace="~{fragments/common/footer :: footer-fragment}"></div>
@@ -67,10 +64,10 @@
 
     <script>
         $('.side_bar_icon').click(function() {
-            $('.nav_wrap').toggleClass('collapsed');
+            $('.nav_wrap').toggleClass('closed');
         })
 
-        const $logo = $('.symbol_logo');
+        const $logo = $('#study_log_btn');
         const $modalExit = $('#modal-study-exit');
         $logo.click(function() {
             if ($modalExit.length) {

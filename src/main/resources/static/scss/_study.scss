@@ -1,73 +1,6 @@
 #study-history-container {
-    .study_history_info:hover {
+    .study_history_info:hover .study_title {
         color: var(--primaryColor);
-    }
-}
-
-.text_background {
-    padding: var(--smallPadding);
-    background-color: var(--subColor);
-    border-radius: var(--bdrs);
-}
-
-/* 공통 믹스인처럼 중첩 구조화
-    공통스타일을 정의하고 상속할 수 있다
-*/
-%list_item_common {
-    display: flex;
-    justify-content: space-between;
-    border-top: var(--baseBorder);
-    align-items: center;
-    padding: var(--basePadding) 0;
-
-    &:first-child {
-        border-top: none;
-    }
-}
-
-.daily_quest_item {
-    @extend %list_item_common;
-}
-
-.study_history_item {
-    @extend %list_item_common;
-
-
-    .history_info {
-        display: flex;
-        gap: 4px;
-        align-items: center;
-        justify-content: end;
-        font-size: var(--smallFontSize);
-        min-width: 170px;
-
-        /* 학습완료 */
-        &.completed {
-            span:first-child {
-                color: var(--darkGreenColor);
-                font-weight: 500;
-            }
-
-            &:nth-child(2) {
-                color: var(--grayColor);
-            }
-        }
-
-        /* 학습중 */
-        &.in_progress {
-            span:first-child {
-                color: var(--redColor); // 예: 주황색 계열
-                font-weight: 500;
-            }
-        }
-
-        &:nth-child(2) {
-            color: var(--grayColor);
-        }
-    }
-
-    &:hover {
-        background-color: var(--lightGrayColor);
     }
 }
 
@@ -398,80 +331,14 @@
     }
 }
 
-.nav_container_study {
+.study_nav_container {
+    transition: width var(--trst);
     .nav_wrap {
-        padding-top: 0;
-        padding-left: 0;
-        padding-right: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-        transition: width var(--trst);
 
-        .study {
-            gap: 0;
-        }
-
-        &.collapsed {
+        &.closed {
             width: 70px;
             min-width: 70px;
             overflow-y: hidden;
-
-            // 부드럽게 사라지는 효과
-            .symbol_logo,
-            .study_nav_list_container,
-            #footer {
-                opacity: 0;
-            }
-        }
-
-        #footer {
-            padding: 0 var(--baseGap);
-        }
-    }
-
-    /* 내부 요소의 스르륵 나타나는 효과 */
-    .study_nav_list_container,
-    .symbol_logo {
-        transition: opacity var(--trst);
-    }
-}
-
-.study_nav_header_info {
-    padding-bottom: var(--largePadding);
-    background-color: #fff;
-    position: sticky; // ✅ 부모 기준 고정
-    top: 0;
-    left: 0;
-    z-index: 1;
-}
-
-.study_nav_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--basePadding);
-    width: 100%;
-    height: 70px;
-
-    .symbol_logo {
-        transition: opacity var(--trst);
-    }
-
-    .side_bar_icon {
-        padding: 2px;
-        cursor: pointer;
-        border-radius: var(--bdrs);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        iconify-icon {
-            font-size: var(--baseIcon);
-            color: var(--darkGreenColor);
-        }
-
-        &:hover {
-            background-color: var(--subColor);
         }
     }
 }

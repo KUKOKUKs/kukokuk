@@ -1,30 +1,90 @@
 .nav_container {
-    width: var(--navWidth);
-    min-width: var(--navWidth);
+    width: calc(var(--navWidth) + var(--basePadding));
+    min-width: calc(var(--navWidth) + var(--basePadding));
+    max-width: calc(var(--navWidth) + var(--basePadding));
     min-height: 100%;
+    padding-right: var(--basePadding);
+    transition: margin-left var(--trst);
+    position: relative;
+
+    .nav_toggle_btn {
+        width: var(--basePadding);
+        height: 100%;
+        border-left: 1px solid var(--borderColor);
+        transition: background-color var(--trst), box-shadow var(--trst);
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        &::before {
+            content: '';
+            display: inline-block;
+            width: 1px;
+            height: var(--baseFontSize);
+            border-radius: var(--bdrs);
+            background-color: var(--borderColor);
+            position: absolute;
+            top: 50%;
+            left: calc(50% - 2px);
+            transform: translate(-50%, -50%);
+            transition: background-color var(--trst);
+        }
+
+        &::after {
+            content: '';
+            display: inline-block;
+            width: 1px;
+            height: var(--baseFontSize);
+            border-radius: var(--bdrs);
+            background-color: var(--borderColor);
+            position: absolute;
+            top: 50%;
+            left: calc(50% + 2px);
+            transform: translate(-50%, -50%);
+            transition: background-color var(--trst);
+        }
+    }
+
+    &.closed {
+        margin-left: calc(0px - var(--navWidth));
+
+        .nav_toggle_btn {
+            background-color: var(--subColor);
+            box-shadow: var(--bxsh);
+
+            &::before, &::after {
+                background-color: var(--primaryColor);
+            }
+        }
+    }
+
+    &:hover .nav_toggle_btn {
+        background-color: var(--subColor);
+        box-shadow: var(--bxsh);
+
+        &::before, &::after {
+            background-color: var(--primaryColor);
+        }
+    }
 }
 
 .nav_wrap {
     width: var(--navWidth);
     height: 100%;
-    padding: var(--baseGap);
-    padding-top: calc(var(--logoHeight) + (var(--baseGap) * 2) + var(--baseFontSize));
-    padding-bottom: 0;
+    padding-top: calc(var(--logoHeight) + (var(--containerPadding) * 2) + var(--baseFontSize));
+    padding-bottom: var(--containerPadding);
     background-color: var(--baseBackGround);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: var(--baseGap);
-    border-right: 1px solid var(--borderColor);
-    position: fixed;
-    top: 0;
-    left: 0;
 }
 
 .nav_list {
+    padding: 0 var(--basePadding);
     display: flex;
     flex-direction: column;
-    gap: var(--smallGap);
+    overflow-y: auto;
 
     .menu {
         font-weight: bold;

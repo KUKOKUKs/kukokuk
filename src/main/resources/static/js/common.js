@@ -13,6 +13,29 @@ $(document).ready(() => {
 
         this.submit();
     });
+    
+    // 네이바 상태 설정값 적용
+    const $navContainer = $('#nav-container'); // 네비 컨테이너 요소
+    const isNavClosed = localStorage.getItem('isNavClosed') === 'true';
+    if (isNavClosed) {
+        $navContainer.addClass("closed");
+    } else {
+        $navContainer.removeClass("closed");
+    }
+
+    // 네이바 토글
+    const $navToggleBtn = $("#nav-toggle-btn"); // 네비 토글 버튼
+    $navToggleBtn.click(function () {
+        if ($navContainer.length) {
+            $navContainer.toggleClass("closed");
+
+            // 현재 상태 확인(closed 클래스를 가지고 있는지)
+            const isClosed = $navContainer.hasClass("closed");
+
+            // 로컬스토리지에 저장
+            localStorage.setItem("isNavClosed", isClosed.toString());
+        }
+    });
 
     // 모달창 닫기
     const $modalCloseBtns = $(".modal_close"); // 모달창 닫기 버튼

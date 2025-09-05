@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/center}">
-
 <!--/* 학습 진행화면에서 표시할 네비바 */-->
 <div layout:fragment="fixed-nav-fragment" th:replace="~{fragments/study/study-nav :: study-nav-fragment(studyProgress=${data})}"></div>
 
