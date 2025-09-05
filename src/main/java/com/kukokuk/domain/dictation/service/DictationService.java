@@ -418,15 +418,6 @@ public class DictationService {
     }
 
     /**
-     * 힌트 사용
-     *
-     * @param dictationQuestionLogNo 식별자
-     */
-    public void updateUseHint(int dictationQuestionLogNo) {
-        dictationQuestionLogMapper.updateHintUsed(dictationQuestionLogNo, "Y");
-    }
-
-    /**
      * 사용자의 번호를 기반으로 받아쓰기 세트 객체를 생성하고, 시작일자와 종료일자를 현재 시각으로 설정한 후 DB에 저장
      *
      * @param userNo 사용자 번호
@@ -471,6 +462,11 @@ public class DictationService {
         return dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo, userNo);
     }
 
+    /**
+     * 문제 번호로 받아쓰기 문제를 조회
+     * @param dictationQuestionNo 문제 번호
+     * @return 받아쓰기 문제
+     */
     public DictationQuestion getDictationQuestionByQuestionNo(Integer dictationQuestionNo) {
         log.info("getDictationQuestionByQuestionNo 서비스 실행");
         if (dictationQuestionNo == null) {
@@ -486,6 +482,11 @@ public class DictationService {
         }
     }
 
+    /**
+     * 문제 세트 번호로 받아쓰기 결과 페이지 보여질 받아쓰기 결과 내용 조회
+     * @param dictationSessionNo 세트 번호
+     * @return 받아쓰기 문제 세트 결과
+     */
     public DictationSession getDictationSessionByDictationSessionNo(int dictationSessionNo) {
         if (dictationSessionNo == 0) {
             log.info("getDictationSessionByDictationSessionNo 예외처리 실행");
@@ -500,6 +501,13 @@ public class DictationService {
         }
     }
 
+    /**
+     * 문제 풀이 로그를 DB에 저장
+     * @param userNo 사용자 번호
+     * @param sessionNo 문제 세트 번호
+     * @param dictationQuestions 세션에 저장된 받아쓰기 문제 목록
+     * @param dictationQuestionLogDtoList 세션에 저장된 이력 dto 목록
+     */
     @Transactional
     public void insertDictationQuestionLogDto(int userNo, int sessionNo,
         List<DictationQuestion> dictationQuestions,
@@ -514,12 +522,23 @@ public class DictationService {
             String userAnswer = dto.getUserAnswer();
             String isSuccess  = dto.getIsSuccess();
             int tryCount      = dto.getTryCount();
-            String usedHint   = "Y".equals(dto.getUsedHint()) ? "Y" : "N";
+            String usedHint   = (dto.getUsedHint() == null) ? "N" : dto.getUsedHint();
 
             log.info("[saveDictationLogs] 문제{}: 문제 번호: {}, 제출문장: {}, 맞춤 여부: {}, 시도 횟수: {}, 힌트 사용: {}",
                 i + 1, q.getDictationQuestionNo(), userAnswer, isSuccess, tryCount, usedHint);
 
             insertSubmitAnswer(userNo, sessionNo, q.getDictationQuestionNo(), userAnswer, usedHint, tryCount);
         }
+    }
+
+    /**
+     * 정답 보기 사용시 오답 처리, 시도횟수 : 2회, 제출문장: <정답 보기 사용>
+     * @param dictationQuestiondto 세션에 저장된 이력 dto
+     */
+    @Transactional
+    public void insertShowAnswerAndSkip(DictationQuestionLogDto dictationQuestiondto) {
+        dictationQuestiondto.setIsSuccess("N");
+        dictationQuestiondto.setTryCount(2);
+        dictationQuestiondto.setUserAnswer("<정답 보기 사용>");
     }
 }

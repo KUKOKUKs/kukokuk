@@ -104,6 +104,24 @@ $(document).ready(() => {
         }); // 힌트 버튼 부모 요소를 제거하여 완전 보이지 않도록 함
     }
 
+    // 정답 보기 서버 반영 (오답 처리 + tryCount=2)
+    async function ShowAnswerAndSkip() {
+        console.log("[markShowAnswer] 함수 실행됨");
+        try {
+            const response = await $.ajax({
+                url: "/dictation/show-answer",
+                method: "POST",
+                dataType: "json"
+            });
+            console.log("정답보기 반영 완료:", response);
+        } catch (e) {
+            console.error("[markShowAnswer] 에러", e);
+        }
+
+        // 폼에 'skip'을 히든 추가하고 skipInput 값이 1로 변경되고 제출 누르면 다음 문제로만 이동
+        $("#skipInput").val("1");
+    }
+
     // 1. 비동기 요청으로 읽어줄 문제와 힌트목록을 요청하는 함수
     // 코드 컨벤션이 맞지않으며 의미가 명확하도록 수정
     // $("#AnswerBtn").on("click", async function () {
@@ -120,7 +138,22 @@ $(document).ready(() => {
             showAnswerInSquares(questionInformation.correctAnswer);
         }
         disableAllHintButtons();
+        await ShowAnswerAndSkip();
     });
+
+    // 힌트 사용 Ajax 호출 함수
+    async function useHint() {
+        try {
+            const response = await $.ajax({
+                url: "/dictation/use-hint",
+                method: "POST",
+                dataType: "json"
+            });
+            console.log("힌트 사용 반영 완료", response);
+        } catch (e) {
+            console.error("힌트 사용 반영 실패", e);
+        }
+    }
 
     // 코드 컨벤션이 맞지않아 수정
     // $("#HintBtn1").on("click", async function () {
@@ -137,6 +170,7 @@ $(document).ready(() => {
             showAnswerInSquares(questionInformation.hint1);
         }
         disableAllHintButtons();
+        await useHint();
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 
@@ -155,6 +189,7 @@ $(document).ready(() => {
             showAnswerInSquares(questionInformation.hint2);
         }
         disableAllHintButtons();
+        await useHint();
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 
@@ -173,6 +208,7 @@ $(document).ready(() => {
             showAnswerInSquares(questionInformation.hint3);
         }
         disableAllHintButtons();
+        await useHint();
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 
@@ -259,26 +295,25 @@ $(document).ready(() => {
         // console.log("[dictation.js] loaded");
     }
 
-    $(".hint_btn").on("click", function () {
-        // const dictationQuestionNo = $(this).attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
-
-        // 사용하지 않은 불필요한 변수는 왜 선언해놓았는지?
-        // 관련된 데이터는 head에 자동으로 ajax가 실행되면 주입되도록 설정해놨다고 공유했음
-        // const token = $('meta[name="_csrf"]').attr('content');
-        // const header = $('meta[name="_csrf_header"]').attr('content');
-
-        $.ajax({
-            url: "/api/dictation/use-hint",
-            type: "POST",
-            data: {dictationQuestionNo},
-            dataType: "json",
-            success: function (res) {
-                if (res.success) {
-                    console.log(res.message); // "성공"
-                }
-            }
-        });
-    });
+    // $(".hint_btn").on("click", function () {
+    //     // const dictationQuestionNo = $(this).attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
+    //
+    //     // 사용하지 않은 불필요한 변수는 왜 선언해놓았는지?
+    //     // 관련된 데이터는 head에 자동으로 ajax가 실행되면 주입되도록 설정해놨다고 공유했음
+    //     // const token = $('meta[name="_csrf"]').attr('content');
+    //     // const header = $('meta[name="_csrf_header"]').attr('content');
+    //
+    //     $.ajax({
+    //         url: "/dictation/use-hint",
+    //         type: "POST",
+    //         dataType: "json",
+    //         success: function (res) {
+    //             if (res.success) {
+    //                 console.log(res.message); // "성공"
+    //             }
+    //         }
+    //     });
+    // });
 // }; // 결국 전체 적으로 코드가 꼬여버림
 
     // 퀴즈 진행 종료 안내 모달창 열기
