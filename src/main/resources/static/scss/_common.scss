@@ -193,6 +193,7 @@ th {
     /* Firefox 전용: (thumb 색상, track 색상) → 둘 다 투명으로 해서 기본 상태에서는 스크롤이 보이지 않음 */
 
     &.show_scroll {
+        overflow-y: auto;
         scrollbar-color: var(--borderColor) transparent;
 
         &::-webkit-scrollbar-thumb {

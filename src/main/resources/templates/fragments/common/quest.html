@@ -6,7 +6,7 @@
     <form th:if="${isAuth}"
           th:data-logged-in="${isAuth}"
           id="quest-container"
-          class="component small_list_component"
+          class="component small_list_component limit"
           method="post"
           th:action="@{/daily-quest-user/obtain}">
         <th:block th:replace="~{fragments/common/quest :: quest-body}"></th:block>
@@ -16,7 +16,7 @@
     <div th:if="${!isAuth}"
          th:data-logged-in="${isAuth}"
          id="quest-container"
-         class="component small_list_component">
+         class="component small_list_component limit">
         <th:block th:replace="~{fragments/common/quest :: quest-body}"></th:block>
     </div>
 
