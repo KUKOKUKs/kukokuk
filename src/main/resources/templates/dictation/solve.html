@@ -6,7 +6,8 @@
 <div layout:fragment="content">
     <form th:action="@{/dictation/submit-answer}"
           method="post"
-          id="main-content">
+          id="main-content"
+          class="content_container">
         <div class="content_info">
             <div class="content_title justify_content_center">
                 <iconify-icon icon="flat-color-icons:voice-presentation"></iconify-icon>
@@ -29,9 +30,7 @@
                     </div>
                     <div class="progress_info">
                         <div class="hints_info">
-                            <div class="hint_icon">
-                                <img th:src="@{/images/favicon-32x32.png/}" alt="hints">
-                            </div>
+                            <div class="hint_icon"></div>
                             <span class="hint_count">x <span id="hint-count" th:text="${user.hintCount}">0</span></span>
                         </div>
                     </div>

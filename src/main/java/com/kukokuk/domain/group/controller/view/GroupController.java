@@ -15,7 +15,7 @@ public class GroupController {
     // 그룹 메인 페이지
     @GetMapping
     public String groupPage() {
-        log.info("dailyQuests() 컨트롤러 실행");
+        log.info("GroupController groupPage() 컨트롤러 실행");
         return "group/main";
     }
 

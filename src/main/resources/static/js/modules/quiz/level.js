@@ -187,4 +187,19 @@ $(document).ready(function () {
         // 폼 전송
         $form.submit();
     }
+
+    // 퀴즈 진행 종료 안내 모달창 열기
+    const $quizEndBtn = $(".quiz_end_btn"); // 모달창 열기 버튼
+    const $modalQuizExit = $("#modal-quiz-exit"); // 모달창
+    $quizEndBtn.click(function () {
+        if ($modalQuizExit.length) {
+            // 해당 모달창 요소가 있을 경우 열기
+            $modalQuizExit.show();
+
+            // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+            setTimeout(() => {
+                $modalQuizExit.addClass("open");
+            }, 10);
+        }
+    });
 });

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/base}" th:with="menu='quiz', title='단계별 퀴즈 설정'">
 <div layout:fragment="content">
-    <div id="main-content">
+    <div id="main-content" class="content_container">
         <form class="w_100 d_flex column large_gap"
               th:action="@{/quiz/level}"
               method="get"
@@ -19,7 +19,7 @@
                         <div class="component_title">
                             <p class="title_info column">
                                 이 뜻, 어떤 단어일까?
-                                <span class="sub_title">
+                                <span class="component_sub_title">
                                     뜻을 보고 알맞은 단어를 골라보세요!
                                 </span>
                             </p>
@@ -30,7 +30,7 @@
                         <div class="component_title">
                             <p class="title_info column">
                                 이 단어, 무슨 뜻일까?
-                                <span class="sub_title">
+                                <span class="component_sub_title">
                                     단어를 보고 정확한 뜻을 찾아보세요!
                                 </span>
                             </p>
@@ -52,7 +52,7 @@
                         <div class="component_title">
                             <p class="title_info column">
                                 쉬움
-                                <span class="sub_title">
+                                <span class="component_sub_title">
                                     뇌가 움직일 차례
                                 </span>
                             </p>
@@ -63,7 +63,7 @@
                         <div class="component_title">
                             <p class="title_info column">
                                 보통
-                                <span class="sub_title">
+                                <span class="component_sub_title">
                                     살짝 땀 날지도?
                                 </span>
                             </p>
@@ -74,7 +74,7 @@
                         <div class="component_title">
                             <p class="title_info column">
                                 어려움
-                                <span class="sub_title">
+                                <span class="component_sub_title">
                                     집중 회로 풀가동
                                 </span>
                             </p>
@@ -93,7 +93,7 @@
         </form>
     </div>
 
-    <div id="sub-content">
+    <div id="sub-content" class="content_container">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
         <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
     </div>

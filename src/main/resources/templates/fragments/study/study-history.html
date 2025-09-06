@@ -11,15 +11,15 @@
            th:each="log : ${studyHistory.getDailyStudyLogs()}"
            th:href="@{/study}">
             <div class="list_info">
-                <div class="history_info tiny_font"
-                     th:classappend="${log.status == 'COMPLETED'} ? 'completed' : 'in_progress'">
-                    <!-- in_progress, completed -->
-                    <span th:text="${log.status == 'COMPLETED'} ? '학습완료' : '학습중'">학습 상태</span>
-                    <!-- COMPLETED 상태일 경우 -->
+                <div class="history_info tiny_font">
+                    <span class="bold"
+                          th:text="${log.status == 'COMPLETED'} ? '학습완료' : '학습중'"
+                          th:classappend="${log.status == 'COMPLETED'} ? 'color_primary' : 'color_red'">학습 상태</span>
+                    <!-- COMPLETED 일 경우 시작일부터 종료일 -->
                     <span th:if="${log.status == 'COMPLETED'}"
                           th:text="${#dates.format(log.createdDate, 'yyyy.M.d')} + '~' + ${#dates.format(log.updatedDate, 'yyyy.M.d')}">
                     </span>
-                    <!-- IN_PROGRESS 상태 -->
+                    <!-- IN_PROGRESS 일 경우 시작일부터 -->
                     <span th:if="${log.status == 'IN_PROGRESS'}"
                           th:text="${#dates.format(log.createdDate, 'yyyy.M.d')} + '~'">
                     </span>

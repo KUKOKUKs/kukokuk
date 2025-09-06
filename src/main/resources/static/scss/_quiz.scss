@@ -3,9 +3,10 @@
     .option_btns {
         border-radius: var(--bdrs);
         background-color: var(--baseBackGround);
+        border: var(--baseBorder);
         box-shadow: var(--bxsh);
 
-        &:hover {
+        &:hover, &.selected {
             font-weight: bold;
             background-color: var(--subColor);
         }
