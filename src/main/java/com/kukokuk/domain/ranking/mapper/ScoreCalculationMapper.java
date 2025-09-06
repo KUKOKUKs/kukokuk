@@ -1,5 +1,6 @@
 package com.kukokuk.domain.ranking.mapper;
 
+import com.kukokuk.domain.quiz.vo.QuizSessionSummary;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -8,6 +9,14 @@ import org.apache.ibatis.annotations.Param;
  */
 @Mapper
 public interface ScoreCalculationMapper {
+
+    /**
+     * 세션 번호로 퀴즈 세션 정보 조회 (점수 계산용)
+     *
+     * @param sessionNo 세션 번호
+     * @return 퀴즈 세션 요약 정보
+     */
+    QuizSessionSummary getQuizSessionSummary(@Param("sessionNo") int sessionNo);
 
     /**
      * 동일 정답수 그룹의 최대 소요 시간 조회

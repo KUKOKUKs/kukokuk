@@ -34,5 +34,16 @@
         추후 학습 점수 계산용 쿼리 추가
        추후 기타 컨텐츠 점수 계산용 쿼리 추가
     -->
-
+    <select id="getQuizSessionSummary" resultType="com.kukokuk.domain.quiz.vo.QuizSessionSummary">
+        SELECT SESSION_NO,
+               TOTAL_TIME_SEC,
+               TOTAL_QUESTION,
+               CORRECT_ANSWERS,
+               PERCENTILE,
+               AVERAGE_TIME_PER_QUESTION,
+               QUIZ_MODE,
+               USER_NO
+        FROM KUKOKUK_QUIZ_SESSION_SUMMARIES
+        WHERE SESSION_NO = #{sessionNo}
+    </select>
 </mapper>
