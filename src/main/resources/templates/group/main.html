@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/base}" th:with="title='우리반', menu='group'">
 <div layout:fragment="content">
-    <div id="main-content">
+    <div id="main-content" class="content_container">
         <div class="content_info">
             <div class="content_title">
                 <iconify-icon icon="streamline-plump-color:class-lesson-flat"></iconify-icon>
@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    <div id="sub-content">
+    <div id="sub-content" class="content_container">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
 
         <div class="component">

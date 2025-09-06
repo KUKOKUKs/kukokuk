@@ -67,7 +67,7 @@ async function updateOrCreateLog() {
  * 렌더링 시점에 퀴즈 마커의 위치를 정하는 함수
  */
 function renderQuizMarkerPosition() {
-    const $quizMarker = $('.marker');
+    const $quizMarker = $('#study-quiz-marker');
 
     const progressStepCount = totalCount - 1; // 진행률 기준 칸 수 (startInfo 제외)
     const markerPercent = (quizInfoIndex / progressStepCount) * 100;
