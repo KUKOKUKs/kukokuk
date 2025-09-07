@@ -41,22 +41,6 @@ public class ApiDictationController {
         return ResponseEntityUtils.ok(dictationQuestion);
     }
 
-    @PostMapping("/use-hint")
-    public ResponseEntity<ApiResponse<Void>> useHint(@RequestParam Integer dictationQuestionNo,
-        @SessionAttribute(value = "dictationQuestionLogDto", required = false) List<DictationQuestionLogDto> dictationQuestionLogDtoList) {
-
-        log.info("[/use-hint] 요청 받음 - dictationQuestionNo: {}", dictationQuestionNo);
-
-        for (DictationQuestionLogDto dictationQuestionLogDto : dictationQuestionLogDtoList) {
-            if (dictationQuestionLogDto.getDictationQuestionNo() == dictationQuestionNo) {
-                dictationQuestionLogDto.setUsedHint("Y");
-                log.info("usedHint: {}", dictationQuestionLogDto.getUsedHint());
-                break;
-            }
-        }
-        return ResponseEntityUtils.ok("힌트 사용 완료");
-    }
-
     /**
      * 받아쓰기 세트 번호를 기준으로 해당 세트의 문제 풀이 이력을 조회
      *
