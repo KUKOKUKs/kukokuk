@@ -108,7 +108,7 @@
 .component {
     width: 100%;
     padding: var(--basePadding);
-    background-color: var(--baseBackGround);
+    background-color: var(--baseBackground);
     border-radius: var(--bdrs);
     border: var(--baseBorder);
     box-shadow: var(--bxsh);
@@ -117,69 +117,96 @@
     &:has(.callout) {
         margin-top: var(--basePadding);
     }
+}
 
-    .callout {
-        font-size: var(--subFontSize);
-        width: max-content;
-        padding: 0.3em 0.6em;
-        background-color: var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
-        color: #fff;
-        border-radius: var(--bdrs);
-        box-shadow: var(--bxsh);
-        position: absolute;
-        top: 0;
-        transform: translateY(-50%);
-        transition: background-color var(--trst);
+/* callout */
+.callout {
+    font-size: var(--subFontSize);
+    width: max-content;
+    padding: 0.3em 0.6em;
+    background-color: var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+    color: #fff;
+    border-radius: var(--bdrs);
+    box-shadow: var(--bxsh);
+    position: absolute;
+    top: 0;
+    transform: translateY(-50%);
+    transition: background-color var(--trst);
+
+    &::after {
+        content: "";
+        display: inline-block;
+        width: 0;
+        height: 0;
+        top: 98%;
+    }
+
+    &.center {
+        left: 50%;
+        transform: translate(-50%, -50%);
 
         &::after {
-            content: "";
-            display: inline-block;
-            width: 0;
-            height: 0;
-            top: 98%;
-        }
-
-        &.center {
+            border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            position: absolute;
             left: 50%;
-            transform: translate(-50%, -50%);
-
-            &::after {
-                border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
-                border-left: 5px solid transparent;
-                border-right: 5px solid transparent;
-                position: absolute;
-                left: 50%;
-                transform: translateX(-50%);
-            }
-        }
-
-        &.left {
-            left: var(--basePadding);
-
-            &::after {
-                border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
-                border-left: 10px solid transparent;
-                border-right: 0 solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
-                position: absolute;
-                right: 0.3em;
-            }
-        }
-
-        &.right {
-            right: var(--basePadding);
-
-            &::after {
-                border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
-                border-left: 0 solid var(--callout-color, var(--primaryColor));
-                border-right: 10px solid transparent;
-                position: absolute;
-                left: 0.3em;
-            }
+            transform: translateX(-50%);
         }
     }
 
-    .collout_info {
-        padding: var(--smallPadding) 0;
+    &.left {
+        left: var(--basePadding);
+
+        &::after {
+            border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+            border-left: 10px solid transparent;
+            border-right: 0 solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+            position: absolute;
+            right: 0.3em;
+        }
+    }
+
+    &.right {
+        right: var(--basePadding);
+
+        &::after {
+            border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+            border-left: 0 solid var(--callout-color, var(--primaryColor));
+            border-right: 10px solid transparent;
+            position: absolute;
+            left: 0.3em;
+        }
+    }
+}
+
+.callout_info {
+    padding: var(--smallPadding) 0;
+}
+
+/* tooltip */
+.tooltip {
+    position: relative;
+
+    &::after {
+        content: attr(data-label);
+        opacity: 0;
+        display: inline-block;
+        width: max-content;
+        padding: var(--tinyPadding);
+        font-size: var(--fixEtcTinyFontSize);
+        position: absolute;
+        bottom: 90%;
+        left: 50%;
+        transform: translateX(-50%);
+        transition: opacity var(--trst), bottom var(--trst);
+    }
+
+    &:hover {
+        &::after {
+            opacity: 1;
+            bottom: 100%;
+        }
     }
 }
 
@@ -229,7 +256,7 @@
 /* grid list */
 .grid_list_component {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 한 라인 3분할 리스트 */
+    grid-template-columns: repeat(var(--cols, 3), 1fr); /* --cols 없으면 3분할로 기본값 적용 */
     gap: var(--smallGap);
 
     /* 리스트가 1개일 때 → 전체 차지 */
@@ -244,6 +271,10 @@
 
     &.column {
         grid-template-columns: 1fr !important; /* 한 라인씩 세로형 리스트 */
+    }
+
+    .full_grid {
+        grid-column: 1 / -1; /* 특정 그리드 요소를 전체 컬럼을 차지 */
     }
 
     .grid_list {
@@ -292,9 +323,15 @@
     align-items: center;
 
     .title_info {
+        width: 100%;
         display: flex;
         align-items: baseline;
         gap: var(--tinyGap);
+
+        &.center {
+            justify-content: center;
+            text-align: center;
+        }
     }
 
     .sub_title {
@@ -305,6 +342,7 @@
 }
 
 .component_sub_title {
+    width: 100%;
     font-size: var(--baseFontSize);
     font-weight: normal;
     color: var(--grayColor);
@@ -342,6 +380,21 @@
         flex-direction: column;
         gap: var(--tinyGap);
         overflow: hidden;
+    }
+}
+
+/* 문단 앞 인덱스/마커가 있는 리스트 */
+.index_list {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 12), 1fr); /* --cols 없으면 12분할로 기본값 적용 */
+    gap: var(--tinyGap);
+
+    & > :first-child {
+        grid-column: 1 / span var(--indexCols, 1); /* 인덱스/마커 요소가 차지하는 컬럼 개수 처음부터 N칸을 차지 */
+    }
+
+    & > :not(:first-child) {
+        grid-column: calc(var(--indexCols, 1) + 1) / -1; /* 인덱스 이후 남은 칸 전부 차지 */
     }
 }
 
@@ -1067,7 +1120,29 @@
     }
 }
 
-/* 힌트 버튼 */
+/*
+    채점 아이콘 (크기는 위 icon 클래스로 정함)
+    sub, base font일 경우 icon large 적합
+    tiny, small font일 경우 icon base 적합
+*/
+.result_icon {
+    opacity: .7;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-25%, -20%);
+
+    &.correct {
+        background: url("/icons/correct.png") 0 0 / contain no-repeat;
+    }
+
+    &.incorrect {
+        background: url("/icons/incorrect.png") 0 0 / contain no-repeat;
+        background-size: contain;
+    }
+}
+
+/* 힌트 */
 .hints_info {
     display: flex;
     align-items: center;
@@ -1119,6 +1194,10 @@
     opacity: .5;
 }
 
+.ov_v {
+    overflow: visible !important;
+}
+
 .d_flex {
     width: 100%;
     display: flex;
@@ -1136,12 +1215,16 @@
     justify-content: space-between !important; /* 양끝 정렬 */
 }
 
+.justify_content_end {
+    justify-content: flex-end !important;
+}
+
 .align_center {
     align-items: center !important; /* 수직/수평 정렬 */
 }
 
-.justify_content_end {
-    justify-content: flex-end !important;
+.align_start {
+    align-items: flex-start !important; /* 앞 정렬 */
 }
 
 .align_end {
@@ -1277,6 +1360,10 @@
     color: var(--subColor) !important;
 }
 
+.color_border {
+    color: var(--borderColor) !important;
+}
+
 .color_gray {
     color: var(--grayColor) !important;
 }
@@ -1289,9 +1376,14 @@
     color: var(--blueColor) !important;
 }
 
+.color_yellow {
+    color: var(--yellowColor) !important;
+}
+
 .color_white {
     color: #fff !important;
 }
+
 .color_black {
     color: var(--blackColor) !important;
 }
@@ -1300,6 +1392,11 @@
     overflow: hidden;          /* 넘치는 내용 숨김 */
     text-overflow: ellipsis;   /* 말줄임 (...) 처리 */
     white-space: nowrap;       /* 한줄로 처리 */
+}
+
+/* position */
+.pos_r {
+    position: relative;
 }
 
 /* 호버 효과 */
@@ -1371,9 +1468,9 @@
         background: linear-gradient(
                 120deg
             , transparent 0%
-            , transparent 25%
-            , rgba(255, 255, 255, 0.7) 50%
-            , transparent 75%
+            , transparent 40%
+            , rgba(255, 255, 255, 0.5) 50%
+            , transparent 60%
             , transparent 100%
         );
         background-size: 400%, 100%;

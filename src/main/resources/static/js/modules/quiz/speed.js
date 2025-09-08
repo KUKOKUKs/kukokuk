@@ -69,7 +69,7 @@ $(document).ready(function () {
         let options = "";
         for (let i = 1; i <= quiz.options.length; i++) {
             options+= `
-                <button type="button" class="component_info elevate_on_hover option_btns" data-choice="${i}">
+                <button type="button" class="component_info option_btns" data-choice="${i}">
                     <div class="list_option">
                         <span class="marker">${i}.</span>
                         <p class="option">${quiz.options[i - 1]}</p>

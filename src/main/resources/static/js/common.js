@@ -60,4 +60,14 @@ $(document).ready(() => {
             $tabContents.eq(index).addClass("selected").siblings().removeClass("selected");
         }
     });
+    
+    // 정답 확인 버튼 핸들러
+    const $checkCorrect = $(".check_correct"); // 정답 확인 버튼
+    $checkCorrect.click(function () {
+        const $this = $(this);
+        
+        // 버튼에 클라스 추가 및 자식 요소 텍스트 전부 보이도록 클래스 제거
+        $this.addClass("checked")
+            .find(".correct_answer").removeClass("text_ellipsis");
+    });
 });
