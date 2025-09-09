@@ -76,7 +76,7 @@ public class ApiHomeController {
         studyJobStatusStore.put(status);
         
         // 백그라운드 비동기 처리 로직 추가
-        homeService.getHomeUserDailyStudies(jobId, securityUser.getUser(), dailyStudyCount);
+        //homeService.getHomeUserDailyStudies(jobId, securityUser.getUser(), dailyStudyCount);
 
         return ResponseEntityUtils.ok(status);
     }

@@ -57,7 +57,7 @@ export async function apiGetHomeUserDailyStudies(dailyStudyCount, $studyListCont
  * @param {string} jobId Redis Job Key
  * @param $studyListContainer 진행률이 표시될 부모 요소
  */
-function pollJobStatus(jobId, $studyListContainer) {
+export function pollJobStatus(jobId, $studyListContainer) {
     console.log("pollJobStatus() api 요청 실행");
 
     let reqCnt = 1;

@@ -163,4 +163,52 @@
             DAILY_STUDY_NO = #{dailyStudyNo}
     </select>
 
+    <!--
+        UserStudyRecommendationDto getDailyStudyByMaterialNoAndDifficulty(
+            @Param("dailyStudyMaterialNo") int dailyStudyMaterialNo,
+            @Param("studyDifficultyNo") int studyDifficultyNo);
+    -->
+    <select id="getDailyStudyByMaterialNoAndDifficulty"
+      resultMap="UserStudyRecommendationDtoResultMap">
+        SELECT
+            S.DAILY_STUDY_NO,
+            S.TITLE,
+            S.EXPLANATION,
+            S.STUDY_DIFFICULTY,
+            S.CARD_COUNT,
+            S.CREATED_DATE AS STUDY_CREATED_DATE,
+            S.UPDATED_DATE AS STUDY_UPDATED_DATE,
+
+            L.DAILY_STUDY_LOG_NO,
+            L.STUDIED_CARD_COUNT,
+            L.STATUS,
+            L.CREATED_DATE AS LOG_CREATED_DATE,
+            L.UPDATED_DATE AS LOG_UPDATED_DATE,
+            L.USER_NO,
+
+            M.DAILY_STUDY_MATERIAL_NO,
+            M.SCHOOL,
+            M.GRADE,
+            M.SEQUENCE,
+
+            EL.DAILY_STUDY_ESSAY_QUIZ_LOG_NO
+        FROM
+            KUKOKUK_DAILY_STUDY_MATERIALS M
+                LEFT OUTER JOIN KUKOKUK_DAILY_STUDIES S
+                                ON M.DAILY_STUDY_MATERIAL_NO = S.DAILY_STUDY_MATERIAL_NO
+                                    /* 그 원본데이터에 사용자 수준에 맞는 학습자료가 생성되어있거나, 학습자료가 아직 생성되지 않은경우 포함
+                                       JOIN 조건으로 포함해야 정상 동작함*/
+                                    AND (S.STUDY_DIFFICULTY = #{studyDifficultyNo} OR S.STUDY_DIFFICULTY IS NULL)
+                LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_LOGS L
+                                ON S.DAILY_STUDY_NO = L.DAILY_STUDY_NO
+                LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_ESSAY_QUIZZES E
+                                ON S.DAILY_STUDY_NO = E.DAILY_STUDY_NO
+                LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_ESSAY_QUIZ_LOGS EL
+                                ON E.DAILY_STUDY_ESSAY_QUIZ_NO = EL.DAILY_STUDY_ESSAY_QUIZ_NO
+                                    AND EL.USER_NO = #{userNo}
+        WHERE
+            M.DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo}
+            AND S.STUDY_DIFFICULTY = #{studyDifficultyNo}
+    </select>
+
 </mapper>

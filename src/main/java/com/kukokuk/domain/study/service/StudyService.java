@@ -8,7 +8,9 @@ import com.kukokuk.ai.GeminiStudyResponse;
 import com.kukokuk.ai.GeminiStudyResponse.Card;
 import com.kukokuk.ai.GeminiStudyResponse.EssayQuiz;
 import com.kukokuk.ai.GeminiStudyResponse.Quiz;
+import com.kukokuk.common.dto.JobStatusResponse;
 import com.kukokuk.common.exception.AppException;
+import com.kukokuk.common.store.RedisJobStatusStore;
 import com.kukokuk.common.util.DailyQuestEnum;
 import com.kukokuk.common.util.SchoolGradeUtils;
 import com.kukokuk.domain.quest.mapper.DailyQuestMapper;
@@ -17,6 +19,7 @@ import com.kukokuk.domain.quest.vo.DailyQuest;
 import com.kukokuk.domain.quest.vo.DailyQuestUser;
 import com.kukokuk.domain.quiz.dto.QuizWithLogDto;
 import com.kukokuk.domain.study.dto.DailyQuestDto;
+import com.kukokuk.domain.study.dto.DailyStudyJobPayload;
 import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
 import com.kukokuk.domain.study.dto.MainStudyViewDto;
 import com.kukokuk.domain.study.dto.ParseMaterialRequest;
@@ -52,6 +55,7 @@ import com.kukokuk.domain.study.dto.DailyStudyLogResponse;
 import com.kukokuk.domain.study.dto.GeminiEssayResponse;
 import com.kukokuk.domain.study.dto.ParseMaterialResponse;
 import com.kukokuk.security.SecurityUser;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +67,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.internal.Pair;
 import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -87,11 +92,14 @@ public class StudyService {
     private final UserMapper userMapper;
 
     private final StringRedisTemplate stringRedisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final GeminiClient geminiClient;
 
     private final ObjectMapper objectMapper;
     private final ModelMapper modelMapper;
+
+    private final RedisJobStatusStore<DailyStudySummaryResponse> studyJobStatusStore;
 
     /**
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
@@ -165,19 +173,26 @@ public class StudyService {
     }
 
     /**
+     * 학습원본데이터와 학습수준에 맞는 학습자료를 조회
+     * @param dailyStudyMaterialNo
+     * @param studyDifficultyNo
+     * @return
+     */
+    public UserStudyRecommendationDto getDailyStudyByMaterial(int dailyStudyMaterialNo, int studyDifficultyNo) {
+        return dailyStudyMapper.getDailyStudyByMaterialNoAndDifficulty(dailyStudyMaterialNo, studyDifficultyNo);
+    }
+
+    /**
      * 사용자의 수준과 진도에 맞는 추천 학습자료(DailyStudy) 목록을 조회한다. 최대 recommendStudyCount(기본 5개)까지 추천하며, 필요한 경우
      * GPT 기반으로 학습자료를 생성한다.
      * <p>
      * [전체 처리 단계]
      * <p>
      * 1단계: 사용자 진도(CURRENT_SCHOOL, CURRENT_GRADE)에 해당하는 원본 학습자료를 기준으로 학습자료 + 학습이력과 함께 아우터 조인하여 학습자료
-     * DTO 목록을 조회한다.
-     * - 조건: 사용자의 수준(STUDY_DIFFICULTY)에 맞는 학습자료
-     * - 조건: 학습이력이 없거나, 학습중(IN_PROGRESS) 상태인 학습자료
-     * - 정렬: 학습중이면 UPDATED_DATE 최신순, 그 외에는 자료순서(SEQUENCE) 순
+     * DTO 목록을 조회한다. - 조건: 사용자의 수준(STUDY_DIFFICULTY)에 맞는 학습자료 - 조건: 학습이력이 없거나, 학습중(IN_PROGRESS) 상태인
+     * 학습자료 - 정렬: 학습중이면 UPDATED_DATE 최신순, 그 외에는 자료순서(SEQUENCE) 순
      * <p>
-     * 2단계: 추천 결과가 5개 미만일 경우 → 다음 학년의 학습자료로 부족한 수만큼 추가 조회한다.
-     * - 다음 학년이 없을 경우, "진도 종료" 상태로 간주 - 선택적으로
+     * 2단계: 추천 결과가 5개 미만일 경우 → 다음 학년의 학습자료로 부족한 수만큼 추가 조회한다. - 다음 학년이 없을 경우, "진도 종료" 상태로 간주 - 선택적으로
      * 사용자의 currentSchool/currentGrade를 업데이트할 수 있음
      * <p>
      * 3단계: 조회된 DTO 중 GPT 재구성된 학습자료가 없는 경우 → GPT 호출로 학습자료(DailyStudy)를 생성하고 DTO에 설정한다.
@@ -188,7 +203,7 @@ public class StudyService {
      * @param recommendStudyCount recommendStudyCount 반환할 학습자료 수
      * @return 학습자료 목록 (DailyStudy)
      */
-    public List<UserStudyRecommendationDto> getUserDailyStudies(User user, int recommendStudyCount) {
+    public List<JobStatusResponse<DailyStudySummaryResponse>> getUserDailyStudies(User user, int recommendStudyCount) {
         log.info("getUserDailyStudies 서비스 실행");
         // 1단계 : 현재 사용자 수준/진도 기준으로 학습원본데이터_학습자료_학습이력DTO 목록 조회
       /*
@@ -267,19 +282,93 @@ public class StudyService {
             // 다음학년을 조회했음에도 채우지못했으면, 개수가 채워질 때 까지 루프가 돈다
         }
 
-        // 3단계 : 조회한 학습원본데이터_학습자료_학습이력DTO 리스트에서 학습자료가 NULL값인 원본데이터에 대해 학습자료 생성하기
+        // 응답으로 반환할 작업상태리스트 생성
+        List<JobStatusResponse<DailyStudySummaryResponse>> responses = new ArrayList<>();
+
+        // 3단계 : 조회한 학습원본데이터_학습자료_학습이력DTO 리스트 순회
+        // 각 DTO에서 학습자료 존재 여부를 확인 후,
+        // - 학습자료가 존재하면 status가 DONE인 jobStatus를 응답으로 반환
+        // - 학습자료가 존재하지 않으면 jobStatus 생성 및 상태저장소에 저장,
+        //      jobPayload 생성 및 Redis 작업 큐에 저장, 별도의 워커(DailyStudyWorker)가 비동기로 학습자료 생성 작업 처리
         for (UserStudyRecommendationDto rec : userStudyRecommendationDtos) {
+
+            // 각 학습자료에 대한 고유한 JobId 생성
+            // -> 학습원본자료 번호 + 사용자의 학습 수준 기준으로 멱등키 생성
+            String jobId = String.format("material:%d:difficulty:%d"
+                , rec.getDailyStudyMaterialNo()
+                , user.getStudyDifficulty()
+            );
+
+            // 학습자료가 아직 생성되지 않은 경우
             if (rec.getDailyStudyNo() == null) {
-                // 해당 학습원본데이터와 사용자수준에 맞는 학습자료 생성하는 메소드 호출
-                DailyStudy newDailyStudy = createDailyStudy(rec.getDailyStudyMaterialNo(),
-                    user.getStudyDifficulty());
-                rec.setDailyStudy(newDailyStudy);
+//                // 해당 학습원본데이터와 사용자수준에 맞는 학습자료 생성하는 메소드 호출
+//                DailyStudy newDailyStudy = createDailyStudy(rec.getDailyStudyMaterialNo(),
+//                    user.getStudyDifficulty());
+//                rec.setDailyStudy(newDailyStudy);
+
+                JobStatusResponse<DailyStudySummaryResponse> status;
+
+                // 기존 Job 확인
+                JobStatusResponse<DailyStudySummaryResponse> existingStatus = studyJobStatusStore.get(jobId);
+
+                // 이미 해당 job이 작업 진행 중인 경우 상태저장소에 새 job을 추가하지 않음 (중복 작업 방지)
+                if(existingStatus != null && "PROCESSING".equals(existingStatus.getStatus())) {
+                    status = existingStatus;
+                }
+                // 해당 job이 진행중이지 않은 경우 (DONE, FAILED인 경우도 포함)
+                else {
+                    // 상태저장소에서 기존 작업 (DONE, FAILED인 경우) 제거
+                    studyJobStatusStore.delete(jobId);
+
+                    // Job 상태 객체 생성 (PROCESSING 상태)
+                    status = JobStatusResponse.<DailyStudySummaryResponse>builder()
+                            .jobId(jobId)
+                            .status("PROCESSING")
+                            .progress(0)
+                            .result(null)
+                            .message("맞춤 학습 자료 요청 대기 중...")
+                            .build();
+
+                    // 상태저장소(Redis)에 현재 Job 상태 저장
+                    studyJobStatusStore.put(status);
+                }
+
+                // 응답으로 바로 반환할 작업상태 리스트에도 추가
+                responses.add(status);
+
+                // Worker가 실제 처리할 작업 페이로드 생성
+                DailyStudyJobPayload payload = DailyStudyJobPayload.builder()
+                    .jobId(jobId)
+                    .dailyStudyMaterialNo(rec.getDailyStudyMaterialNo())
+                    .studyDifficultyNo(user.getStudyDifficulty())
+                    .build();
+
+                // Redis 큐에 작업을 push → Worker가 비동기 처리로 소비함
+                redisTemplate.opsForList().rightPush("study:generate", payload);
+            }
+            // 이미 학습자료가 존재하는 경우
+            else {
+                // DONE 상태의 JobStatusResponse 생성
+                // - result에 이미 생성된 학습자료를 담아 반환
+                JobStatusResponse<DailyStudySummaryResponse> status =
+                    JobStatusResponse.<DailyStudySummaryResponse>builder()
+                        .jobId(jobId)
+                        .status("DONE")
+                        .progress(100)
+                        .result(mapToDailyStudySummaryResponse(rec))
+                        .message("이미 생성된 학습자료입니다")
+                        .build();
+
+                // 응답으로 반환할 job 리스트에 추가
+                responses.add(status);
             }
         }
 
-        // 4단게 : 최종 학습원본데이터_학습자료_학습이력DTO 를 컨트롤러에 전달
-        return userStudyRecommendationDtos;
+        // 4단계 : 최종 JobStatusResponse 리스트를 컨트롤러로 반환
+        return responses;
     }
+
+
 
     /**
      * UserStudyRecommendationDto 리스트를 DailyStudySummaryResponse 리스트로 변환한다.
@@ -326,6 +415,45 @@ public class StudyService {
                     .build();
             })
             .toList();
+    }
+
+    /**
+     * UserStudyRecommendationDto 를 DailyStudySummaryResponse 로 변환한다.
+     * @param dto
+     * @return
+     */
+    public DailyStudySummaryResponse mapToDailyStudySummaryResponse(UserStudyRecommendationDto dto) {
+
+        DailyStudy study = dto.getDailyStudy();
+        DailyStudyLog log = dto.getDailyStudyLog();
+        DailyStudyMaterial material = dto.getDailyStudyMaterial();
+
+        int totalCardCount = study.getCardCount();
+        int studiedCardCount = (log != null && log.getStudiedCardCount() != null) ? log.getStudiedCardCount() : 0;
+        int progressRate =
+            (totalCardCount == 0) ? 0 : (int) ((studiedCardCount * 100.0) / totalCardCount);
+
+        String status = "NOT_STARTED";
+        if (log != null) {
+            status = log.getStatus(); // "IN_PROGRESS", "COMPLETED" 중 하나라고 가정
+        }
+
+        // dailyStudyEssayQuizLogNo 가 null이 아니면 서술형퀴즈완료여부 true로 설정
+        boolean essayQuizCompleted = dto.getDailyStudyEssayQuizLogNo() != null;
+
+        return DailyStudySummaryResponse.builder()
+            .dailyStudyNo(study.getDailyStudyNo())
+            .title(study.getTitle())
+            .explanation((study.getExplanation()))
+            .cardCount(totalCardCount)
+            .status(status)
+            .studiedCardCount(studiedCardCount)
+            .progressRate(progressRate)
+            .school(material.getSchool())
+            .grade(material.getGrade())
+            .sequence(material.getSequence())
+            .essayQuizCompleted(essayQuizCompleted)
+            .build();
     }
 
     /**
