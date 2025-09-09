@@ -58,7 +58,7 @@
                             <span class="result_icon incorrect icon large"
                                   th:classappend="${result.success ? 'correct' : 'incorrect'}">정답 여부</span>
                         </div>
-                        <p th:text="${result.getOption(result.selectedChoice)}">선택한 보기 내용</p>
+                        <p th:text="${result.getOption(result.selectedChoice) ?: '시간 초과'}">선택한 보기 내용</p>
                     </div>
 
                     <!--/* 오답일 경우 정답 확인 버튼 추가 */-->
@@ -73,13 +73,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!--/* 단계별에서 사용할 테스트 요소 */-->
-                <button type="button" class="tooltip" data-label="북마크">
-                    <iconify-icon class="icon title_font"
-                                  th:classappend="${result.bookmarked ? 'color_yellow' : 'color_border'}"
-                                  icon="material-symbols:bookmark-star"></iconify-icon>
-                </button>
             </div>
         </div>
 
