@@ -1,9 +1,4 @@
 #profile-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: var(--baseGap);
-
     .learning_level_info {
         background-color: var(--subColor);
         border-radius: var(--bdrs);
@@ -12,7 +7,7 @@
 
 .welcome_info {
     font-weight: bold;
-    padding: var(--basePadding);
+    padding: var(--smallPadding);
     border-radius: var(--bdrs);
     background-color: var(--subColor);
 }
@@ -81,7 +76,7 @@
         gap: var(--smallGap);
 
         .experience_points_info {
-            font-size: var(--smallFontSize);
+            font-size: var(--fixEtcTinyFontSize);
             color: var(--grayColor);
         }
     }

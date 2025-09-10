@@ -8,12 +8,13 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
->
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/common/head :: head-fragment}"></head>
 <body>
 <main class="main">
-    <div layout:fragment="fixed-nav-fragment"></div>
+    <!--/* custom nav */-->
+    <th:block layout:fragment="custom-nav-fragment"></th:block>
+
     <!--/* contents */-->
     <div layout:fragment="content" class="content center"></div>
 </main>

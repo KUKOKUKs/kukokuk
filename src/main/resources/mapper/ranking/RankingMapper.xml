@@ -1,149 +1,268 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.domain.ranking.mapper.RankingMapper">
 
-    <resultMap id="RankingMap" type="Ranking">
+    <resultMap id="RankingResultMap" type="Ranking">
         <id property="rankNo" column="RANK_NO"/>
         <result property="contentType" column="CONTENT_TYPE"/>
         <result property="playCount" column="PLAY_COUNT"/>
         <result property="totalScore" column="TOTAL_SCORE"/>
         <result property="userNo" column="USER_NO"/>
+        <result property="createdDate" column="CREATED_DATE"/>
+        <result property="updatedDate" column="UPDATED_DATE"/>
+        <!-- JOIN 결과용 추가 필드 -->
         <result property="nickname" column="NICKNAME"/>
-        <result property="ranking" column="RANKING"/>
         <result property="profileFilename" column="PROFILE_FILENAME"/>
+        <result property="groupNo" column="GROUP_NO"/>
+        <result property="groupTitle" column="TITLE"/>
+        <result property="userRank" column="USER_RANK"/>
     </resultMap>
 
     <!--
-        * 전체 랭킹 조회 (모든 사용자)
-        * @param contentType 컨텐츠 유형 (SPEED, LEVEL, DICTATION 등)
-        * @return 랭킹 리스트 (순위 포함)
-        List<Ranking> getAllRankingsByContentType(@Param("contentType") String contentType);
+    /**
+     * 새로운 랭킹 등록
+     * @param ranking 랭킹 정보
+     */
+    void insertRanking(Ranking ranking);
     -->
-    <select id="getAllRankingsByContentType" resultMap="RankingMap">
-        SELECT
-            r.RANK_NO,
-            r.CONTENT_TYPE,
-            r.PLAY_COUNT,
-            r.TOTAL_SCORE,
-            r.USER_NO,
-            u.NICKNAME,
-            u.PROFILE_FILENAME,
-            ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC) as RANKING
-        FROM KUKOKUK_RANKS r
-                 JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
-        WHERE r.CONTENT_TYPE = #{contentType}
-          AND u.IS_DELETED = 'N'
-        ORDER BY r.TOTAL_SCORE DESC
-    </select>
-
-    <!--
-        * 반별 랭킹 조회 (특정 그룹 내 사용자)
-        * @param contentType 컨텐츠 유형
-        * @param groupNo 그룹 번호
-        * @return 그룹 내 랭킹 리스트
-        List<Ranking> getGroupRankingsByContentType(@Param("contentType") String contentType,
-                                                   @Param("groupNo") int groupNo);
-    -->
-    <select id="getGroupRankingsByContentType" resultMap="RankingMap">
-        SELECT
-            r.RANK_NO,
-            r.CONTENT_TYPE,
-            r.PLAY_COUNT,
-            r.TOTAL_SCORE,
-            r.USER_NO,
-            u.NICKNAME,
-            u.PROFILE_FILENAME,
-            ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC) as RANKING
-        FROM KUKOKUK_RANKS r
-                 JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
-                 JOIN KUKOKUK_GROUP_USERS gu ON r.USER_NO = gu.USER_NO
-        WHERE r.CONTENT_TYPE = #{contentType}
-          AND gu.GROUP_NO = #{groupNo}
-          AND u.IS_DELETED = 'N'
-        ORDER BY r.TOTAL_SCORE DESC
-    </select>
-
-    <!--
-        * 특정 사용자의 랭킹 정보 조회
-        * @param userNo 사용자 번호
-        * @param contentType 컨텐츠 유형
-        * @return 사용자 랭킹 정보
-        Ranking getUserRanking(@Param("userNo") int userNo,
-                              @Param("contentType") String contentType);
-    -->
-    <select id="getUserRanking" resultMap="RankingMap">
-        SELECT
-            user_rank.RANK_NO,
-            user_rank.CONTENT_TYPE,
-            user_rank.PLAY_COUNT,
-            user_rank.TOTAL_SCORE,
-            user_rank.USER_NO,
-            user_rank.NICKNAME,
-            user_rank.PROFILE_FILENAME,
-            user_rank.RANKING
-        FROM (
-                 SELECT
-                     r.RANK_NO,
-                     r.CONTENT_TYPE,
-                     r.PLAY_COUNT,
-                     r.TOTAL_SCORE,
-                     r.USER_NO,
-                     u.NICKNAME,
-                     u.PROFILE_FILENAME,
-                     ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC) as RANKING
-                 FROM KUKOKUK_RANKS r
-                          JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
-                 WHERE r.CONTENT_TYPE = #{contentType}
-                   AND u.IS_DELETED = 'N'
-             ) user_rank
-        WHERE user_rank.USER_NO = #{userNo}
-    </select>
-
-    <!--
-        * 랭킹 정보 신규 등록
-        * @param ranking 랭킹 정보
-        void insertRanking(Ranking ranking);
-    -->
-    <insert id="insertRanking" parameterType="Ranking">
-        INSERT INTO KUKOKUK_RANKS (CONTENT_TYPE, PLAY_COUNT, TOTAL_SCORE, USER_NO)
-        VALUES (#{contentType}, #{playCount}, #{totalScore}, #{userNo})
+    <insert id="insertRanking" useGeneratedKeys="true" keyProperty="rankNo">
+        INSERT INTO KUKOKUK_RANKS(
+                                   CONTENT_TYPE
+                                 ,PLAY_COUNT
+                                 ,TOTAL_SCORE
+                                 ,USER_NO
+        )VALUES(
+                 #{contentType}
+               ,#{playCount}
+               ,#{totalScore}
+               ,#{userNo}
+               )
     </insert>
 
     <!--
-        * 랭킹 정보 업데이트 (점수 갱신)
-        * @param ranking 업데이트할 랭킹 정보
-        void updateRanking(Ranking ranking);
+    /**
+     * 기존 랭킹 업데이트 (점수, 플레이 횟수)
+     * @param ranking 업데이트할 랭킹 정보
+     */
+    void updateRanking(Ranking ranking);
     -->
-    <update id="updateRanking" parameterType="Ranking">
+    <update id="updateRanking">
         UPDATE KUKOKUK_RANKS
-        SET PLAY_COUNT = #{playCount},
-            TOTAL_SCORE = #{totalScore}
-        WHERE USER_NO = #{userNo}
-          AND CONTENT_TYPE = #{contentType}
+        SET
+            PLAY_COUNT = #{playCount}
+          ,TOTAL_SCORE = #{totalScore}
+        WHERE
+            RANK_NO = #{rankNo}
     </update>
 
     <!--
-        * 특정 사용자의 랭킹 존재 여부 확인
-        * @param userNo 사용자 번호
-        * @param contentType 컨텐츠 유형
-        * @return 존재하면 1, 없으면 0
-        int getRankingCountByUserAndContent(@Param("userNo") int userNo,
-                                           @Param("contentType") String contentType);
+    /**
+     * 랭킹 번호로 조회
+     * @param rankNo 랭킹 번호
+     * @return 랭킹 정보
+     */
+    Ranking getRankingByRankNo(int rankNo);
     -->
-    <select id="getRankingCountByUserAndContent" resultType="int">
-        SELECT COUNT(*)
-        FROM KUKOKUK_RANKS
-        WHERE USER_NO = #{userNo}
+    <select id="getRankingByRankNo" resultMap="RankingResultMap">
+        SELECT
+            RANK_NO
+             ,CONTENT_TYPE
+             ,PLAY_COUNT
+             ,TOTAL_SCORE
+             ,USER_NO
+             ,CREATED_DATE
+             ,UPDATED_DATE
+        FROM
+            KUKOKUK_RANKS
+        WHERE
+            RANK_NO = #{rankNo}
+    </select>
+
+    <!--
+    /**
+     * 사용자의 특정 컨텐츠 랭킹 조회
+     * @param userNo 사용자 번호
+     * @param contentType 컨텐츠 타입
+     * @return 랭킹 정보, 없으면 null
+     */
+    Ranking getRankingByUserAndContent(@Param("userNo") int userNo, @Param("contentType") String contentType);
+    -->
+    <select id="getRankingByUserAndContent" resultMap="RankingResultMap">
+        SELECT
+            RANK_NO
+             ,CONTENT_TYPE
+             ,PLAY_COUNT
+             ,TOTAL_SCORE
+             ,USER_NO
+             ,CREATED_DATE
+             ,UPDATED_DATE
+        FROM
+            KUKOKUK_RANKS
+        WHERE
+            USER_NO = #{userNo}
           AND CONTENT_TYPE = #{contentType}
     </select>
 
     <!--
-        * 랭킹 삭제 (사용자 탈퇴 시 등)
-        * @param userNo 사용자 번호
-        void deleteRankingByUserNo(@Param("userNo") int userNo);
+    /**
+     * 전체 랭킹 목록 조회 (사용자 정보 JOIN)
+     * @param contentType 컨텐츠 타입
+     * @param limit 조회할 개수
+     * @return 랭킹 목록 (점수 높은 순)
+     */
+    List<Ranking> getGlobalRankings(@Param("contentType") String contentType, @Param("limit") int limit);
     -->
-    <delete id="deleteRankingByUserNo">
+    <select id="getGlobalRankings" resultMap="RankingResultMap">
+        SELECT
+            r.RANK_NO
+             ,r.CONTENT_TYPE
+             ,r.PLAY_COUNT
+             ,r.TOTAL_SCORE
+             ,r.USER_NO
+             ,r.CREATED_DATE
+             ,r.UPDATED_DATE
+             ,u.NICKNAME
+             ,u.PROFILE_FILENAME
+             ,gu.GROUP_NO
+             ,g.TITLE
+             ,ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC) AS USER_RANK
+        FROM
+            KUKOKUK_RANKS r
+                INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
+                LEFT JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
+                LEFT JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
+        WHERE
+            r.CONTENT_TYPE = #{contentType}
+        ORDER BY
+            r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC
+        LIMIT #{limit}
+    </select>
+
+    <!--
+    /**
+     * 특정 그룹 내 랭킹 목록 조회 (그룹 소속 사용자만)
+     * @param contentType 컨텐츠 타입
+     * @param groupNo 그룹 번호
+     * @param limit 조회할 개수
+     * @return 그룹 내 랭킹 목록 (점수 높은 순)
+     */
+    List<Ranking> getGroupRankings(@Param("contentType") String contentType, @Param("groupNo") int groupNo, @Param("limit") int limit);
+    -->
+    <select id="getGroupRankings" resultMap="RankingResultMap">
+        SELECT
+            r.RANK_NO
+             ,r.CONTENT_TYPE
+             ,r.PLAY_COUNT
+             ,r.TOTAL_SCORE
+             ,r.USER_NO
+             ,r.CREATED_DATE
+             ,r.UPDATED_DATE
+             ,u.NICKNAME
+             ,u.PROFILE_FILENAME
+             ,gu.GROUP_NO
+             ,g.TITLE
+             ,ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC) AS USER_RANK
+        FROM
+            KUKOKUK_RANKS r
+                INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
+                INNER JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
+                INNER JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
+        WHERE
+            r.CONTENT_TYPE = #{contentType}
+          AND gu.GROUP_NO = #{groupNo}
+        ORDER BY
+            r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC
+        LIMIT #{limit}
+    </select>
+
+    <!--
+    /**
+     * 전체 랭킹에서 사용자 순위 조회
+     * @param userNo 사용자 번호
+     * @param contentType 컨텐츠 타입
+     * @return 순위 (1부터 시작)
+     */
+    int getGlobalUserRanking(@Param("userNo") int userNo, @Param("contentType") String contentType);
+    -->
+    <select id="getGlobalUserRanking" resultType="int">
+        SELECT
+        COUNT(*) + 1
+        FROM
+        KUKOKUK_RANKS r1
+        WHERE
+        r1.CONTENT_TYPE = #{contentType}
+        AND (r1.TOTAL_SCORE > (
+        SELECT r2.TOTAL_SCORE
+        FROM KUKOKUK_RANKS r2
+        WHERE r2.USER_NO = #{userNo}
+        AND r2.CONTENT_TYPE = #{contentType}
+        )
+        OR (r1.TOTAL_SCORE = (
+        SELECT r2.TOTAL_SCORE
+        FROM KUKOKUK_RANKS r2
+        WHERE r2.USER_NO = #{userNo}
+        AND r2.CONTENT_TYPE = #{contentType}
+        )
+        AND r1.UPDATED_DATE < (
+        SELECT r2.UPDATED_DATE
+        FROM KUKOKUK_RANKS r2
+        WHERE r2.USER_NO = #{userNo}
+        AND r2.CONTENT_TYPE = #{contentType}
+        )
+        )
+        )
+    </select>
+
+    <!--
+    /**
+     * 그룹 내 랭킹에서 사용자 순위 조회
+     * @param userNo 사용자 번호
+     * @param contentType 컨텐츠 타입
+     * @param groupNo 그룹 번호
+     * @return 그룹 내 순위 (1부터 시작)
+     */
+    int getGroupUserRanking(@Param("userNo") int userNo, @Param("contentType") String contentType, @Param("groupNo") int groupNo);
+    -->
+    <select id="getGroupUserRanking" resultType="int">
+        SELECT
+        COUNT(*) + 1
+        FROM
+        KUKOKUK_RANKS r1
+        INNER JOIN KUKOKUK_USERS u1 ON r1.USER_NO = u1.USER_NO
+        INNER JOIN KUKOKUK_GROUP_USERS gu1 ON u1.USER_NO = gu1.USER_NO
+        WHERE
+        r1.CONTENT_TYPE = #{contentType}
+        AND gu1.GROUP_NO = #{groupNo}
+        AND (r1.TOTAL_SCORE > (
+        SELECT r2.TOTAL_SCORE
+        FROM KUKOKUK_RANKS r2
+        WHERE r2.USER_NO = #{userNo}
+        AND r2.CONTENT_TYPE = #{contentType}
+        )
+        OR (r1.TOTAL_SCORE = (
+        SELECT r2.TOTAL_SCORE
+        FROM KUKOKUK_RANKS r2
+        WHERE r2.USER_NO = #{userNo}
+        AND r2.CONTENT_TYPE = #{contentType}
+        )
+        AND r1.UPDATED_DATE < (
+        SELECT r2.UPDATED_DATE
+        FROM KUKOKUK_RANKS r2
+        WHERE r2.USER_NO = #{userNo}
+        AND r2.CONTENT_TYPE = #{contentType}
+        )
+        )
+        )
+    </select>
+
+    <!--
+    /**
+     * 사용자의 모든 랭킹 삭제
+     * @param userNo 사용자 번호
+     */
+    void deleteRankingsByUser(int userNo);
+    -->
+    <delete id="deleteRankingsByUser">
         DELETE FROM KUKOKUK_RANKS
         WHERE USER_NO = #{userNo}
     </delete>

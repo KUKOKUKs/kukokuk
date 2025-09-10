@@ -51,7 +51,7 @@ $(document).ready(async function () {
     });
 
     // 사용자 진도/단계 선택 모달창 열기
-    const $modalStudyLevelBtn = $(".modal-study-level-btn"); // 모달창 열기 버튼
+    const $modalStudyLevelBtn = $(".modal_study_level_btn"); // 모달창 열기 버튼
     const $modalStudyLevel = $("#modal-study-level"); // 모달창
     $modalStudyLevelBtn.click(function () {
         if ($modalStudyLevel.length) {
@@ -60,6 +60,11 @@ $(document).ready(async function () {
 
             // 모달창 단계별 설명 리스트 추가
             setStudyDifficultyList($modalStudyDifficultyInfoElement);
+
+            // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+            setTimeout(() => {
+                $modalStudyLevel.addClass("open");
+            }, 10);
         }
     });
 });

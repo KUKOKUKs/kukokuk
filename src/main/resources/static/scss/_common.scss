@@ -2,10 +2,11 @@
     /* font */
     --baseFontSize: 16px;
     --subFontSize: 0.9em;
-    --titleFontSize: 22px;
+    --titleFontSize: 24px;
     --smallFontSize: 0.8em;
-    --largeFontSize: 1.25em;
-    --pageTitleFontSize: 2em;
+    --largeFontSize: 1.2em;
+    --tinyFontSize: 0.65em;
+    --fixEtcTinyFontSize: 11px;
 
     /* color palette */
     --primaryColor: #009b90;
@@ -19,6 +20,7 @@
     --blueColor: #2783D9;
     --borderColor: #d9d9d9;
     --dimmedColor: rgba(0, 0, 0, 0.3);
+    --baseBackGround: rgba(255, 255, 255, 0.5);
 
     /* element property */
     --logoWidth: 100px;
@@ -26,7 +28,7 @@
     --smallLogoWidth: 80px;
     --smallLogoHeight: 52px;
     --symbolLogoSize: 35px;
-    --mainContentWidth: 600px;
+    --mainContentWidth: 500px;
     --subContentWidth: 400px;
     --centerContentWidth: 800px;
     --modalWidth: 400px;
@@ -34,11 +36,10 @@
     --modalSmallHeight: 200px;
     --navWidth: 250px;
     --baseIcon: 30px;
-    --smallIcon: 16px;
-    --tinyIcon: 10px;
+    --smallIcon: 14px;
     --largeIcon: 40px;
     --profileThumbnail: 80px;
-    --inputHeight: 60px;
+    --inputHeight: 54px;
     --tabHeight: 40px;
     --modalInfoTitleWidth: 50px;
 
@@ -47,17 +48,18 @@
 
     --largePadding: 30px;
     --basePadding: 18px;
-    --smallPadding: .75em;
-    --tinyPadding: .3em;
-    --inputPadding: 27px 15px 8px;
+    --smallPadding: 0.75em;
+    --tinyPadding: 0.3em;
+    --studyNavListPadding: 0.5em var(--basePadding);
+    --inputPadding: 19px 15px 5px;
     --modalPadding: 16px;
-    --modalPaddingBottom: 80px;
-    --smallComponentWithIconPadding: 0.45em 0.45em 0.45em 0.9em;
+    --modalTitlePadding: 10px var(--modalPadding);
+    --smallComponentWithIconPadding: 0.4em 0.4em 0.4em 0.7em;
 
-    --baseBorder: 2px solid var(--borderColor);
-    --thinBorder: 1px solid var(--borderColor);
+    --baseBorder: 1px solid var(--borderColor);
     --bdrs: 7px;
-    --bxsh: 3px 3px 7px rgba(0, 0, 0, .07);
+    --tagBdrs: 2em;
+    --bxsh: 2px 2px 10px rgba(0, 0, 0, .05);
     --insetBxsh: inset -1px -1px 1px rgba(0, 0, 0, .25);
     --trst: .2s ease-in-out;
 
@@ -65,6 +67,9 @@
     --smallGap: 10px;
     --tinyGap: 0.3em;
     --largeGap: 46px;
+
+    /* size */
+    --smallIconImage: 20px;
 }
 
 html, body, div, span, applet, object, iframe,
@@ -97,7 +102,7 @@ img {
 
 button {
     cursor: pointer;
-    background-color: inherit;
+    background-color: transparent;
 }
 
 input {
@@ -141,6 +146,9 @@ body {
     font-size: var(--baseFontSize);
     line-height: 1.4;
     color: var(--blackColor);
+    background: url("/images/background-img.webp");
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }
 
 ol, ul {
@@ -165,23 +173,77 @@ table {
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
-    border-spacing: 0;
-    overflow: hidden;
 }
 
 th, td {
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-    max-height: 80px;
-    overflow: hidden;          /* 넘치는 내용 숨김 */
-    text-overflow: ellipsis;   /* 말줄임 (...) 처리 */
-    white-space: nowrap; /* 한줄로 처리 */
+    font-size: var(--subFontSize);
+    padding: 0.3em;
+    border-bottom: var(--baseBorder);
 }
 
 th {
-    background-color: #f9f9f9;
+    background-color: var(--lightGrayColor);
     font-weight: bold;
-    color: #2c3e50;
+}
+
+/* 스크롤 커스텀 */
+/* 모든 요소(*)에 기본 스크롤 스타일 지정 */
+* {
+    scrollbar-width: thin; /* Firefox 전용: 스크롤 두께를 얇게 지정 */
+    scrollbar-color: transparent transparent;
+    /* Firefox 전용: (thumb 색상, track 색상) → 둘 다 투명으로 해서 기본 상태에서는 스크롤이 보이지 않음 */
+
+    &.show_scroll {
+        overflow-y: auto;
+        scrollbar-color: var(--borderColor) transparent;
+
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--borderColor);
+        }
+    }
+}
+
+/* 크롬, 사파리, 엣지 브라우저에서 스크롤 공간 정의 */
+/* 브라우저 정책상 최소 두께 */
+*::-webkit-scrollbar {
+    width: 6px;  /* 세로 스크롤 두께 */
+    height: 6px; /* 가로 스크롤 두께 */
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: transparent; /* 기본 상태에서는 thumb(막대)를 투명하게 해서 안 보이도록 처리 */
+    border-radius: 3px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent; /* track(스크롤 막대 배경 부분)을 투명하게 설정 */
+}
+
+/* hover 시 활성화 */
+*:hover::-webkit-scrollbar-thumb {
+    background-color: var(--borderColor);
+}
+
+*:hover {
+    scrollbar-color: var(--borderColor) transparent;
+}
+
+/* 예외 처리: 원래 브라우저 스크롤 유지 */
+/* 특정 요소에 class="no-custom-scroll"을 주면, 기본 브라우저 스크롤 스타일을 그대로 복원 */
+.no-custom-scroll {
+    scrollbar-width: auto !important; /* Firefox: 스크롤 두께 기본값으로 복원 */
+    scrollbar-color: auto !important; /* Firefox: 색상 기본값으로 복원 */
+}
+
+.no-custom-scroll::-webkit-scrollbar {
+    width: initial !important;  /* 크롬: 기본 스크롤 두께로 복원 */
+    height: initial !important; /* 크롬: 기본 가로 스크롤 두께로 복원 */
+}
+
+.no-custom-scroll::-webkit-scrollbar-thumb {
+    background: initial !important; /* thumb 색상 기본값으로 복원 */
+}
+
+.no-custom-scroll::-webkit-scrollbar-track {
+    background: initial !important; /* track 색상 기본값으로 복원 */
 }

@@ -17,6 +17,7 @@
          ,USER_ANSWER
          ,TRY_COUNT
          ,IS_SUCCESS
+         ,USED_HINT
     ) VALUES (
          #{userNo}
         ,#{dictationQuestionNo}
@@ -24,25 +25,9 @@
         ,#{userAnswer}
         ,#{tryCount}
         ,#{isSuccess}
+        ,#{usedHint}
     )
   </insert>
-
-  <!--
-  /**
-   * 식별자 받아쓰기 힌트 사용 여부
-   * @param dictationQuestionLogNo 식별자
-   * @param userHint 힌트 사용 여부
-   */
-   updateHintUsed(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("userHint") String userHint)
-   -->
-  <update id="updateHintUsed" parameterType="DictationQuestionLog">
-    UPDATE
-        KUKOKUK_DICTATION_QUESTION_LOGS
-    SET
-        USER_HINT = #{userHint}
-    WHERE
-        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
-  </update>
 
   <!--
    /**
@@ -58,6 +43,7 @@
        IS_SUCCESS = #{isSuccess}
       ,TRY_COUNT = #{tryCount}
       ,USER_ANSWER = #{userAnswer}
+      ,USED_HINT = #{usedHint}
     WHERE
        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
   </update>
@@ -123,28 +109,35 @@
    /**
    * 받아쓰기 세트 번호에 해당하는 받아쓰기 문제 풀이 이력 조회
    * @param dictationSessionNo 문제 세트 번호
+   * @param userNo 사용자
    * @return 받아쓰기 문제 풀이 이력 내용
    */
-  List<DictationQuestionLogResponse> getDictationQuestionLogBySessionNo(int dictationSessionNo);
+  List<DictationResultLogDto> getDictationQuestionLogBySessionNo(
+      @Param("dictationSessionNo") int dictationSessionNo,
+      @Param("userNo") int userNo
+  );
   -->
-  <select id="getDictationQuestionLogBySessionNo" resultType="DictationQuestionLog">
-    SELECT
-       L.DICTATION_QUESTION_NO
-      ,Q.CORRECT_ANSWER
-      ,L.USER_ANSWER
-      ,L.TRY_COUNT
-      ,L.USED_HINT
-      ,L.IS_SUCCESS
-      ,L.CREATED_DATE
-    FROM
-      KUKOKUK_DICTATION_QUESTION_LOGS L
-    JOIN
-      KUKOKUK_DICTATION_QUESTIONS Q
-    ON
-      L.DICTATION_QUESTION_NO = Q.DICTATION_QUESTION_NO
-    WHERE
-      L.DICTATION_SESSION_NO = #{dictationSessionNo}
-    ORDER BY
-      L.CREATED_DATE ASC
-  </select>
+
+  <select id="getDictationQuestionLogBySessionNo" parameterType="map" resultType="com.kukokuk.domain.dictation.dto.DictationResultLogDto">
+      SELECT
+            L.DICTATION_QUESTION_NO AS dictationQuestionNo
+           ,Q.CORRECT_ANSWER        AS correctAnswer
+           ,L.USER_ANSWER           AS userAnswer
+           ,L.TRY_COUNT             AS tryCount
+           ,L.USED_HINT             AS usedHint
+           ,L.IS_SUCCESS            AS isSuccess
+           ,L.CREATED_DATE          AS createdDate
+      FROM
+          KUKOKUK_DICTATION_QUESTION_LOGS L
+      JOIN
+          KUKOKUK_DICTATION_QUESTIONS Q
+      ON
+          L.DICTATION_QUESTION_NO = Q.DICTATION_QUESTION_NO
+      WHERE
+          L.DICTATION_SESSION_NO = #{dictationSessionNo}
+      AND
+          L.USER_NO = #{userNo}
+      ORDER BY
+          L.CREATED_DATE ASC
+</select>
 </mapper>

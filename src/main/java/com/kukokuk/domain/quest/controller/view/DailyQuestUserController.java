@@ -1,8 +1,10 @@
 package com.kukokuk.domain.quest.controller.view;
 
 import com.kukokuk.common.exception.AppException;
+import com.kukokuk.common.util.RequestPathUtils;
 import com.kukokuk.domain.quest.service.DailyQuestUserService;
 import com.kukokuk.security.SecurityUser;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,11 +25,12 @@ public class DailyQuestUserController {
 
     // 사용자의 완료된 일일 도전과제 보상 획득(일괄) 처리 및 획득 후 힌트 개수 요청
     @PostMapping("/obtain")
-    public String dailyQuestAllObtainReward(
+    public String dailyQuestObtainRewardBatch(
         @RequestParam("dailyQuestUserNo") List<Integer> dailyQuestUserNos
         , @AuthenticationPrincipal SecurityUser securityUser
+        , HttpServletRequest request
         , RedirectAttributes redirectAttributes) {
-        log.info("dailyQuestAllObtainReward() 컨트롤러 실행");
+        log.info("dailyQuestObtainRewardBatch() 컨트롤러 실행");
 
         try {
             // 보상 획득 일괄 처리 요청
@@ -41,7 +44,11 @@ public class DailyQuestUserController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 
-        return "redirect:/daily-quests";
+        // 클라이언트에서 요청 보낸 페이지
+        String pathAndQuery = RequestPathUtils.getRefererPathWithQuery(request);
+        log.info("dailyQuestObtainRewardBatch() 요청 경로: {}", pathAndQuery);
+
+        return "redirect:" + pathAndQuery;
     }
 
 }

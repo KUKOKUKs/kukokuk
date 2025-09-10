@@ -1,45 +1,64 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{/layout/center}">
+<html layout:decorate="~{/layout/center}"
+      th:with="title='단계별 퀴즈',
+      menu='quiz',
+      user=${#authentication.principal.user}">
+<div layout:fragment="content">
+    <div id="main-content" class="content_container">
+        <div class="content_info">
+            <div class="content_title justify_content_center">
+                <iconify-icon icon="token-branded:step"></iconify-icon>
+                단계별 퀴즈
 
-<div layout:fragment="content" class="quiz_play_container">
-    <h1 class="quiz_title">단계별 퀴즈</h1>
+                <div class="progress_end_btn quiz_end_btn">
+                    <button type="button" class="btn tiny">종료하기</button>
+                </div>
+            </div>
 
-    <!-- 진행 상황 / 힌트 / 진행률 -->
-    <div class="quiz_step_container d_flex column small_gap">
-        <!-- 진행 상황 -->
-        <div id="quiz-progress-info" class="quiz_progress_info">
-            <span id="quiz-current">1</span> / <span id="quiz-total">0</span>
-        </div>
+            <div class="progress_container">
+                <div class="progress_component">
+                    <div class="progress_info">
+                        <span class="icon">
+                            <iconify-icon icon="fluent-color:chat-bubbles-question-16"></iconify-icon>
+                        </span>
+                        <p class="info">
+                            <span id="quiz-current">1</span> / <span th:text="${quizList.size()}">0</span>
+                        </p>
+                    </div>
+                    <div class="progress_info">
+                        <div class="hints_info">
+                            <div class="hint_icon"></div>
+                            <span class="hint_count">x <span id="hint-count" th:text="${user.hintCount}">0</span></span>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- 힌트 버튼 -->
-        <button id="hint-btn" class="hint_btn">
-            힌트 <span id="hint-count">(0)</span>
-        </button>
-
-        <!-- 진행률 바 -->
-        <div class="level_info timer_progress">
-            <div class="timer_level_bar">
-                <div class="timer_experience_point" id="timer-progress-bar"></div>
+                <div class="bar_gauge">
+                    <div id="step-progress-bar" class="gauge"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- 문제 -->
-    <div id="quiz-question" class="quiz_question"></div>
+        <!--/* 문제 */-->
+        <div class="component">
+            <p id="quiz-question" class="collout_info bold large_font tac"></p>
+        </div>
 
-    <!-- 보기 -->
-    <div id="quiz-options" class="quiz_options"></div>
+        <!--/* 보기 */-->
+        <div id="quiz-options" class="tiny_list_component"></div>
 
-    <!-- 이전/다음 버튼 -->
-    <div class="btn_list">
-        <button id="prev-btn" class="btn" type="button">이전</button>
-        <button id="next-btn" class="btn blue" type="button">다음</button>
+        <!-- 이전/다음 버튼 -->
+        <div class="btn_list">
+            <button id="prev-btn" class="btn white" type="button">이전</button>
+            <button id="next-btn" class="btn primary" type="button">다음</button>
+        </div>
     </div>
 
     <!-- 결과 제출용 폼 -->
     <form id="quiz-result-form" method="post" th:action="@{/quiz/result}"></form>
+
+    <!--/* 게임 종료 안내 모달창 */-->
+    <div th:replace="~{fragments/modal/modal-quiz-exit :: modal-quiz-exit-fragment}"></div>
 </div>
 
 <th:block layout:fragment="script">

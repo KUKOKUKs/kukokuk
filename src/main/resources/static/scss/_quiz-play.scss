@@ -1,82 +1,24 @@
-/* ===============================
-   퀴즈 풀이 화면 (quiz-play.scss)
-   =============================== */
-.quiz_play_container {
-    width: 800px;
-    height: 700px;                /* 🔒 절대 고정 */
-    margin: 20px auto;
-    padding: 20px;
-    background: #fff;
-    border-radius: var(--bdrs);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-
-    display: flex;
-    flex-direction: column;
-    gap: var(--baseGap);
-
-    box-sizing: border-box;
-    overflow: hidden;             /* 🔒 내부 스크롤 안생김 */
-}
-
-/* 헤더 */
-.quiz_header {
-    flex: 0 0 50px;               /* 🔒 항상 같은 높이 */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* 문제 영역 */
-.quiz_question {
-    flex: 0 0 150px;              /* 🔒 문제 높이 고정 */
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-
-    padding: var(--basePadding);
-    font-size: var(--largeFontSize);
-    font-weight: bold;
-    line-height: 1.5;
-    color: var(--darkGreenColor);
-
-    white-space: normal;
-    word-break: break-word;
-
-    overflow: hidden;             /* 🔒 길면 잘라버림 */
-    text-overflow: ellipsis;      /* 🔒 ... 처리 */
-}
-
-/* 보기 영역 */
-.quiz_options {
-    flex: 1;                      /* 🔒 남은 공간 전부 사용 */
-    display: flex;
-    flex-direction: column;
-    gap: var(--smallGap);
-    overflow: hidden;             /* 🔒 스크롤 ❌ */
-}
-
-/* 보기 버튼 */
 .quiz_options .btn {
-    flex: 1;                      /* 🔒 보기 개수만큼 균등 분할 */
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
+    width: 800px;
+    max-width: 100%;
+    min-height: 60px;
     padding: var(--smallPadding) var(--basePadding);
     text-align: left;
-
-    font-size: var(--baseFontSize);
-    font-weight: 500;
-
+    justify-content: flex-start;
     white-space: normal;
     word-break: break-word;
+    box-sizing: border-box;
 
-    overflow: hidden;             /* 🔒 텍스트 넘치면 잘라냄 */
-    text-overflow: ellipsis;
+    .choice-no {
+        flex-shrink: 0;
+    }
 
-    .choice-no { flex-shrink: 0; }
-    .choice-text { flex: 1; }
+    .choice-text {
+        flex: 1;
+    }
 
     &.selected {
         background-color: var(--primaryColor);
@@ -85,7 +27,6 @@
     }
 }
 
-/* 힌트 버튼 */
 .hint_btn {
     background: var(--primaryColor);
     color: var(--subColor);

@@ -2,6 +2,8 @@ package com.kukokuk.domain.study.controller.api;
 
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
+import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
+import com.kukokuk.domain.study.dto.ParseMaterialRequest;
 import com.kukokuk.domain.study.dto.UserStudyRecommendationDto;
 import com.kukokuk.domain.study.service.StudyService;
 import com.kukokuk.domain.study.vo.DailyStudy;
@@ -10,16 +12,14 @@ import com.kukokuk.domain.study.vo.DailyStudyLog;
 import com.kukokuk.domain.study.vo.DailyStudyMaterial;
 import com.kukokuk.domain.study.vo.DailyStudyQuizLog;
 import com.kukokuk.domain.study.vo.StudyDifficulty;
-import com.kukokuk.request.CreateStudyLogRequest;
-import com.kukokuk.request.EssayQuizLogRequest;
-import com.kukokuk.request.ParseMaterialRequest;
-import com.kukokuk.request.StudyQuizLogRequest;
-import com.kukokuk.request.UpdateStudyLogRequest;
-import com.kukokuk.response.DailyStudyLogResponse;
-import com.kukokuk.response.DailyStudySummaryResponse;
-import com.kukokuk.response.EssayQuizLogResponse;
-import com.kukokuk.response.GeminiEssayResponse;
-import com.kukokuk.response.ParseMaterialResponse;
+import com.kukokuk.domain.study.dto.CreateStudyLogRequest;
+import com.kukokuk.domain.study.dto.StudyQuizLogRequest;
+import com.kukokuk.domain.study.dto.UpdateStudyLogRequest;
+import com.kukokuk.domain.study.dto.DailyStudyLogResponse;
+import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
+import com.kukokuk.domain.study.dto.EssayQuizLogResponse;
+import com.kukokuk.domain.study.dto.GeminiEssayResponse;
+import com.kukokuk.domain.study.dto.ParseMaterialResponse;
 import com.kukokuk.security.SecurityUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -105,41 +105,7 @@ public class ApiStudyController {
             securityUser.getUser(), rows);
 
         // UserStudyRecommendationDto에서 응답에 필요한 정보만 반환하도록 ResponseDTO에 매핑
-        List<DailyStudySummaryResponse> responses = dtos.stream()
-            .filter(dto -> dto.getDailyStudy() != null)
-            .map(dto -> {
-                DailyStudy study = dto.getDailyStudy();
-                DailyStudyLog log = dto.getDailyStudyLog();
-                DailyStudyMaterial material = dto.getDailyStudyMaterial();
-
-                int totalCardCount = study.getCardCount();
-                int studiedCardCount = (log != null && log.getStudiedCardCount() != null) ? log.getStudiedCardCount() : 0;
-                int progressRate =
-                    (totalCardCount == 0) ? 0 : (int) ((studiedCardCount * 100.0) / totalCardCount);
-
-                String status = "NOT_STARTED";
-                if (log != null) {
-                    status = log.getStatus(); // "IN_PROGRESS", "COMPLETED" 중 하나라고 가정
-                }
-
-                // dailyStudyEssayQuizLogNo 가 null이 아니면 서술형퀴즈완료여부 true로 설정
-                boolean essayQuizCompleted = dto.getDailyStudyEssayQuizLogNo() != null;
-
-                return DailyStudySummaryResponse.builder()
-                    .dailyStudyNo(study.getDailyStudyNo())
-                    .title(study.getTitle())
-                    .explanation((study.getExplanation()))
-                    .cardCount(totalCardCount)
-                    .status(status)
-                    .studiedCardCount(studiedCardCount)
-                    .progressRate(progressRate)
-                    .school(material.getSchool())
-                    .grade(material.getGrade())
-                    .sequence(material.getSequence())
-                    .essayQuizCompleted(essayQuizCompleted)
-                    .build();
-            })
-            .toList();
+        List<DailyStudySummaryResponse> responses = studyService.mapToDailyStudySummaryResponse(dtos);
 
         return ResponseEntityUtils.ok("사용자 맞춤 학습자료 목록 조회 성공", responses);
     }
@@ -232,7 +198,8 @@ public class ApiStudyController {
     public ResponseEntity<ApiResponse<EssayQuizLogResponse>> createEssayQuizLog(@RequestBody EssayQuizLogRequest essayQuizLogRequest,
         @AuthenticationPrincipal SecurityUser securityUser) {
 
-        DailyStudyEssayQuizLog essayQuizLog = studyService.createStudyEssayQuizLog(essayQuizLogRequest, securityUser.getUser().getUserNo());
+        DailyStudyEssayQuizLog essayQuizLog = studyService.createStudyEssayQuizLog(
+            essayQuizLogRequest, securityUser.getUser().getUserNo());
 
         EssayQuizLogResponse response = modelMapper.map(essayQuizLog, EssayQuizLogResponse.class);
 
@@ -246,12 +213,13 @@ public class ApiStudyController {
      *   "userAnswer": "유저가 작성한 답변" }
      */
     @PutMapping("/essays/logs/{essayQuizLogNo}")
-    public ResponseEntity<ApiResponse<EssayQuizLogResponse>> createEssayQuizLog(
+    public ResponseEntity<ApiResponse<EssayQuizLogResponse>> updateEssayQuizLog(
         @PathVariable("essayQuizLogNo") int essayQuizLogNo,
         @RequestBody EssayQuizLogRequest essayQuizLogRequest,
         @AuthenticationPrincipal SecurityUser securityUser) {
 
-        DailyStudyEssayQuizLog essayQuizLog = studyService.updateStudyEssayQuizLog(essayQuizLogNo, essayQuizLogRequest, securityUser.getUser().getUserNo());
+        DailyStudyEssayQuizLog essayQuizLog = studyService.updateStudyEssayQuizLog(essayQuizLogNo,
+            essayQuizLogRequest, securityUser.getUser().getUserNo());
 
         EssayQuizLogResponse response = modelMapper.map(essayQuizLog, EssayQuizLogResponse.class);
 

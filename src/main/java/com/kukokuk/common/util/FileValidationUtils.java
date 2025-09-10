@@ -1,12 +1,16 @@
 package com.kukokuk.common.util;
 
 import java.util.List;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.multipart.MultipartFile;
 
+@Log4j2
 public class FileValidationUtils {
 
     // 파일 확장자 추출
     public static String extractExtension(String originalFilename) {
+        log.info("extractExtension() 실행 originalFilename: {}",  originalFilename);
+
         if (originalFilename == null || !originalFilename.contains(".")) {
             throw new IllegalArgumentException("파일 이름이 잘못되었습니다.");
         }
@@ -19,6 +23,8 @@ public class FileValidationUtils {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("파일이 선택되지 않았습니다.");
         }
+
+        log.info("validateProfileImage() 실행 file: {}",  file.getOriginalFilename());
 
         // 파일 크기 제한
         if (file.getSize() > 5 * 1024 * 1024) {

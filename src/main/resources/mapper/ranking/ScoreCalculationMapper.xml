@@ -1,49 +1,136 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.kukokuk.domain.ranking.mapper.ScoreCalculationMapper">
 
     <!--
-        * 동일 정답수 그룹의 최대 소요 시간 조회 (스피드 퀴즈용)
-        * @param correctAnswers 정답 수
-        * @return 최대 시간 (초)
-        Float getMaxTimeByCorrectAnswers(@Param("correctAnswers") int correctAnswers);
+        스피드 퀴즈 점수 계산 후 랭킹 등록
+        새로운 랭킹 등록시에만 사용 (중복 체크는 Service에서 처리)
+
+        점수 계산 공식:
+        - BASE_SCORE: (정답수 ÷ 전체문제수) × 100
+        - TIME_BONUS: ((MAX_TIME - 실제시간) ÷ (MAX_TIME - MIN_TIME)) × 5
+        - TOTAL_SCORE: BASE_SCORE + TIME_BONUS
+
+        @param sessionNo 퀴즈 세션 번호
+        @param userNo 사용자 번호
+        @param groupNo 그룹 번호 (NULL: 전체랭킹)
+        @return 처리된 행 수
     -->
-    <select id="getMaxTimeByCorrectAnswers" resultType="java.lang.Float">
-        SELECT MAX(TOTAL_TIME_SEC)
-        FROM KUKOKUK_QUIZ_SESSION_SUMMARIES
-        WHERE CORRECT_ANSWERS = #{correctAnswers}
-          AND QUIZ_MODE = 'speed'
-    </select>
+    <insert id="insertSpeedQuizRanking">
+        INSERT INTO KUKOKUK_RANKS (
+            CONTENT_TYPE,
+            PLAY_COUNT,
+            TOTAL_SCORE,
+            USER_NO,
+            GROUP_NO,
+            CREATED_DATE
+        )
+        SELECT
+            'SPEED' AS CONTENT_TYPE,
+            1 AS PLAY_COUNT,
+            (
+                /* BASE_SCORE 계산: (정답수 ÷ 전체문제수) × 100 */
+                (qss.CORRECT_ANSWERS / qss.TOTAL_QUESTION * 100) +
+                    /* TIME_BONUS 계산: ((MAX_TIME - 실제시간) ÷ (MAX_TIME - MIN_TIME)) × 5 */
+                CASE
+                    WHEN qss.TOTAL_TIME_SEC BETWEEN 30 AND 300 THEN
+                        ((300 - qss.TOTAL_TIME_SEC) / (300 - 30)) * 5
+                    ELSE 0
+                    END
+                ) AS TOTAL_SCORE,
+            #{userNo} AS USER_NO,
+            #{groupNo} AS GROUP_NO,
+            NOW() AS CREATED_DATE
+        FROM KUKOKUK_QUIZ_SESSION_SUMMARIES qss
+        WHERE qss.SESSION_NO = #{sessionNo}
+          AND qss.USER_NO = #{userNo}
+    </insert>
 
     <!--
-        * 동일 정답수 그룹의 최소 소요 시간 조회 (스피드 퀴즈용)
-        * @param correctAnswers 정답 수
-        * @return 최소 시간 (초)
-        Float getMinTimeByCorrectAnswers(@Param("correctAnswers") int correctAnswers);
-    -->
-    <select id="getMinTimeByCorrectAnswers" resultType="java.lang.Float">
-        SELECT MIN(TOTAL_TIME_SEC)
-        FROM KUKOKUK_QUIZ_SESSION_SUMMARIES
-        WHERE CORRECT_ANSWERS = #{correctAnswers}
-          AND QUIZ_MODE = 'speed'
-    </select>
+        스피드 퀴즈 점수 계산 후 랭킹 수정
+        기존 랭킹 수정시에만 사용 (더 높은 점수일 때만)
 
-    <!-- 
-      추후 받아쓰기 점수 계산용 쿼리 추가
-        추후 학습 점수 계산용 쿼리 추가
-       추후 기타 컨텐츠 점수 계산용 쿼리 추가
+        @param sessionNo 퀴즈 세션 번호
+        @param rankNo 기존 랭킹 번호
+        @return 처리된 행 수
     -->
-    <select id="getQuizSessionSummary" resultType="com.kukokuk.domain.quiz.vo.QuizSessionSummary">
-        SELECT SESSION_NO,
-               TOTAL_TIME_SEC,
-               TOTAL_QUESTION,
-               CORRECT_ANSWERS,
-               PERCENTILE,
-               AVERAGE_TIME_PER_QUESTION,
-               QUIZ_MODE,
-               USER_NO
-        FROM KUKOKUK_QUIZ_SESSION_SUMMARIES
-        WHERE SESSION_NO = #{sessionNo}
-    </select>
+    <update id="updateSpeedQuizRanking">
+        UPDATE KUKOKUK_RANKS
+        SET TOTAL_SCORE = (
+            SELECT
+                (
+                    /* BASE_SCORE 계산: (정답수 ÷ 전체문제수) × 100 */
+                    (qss.CORRECT_ANSWERS / qss.TOTAL_QUESTION * 100) +
+                        /* TIME_BONUS 계산: ((MAX_TIME - 실제시간) ÷ (MAX_TIME - MIN_TIME)) × 5 */
+                    CASE
+                        WHEN qss.TOTAL_TIME_SEC BETWEEN 30 AND 300 THEN
+                            ((300 - qss.TOTAL_TIME_SEC) / (300 - 30)) * 5
+                        ELSE 0
+                        END
+                    ) AS CALCULATED_SCORE
+            FROM KUKOKUK_QUIZ_SESSION_SUMMARIES qss
+            WHERE qss.SESSION_NO = #{sessionNo}
+        ),
+            PLAY_COUNT = PLAY_COUNT + 1,
+            UPDATED_DATE = NOW()
+        WHERE RANK_NO = #{rankNo}
+          AND TOTAL_SCORE &lt; (
+            SELECT
+                (
+                    /* 새로운 점수가 기존 점수보다 높은지 확인 */
+                    (qss.CORRECT_ANSWERS / qss.TOTAL_QUESTION * 100) +
+                    CASE
+                        WHEN qss.TOTAL_TIME_SEC BETWEEN 30 AND 300 THEN
+                            ((300 - qss.TOTAL_TIME_SEC) / (300 - 30)) * 5
+                        ELSE 0
+                        END
+                    )
+            FROM KUKOKUK_QUIZ_SESSION_SUMMARIES qss
+            WHERE qss.SESSION_NO = #{sessionNo}
+        )
+    </update>
+
+    <!--
+        받아쓰기 담당자 구현 영역
+        아래는 템플릿으로 각 담당자가 실제 로직으로 교체 필요
+
+        받아쓰기 점수 계산 공식 (예시):
+        - BASE_SCORE: (정답수 ÷ 전체문제수) × 100
+        - HINT_PENALTY: 힌트 사용 횟수 × 2 (감점)
+        - TOTAL_SCORE: BASE_SCORE - HINT_PENALTY
+    -->
+
+    <!--
+        학습 담당자 구현 영역
+        아래는 템플릿으로 각 담당자가 실제 로직으로 교체 필요
+
+        학습 점수 계산 공식 (예시):
+        - STUDY_SCORE: 일일 학습 완료 점수
+        - BONUS_SCORE: 연속 학습일 보너스
+        - TOTAL_SCORE: STUDY_SCORE + BONUS_SCORE
+    -->
+
+    <!--
+        스무고개 담당자 구현 영역
+        아래는 템플릿으로 각 담당자가 실제 로직으로 교체 필요
+
+        스무고개 점수 계산 공식 (예시):
+        - BASE_SCORE: 성공시 100점
+        - QUESTION_PENALTY: 사용한 질문 수 × 5 (감점)
+        - TIME_BONUS: 빠른 해결 보너스
+        - TOTAL_SCORE: BASE_SCORE - QUESTION_PENALTY + TIME_BONUS
+    -->
+
+    <!--
+        서술형 담당자 구현 영역
+        아래는 템플릿으로 각 담당자가 실제 로직으로 교체 필요
+
+        서술형 점수 계산 공식 (예시):
+        - AI_SCORE: AI 평가 점수 (0-100)
+        - CREATIVITY_BONUS: 창의성 보너스
+        - TOTAL_SCORE: AI_SCORE + CREATIVITY_BONUS
+    -->
+
 </mapper>

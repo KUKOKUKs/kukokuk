@@ -1,5 +1,6 @@
 package com.kukokuk.domain.dictation.mapper;
 
+import com.kukokuk.domain.dictation.dto.DictationResultLogDto;
 import com.kukokuk.domain.dictation.vo.DictationQuestionLog;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -13,13 +14,6 @@ public interface DictationQuestionLogMapper {
    * @param dictationQuestionLog 받아쓰기 이력
    */
   void insertDictationQuestionLog(DictationQuestionLog dictationQuestionLog);
-
-  /**
-   * 식별자로 받아쓰기 힌트 사용 여부 반영
-   * @param dictationQuestionLogNo 식별자
-   * @param userHint 힌트 사용 여부
-   */
-  void updateHintUsed(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("userHint") String userHint);
 
   /**
    * 정답 제출 버튼을 눌렀을 때 제출문장, 시도 누적 횟수, 정답 여부 반영
@@ -52,7 +46,11 @@ public interface DictationQuestionLogMapper {
   /**
    * 받아쓰기 세트 번호에 해당하는 받아쓰기 문제 풀이 이력 조회
    * @param dictationSessionNo 문제 세트 번호
+   * @param userNo 사용자
    * @return 받아쓰기 문제 풀이 이력 내용
    */
-  List<DictationQuestionLog> getDictationQuestionLogBySessionNo(int dictationSessionNo);
+  List<DictationResultLogDto> getDictationQuestionLogBySessionNo(
+      @Param("dictationSessionNo") int dictationSessionNo,
+      @Param("userNo") int userNo
+  );
 }

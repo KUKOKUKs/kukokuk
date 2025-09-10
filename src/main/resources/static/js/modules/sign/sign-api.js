@@ -13,7 +13,7 @@ export async function apiCheckUsernameDuplicate(username) {
         const response = await $.ajax({
             method: "GET",
             url: "/api/users/duplicate/username",
-            data: { username },
+            data: {username},
             dataType: "json",
         });
 
@@ -35,7 +35,7 @@ export async function apiCheckNicknameDuplicate(nickname) {
         const response = await $.ajax({
             method: "GET",
             url: "/api/users/duplicate/nickname",
-            data: { nickname },
+            data: {nickname},
             dataType: "json",
         });
 

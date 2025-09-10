@@ -30,7 +30,7 @@ public class ApiDailyQuestController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<DailyQuestStatusDto>>> dailyQuestList(
         @AuthenticationPrincipal SecurityUser securityUser) {
-        log.info("dailyQuestList() 컨트롤러 실행");
+        log.info("ApiDailyQuestController dailyQuestList() 컨트롤러 실행");
         return ResponseEntityUtils.ok(
             dailyQuestService.getDailyQuestsStatus(securityUser.getUser().getUserNo())
         );
@@ -39,7 +39,7 @@ public class ApiDailyQuestController {
     // 미인증 시 사용될 모든 퀘스트 목록 조회 요청
     @GetMapping("/basic")
     public ResponseEntity<ApiResponse<List<DailyQuest>>> dailyQuestBasic() {
-        log.info("dailyQuestBasic() 컨트롤러 실행");
+        log.info("ApiDailyQuestController dailyQuestBasic() 컨트롤러 실행");
         return ResponseEntityUtils.ok(
             dailyQuestService.getDailyQuests()
         );

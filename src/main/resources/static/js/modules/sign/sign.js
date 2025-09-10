@@ -38,7 +38,7 @@ $(document).ready(() => {
         e.preventDefault();
         if (!isValid) return false;
 
-        // 유효성 검사 통화 시 제출
+        // 유효성 검사 통과 시 제출
         this.submit();
     });
 
@@ -256,7 +256,7 @@ $(document).ready(() => {
     $loginForm.submit(function (e) {
         e.preventDefault();
 
-        // 유효성 검사 통화 시 제출
+        // 유효성 검사 통과 시 제출
         if (validateLoginForm($(this))) {
             this.submit();
         }

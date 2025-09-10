@@ -39,14 +39,14 @@
     margin-top: var(--baseGap);
     font-size: var(--subFontSize);
     background-color: #fff;
-    border: var(--thinBorder);
+    border: var(--baseBorder);
 
     thead {
         background-color: var(--lightGrayColor);
 
         th {
             padding: var(--smallPadding);
-            border: var(--thinBorder);
+            border: var(--baseBorder);
             color: var(--blackColor);
             font-weight: bold;
             text-align: center;
@@ -58,7 +58,7 @@
 
         td {
             padding: var(--smallPadding);
-            border: var(--thinBorder);
+            border: var(--baseBorder);
             text-align: center;
             color: var(--blackColor);
         }
@@ -75,7 +75,7 @@
     margin-top: var(--largeGap);
 
     .btn.white {
-        border: 2px solid var(--darkGreenColor);
+        border: var(--baseBorder);
         background-color: #fff;
         color: var(--darkGreenColor);
         font-weight: 600;

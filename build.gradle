@@ -70,7 +70,7 @@ dependencies {
 	// - 사용 시 log4jdbc용 DataSource 설정 필요
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
 
-	// Redis (인메모리 데이터 저장소)
+	// Redis (인메모리 데이터 저장소)(외부 Redis 서버(로컬/원격))
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	// .env로 환경변수 관리

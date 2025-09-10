@@ -4,6 +4,20 @@
 <mapper namespace="com.kukokuk.domain.user.mapper.UserMapper">
 
     <!--
+         * 전달받은 힌트 개수를 사용자 힌트 개수에서 차감하여 업데이트
+         * @param hintCount 추가할 힌트 개수
+         * @param userNo 사용자 번호
+        void updateUserHintCountMinus(@Param("hintCount") int hintCount
+            , @Param("userNo") int userNo);
+    -->
+    <update id="updateUserHintCountMinus">
+        UPDATE
+            KUKOKUK_USERS
+        SET HINT_COUNT = GREATEST(0, HINT_COUNT - #{hintCount})
+        WHERE USER_NO = #{userNo}
+    </update>
+
+    <!--
          * 전달받은 힌트 개수를 사용자 힌트 개수에 더하여 업데이트
          * @param hintCount 추가할 힌트 개수
          * @param userNo 사용자 번호

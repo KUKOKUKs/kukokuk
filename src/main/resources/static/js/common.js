@@ -13,6 +13,15 @@ $(document).ready(() => {
 
         this.submit();
     });
+    
+    // 네이바 토글
+    const $navContainer = $('#nav-container'); // 네비 컨테이너 요소
+    const $navToggleBtn = $("#nav-toggle-btn"); // 네비 토글 버튼
+    $navToggleBtn.click(function () {
+        if ($navContainer.length) {
+            $navContainer.toggleClass("closed");
+        }
+    });
 
     // 모달창 닫기
     const $modalCloseBtns = $(".modal_close"); // 모달창 닫기 버튼
@@ -25,7 +34,7 @@ $(document).ready(() => {
                 this.reset();
             });
             // 모달창 닫기
-            $modalAll.hide();
+            $modalAll.hide().removeClass("open");
         }
     });
 

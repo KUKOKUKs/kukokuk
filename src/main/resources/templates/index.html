@@ -1,70 +1,111 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/base}"
       th:with="menu='home',
-          loggedIn=${#authorization.expression('isAuthenticated()')},
-          d=${loggedIn ? #authentication.principal?.user?.studyDifficulty : null},
-          s=${loggedIn ? #authentication.principal?.user?.currentSchool : null},
-          g=${loggedIn ? #authentication.principal?.user?.currentGrade : null},
-          ready=${d != null and s != null and g != null}">
-
+      isAuth=${#authorization.expression('isAuthenticated()')},
+      user=${isAuth ? #authentication.principal.user : null},
+      isSetStudyLevel=${user != null
+                      and user.studyDifficulty != null
+                      and user.currentSchool != null
+                      and user.currentGrade != null}">
 <div layout:fragment="content">
-    <div id="main-content" class="main_container">
-        <div class="main_content_container">
-            <div class="page_title "> <span class="emoji">📖</span> 오늘의 학습하기 </div>
-            <div class="study_list_container">
-                <!-- 일일학습 카드가 동적으로 추가되는 부분 -->
+    <div id="main-content" class="content_container">
+        <div class="content_info">
+            <a href="/study" class="content_title">
+                <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
+                오늘의 학습
+            </a>
 
-                <!--/* 로그인 되어있지 않은 경우 */-->
-                <th:block th:if="${!loggedIn}">
-                    <div class="daily_study_card no_cursor center">
-                        <div class="study_info">
-                            <div class="study_title">로그인하고 학습을 시작해보세요!</div>
-                            <div class="study_content">
-                                AI 기반 학습 서비스를 경험하려면 먼저 로그인하세요.
-                            </div>
-                        </div>
+            <!--/* 로그인 되어있지 않은 경우 */-->
+            <div class="component elevate_on_hover"
+                 th:if="${!isAuth}">
+                <a href="/login" class="component_title justify_content_center pd_base tac">
+                    <div class="title_info">
+                        안녕하세요! AI가 맞춤형 학습을 도와줄 준비가 되어 있어요. 로그인하고 바로 경험해보세요!
                     </div>
-                </th:block>
+                </a>
+            </div>
 
-                <!--/* 로그인 되어있고 학습수준이 설정되어 있지 않은 경우*/-->
-                <th:block th:if="${loggedIn and !ready}">
-                    <button class="modal-study-level-btn btn white">
-                        학습수준 설정하고 일일학습하기
-                    </button>
-                </th:block>
+            <!--/* 로그인 되어있지만 학습 진도/단계 설정이 필요한 경우 */-->
+            <div class="component elevate_on_hover"
+                 th:if="${isAuth and !isSetStudyLevel}">
+                <button type="button"
+                        class="modal_study_level_btn component_title justify_content_center pd_base tac">
+                    <div class="title_info">
+                        학습 수준을 설정하고 오늘의 학습을 시작해볼까요?
+                    </div>
+                </button>
+            </div>
+
+            <!--/* 로그인 되었고 학습 진도/단계 설정까지 완료된 경우 컨텐츠 추가 */-->
+            <div class="study_list_container"
+                 th:if="${isAuth and isSetStudyLevel}"
+                 th:data-is-study-level-set="${isAuth and isSetStudyLevel}">
+                <!--/* 요청 기본 UI 세팅 */-->
+                <div class="component base_list_component">
+                    <div class="loading_spinner pd_base">
+                        <div class="spinner"></div>
+                        <p class="info" style="--percent: 0%;">맞춤 학습 자료 요청 중...</p>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="main_content_container">
-            <div class="page_title "> <span class="emoji">🎮</span> 게임하기 </div>
-            <div class="square_container">
-                <a href="/quiz/speed" class="square_component">
-                    <span class="square_text">스피드퀴즈</span>
-                    <span class="square_emoji">⚡</span>
+
+        <div class="content_info">
+            <a href="/quiz" class="content_title">
+                <iconify-icon icon="fluent-color:game-chat-20"></iconify-icon>
+                국어 놀이터
+            </a>
+            <div class="grid_list_component">
+                <a href="/quiz/speed" class="component grid_list elevate_on_hover">
+                    <div class="component_title">
+                        <p class="title_info column">
+                            스피드 퀴즈
+                            <span class="component_sub_title">
+                                제한 시간 내 문제를 풀고, 순위를 확인해 보세요!
+                            </span>
+                        </p>
+                    </div>
+                    <span class="icon base">
+                        <iconify-icon icon="flat-color-icons:flash-on"></iconify-icon>
+                    </span>
                 </a>
-                <a href="/quiz/level-select" class="square_component">
-                    <span class="square_text">단계별퀴즈</span>
-                    <span class="square_emoji">📚</span>
+                <a href="/quiz/level-select" class="component grid_list elevate_on_hover">
+                    <div class="component_title">
+                        <p class="title_info column">
+                            단계별 퀴즈
+                            <span class="component_sub_title">
+                                단계별 문제를 풀며 실력을 키워보세요!
+                            </span>
+                        </p>
+                    </div>
+                    <span class="icon base">
+                        <iconify-icon icon="token-branded:step"></iconify-icon>
+                    </span>
                 </a>
-                <a href="/dictation/start" class="square_component">
-                    <span class="square_text">받아쓰기</span>
-                    <span class="square_emoji">✍️</span>
+                <a href="/dictation/start" class="component grid_list elevate_on_hover">
+                    <div class="component_title">
+                        <p class="title_info column">
+                            받아쓰기
+                            <span class="component_sub_title">
+                                AI가 생성한 문장을 듣고 받아쓰기에 도전해 보세요!
+                            </span>
+                        </p>
+                    </div>
+                    <span class="icon base">
+                        <iconify-icon icon="flat-color-icons:voice-presentation"></iconify-icon>
+                    </span>
                 </a>
             </div>
         </div>
     </div>
 
-    <div id="sub-content">
+    <div id="sub-content" class="content_container">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
         <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
     </div>
-
 </div>
 
 <th:block layout:fragment="script">
-    <!--/* 로그인 되어있고 학습수준이 설정되어 있은 경우*/-->
-    <th:block th:if="${loggedIn and ready}">
-        <!--/* 학습 목록을 요청 */-->
-        <script type="module" th:src="@{/js/modules/main/main.js}"></script>
-    </th:block>
+    <script type="module" th:src="@{/js/modules/home/home.js}"></script>
 </th:block>
 </html>
