@@ -10,10 +10,16 @@
 <div layout:fragment="content">
     <div id="main-content" class="content_container">
         <div class="content_info">
-            <a href="/study" class="content_title">
+            <div class="content_title">
                 <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
                 오늘의 학습
-            </a>
+
+                <!--/* 로그인이 되었고 그룹에 속해 있을 경우 일반/우리반 토글 스위치 노출 */-->
+                <div th:if="${isAuth and user.group != null}"
+                     class="group_toggle_btn">
+                    <div class="toggle_switch"></div>
+                </div>
+            </div>
 
             <!--/* 로그인 되어있지 않은 경우 */-->
             <div class="component elevate_on_hover"
@@ -51,10 +57,10 @@
         </div>
 
         <div class="content_info">
-            <a href="/quiz" class="content_title">
+            <p class="content_title">
                 <iconify-icon icon="fluent-color:game-chat-20"></iconify-icon>
                 국어 놀이터
-            </a>
+            </p>
             <div class="grid_list_component">
                 <a href="/quiz/speed" class="component grid_list elevate_on_hover">
                     <div class="component_title">

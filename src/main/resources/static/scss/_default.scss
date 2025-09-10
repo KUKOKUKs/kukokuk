@@ -1080,6 +1080,83 @@
     }
 }
 
+/*
+    일반/구릅 전용 토글 버튼(범용성으로 사용하지 않음) 기본값 off
+    <div class="group_toggle_btn">
+        <div class="toggle_switch"></div>
+    </div>
+*/
+.group_toggle_btn {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    margin-left: auto; /* 보통 우측에 사용되어지므로 flex 요소 내부에 있을 경우 우측 위치 시킴 */
+    padding: var(--tinyPadding);
+    background-color: var(--lightGrayColor);
+    font-size: var(--fixEtcTinyFontSize);
+    text-align: center;
+    border-radius: var(--bdrs);
+    border: var(--baseBorder);
+    box-shadow: var(--switchToggleInsetBxsh);
+    position: relative;
+    cursor: pointer;
+
+    &::before, &::after {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: calc(var(--smallPadding) / 2) var(--smallPadding);
+        font-weight: normal;
+        position: relative;
+        transition: color var(--trst);
+        z-index: 2;
+    }
+
+    &::before {
+        content: "일반";
+        font-weight: bold;
+        color: var(--primaryColor);
+        grid-column: 1; // 왼쪽 칸 명시
+    }
+
+    &::after {
+        content: "우리반";
+        font-weight: normal;
+        color: var(--grayColor);
+        grid-column: 2; // 오른쪽 칸 명시
+    }
+
+    .toggle_switch {
+        display: block;
+        width: calc((100% - (var(--tinyPadding) * 2)) / 2);
+        height: calc(100% - (var(--tinyPadding) * 2));
+        border-radius: calc(var(--bdrs) / 1.5);
+        background-color: #fff;
+        box-shadow: var(--insetBxsh);
+        position: absolute;
+        top: 50%;
+        left: var(--tinyPadding);
+        z-index: 1;
+        transform: translate(2%, -49%);
+        transition: transform var(--trst);
+    }
+
+    &.on {
+        .toggle_switch {
+            transform: translate(100%, -49%);
+        }
+
+        &::before {
+            font-weight: normal;
+            color: var(--grayColor);
+        }
+
+        &::after {
+            font-weight: bold;
+            color: var(--primaryColor);
+        }
+    }
+}
+
 /* 아이콘 버튼 */
 .icon_btn {
     width: var(--baseIcon);
