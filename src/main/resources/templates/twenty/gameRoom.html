@@ -128,6 +128,10 @@
   }
 
   .participant_item { color: #6aa84f; font-weight: 700; }
+
+  .participants_user-join{
+    color: #6aa84f;
+  }
   .participants_user {
     color: gray;
   }
@@ -224,9 +228,9 @@
   }
 </style>
 <body>
-<div class="page-container"
+<div class="page_container"
      th:data-user-no = "${userNo}"
-     th:data-room-id = "${roomId}">
+     th:data-room-no = "${roomNo}">
 
   <div class="page_header">
     <span>스무고개 게임방</span>
@@ -271,7 +275,7 @@
       <div class="participants_list" id="participants-list">
         <div class ="participants_user"
               th:each="user :${list}"
-              th:text="${user.user.name}"
+              th:text="${user.name}"
               th:data-user-no="${user.userNo}"
               th:data-user-status ="${user.status}">
           1

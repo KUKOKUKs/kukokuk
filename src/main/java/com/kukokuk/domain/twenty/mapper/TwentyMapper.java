@@ -1,5 +1,6 @@
 package com.kukokuk.domain.twenty.mapper;
 
+import com.kukokuk.domain.twenty.dto.RoomUser;
 import com.kukokuk.domain.twenty.vo.TwentyRoomUser;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -13,5 +14,7 @@ public interface TwentyMapper {
    * @param roomNo
    * @return
    */
-  public List<TwentyRoomUser> getTwentyPlayerList(int roomNo);
+  public List<RoomUser> getTwentyPlayerList(int roomNo);
+
+  public void updateTwentyRoomUser(int userNo, int roomNo);
 }

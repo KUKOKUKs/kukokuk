@@ -3,40 +3,41 @@
  */
 
 const pageContainer = $(".page_container");
-/*const currentUser = {
-  role: mainContainer.dataset.role,
-  username: mainContainer.dataset.username
-};*/
+
 const currentUserNo = pageContainer.data("user-no");
-const currentRoomId = pageContainer.data("room-id");
+const StringroomNo =  pageContainer.data("room-no");
+const currentRoomNo = parseInt(StringroomNo);
 
 let stompClient = null;
 let turnTimer = null;
 
-// WebSocket 연결 함수
+// WebSocket 연결
 function connectWebSocket() {
   const socket = new SockJS('/ws');
   stompClient = Stomp.over(socket);
   stompClient.connect({}, function (frame) {
     console.log('Connected: ' + frame);
 
-    // 구독 (subscribe) 로직은 기존과 동일
-    stompClient.subscribe(`/topic/twentyRoom/${currentRoomId}`, function(result) {
+    // 구독 코드
+    // 1. 채팅 영역 실시간 반영
+    stompClient.subscribe(`/topic/twentyRoom/${currentRoomNo}`, function(result) {
       const message = JSON.parse(result.body);
       appendBoardLine(message);
     });
 
-    stompClient.subscribe(`/topic/participants/${currentRoomId}`, function(result) {
-      const participants = JSON.parse(result.body);
-      updateParticipantList(participants);
+    // 2.참여자 명단 실시간 반영
+    stompClient.subscribe(`/topic/participants/${currentRoomNo}`, function(result) {
+      const userList = JSON.parse(result.body);
+      console.log("userList: ",userList);
+      updateParticipantList(userList);
     });
 
-    stompClient.subscribe(`/topic/turnOff/${currentRoomId}`, function(result) {
+    stompClient.subscribe(`/topic/turnOff/${currentRoomNo}`, function(result) {
       resetToDefault();
     });
 
     // 손든 사람!!
-    stompClient.subscribe(`/topic/raisehand/${currentRoomId}`, function(result) {
+    stompClient.subscribe(`/topic/raisehand/${currentRoomNo}`, function(result) {
       const winner = JSON.parse(result.body);
       if (winner.userNo == currentUserNo) {
         activateQuestionMode();
@@ -46,7 +47,7 @@ function connectWebSocket() {
     });
 
     // 입장할 때마다, 누가 들어왔는지 신호 보내기
-    stompClient.send(`/app/join/${currentRoomId}`, {}, JSON.stringify({}));
+    stompClient.send(`/app/join/${currentRoomNo}`, {}, JSON.stringify({}));
   });
 }
 
@@ -67,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   if (btnEnd) {
     btnEnd.addEventListener('click', function() {
-      stompClient.send(`/app/gameOver/${currentRoomId}`, {}, JSON.stringify({}));
+      stompClient.send(`/app/gameOver/${currentRoomNo}`, {}, JSON.stringify({}));
     });
   }
   // 눌렀을 때 웹 소캣 신호 보내는거
@@ -75,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const msg = {
       content: event.target.textContent
     };
-    stompClient.send(`/app/chatSend/${currentRoomId}`, {}, JSON.stringify(msg));
+    stompClient.send(`/app/chatSend/${currentRoomNo}`, {}, JSON.stringify(msg));
   }
 
 
@@ -92,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   if (raiseHandBtn) {
     raiseHandBtn.addEventListener('click', function() {
-      stompClient.send(`/app/raisehand/${currentRoomId}`, {}, JSON.stringify({}));
+      stompClient.send(`/app/raisehand/${currentRoomNo}`, {}, JSON.stringify({}));
     });
   }
 
@@ -103,19 +104,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (text) {
       const msg = {
-        roomId: currentRoomId,
+        roomId: currentRoomNo,
         content: text
       };
-      stompClient.send(`/app/chatSend/${currentRoomId}`, {}, JSON.stringify(msg));
+      stompClient.send(`/app/chatSend/${currentRoomNo}`, {}, JSON.stringify(msg));
       input.value = '';
     }
-    stompClient.send(`/app/turnOff/${currentRoomId}`, {}, JSON.stringify({}));
+    stompClient.send(`/app/turnOff/${currentRoomNo}`, {}, JSON.stringify({}));
   }
 });
 
 
 // --- UI 상태 변경 함수들 ---
-// (jQuery($)를 사용하지 않는 순수 JavaScript(Vanilla JS)로 일부 수정)
 function activateQuestionMode() {
   clearTimeout(turnTimer);
   document.querySelectorAll('#question-input, #answer-input, #send-question, #send-answer').forEach(el => el.disabled = false);
@@ -124,7 +124,7 @@ function activateQuestionMode() {
 
   turnTimer = setTimeout(() => {
     appendBoardLine({ sender: 'system', content: '시간이 초과되었습니다. 턴이 종료됩니다.' });
-    stompClient.send(`/app/turnOff/${currentRoomId}`, {}, JSON.stringify({}));
+    stompClient.send(`/app/turnOff/${currentRoomNo}`, {}, JSON.stringify({}));
   }, 60000);
 }
 
@@ -141,15 +141,32 @@ function resetToDefault() {
   document.getElementById('raise-hand').disabled = false;
 }
 
-function updateParticipantList(participants) {
-  const list = document.getElementById('participants-list');
-  list.innerHTML = ''; // 리스트 비우기
-  participants.forEach(p => {
-    const role = p.role === 'TEACHER' ? '교사' : '학생';
-    const isCurrentUser = p.username === currentUser.username ? ' (나)' : '';
-    const item = `<div class="participant_item">${p.username} ${role}${isCurrentUser}</div>`;
-    list.insertAdjacentHTML('beforeend', item);
-  });
+/**
+ * 게임방의 참여자가 입장 시, UI 변화
+ * @param participants
+ */
+function updateParticipantList(userList) {
+  console.log("userList2: ",userList);
+  let $list = $("#participants-list");
+  $list.empty();
+
+  for (let i of userList) {
+    // 1. 오타 수정: stausClass -> statusClass
+    let statusClass = '';
+    if (i.status == "JOINED") {
+      statusClass = 'participants_user-join';
+    } else {
+      statusClass = 'participants_user';
+    }
+
+    // 2. data-user-no 속성값에 따옴표 추가
+    let injectHtml = `<div class="${statusClass}"
+                           data-user-no="${i.userNo}">
+          ${i.name}
+        </div>`;
+
+    $list.append(injectHtml);
+  }
 }
 
 function appendBoardLine(message) {

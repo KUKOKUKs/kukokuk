@@ -1,5 +1,6 @@
 package com.kukokuk.domain.twenty.service;
 
+import com.kukokuk.domain.twenty.dto.RoomUser;
 import com.kukokuk.domain.twenty.mapper.TwentyMapper;
 import com.kukokuk.domain.twenty.vo.TwentyRoomUser;
 import com.kukokuk.domain.user.vo.User;
@@ -21,7 +22,16 @@ public class TwentyService {
    * @param roomNo
    * @return 참여자 리스트 - 이름, userNo, status
    */
-  public List<TwentyRoomUser> getTwentyPlayerList(int roomNo) {
+  public List<RoomUser> getTwentyPlayerList(int roomNo) {
     return twentyMapper.getTwentyPlayerList(roomNo);
+  }
+
+  /**
+   * 이 게임방의 사용자의 상태를 "JOIN"으로 변경
+   * @param userNo
+   * @param roomNo
+   */
+  public void updateTwentyRoomUser(int userNo, int roomNo) {
+    twentyMapper.updateTwentyRoomUser(userNo, roomNo);
   }
 }
