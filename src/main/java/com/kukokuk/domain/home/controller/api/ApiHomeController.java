@@ -28,7 +28,12 @@ public class ApiHomeController {
     private final HomeService homeService;
     private final RedisJobStatusStore<List<DailyStudySummaryResponse>> studyJobStatusStore;
 
+    /*
+    !! 정호형님 확인!!!
+        study 컨트롤러에 통일됨에 따라 확인후 삭제 - /api/studies
+     */
     // 맞춤 학습 자료 요청
+    /*
     @GetMapping("/studies")
     public ResponseEntity<ApiResponse<JobStatusResponse<?>>> getStudiesByUser(
         @RequestParam(defaultValue = "1") int dailyStudyCount
@@ -80,8 +85,14 @@ public class ApiHomeController {
 
         return ResponseEntityUtils.ok(status);
     }
+     */
 
+    /*
+        !! 정호형님 확인 !!
+        - apiStudyController로 이동
+     */
     // 맞춤 학습 자료 폴링(최초 요청시 응답 받은 jobId)
+    /*
     @GetMapping("/studies/status/{jobId}")
     public ResponseEntity<ApiResponse<JobStatusResponse<?>>> getStudiesByUserStatus(
         @PathVariable("jobId") String jobId) {
@@ -96,5 +107,7 @@ public class ApiHomeController {
 
         return ResponseEntityUtils.ok(status);
     }
+
+     */
 
 }

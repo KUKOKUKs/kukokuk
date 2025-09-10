@@ -1,8 +1,4 @@
 import {apiGetDailyStudies} from "./study-api.js";
-import {
-    renderStudyListCard,
-    renderStudyListCardSkeleton
-} from "./study-renderer.js";
 
 // 학습 자료 카드가 삽입될 목록 컨테이너
 const $studyListContainer = $('.study_list_container');
@@ -79,7 +75,7 @@ $(document).on('click', '.daily_study_card', function () {
 
         // 버튼 HTML
         const buttonsHtml = `
-            <div class="study_btn_list">
+            <div class="btn_list column">
               <a href="/study/${dailyStudyNo}" class="btn dark">${statusText}</a>
               <a href="/study/${dailyStudyNo}/essay" class="btn white ${essayBtnClass}">AI 피드백 기반 논술형 퀴즈 풀기</a>
             </div>

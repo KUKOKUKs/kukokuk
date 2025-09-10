@@ -2,10 +2,9 @@
 
 import {apiErrorProcessByXhr} from '../../utils/api-error-util.js';
 import {
-    renderStudyListCard,
-    renderStudyListCardSkeleton
+    renderStudyListCard, renderStudyListCardFirstSkeleton
 } from "./study-renderer.js";
-import {pollJobStatus} from "../home/home-api.js";
+import {pollStudyJob} from "./study-poll.js";
 
 // 학습 단계 정보 비동기 요청
 export async function apiGetStudyDifficultyList() {
@@ -84,6 +83,7 @@ export async function apiGetDailyStudies(rows, $studyListContainer) {
         console.log("apiGetHomeUserDailyStudies() api 요청 response: ", response);
 
         // DONE일 경우 바로 렌더링
+        console.log(typeof response.data);
 
         // 동작을 기다리지 않고 응답
         pollAndRenderJobStatusList(response.data, $studyListContainer);
@@ -103,26 +103,33 @@ export async function apiGetDailyStudies(rows, $studyListContainer) {
 export async function pollAndRenderJobStatusList(jobStatusList, $studyListContainer) {
     $studyListContainer.empty();
 
-    jobStatusList.forEach((job, index) => {
-        // 우선 스켈레톤 렌더링
-        renderStudyListCard(job, index, $studyListContainer);
+    // 모든 스켈레톤 카드 먼저 렌더링
+    jobStatusList.forEach(job => {
+        renderStudyListCardFirstSkeleton(job.jobId, $studyListContainer);
+    });
+
+    // forEach문은 비동기처리(await)를 기다려주지 않음
+    // forEach는 콜백을 호출만 하고, 콜백 안의 비동기 처리 결과를 Promise로 모아서 기다리는 로직이 없다
+    for (const [index, job] of jobStatusList.entries()) { // entries() : 인덱스와 값을 동시에 꺼냄
+        // 이미 데이터가 존재하는 경우, 바로 렌더링
+        if (job.status === "DONE") {
+            renderStudyListCard(job, index, $studyListContainer);
+        }
 
         // 폴링 시작 -> 상태 DONE/FAILED 되면 다시 renderStudyListCard 호출
-        if (job.status === "PROCESSING") {
+        else if (job.status === "PROCESSING") {
             const $studyCardContainer = $studyListContainer.find(`[data-job-id="${job.jobId}"]`);
-            pollJobStatus(job.jobId, $studyCardContainer)
-                .then(result => {
-                    job.status = "DONE";
-                    job.result = result;
-                    renderStudyListCard(job, index, $studyListContainer);
-                })
-                .catch(err => {
-                    console.error(`jobId=${job.jobId} 실패`, err);
-                    job.status = "FAILED";
-                    renderStudyListCard(job, index, $studyListContainer);
-                });
+            try {
+                // index 순서대로 순차적으로 폴링을 처리하고, job이 DONE이되고 Promise가 resolve되면 다음 동작 실행
+                const updatedJob = await pollStudyJob(job.jobId, $studyCardContainer);
+                renderStudyListCard(updatedJob, index, $studyListContainer);
+            } catch (err) {
+                console.error(`jobId=${job.jobId} 실패`, err);
+                job.status = "FAILED";
+                renderStudyListCard(job, index, $studyListContainer);
+            }
         }
-    })
+    }
 }
 
 /**

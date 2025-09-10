@@ -17,31 +17,11 @@
  */
 export function renderStudyListCard(job, index, $studyListContainer) {
 
-    const $existing = $studyListContainer.find(`[data-job-id="${job.jobId}"]`);
-
-    let cardHtml = "";
-
-    if (job.status === "PROCESSING") {
-        cardHtml = `
-            <div class="component base_list_component daily_study_card skeleton"
-                data-job-id="${job.jobId}">
-                <div class="study_info">
-                    <div class="component_title skeleton-line"></div>
-                    <div class="study_content skeleton-line"></div>
-                    <div class="study_tag_list skeleton-line"></div>
-                </div>
-            </div>`;
-    } else if (job.status === "FAILED") {
-        cardHtml = `
-            <div class="component base_list_component daily_study_card skeleton"
-                data-job-id="${job.jobId}">
-                <div class="study_info">
-                    <div class="component_title skeleton-line"></div>
-                    <div class="study_content skeleton-line"></div>
-                    <div class="study_tag_list skeleton-line"></div>
-                </div>
-            </div>`;
-    } else if (job.status === "DONE") {
+    const $existingCard = $studyListContainer.find(`[data-job-id="${job.jobId}"]`);
+    if (job.status === "FAILED") {
+        // FAILED일때의 ERROR 카드 UI 작업 필요
+    }
+    else if (job.status === "DONE") {
         const study = job.result;
 
         // 학습 상태에 따라 표현할 텍스트 설정
@@ -87,37 +67,18 @@ export function renderStudyListCard(job, index, $studyListContainer) {
                                     </div>
                                   ` : ``;
 
-        // 최종적으로 조립된 학습 카드 HTML 반환
-        cardHtml =`<div class="component base_list_component daily_study_card ${index === 0 ? 'no_cursor' : ''}"
-                    data-study-no="${study.dailyStudyNo}"
-                    data-study-status="${statusText}"
-                    data-essay-btn-class="${essayBtnClass}"
-                    data-job-id="${job.jobId}">
-                    <div class="study_info">
-                        <div class="component_title">${study.title}</div>
-                        <div class="study_content">${study.explanation ? study.explanation : ''}</div>
-                        <div class="study_tag_list">${tagHtml}</div>
-                    </div>
-                    <div class="level_info study_list">
-                        <div class="bar_gauge">
-                            <div class="gauge" style="width: ${study.progressRate}%"></div>
-                        </div>
-                    </div>
-                    ${buttons}
-                </div>
-              `;
-    }
+        // 사실상 이 메소드가 호출될 땐 $existingCard가 0이 아니긴함 but 예외대비
+        if ($existingCard.length) {
+            $existingCard.removeClass("skeleton")
+                .attr("data-study-no", study.dailyStudyNo)
+                .attr("data-study-status", statusText)
+                .attr("data-essay-btn-class", essayBtnClass);
 
-    if ($existing.length) {
-        $existing.replaceWith(cardHtml);
-    } else {
-        $studyListContainer.append(cardHtml);
-    }
-}
+            if (index === 0) {
+                $existingCard.addClass("no_cursor");
+            }
 
-export function renderStudyListCardSkeleton(jobId, $studyListContainer) {
-    const skeletionHtml =  `<div class="component base_list_component daily_study_card ${index === 0 ? 'no_cursor' : ''}"
-                data-job-id="${jobId}">
+            const innerHtml =`
                 <div class="study_info">
                     <div class="component_title">${study.title}</div>
                     <div class="study_content">${study.explanation ? study.explanation : ''}</div>
@@ -129,6 +90,22 @@ export function renderStudyListCardSkeleton(jobId, $studyListContainer) {
                     </div>
                 </div>
                 ${buttons}
+              `;
+
+            $existingCard.html(innerHtml);
+        }
+    }
+}
+
+export function renderStudyListCardFirstSkeleton(jobId, $studyListContainer) {
+    const skeletionHtml =  `
+            <div class="component base_list_component daily_study_card skeleton"
+                data-job-id="${jobId}">
+                <div class="study_info">
+                    <div class="component_title skeleton-line"></div>
+                    <div class="study_content skeleton-line"></div>
+                    <div class="study_tag_list skeleton-line"></div>
+                </div>
             </div>
           `;
 

@@ -1,7 +1,6 @@
 // noinspection ES6UnusedImports
 
 import {apiErrorProcessByXhr} from '../../utils/api-error-util.js';
-import {updateHomeDailyStudyProgressUI} from "./home-handler.js";
 
 /**
  * 요청할 자료 수를 전달받아 맞춤 학습 자료 비동기 요청
@@ -12,6 +11,9 @@ import {updateHomeDailyStudyProgressUI} from "./home-handler.js";
  * @param $studyListContainer 진행률이 표시될 부모 요소
  * @returns 맞춤 학습 자료 목록
  */
+
+// study-api로 통일시키면서 사용하지 않게 됨 - 정호형님 확인 후 삭제
+/*
 export async function apiGetHomeUserDailyStudies(dailyStudyCount, $studyListContainer) {
     console.log("apiGetHomeUserDailyStudies() api 요청 실행");
     try {
@@ -24,7 +26,7 @@ export async function apiGetHomeUserDailyStudies(dailyStudyCount, $studyListCont
         });
 
         console.log("apiGetHomeUserDailyStudies() api 요청 response: ", response);
-        
+
         // 최초 응답
         const jobStatus = response.data; // JobStatusResponse
         const jobId = jobStatus.jobId;
@@ -51,12 +53,27 @@ export async function apiGetHomeUserDailyStudies(dailyStudyCount, $studyListCont
         }
     }
 }
+/*
 
+
+/*
+    정호형님 확인!!
+    - 기존의 pollJobStatus 는 학습전용으로 작성되어 (ajax요청 url, 상태 render 함수가 고정),
+    다른 비동기 작업에서 재사용이 어려움
+    - 따라서, 학습 자료 외의 job상태 폴링에 활용 불가
+
+    따라서, URL과 UI 업데이트 로직을 외부에서 주입받는 유틸 메소드를 poll-job-utils에 추가
+    study-poll.js에서 범용 메소드에
+        url(/api/home/studies/status/${jobId})과
+        렌더함수 updateHomeDailyStudyProgressUI를 넘겨주도록 수정함
+     ※ 즉 이 함수는 study-poll.js의 pollStudyJob로 대체됨
+ */
 /**
  * 백그라운드 상태 폴링
  * @param {string} jobId Redis Job Key
  * @param $studyListContainer 진행률이 표시될 부모 요소
  */
+/*
 export function pollJobStatus(jobId, $studyListContainer) {
     console.log("pollJobStatus() api 요청 실행");
 
@@ -88,7 +105,7 @@ export function pollJobStatus(jobId, $studyListContainer) {
                 // FAILED일 경우엔 클라이언트에서 조치
                 if (status.status === "DONE" || status.status === "FAILED") {
                     console.log(`poll() ${reqCnt}번째 api 요청 실행되었음 소요시간: ${Date.now() - startTime}ms`);
-                    resolve(status.result); // 최종적으로 여기서 Promise 해결
+                    resolve(status); // 최종적으로 여기서 Promise 해결
                     return;
                 }
 
@@ -108,3 +125,4 @@ export function pollJobStatus(jobId, $studyListContainer) {
         void poll(); // 최초 실행(void로 Promise 무시 의도 명시/IDE 경고 제거)
     });
 }
+*/
