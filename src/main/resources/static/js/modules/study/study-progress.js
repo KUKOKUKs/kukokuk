@@ -554,7 +554,7 @@ function renderBtn() {
  * quiz 안내 화면은 화면이긴 하지만 진행률 전체 구간 수에도 포함하지 않음
  */
 function renderProgressBar() {
-    const $experiencePoint = $('.gauge');
+    const $experiencePoint = $('#study-progress');
 
     const progressStepCount = totalCount - 1; // startInfo 화면만 제외
     let progressStepIndex = currentIndex // 진행률 계산용 인덱스
