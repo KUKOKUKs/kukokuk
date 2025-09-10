@@ -29,16 +29,15 @@
             <tr th:each="result, iterStat : ${results}">
                 <td th:text="${iterStat.count}">1</td>
                 <td th:text="${result.question}">문제 내용</td>
-                <td>
-                    <span th:if="${result.selectedChoice == 0}">시간 초과</span>
-                    <span th:if="${result.selectedChoice != 0}"
-                          th:text="${result.selectedChoice}">-</span>
-                </td>
+
+                <!-- 개선된 부분 1: getOption() 사용 -->
+                <td th:text="${result.selectedChoice == 0 ? '시간 초과' : result.getOption(result.selectedChoice)}">-</td>
+
                 <td th:text="${result.successAnswer}">2</td>
-                <td>
-                    <span th:if="${result.isSuccess == 'Y'}" class="answer_correct">정답</span>
-                    <span th:unless="${result.isSuccess == 'Y'}" class="answer_wrong">오답</span>
-                </td>
+
+                <!-- 개선된 부분 2: isSuccess() 사용 -->
+                <td th:text="${result.isSuccess() ? '정답' : '오답'}"
+                    th:class="${result.isSuccess() ? 'answer_correct' : 'answer_wrong'}">정답/오답</td>
             </tr>
             </tbody>
         </table>

@@ -41,4 +41,11 @@ public class QuizResultDto {
     public boolean isBookmarked() {
         return "Y".equals(bookmarked);
     }
+
+    /**
+     * 정답 여부를 boolean으로 변환하는 커스텀 getter
+     */
+    public boolean isSuccess() {
+        return "Y".equals(isSuccess);
+    }
 }
