@@ -13,12 +13,12 @@
                     <div class="component_title">
                         <th:block th:with="
                                     resultMsg=${summary.percentile <= 1 ?
-                                        '상위 1%<br>전설의 기록! 👑' :
-                                        summary.percentile <= 10 ? '상위 ' + summary.percentile + '%!<br>대단해요 🎉' :
-                                        summary.percentile <= 30 ? '상위 ' + summary.percentile + '%!<br>멋진 기록이에요 👏' :
-                                        summary.percentile <= 50 ? '상위 ' + summary.percentile + '%!<br>조금만 더 하면 Top 30%! 🚀' :
-                                        summary.percentile <= 70 ? '상위 ' + summary.percentile + '%!<br>꾸준히 도전하면 더 올라갈 수 있어요 💪' :
-                                        '상위 ' + summary.percentile + '%!<br>지금은 시작 단계예요 🌱'
+                                        '상위 1%<br>전설의 퀴즈왕! 👑' :
+                                        summary.percentile <= 10 ? '상위 ' + summary.percentile + '%!<br>두뇌 풀가동! ⚡' :
+                                        summary.percentile <= 30 ? '상위 ' + summary.percentile + '%!<br>감각이 살아있네 🎯' :
+                                        summary.percentile <= 50 ? '상위 ' + summary.percentile + '%!<br>반은 잡았다! 📈' :
+                                        summary.percentile <= 70 ? '상위 ' + summary.percentile + '%!<br>꾸준함이 답이다 🏃' :
+                                        '상위 ' + summary.percentile + '%!<br>워밍업 끝! 한번 더! 💪'
                                     }">
                             <p class="title_info center" th:utext="${resultMsg}"></p>
                         </th:block>
