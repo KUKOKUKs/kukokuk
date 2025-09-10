@@ -5,6 +5,7 @@ import com.kukokuk.domain.quiz.mapper.QuizResultMapper;
 import com.kukokuk.domain.quiz.mapper.QuizSessionSummaryMapper;
 import com.kukokuk.domain.quiz.vo.QuizResult;
 import com.kukokuk.domain.quiz.vo.QuizSessionSummary;
+import com.kukokuk.domain.ranking.service.RankingService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,6 +22,7 @@ public class QuizProcessService {
     private final QuizMasterMapper quizMasterMapper;
     private final QuizService quizService;
     private final QuizSessionSummaryService quizSessionSummaryService;
+    private final RankingService rankingService;
 
     /**
      * 퀴즈 세션 요약과 결과 저장 + 퀴즈 자동 보충 처리
@@ -109,6 +111,10 @@ public class QuizProcessService {
         log.info("[전체 처리 완료] 세션 {}, 정답 수: {}, 상위 {}%에 속함",
             sessionNo, correctAnswers, percentile);
 
+        //스피드퀴즈 점수 계산 및 랭킹 처리
+        if ("speed".equals(summary.getQuizMode())) {
+            processSpeedQuizRanking(summary, correctAnswers, totalQuestion);
+        }
         // 스피드 퀴즈 풀 유지
         maintainSpeedQuizPool();
 
@@ -134,6 +140,40 @@ public class QuizProcessService {
             int toCreate = TARGET_COUNT - currentWord;
             quizService.insertQuizByDefRandomEntry(toCreate);
             log.info("보충된 단어 유형 퀴즈 {}개", toCreate);
+        }
+    }
+    /**
+     * 스피드퀴즈 점수 계산 및 랭킹 처리
+     * @param summary 퀴즈 세션 요약
+     * @param correctAnswers 정답 수
+     * @param totalQuestion 전체 문제 수
+     */
+    private void processSpeedQuizRanking(QuizSessionSummary summary, int correctAnswers, int totalQuestion) {
+        log.info("[랭킹 처리 시작] 사용자: {}, 정답: {}/{}", summary.getUserNo(), correctAnswers, totalQuestion);
+
+        final float MAX_TIME = 300f; // 5분 (300초)
+        final float MIN_TIME = 30f;  // 30초
+
+        // BASE_SCORE: (정답수 ÷ 전체문제수) × 100
+        double baseScore = ((double) correctAnswers / totalQuestion) * 100;
+
+        // TIME_BONUS: ((MAX_TIME - 실제시간) ÷ (MAX_TIME - MIN_TIME)) × 5
+        float actualTime = Math.max(MIN_TIME, Math.min(MAX_TIME, summary.getTotalTimeSec()));
+        double timeBonus = ((MAX_TIME - actualTime) / (MAX_TIME - MIN_TIME)) * 5;
+
+        // TOTAL_SCORE: BASE_SCORE + TIME_BONUS
+        double finalScore = baseScore + timeBonus;
+
+        log.info("[점수 계산] 기본점수: {:.2f}, 시간보너스: {:.2f}, 최종점수: {:.2f}",
+            baseScore, timeBonus, finalScore);
+
+        // 랭킹 처리 (신규 등록 또는 평균 업데이트)
+        try {
+            rankingService.processRanking("SPEED", finalScore, summary.getUserNo());
+            log.info("[랭킹 처리 완료] 사용자: {}, 점수: {:.2f}", summary.getUserNo(), finalScore);
+        } catch (Exception e) {
+            log.error("[랭킹 처리 실패] 사용자: {}, 점수: {:.2f}", summary.getUserNo(), finalScore, e);
+            // 랭킹 실패가 퀴즈 처리 전체를 망치지 않도록 예외를 잡아서 로그만 남김
         }
     }
 }

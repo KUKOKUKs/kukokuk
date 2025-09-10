@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.domain.ranking.mapper.RankingMapper">
 
     <resultMap id="RankingResultMap" type="Ranking">
@@ -26,17 +27,14 @@
     void insertRanking(Ranking ranking);
     -->
     <insert id="insertRanking" useGeneratedKeys="true" keyProperty="rankNo">
-        INSERT INTO KUKOKUK_RANKS(
-                                   CONTENT_TYPE
-                                 ,PLAY_COUNT
-                                 ,TOTAL_SCORE
-                                 ,USER_NO
-        )VALUES(
-                 #{contentType}
-               ,#{playCount}
-               ,#{totalScore}
-               ,#{userNo}
-               )
+        INSERT INTO KUKOKUK_RANKS( CONTENT_TYPE
+                                 , PLAY_COUNT
+                                 , TOTAL_SCORE
+                                 , USER_NO)
+        VALUES ( #{contentType}
+               , #{playCount}
+               , #{totalScore}
+               , #{userNo})
     </insert>
 
     <!--
@@ -48,11 +46,9 @@
     -->
     <update id="updateRanking">
         UPDATE KUKOKUK_RANKS
-        SET
-            PLAY_COUNT = #{playCount}
-          ,TOTAL_SCORE = #{totalScore}
-        WHERE
-            RANK_NO = #{rankNo}
+        SET PLAY_COUNT  = #{playCount}
+          , TOTAL_SCORE = #{totalScore}
+        WHERE RANK_NO = #{rankNo}
     </update>
 
     <!--
@@ -64,18 +60,15 @@
     Ranking getRankingByRankNo(int rankNo);
     -->
     <select id="getRankingByRankNo" resultMap="RankingResultMap">
-        SELECT
-            RANK_NO
-             ,CONTENT_TYPE
-             ,PLAY_COUNT
-             ,TOTAL_SCORE
-             ,USER_NO
-             ,CREATED_DATE
-             ,UPDATED_DATE
-        FROM
-            KUKOKUK_RANKS
-        WHERE
-            RANK_NO = #{rankNo}
+        SELECT RANK_NO
+             , CONTENT_TYPE
+             , PLAY_COUNT
+             , TOTAL_SCORE
+             , USER_NO
+             , CREATED_DATE
+             , UPDATED_DATE
+        FROM KUKOKUK_RANKS
+        WHERE RANK_NO = #{rankNo}
     </select>
 
     <!--
@@ -88,18 +81,15 @@
     Ranking getRankingByUserAndContent(@Param("userNo") int userNo, @Param("contentType") String contentType);
     -->
     <select id="getRankingByUserAndContent" resultMap="RankingResultMap">
-        SELECT
-            RANK_NO
-             ,CONTENT_TYPE
-             ,PLAY_COUNT
-             ,TOTAL_SCORE
-             ,USER_NO
-             ,CREATED_DATE
-             ,UPDATED_DATE
-        FROM
-            KUKOKUK_RANKS
-        WHERE
-            USER_NO = #{userNo}
+        SELECT RANK_NO
+             , CONTENT_TYPE
+             , PLAY_COUNT
+             , TOTAL_SCORE
+             , USER_NO
+             , CREATED_DATE
+             , UPDATED_DATE
+        FROM KUKOKUK_RANKS
+        WHERE USER_NO = #{userNo}
           AND CONTENT_TYPE = #{contentType}
     </select>
 
@@ -113,28 +103,24 @@
     List<Ranking> getGlobalRankings(@Param("contentType") String contentType, @Param("limit") int limit);
     -->
     <select id="getGlobalRankings" resultMap="RankingResultMap">
-        SELECT
-            r.RANK_NO
-             ,r.CONTENT_TYPE
-             ,r.PLAY_COUNT
-             ,r.TOTAL_SCORE
-             ,r.USER_NO
-             ,r.CREATED_DATE
-             ,r.UPDATED_DATE
-             ,u.NICKNAME
-             ,u.PROFILE_FILENAME
-             ,gu.GROUP_NO
-             ,g.TITLE
-             ,ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC) AS USER_RANK
-        FROM
-            KUKOKUK_RANKS r
-                INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
-                LEFT JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
-                LEFT JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
-        WHERE
-            r.CONTENT_TYPE = #{contentType}
-        ORDER BY
-            r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC
+        SELECT r.RANK_NO
+             , r.CONTENT_TYPE
+             , r.PLAY_COUNT
+             , r.TOTAL_SCORE
+             , r.USER_NO
+             , r.CREATED_DATE
+             , r.UPDATED_DATE
+             , u.NICKNAME
+             , u.PROFILE_FILENAME
+             , gu.GROUP_NO
+             , g.TITLE
+             , ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC) AS USER_RANK
+        FROM KUKOKUK_RANKS r
+                 INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
+                 LEFT JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
+                 LEFT JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
+        WHERE r.CONTENT_TYPE = #{contentType}
+        ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC
         LIMIT #{limit}
     </select>
 
@@ -149,29 +135,25 @@
     List<Ranking> getGroupRankings(@Param("contentType") String contentType, @Param("groupNo") int groupNo, @Param("limit") int limit);
     -->
     <select id="getGroupRankings" resultMap="RankingResultMap">
-        SELECT
-            r.RANK_NO
-             ,r.CONTENT_TYPE
-             ,r.PLAY_COUNT
-             ,r.TOTAL_SCORE
-             ,r.USER_NO
-             ,r.CREATED_DATE
-             ,r.UPDATED_DATE
-             ,u.NICKNAME
-             ,u.PROFILE_FILENAME
-             ,gu.GROUP_NO
-             ,g.TITLE
-             ,ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC) AS USER_RANK
-        FROM
-            KUKOKUK_RANKS r
-                INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
-                INNER JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
-                INNER JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
-        WHERE
-            r.CONTENT_TYPE = #{contentType}
+        SELECT r.RANK_NO
+             , r.CONTENT_TYPE
+             , r.PLAY_COUNT
+             , r.TOTAL_SCORE
+             , r.USER_NO
+             , r.CREATED_DATE
+             , r.UPDATED_DATE
+             , u.NICKNAME
+             , u.PROFILE_FILENAME
+             , gu.GROUP_NO
+             , g.TITLE
+             , ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC) AS USER_RANK
+        FROM KUKOKUK_RANKS r
+                 INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
+                 INNER JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
+                 INNER JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
+        WHERE r.CONTENT_TYPE = #{contentType}
           AND gu.GROUP_NO = #{groupNo}
-        ORDER BY
-            r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC
+        ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC
         LIMIT #{limit}
     </select>
 
@@ -185,33 +167,25 @@
     int getGlobalUserRanking(@Param("userNo") int userNo, @Param("contentType") String contentType);
     -->
     <select id="getGlobalUserRanking" resultType="int">
-        SELECT
-        COUNT(*) + 1
-        FROM
-        KUKOKUK_RANKS r1
-        WHERE
-        r1.CONTENT_TYPE = #{contentType}
-        AND (r1.TOTAL_SCORE > (
-        SELECT r2.TOTAL_SCORE
-        FROM KUKOKUK_RANKS r2
-        WHERE r2.USER_NO = #{userNo}
-        AND r2.CONTENT_TYPE = #{contentType}
-        )
-        OR (r1.TOTAL_SCORE = (
-        SELECT r2.TOTAL_SCORE
-        FROM KUKOKUK_RANKS r2
-        WHERE r2.USER_NO = #{userNo}
-        AND r2.CONTENT_TYPE = #{contentType}
-        )
-        AND r1.UPDATED_DATE < (
-        SELECT r2.UPDATED_DATE
-        FROM KUKOKUK_RANKS r2
-        WHERE r2.USER_NO = #{userNo}
-        AND r2.CONTENT_TYPE = #{contentType}
-        )
-        )
-        )
-    </select>
+    <![CDATA[
+        SELECT COUNT(*) + 1
+        FROM KUKOKUK_RANKS r1
+        WHERE r1.CONTENT_TYPE = #{contentType}
+          AND (r1.TOTAL_SCORE > (SELECT r2.TOTAL_SCORE
+                                 FROM KUKOKUK_RANKS r2
+                                 WHERE r2.USER_NO = #{userNo}
+                                   AND r2.CONTENT_TYPE = #{contentType})
+            OR (r1.TOTAL_SCORE = (SELECT r2.TOTAL_SCORE
+                                  FROM KUKOKUK_RANKS r2
+                                  WHERE r2.USER_NO = #{userNo}
+                                    AND r2.CONTENT_TYPE = #{contentType})
+                AND r1.UPDATED_DATE < (SELECT r2.UPDATED_DATE
+                                       FROM KUKOKUK_RANKS r2
+                                       WHERE r2.USER_NO = #{userNo}
+                                         AND r2.CONTENT_TYPE = #{contentType})))
+        ]]>
+</select>
+
 
     <!--
     /**
@@ -224,36 +198,27 @@
     int getGroupUserRanking(@Param("userNo") int userNo, @Param("contentType") String contentType, @Param("groupNo") int groupNo);
     -->
     <select id="getGroupUserRanking" resultType="int">
-        SELECT
-        COUNT(*) + 1
-        FROM
-        KUKOKUK_RANKS r1
-        INNER JOIN KUKOKUK_USERS u1 ON r1.USER_NO = u1.USER_NO
-        INNER JOIN KUKOKUK_GROUP_USERS gu1 ON u1.USER_NO = gu1.USER_NO
-        WHERE
-        r1.CONTENT_TYPE = #{contentType}
-        AND gu1.GROUP_NO = #{groupNo}
-        AND (r1.TOTAL_SCORE > (
-        SELECT r2.TOTAL_SCORE
-        FROM KUKOKUK_RANKS r2
-        WHERE r2.USER_NO = #{userNo}
-        AND r2.CONTENT_TYPE = #{contentType}
-        )
-        OR (r1.TOTAL_SCORE = (
-        SELECT r2.TOTAL_SCORE
-        FROM KUKOKUK_RANKS r2
-        WHERE r2.USER_NO = #{userNo}
-        AND r2.CONTENT_TYPE = #{contentType}
-        )
-        AND r1.UPDATED_DATE < (
-        SELECT r2.UPDATED_DATE
-        FROM KUKOKUK_RANKS r2
-        WHERE r2.USER_NO = #{userNo}
-        AND r2.CONTENT_TYPE = #{contentType}
-        )
-        )
-        )
-    </select>
+    <![CDATA[
+        SELECT COUNT(*) + 1
+        FROM KUKOKUK_RANKS r1
+                 INNER JOIN KUKOKUK_USERS u1 ON r1.USER_NO = u1.USER_NO
+                 INNER JOIN KUKOKUK_GROUP_USERS gu1 ON u1.USER_NO = gu1.USER_NO
+        WHERE r1.CONTENT_TYPE = #{contentType}
+          AND gu1.GROUP_NO = #{groupNo}
+          AND (r1.TOTAL_SCORE > (SELECT r2.TOTAL_SCORE
+                                 FROM KUKOKUK_RANKS r2
+                                 WHERE r2.USER_NO = #{userNo}
+                                   AND r2.CONTENT_TYPE = #{contentType})
+            OR (r1.TOTAL_SCORE = (SELECT r2.TOTAL_SCORE
+                                  FROM KUKOKUK_RANKS r2
+                                  WHERE r2.USER_NO = #{userNo}
+                                    AND r2.CONTENT_TYPE = #{contentType})
+                AND r1.UPDATED_DATE < (SELECT r2.UPDATED_DATE
+                                       FROM KUKOKUK_RANKS r2
+                                       WHERE r2.USER_NO = #{userNo}
+                                         AND r2.CONTENT_TYPE = #{contentType})))
+        ]]>
+</select>
 
     <!--
     /**
@@ -263,7 +228,8 @@
     void deleteRankingsByUser(int userNo);
     -->
     <delete id="deleteRankingsByUser">
-        DELETE FROM KUKOKUK_RANKS
+        DELETE
+        FROM KUKOKUK_RANKS
         WHERE USER_NO = #{userNo}
     </delete>
 
