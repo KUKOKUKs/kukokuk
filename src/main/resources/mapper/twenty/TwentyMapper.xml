@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.twenty.mapper.TwentyMapper">
+    <!--
+        public List<TwentyRoomUser> getTwentyPlayerList(int roomNo);
+    -->
+    <select id="getTwentyPlayerList" resultType="TwentyRoomUser">
+        SELECT
+            RU.USER_NO                      AS userNo
+             ,RU.STATUS                       AS status
+             ,U.NAME                          AS "user.name"
+        FROM
+            KUKOKUK_TWENTY_ROOM_USERS RU
+                JOIN KUKOKUK_USERS U ON RU.USER_NO = U.USER_NO
+        WHERE
+            RU.USER_NO = U.USER_NO AND
+            RU.TWENTY_ROOM_NO = #{roomNo}
+    </select>
+
+
+</mapper>

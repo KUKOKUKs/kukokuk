@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스무고개 게임방</title>
+</head>
+<style>
+  /* 레이아웃 기본 */
+  :root {
+    --brand: #b8000d;
+    --gray-100: #f7f8fa;
+    --gray-200: #f0f0f0;
+    --gray-300: #e5e7eb;
+    --gray-500: #999;
+    --text: #222;
+  }
+
+  /* 1. html과 body가 전체 화면 높이를 사용하도록 설정 */
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background: #fff;
+    color: var(--text);
+    display: flex; /* flex 컨테이너로 변경 */
+    flex-direction: column; /* 자식 요소를 세로로 배치 */
+  }
+
+  /* page-container 추가 (body의 자식, room_container의 부모) */
+  /* 이 클래스를 HTML의 body 바로 안쪽 div에 적용해야 합니다. */
+  .page-container {
+    flex: 1; /* body의 남은 세로 공간을 모두 차지 */
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* body 높이를 상속받아 전체 높이 사용 */
+  }
+
+  .page_header {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--gray-300);
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .user_info {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+  }
+
+  .room_container {
+    flex: 1; /* 2. page_header를 제외한 모든 세로 공간을 차지 */
+    display: grid;
+    grid-template-columns: 3fr 1fr; /* 3. 가로 비율을 3:1로 조정 */
+    gap: 12px;
+    padding: 12px;
+    min-height: 0; /* flex/grid 아이템의 내용 넘침 방지 */
+  }
+
+  .left_panel {
+    border: 2px solid #000;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    min-height: 0;
+  }
+
+  .board_area {
+    flex: 1; /* 4. left_panel 내부의 남은 공간을 모두 차지 */
+    border: 4px solid #000;
+    border-radius: 6px;
+    background: #fff;
+    padding: 24px;
+    overflow: auto; /* 내용이 넘치면 스크롤 생성 */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bullet_list { margin: 0.6rem 0 0 0; padding-left: 1.1rem; }
+  .bullet_list li { margin: 0.35rem 0; }
+
+  /* 채팅 메시지 스타일 */
+  .message-line { max-width: 70%; padding: 8px 12px; border-radius: 12px; line-height: 1.5; }
+  .my-message { background-color: #FFEB33; align-self: flex-end; }
+  .other-message { background-color: #f1f1f1; align-self: flex-start; }
+  .system-message { color: #888; font-style: italic; text-align: center; align-self: center; background: none; padding: 4px; font-size: 0.9em; }
+  .sender { font-weight: bold; font-size: 0.9em; margin-bottom: 4px; color: #555; }
+
+  /* 오른쪽 참가자 영역 */
+  .participants_panel {
+    border: 2px solid #000;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+    min-height: 0;
+  }
+
+  .participants_header {
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 8px 10px;
+    text-align: center;
+    font-weight: 700;
+    background: #fff;
+  }
+
+  .participants_list {
+    flex: 1; /* 5. participants_panel 내부의 남은 공간을 모두 차지 */
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 10px;
+    overflow: auto; /* 내용이 넘치면 스크롤 생성 */
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .participant_item { color: #6aa84f; font-weight: 700; }
+  .participants_user {
+    color: gray;
+  }
+  /* 하단 컨트롤 (교사) */
+  .teacher_controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .answer_box {
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 10px;
+    min-width: 160px;
+    font-weight: 700;
+    background: #fff;
+  }
+
+  .button_row {
+    display: flex;
+    gap: 16px;
+  }
+
+  .big_button {
+    width: 160px;
+    height: 70px;
+    border: 2px solid #000;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .big_button:hover { background: var(--gray-100); }
+
+  /* 하단 컨트롤 (학생) */
+  .student_controls {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 10px;
+    margin-top: 12px;
+    align-items: center;
+  }
+
+  .input_group {
+    display: grid;
+    grid-template-columns: 80px 1fr 48px;
+    gap: 10px;
+    align-items: center;
+    grid-column: 1 / 2;
+  }
+
+  .input_label { font-weight: 700; text-align: center; }
+
+  .text_input {
+    height: 36px;
+    border: 2px solid #000;
+    border-radius: 6px;
+    padding: 0 10px;
+    font-size: 1rem;
+  }
+
+  .arrow_button {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #000;
+    border-radius: 50%;
+    background: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .raise_button {
+    height: 82px;
+    border: 2px solid #000;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    grid-column: 2 / 3;
+    grid-row: 1 / 3;
+  }
+
+  @media (max-width: 980px) {
+    .room_container { grid-template-columns: 1fr; }
+    .participants_panel { order: -1; }
+  }
+</style>
+<body>
+<div class="page-container"
+     th:data-user-no = "${userNo}"
+     th:data-room-id = "${roomId}">
+
+  <div class="page_header">
+    <span>스무고개 게임방</span>
+    <div class="user_info">
+      <span sec:authentication="principal.username"></span>
+      (<span sec:authorize="hasRole('TEACHER')">교사</span><span sec:authorize="hasRole('STUDENT')">학생</span>)님으로 로그인됨
+    </div>
+  </div>
+
+  <div class="room_container">
+    <div class="left_panel">
+      <div class="board_area" id="board-area">
+        <div class="system-message">게임이 시작되면 이곳에 질문과 답변이 표시됩니다.</div>
+      </div>
+
+      <div class="teacher_controls" id="teacher-controls" sec:authorize="hasRole('TEACHER')">
+        <div class="button_row">
+          <button class="big_button" id="btn-o">O</button>
+          <button class="big_button" id="btn-x">X</button>
+          <button class="big_button" id="btn-end">게임종료</button>
+        </div>
+        <div class="answer_box" id="answer-box">정답 : <span th:text="${correctAnswer}"></span></div>
+      </div>
+
+      <div class="student_controls" id="student-controls" sec:authorize="hasRole('STUDENT')">
+        <div class="input_group">
+          <div class="input_label">질문입력</div>
+          <input class="text_input" id="question-input" placeholder="질문을 입력하세요" disabled/>
+          <button class="arrow_button" id="send-question" disabled>↗</button>
+        </div>
+        <div class="input_group">
+          <div class="input_label">정답 입력</div>
+          <input class="text_input" id="answer-input" placeholder="정답을 입력하세요" disabled/>
+          <button class="arrow_button" id="send-answer" disabled>↗</button>
+        </div>
+        <button class="raise_button" id="raise-hand">손들기</button>
+      </div>
+    </div>
+
+    <aside class="participants_panel">
+      <div class="participants_header">참여자 명단</div>
+      <div class="participants_list" id="participants-list">
+        <div class ="participants_user"
+              th:each="user :${list}"
+              th:text="${user.user.name}"
+              th:data-user-no="${user.userNo}"
+              th:data-user-status ="${user.status}">
+          1
+        </div>
+
+      </div>
+    </aside>
+  </div>
+</div>
+</body>
+
+<th:block layout:fragment="script">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  <script type="module" th:src="@{/js/modules/twenty/twentyGameRoom.js}"></script>
+</th:block>
+</html>
