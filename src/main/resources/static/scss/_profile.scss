@@ -81,16 +81,6 @@
         }
     }
 
-    &.study_list {
-        .level_bar {
-            height: 10px;
-
-            .experience_point {
-                background-color: var(--primaryColor);
-            }
-        }
-    }
-
     &.study_progress {
         margin: 32px 0;
         width: 100%;
