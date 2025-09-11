@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.group.mapper.GroupMapper">
+
+    <!--
+        그룹 정보 조회 ResultMap
+    -->
+    <resultMap id="GroupResultMap" type="Group">
+        <!-- Group 기본 컬럼 -->
+        <id property="groupNo" column="GROUP_NO"/>
+        <result property="title" column="TITLE"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="isDeleted" column="IS_DELETED"/>
+        <result property="createdDate" column="CREATED_DATE"/>
+        <result property="updatedDate" column="UPDATED_DATE"/>
+
+        <!-- teacher(User) 매핑 -->
+        <association property="teacher" javaType="User">
+            <id property="userNo" column="TEACHER_USER_NO"/>
+            <result property="username" column="TEACHER_USERNAME"/>
+            <result property="name" column="TEACHER_NAME"/>
+            <result property="nickname" column="TEACHER_NICKNAME"/>
+            <result property="birthDate" column="TEACHER_BIRTH_DATE"/>
+            <result property="gender" column="TEACHER_GENDER"/>
+            <result property="profileFilename" column="TEACHER_PROFILE_FILENAME"/>
+            <result property="level" column="TEACHER_LEVEL"/>
+        </association>
+    </resultMap>
+
+
+
+</mapper>
