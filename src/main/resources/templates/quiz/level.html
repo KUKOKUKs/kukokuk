@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/center}"
-      th:with="title='단계별 퀴즈',
+      th:with="title=|${difficulty} 단계 퀴즈|,
       menu='quiz',
       user=${#authentication.principal.user}">
 <div layout:fragment="content">
@@ -8,7 +8,7 @@
         <div class="content_info">
             <div class="content_title justify_content_center">
                 <iconify-icon icon="token-branded:step"></iconify-icon>
-                단계별 퀴즈
+                [[${difficulty}]] 단계 퀴즈
 
                 <div class="progress_end_btn quiz_end_btn">
                     <button type="button" class="btn tiny">종료하기</button>
@@ -41,7 +41,7 @@
 
         <!--/* 문제 */-->
         <div class="component">
-            <p id="quiz-question" class="collout_info bold large_font tac"></p>
+            <p id="quiz-question" class="callout_info bold large_font tac"></p>
         </div>
 
         <!--/* 보기 */-->
