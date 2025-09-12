@@ -57,11 +57,6 @@ public class StudyController {
         return "study/complete";
     }
 
-    @GetMapping("/test")
-    public String testHtml() {
-        return "study/test";
-    }
-
     @GetMapping("/{dailyStudyNo}/essay")
     public String studyEssay(@PathVariable("dailyStudyNo") int dailyStudyNo,
         @AuthenticationPrincipal SecurityUser securityUser,
