@@ -25,7 +25,7 @@ function connectWebSocket() {
       appendBoardLine(message);
     });
 
-    // 2.참여자 명단 실시간 반영
+    // 2.참여자 명단 실시간 반영 - 입장 또는 나감 처리
     stompClient.subscribe(`/topic/participants/${currentRoomNo}`, function(result) {
       const userList = JSON.parse(result.body);
       console.log("userList: ",userList);
@@ -53,31 +53,33 @@ function connectWebSocket() {
 
 // 이벤트 리스너: DOM이 로드된 후 실행되도록 변경 (기존의 $(function(){...})와 동일한 역할)
 document.addEventListener('DOMContentLoaded', function() {
-  connectWebSocket();
+    connectWebSocket();
 
-  // --- 교사 기능 ---
-  const btnO = document.getElementById('btn-o');
-  const btnX = document.getElementById('btn-x');
-  const btnEnd = document.getElementById('btn-end');
+    // --- 교사 기능 ---
+    let $btnO = $('#btn-o');
+    let $btnX = $('#btn-x');
+    const $btnEnd = $("#btn-end");
 
-  if (btnO) {
-    btnO.addEventListener('click', handleOXClick);
-  }
-  if (btnX) {
-    btnX.addEventListener('click', handleOXClick);
-  }
-  if (btnEnd) {
-    btnEnd.addEventListener('click', function() {
-      stompClient.send(`/app/gameOver/${currentRoomNo}`, {}, JSON.stringify({}));
+    $btnO.click(function() {
+      stompClient.send(`/app/chatSend/${currentRoomNo}`, {}, JSON.stringify({}));
+      // 아직 어떤 값을 보낼지 정하지 않았음
     });
-  }
-  // 눌렀을 때 웹 소캣 신호 보내는거
-  function handleOXClick(event) {
-    const msg = {
-      content: event.target.textContent
-    };
-    stompClient.send(`/app/chatSend/${currentRoomNo}`, {}, JSON.stringify(msg));
-  }
+    $btnX.click(function() {
+      stompClient.send(`/app/chatSend/${currentRoomNo}`, {}, JSON.stringify({}));
+    });
+
+    $btnEnd.click(function() {
+      let response = $.ajax({
+        url : '/api/twenty/gameOver',
+        type :'POST',
+        dataType: 'json',
+        contentType : 'application/json',
+        data : {'roomNo': currentRoomNo},
+      });
+      window.close();
+
+    });
+
 
 
   // --- 학생 기능 ---
@@ -151,7 +153,6 @@ function updateParticipantList(userList) {
   $list.empty();
 
   for (let i of userList) {
-    // 1. 오타 수정: stausClass -> statusClass
     let statusClass = '';
     if (i.status == "JOINED") {
       statusClass = 'participants_user-join';
@@ -169,6 +170,10 @@ function updateParticipantList(userList) {
   }
 }
 
+/**
+ * 채팅 메세지 표시
+ * @param message
+ */
 function appendBoardLine(message) {
   const board = document.getElementById('board-area');
   let lineClass = '';

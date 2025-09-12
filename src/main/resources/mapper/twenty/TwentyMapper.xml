@@ -18,14 +18,30 @@
             RU.TWENTY_ROOM_NO = #{roomNo}
     </select>
     <!--
-        public void updateTwentyRoomUser(int userNo, int roomNo);
+       public void updateRoomUserStatus(Map<String, Object> map);
     -->
-    <update id="updateTwentyRoomUser">
+    <update id="updateRoomUserStatus">
         UPDATE KUKOKUK_TWENTY_ROOM_USERS
         SET
-            STATUS = 'JOINED'
+            STATUS = #{status}
         WHERE
-            USER_NO = #{userNo}
-            AND TWENTY_ROOM_NO =#{roomNo}
+            TWENTY_ROOM_NO =#{roomNo}
+            <if test="userNo != null">
+            AND USER_NO = #{userNo}
+            </if>
     </update>
+
+    <!--
+       public void updateRoomStaus(Map<String, Object> map);
+    -->
+    <update id="updateRoomStaus">
+        UPDATE
+            KUKOKUK_TWENTY_ROOMS
+        SET
+            STATUS = #{roomStatus}
+        WHERE
+            TWENTY_ROOM_NO = #{roomNo}
+    </update>
+
+
 </mapper>
