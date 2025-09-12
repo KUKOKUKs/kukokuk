@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Log4j2
 @Controller
@@ -204,7 +205,8 @@ public class DictationController {
         @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
         @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
         @ModelAttribute("questionIndex") int questionIndex,
-        Model model) {
+        Model model,
+        RedirectAttributes redirectAttributes) {
         log.info(" [@PostMapping(/submit-answer)] submitAnswer 실행 questionIndex: {}, userAnswer: {}", questionIndex, userAnswer);
 
         // 정답보기 누를 시 바로 다음 문제로 이동
@@ -244,6 +246,19 @@ public class DictationController {
         // 세션 갱신: questionIndex을 nextIndex로 변경
         model.addAttribute("questionIndex", nextIndex);
         log.info("[/submit-answer] 다음 index: {}", nextIndex);
+
+        // 다음 문제로 넘어가기 전 알림을 띄우기 위한 플래시 세팅
+        // 정답일때
+        if (isCorrect) {
+            log.info("[/submit-answer] 정답 판정으로 플래시 correct=true으로 세팅");
+            redirectAttributes.addFlashAttribute("correct", true);
+        }
+
+        // 2번째 시도 오답일때
+        if (!isCorrect && logDto.getTryCount() >= 2) {
+            log.info("[/submit-answer] 2차 시도 후 오답 판정으로 플래시 secondFail=true으로 세팅");
+            redirectAttributes.addFlashAttribute("secondFail", true);
+        }
 
         return "redirect:/dictation/solve";
     }

@@ -533,12 +533,12 @@ public class DictationService {
 
     /**
      * 정답 보기 사용시 오답 처리, 시도횟수 : 2회, 제출문장: <정답 보기 사용>
-     * @param dictationQuestiondto 세션에 저장된 이력 dto
+     * @param dictationQuestionLogDto 세션에 저장된 이력 dto
      */
     @Transactional
-    public void insertShowAnswerAndSkip(DictationQuestionLogDto dictationQuestiondto) {
-        dictationQuestiondto.setIsSuccess("N");
-        dictationQuestiondto.setTryCount(2);
-        dictationQuestiondto.setUserAnswer("<정답 보기 사용>");
+    public void insertShowAnswerAndSkip(DictationQuestionLogDto dictationQuestionLogDto) {
+        dictationQuestionLogDto.setIsSuccess("N");
+        dictationQuestionLogDto.setTryCount(2);
+        dictationQuestionLogDto.setUserAnswer("<정답 보기 사용>");
     }
 }
