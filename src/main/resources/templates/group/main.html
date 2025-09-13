@@ -1,52 +1,127 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/base}" th:with="title='우리반', menu='group'">
 <div layout:fragment="content">
-    <div id="main-content" class="content_container">
-        <div class="content_info">
-            <div class="content_title">
-                <iconify-icon icon="streamline-plump-color:class-lesson-flat"></iconify-icon>
-                우리반
+    <div id="main-content"
+         class="content_container"
+         th:with="user=${#authentication.principal.user}
+                , isTeacher=${#authorization.expression('hasRole(''TEACHER'')')}">
+        <!--/* 그룹에 속하지 않은 일반 사용자인 경우 */-->
+        <th:block th:if="${!isTeacher and user.groupNo == null}">
+            <div class="content_info h_100">
+                <div class="content_title">
+                    <iconify-icon icon="streamline-flex-color:search-category-flat"></iconify-icon>
+                    반 찾기
+                </div>
+
+                <div class="component h_100 base_list_component">
+                    <form class="search_form" id="group-search-form">
+                        <input type="text" class="search_input" placeholder="반 이름 또는 닉네임을 입력해 주세요">
+                        <button type="submit" class="serch_btn">
+                            <iconify-icon class="icon title_font" icon="marketeq:search-alt-3"></iconify-icon>
+                        </button>
+                    </form>
+
+                    <div class="full show_scroll">
+                        <div id="group-search-list-component" class="grid_list_component column">
+                            <div class="group_serach_list" th:each="group : ${randomGroups}">
+                                <div class="list_info">
+                                    <div class="group_info group_title_info">
+                                        <iconify-icon th:if="${group.password != null}"
+                                                      class="icon base_font"
+                                                      icon="streamline-color:padlock-square-1-flat"></iconify-icon>
+                                        <p class="group_title text_ellipsis" th:text="${group.title}">그룹명</p>
+                                        <span class="group_users" th:text="|(${group.memberCountFormatted}명)|">(1,234명)</span>
+                                    </div>
+
+                                    <div class="group_info motto_info">
+                                        <iconify-icon class="icon base_font tooltip"
+                                                      data-label="급훈"
+                                                      icon="fluent-color:chat-32"></iconify-icon>
+                                        <p class="motto text_ellipsis" th:text="${group.motto ?: '-'}">급훈</p>
+                                    </div>
+                                </div>
+
+                                <div class="group_info group_botton_info">
+                                    <div class="group_teacher_profile">
+                                        <div class="icon title group_profile_img">
+                                            <!--/* 프로필 이미지가 있는 경우 */-->
+                                            <img th:if="${user.profileFilename != null}"
+                                                 th:src="${user.profileFileUrl}"
+                                                 alt="profile thumbnail">
+
+                                            <!--/* 프로필 이미지가 없는 경우 (기본 아이콘 출력) */-->
+                                            <img th:if="${user.profileFilename == null}"
+                                                 th:src="@{/images/basic_profile_img.jpg}"
+                                                 alt="profile thumbnail">
+                                        </div>
+                                        <span class="group_teacher_name text_ellipsis"
+                                              th:text="${group.teacher.nickname}">교사 닉네임</span>
+                                    </div>
+
+                                    <button type="button"
+                                            class="btn tiny small_font white group_join_btn"
+                                            th:data-group-no="${group.groupNo}">입반 신청</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn_list">
+                        <div class="btn">페이지네이션</div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+        <!--/* 그룹에 속해 있거나 교사 권한 사용자인 경우 */-->
+        <th:block th:if="${isTeacher or user.groupNo != null}">
+            <div class="content_info">
+                <div class="content_title">
+                    <iconify-icon icon="streamline-plump-color:class-lesson-flat"></iconify-icon>
+                    우리반 학습
+                </div>
+
+                <div class="component">
+                    그룹에 대한 정보 또는 교사일 경우 생성
+                    <hr>
+                    그룹명, 교사 닉네임, 그룹 인원, 등록된 학습 자료 개수, 생성일자, ...등
+                    프레그먼츠로 서브 컨텐츠로 사용해도 되고 메인 컨텐츠에 표시해도 되고
+                    프로필에 그룹이 있을경우 내용 추가해도 되구..
+                    교사일 경우 여러 그룹을 생성할 수 있고
+                    하나의 그룹에 참여자로 있을 수 있으므로
+                    그룹 선택란 추가
+                </div>
             </div>
 
-            <div class="component">
-                그룹에 대한 정보 또는 교사일 경우 생성
-                <hr>
-                그룹명, 교사 닉네임, 그룹 인원, 등록된 학습 자료 개수, 생성일자, ...등
-                프레그먼츠로 서브 컨텐츠로 사용해도 되고 메인 컨텐츠에 표시해도 되고
-                프로필에 그룹이 있을경우 내용 추가해도 되구..
-                교사일 경우 여러 그룹을 생성할 수 있고
-                하나의 그룹에 참여자로 있을 수 있으므로
-                그룹 선택란 추가
-            </div>
-        </div>
+            <div class="content_info">
+                <div class="content_title">
+                    <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
+                    우리반 학습 내용/교사일 경우 학습 자료 관리 컨텐츠
+                </div>
 
-        <div class="content_info">
-            <div class="content_title">
-                <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
-                우리반 학습 내용/교사일 경우 학습 자료 관리 컨텐츠
+                <div class="component">
+                    <p>사용자의 권한 리스트: <span sec:authentication="authorities"></span></p>
+                    sec:authorize="hasRole('TEACHER')" 로 교사 권한 인증
+                    교사 권한이 생성한 그룹에 포함이 되어있다면 해당 그룹의 교사가 학습 자료를 AI로 재구성해준 학습진행 가능
+                    자료 등록이 없을 경우 자료 등록되지 않음을 사용자에게 안내
+                    <hr>
+                    교사일 경우 학습 자료 리스트, 등록, 삭제(수정 불가)
+                </div>
             </div>
 
-            <div class="component">
-                <p>사용자의 권한 리스트: <span sec:authentication="authorities"></span></p>
-                sec:authorize="hasRole('TEACHER')" 로 교사 권한 인증
-                교사 권한이 생성한 그룹에 포함이 되어있다면 해당 그룹의 교사가 학습 자료를 AI로 재구성해준 학습진행 가능
-                자료 등록이 없을 경우 자료 등록되지 않음을 사용자에게 안내
-                <hr>
-                교사일 경우 학습 자료 리스트, 등록, 삭제(수정 불가)
-            </div>
-        </div>
+            <div class="content_info">
+                <div class="content_title">
+                    <iconify-icon icon="streamline-color:desktop-help-flat"></iconify-icon>
+                    스무고개
+                </div>
 
-        <div class="content_info">
-            <div class="content_title">
-                <iconify-icon icon="streamline-color:desktop-help-flat"></iconify-icon>
-                스무고개
+                <div class="component">
+                    교사일 경우 스무고개 방을 생성할 설정값 입력란 및 생성버튼
+                    사용자일 경우 스무고개 방이 열렸는지 여부에 대한 표시 및 참여버튼
+                </div>
             </div>
 
-            <div class="component">
-                교사일 경우 스무고개 방을 생성할 설정값 입력란 및 생성버튼
-                사용자일 경우 스무고개 방이 열렸는지 여부에 대한 표시 및 참여버튼
-            </div>
-        </div>
+        </th:block>
     </div>
 
     <div id="sub-content" class="content_container">

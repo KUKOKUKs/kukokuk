@@ -194,9 +194,12 @@
         display: inline-block;
         width: max-content;
         padding: var(--tinyPadding);
+        background-color: #fff;
         font-size: var(--fixEtcTinyFontSize);
+        border-radius: var(--bdrs);
+        box-shadow: var(--bxsh);
         position: absolute;
-        bottom: 90%;
+        bottom: 70%;
         left: 50%;
         transform: translateX(-50%);
         transition: opacity var(--trst), bottom var(--trst);
@@ -205,7 +208,7 @@
     &:hover {
         &::after {
             opacity: 1;
-            bottom: 100%;
+            bottom: 80%;
         }
     }
 }
@@ -638,7 +641,7 @@
             font-size: var(--baseFontSize);
             color: var(--grayColor);
             position: absolute;
-            top: 16px;
+            top: 15px;
             left: 0;
             z-index: 1;
             transition: top var(--trst), font-size var(--trst);
@@ -774,6 +777,30 @@
 .input_description {
     width: 100%;
     font-size: var(--subFontSize);
+}
+
+.search_form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--tinyGap);
+    font-size: var(--baseFontSize);
+    padding: var(--tinyPadding);
+    padding-left: var(--smallPadding);
+    background-color: var(--baseBackground);
+    border-radius: var(--bdrs);
+    border: var(--baseBorder);
+    box-shadow: var(--bxsh);
+    transition: border-color var(--trst);
+
+    .search_input {
+        font-size: var(--subFontSize);
+        line-height: 2;
+    }
+
+    &:has(.search_input:focus) {
+        border-color: var(--primaryColor);
+    }
 }
 
 /* tab content */
@@ -1195,6 +1222,13 @@
         height: var(--largeIcon);
         font-size: var(--largeIcon);
     }
+
+    &.title {
+        width: var(--titleFontSize);
+        min-width: var(--titleFontSize);
+        height: var(--titleFontSize);
+        font-size: var(--titleFontSize);
+    }
 }
 
 /*
@@ -1271,6 +1305,10 @@
     opacity: .5;
 }
 
+.ov_a {
+    overflow: auto !important;
+}
+
 .ov_v {
     overflow: visible !important;
 }
@@ -1326,6 +1364,16 @@
 
 .w_100 {
     width: 100%;
+}
+
+.h_100 {
+    height: 100%;
+    overflow: auto;
+}
+
+.full {
+    width: 100%;
+    height: 100%;
 }
 
 .pd_0 {
@@ -1411,6 +1459,10 @@
 
 .large_font {
     font-size: var(--largeFontSize) !important;
+}
+
+.base_font {
+    font-size: var(--baseFontSize) !important;
 }
 
 .title_font {

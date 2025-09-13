@@ -12,6 +12,12 @@
             <div class="content_title">
                 <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
                 오늘의 학습
+
+                <!--/* 그룹에 속해 있을 경우 일반/우리반 토글 스위치 노출 */-->
+                <div th:if="${user?.groupNo != null}"
+                     class="group_toggle_btn on">
+                    <div class="toggle_switch"></div>
+                </div>
             </div>
 
             <!--/* 일일학습 카드가 동적으로 추가되는 부분 */-->

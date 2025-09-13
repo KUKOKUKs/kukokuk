@@ -10,7 +10,9 @@
         <!-- Group 기본 컬럼 -->
         <id property="groupNo" column="GROUP_NO"/>
         <result property="title" column="TITLE"/>
+        <result property="motto" column="MOTTO"/>
         <result property="password" column="PASSWORD"/>
+        <result property="memberCount" column="MEMBER_COUNT"/>
         <result property="isDeleted" column="IS_DELETED"/>
         <result property="createdDate" column="CREATED_DATE"/>
         <result property="updatedDate" column="UPDATED_DATE"/>
@@ -28,6 +30,41 @@
         </association>
     </resultMap>
 
-
+    <!--
+         * 전달 받은 조회할 행의 개수로 최초 랜더링 시 기본 그룹 리스트 조회(임의의 행 조회)
+         * (성능 최적화로 최신 1000건 제한으로 1000건 내에서 랜덤으로 조회)
+         * @param groupCount 조회할 행의 개수
+         * @return 그룹 목록 정보
+        List<Group> getRandomGroups(int groupCount);
+    -->
+    <select id="getRandomGroups" resultMap="GroupResultMap">
+        SELECT *
+        FROM (SELECT G.GROUP_NO
+                   , G.TITLE
+                   , G.MOTTO
+                   , G.PASSWORD
+                   , IFNULL(GU.MEMBER_COUNT, 0) AS MEMBER_COUNT
+                   , G.IS_DELETED
+                   , G.CREATED_DATE
+                   , G.UPDATED_DATE
+                   , U.USER_NO                  AS TEACHER_USER_NO
+                   , U.USERNAME                 AS TEACHER_USERNAME
+                   , U.NAME                     AS TEACHER_NAME
+                   , U.NICKNAME                 AS TEACHER_NICKNAME
+                   , U.BIRTH_DATE               AS TEACHER_BIRTH_DATE
+                   , U.GENDER                   AS TEACHER_GENDER
+                   , U.PROFILE_FILENAME         AS TEACHER_PROFILE_FILENAME
+                   , U.LEVEL                    AS TEACHER_LEVEL
+              FROM KUKOKUK_GROUPS G
+                       JOIN KUKOKUK_USERS U ON G.USER_NO = U.USER_NO
+                       LEFT JOIN (SELECT GROUP_NO, COUNT(*) AS MEMBER_COUNT
+                                  FROM KUKOKUK_GROUP_USERS
+                                  GROUP BY GROUP_NO) GU ON G.GROUP_NO = GU.GROUP_NO
+              WHERE G.IS_DELETED = 'N'
+              ORDER BY G.CREATED_DATE DESC
+              LIMIT 1000) AS recent
+        ORDER BY RAND()
+        LIMIT #{groupCount}
+    </select>
 
 </mapper>
