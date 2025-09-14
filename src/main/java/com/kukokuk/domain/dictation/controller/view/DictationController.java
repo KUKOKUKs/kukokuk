@@ -327,6 +327,7 @@ public class DictationController {
 
         model.addAttribute("correctScore", dictationSession.getCorrectScore());
 
+        // 결과 페이지 전달될 데이터 담기
         DictationResultSummaryDto summary = dictationService.getDictationResultSummaryDto(dictationSession, dictationQuestions, userNo, dictationSessionNo);
         model.addAttribute("summary", summary);
         model.addAttribute("results", summary.getResults());

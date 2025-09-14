@@ -544,23 +544,37 @@ public class DictationService {
         dictationQuestionLogDto.setUserAnswer("<정답 보기 사용>");
     }
 
+    /**
+     * 결과 페이지에 전달될 데이터 담기
+     * @param dictationSession 받아쓰기 세트
+     * @param dictationQuestions 받아쓰기 문제
+     * @param currentUserNo 현재 로그인 된 사용자
+     * @param dictationSessionNo 받아쓰기 세트 번호
+     * @return 결과 페이지에 담길 데이터들
+     */
     public DictationResultSummaryDto getDictationResultSummaryDto(DictationSession dictationSession,
         List<DictationQuestion> dictationQuestions, int currentUserNo, int dictationSessionNo) {
 
+        // 다른 사용자이거나 세트 번호 없으면 예외처리
         if (dictationSession == null || dictationSession.getUserNo() != currentUserNo) {
             throw new AppException("다른 사용자의 세트이거나 세트가 없습니다");
         }
 
+        // summary 부분
+        // 문제 총 개수
         int totalQuestion = dictationQuestions.size();
 
+        // 문제 맞은 개수
         int correctAnswers = dictationSession.getCorrectCount();
 
         Date start = dictationSession.getStartDate();
         Date end   = dictationSession.getEndDate();
 
+        // 문제 총 풀이 시간
         long ts = Math.max(0L, end.getTime() - start.getTime()); // 음수 방지
         double totalTimeSec = Math.round((ts / 1000.0) * 1000.0) / 1000.0;
 
+        // 평균 한 문제당 풀이 시간
         double averageTimePerQuestion = Math.round((totalTimeSec / totalQuestion) * 1000.0) / 1000.0;
 
         DictationResultSummaryDto dictationResultSummaryDto = new DictationResultSummaryDto();
@@ -569,11 +583,13 @@ public class DictationService {
         dictationResultSummaryDto.setTotalTimeSec(totalTimeSec);
         dictationResultSummaryDto.setAverageTimePerQuestion(averageTimePerQuestion);
 
+        // results 부분
         List<DictationResultLogDto> dictationResultLogDtos =
             dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo, currentUserNo);
 
         List<DictationResultsDto> dictationResultLogDtoList = new ArrayList<>();
 
+        // 문제 푼 세트의 이력 가져오기(문제, 제출문장, 정답여부)
         for (DictationResultLogDto r : dictationResultLogDtos) {
             DictationResultsDto dictationResultsDto = new DictationResultsDto();
             dictationResultsDto.setQuestion(r.getCorrectAnswer());
@@ -586,8 +602,6 @@ public class DictationService {
 
         return dictationResultSummaryDto;
     }
-
-
 
 
 }
