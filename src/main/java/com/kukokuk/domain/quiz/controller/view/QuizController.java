@@ -97,14 +97,22 @@ public class QuizController {
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
         int userNo = securityUser.getUser().getUserNo();
-        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
-        model.addAttribute("summary", summary);
 
-        // DTO로 조회 및 세팅
+        // 요약 정보 조회
+        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
+
+        // 상세 결과 데이터도 함께 조회하여 전달
+        List<QuizResultDto> results = quizResultService.getQuizResultsBySession(sessionNo, userNo);
+
+        // 모델에 데이터 추가
+        model.addAttribute("summary", summary);
+        model.addAttribute("results", results);
+
         QuizLevelResultDto levelResult = quizService.getDifficultyAndQuestionTypeBySessionNo(sessionNo);
         model.addAttribute("difficulty", levelResult.getDifficulty());
         model.addAttribute("questionType", levelResult.getQuestionType());
 
+        // 퀴즈 모드에 따라 다른 뷰 반환
         if ("level".equals(summary.getQuizMode())) {
             return "quiz/level-result";
         }

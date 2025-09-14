@@ -28,30 +28,31 @@
         <tr th:each="result, iterStat : ${results}">
             <td th:text="${iterStat.count}">1</td>
             <td th:text="${result.question}">문제 내용</td>
-            <td>
-                <span th:if="${result.selectedChoice == 0}">미선택</span>
-                <span th:if="${result.selectedChoice != 0}"
-                      th:text="${result.selectedChoice}">-</span>
-            </td>
+
+            <!-- 개선된 부분 1: getOption() 사용 -->
+            <td th:text="${result.selectedChoice == 0 ? '미선택' : result.getOption(result.selectedChoice)}">-</td>
+
             <td th:text="${result.successAnswer}">2</td>
+
+            <!-- 개선된 부분 2: isSuccess() 사용 -->
+            <td th:text="${result.isSuccess() ? '정답' : '오답'}"
+                th:class="${result.isSuccess() ? 'answer_correct' : 'answer_wrong'}">정답/오답</td>
+
             <td>
-                <span th:if="${result.isSuccess == 'Y'}" class="answer_correct">정답</span>
-                <span th:unless="${result.isSuccess == 'Y'}" class="answer_wrong">오답</span>
-            </td>
-            <td>
+                <!-- 개선된 부분 3: isBookmarked() 사용 -->
                 <button type="button" class="bookmark_btn"
                         th:data-quiz-no="${result.quizNo}"
-                        th:data-bookmarked="${result.bookmarked == 'Y'}"
-                        th:attr="aria-label=${result.bookmarked == 'Y' ? '북마크 해제' : '북마크 등록'}">
+                        th:data-bookmarked="${result.isBookmarked()}"
+                        th:attr="aria-label=${result.isBookmarked() ? '북마크 해제' : '북마크 등록'}">
 
                     <!-- 북마크 상태에 따라 아이콘 변경 -->
                     <iconify-icon
-                        th:if="${result.bookmarked == 'Y'}"
+                        th:if="${result.isBookmarked()}"
                         icon="emojione:red-heart"
                         style="font-size: 1.5rem;"></iconify-icon>
 
                     <iconify-icon
-                        th:unless="${result.bookmarked == 'Y'}"
+                        th:unless="${result.isBookmarked()}"
                         icon="emojione-monotone:red-heart"
                         style="font-size: 1.5rem;"></iconify-icon>
                 </button>

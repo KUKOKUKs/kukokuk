@@ -76,6 +76,9 @@ dependencies {
 	// .env로 환경변수 관리
 	implementation("io.github.cdimascio:java-dotenv:5.2.2")
 
+	//WebSocket 및 STOMP 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 }
 
 tasks.named('test') {
