@@ -19,20 +19,31 @@ function connectWebSocket() {
     console.log('Connected: ' + frame);
 
     // 구독 코드
-    // 1. 채팅 영역 실시간 반영
-    stompClient.subscribe(`/topic/twentyRoom/${currentRoomNo}`,
+    // - 교사가 게임 시작 버튼 눌렀을 때 브로드 캐스팅 =>
+    stompClient.subscribe(`/topic/gameStart/${currentRoomNo}`,
         function (result) {
           const message = JSON.parse(result.body);
+          console.log("message: ",message);
           appendBoardLine(message);
+
+          $("#btn-o").prop('disabled', false);
+          $("#btn-x").prop('disabled', false);
+          $("#btn-end").prop('disabled', false);
+          $("#btn-start").prop('disabled', true);
+          $("#raise-hand").prop('disabled', false);
         });
 
-    // 2.참여자 명단 실시간 반영 - 입장 또는 나감 처리
+    // - 참여자 명단 실시간 반영 - 입장 또는 나감 처리
     stompClient.subscribe(`/topic/participants/${currentRoomNo}`,
         function (result) {
           const userList = JSON.parse(result.body);
           console.log("userList: ", userList);
           updateParticipantList(userList);
         });
+
+    // - 학생이 손들기 버튼을 눌렀을 때, 브로드 캐스팅
+
+    // - 학생이 질문 or 정답 + 교사 OX 버튼 눌렀을 때 실시간 채팅 브로드 캐스팅
 
     stompClient.subscribe(`/topic/turnOff/${currentRoomNo}`, function (result) {
       resetToDefault();
@@ -93,8 +104,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     window.location.href ='/group';
   });
-  $btnStart.click(function () {
 
+  //게임 시작 버튼 눌렀을 때, 게임방 상태 변경
+  $btnStart.click(function () {
+    stompClient.send(`/app/gameStart/${currentRoomNo}`, {}, JSON.stringify({}));
   });
 
   // --- 학생 기능 ---
@@ -168,6 +181,7 @@ function resetToDefault() {
   document.getElementById('raise-hand').disabled = false;
 }
 
+
 /**
  * 게임방의 참여자가 입장 시, UI 변화
  * @param participants
@@ -200,27 +214,27 @@ function updateParticipantList(userList) {
  * @param message
  */
 function appendBoardLine(message) {
-  const board = document.getElementById('board-area');
+  let $board = $("#board-area");
+  let $firstMessage = $(".system_message");
+
   let lineClass = '';
   let senderHtml = '';
 
-  const firstMessage = board.querySelector('.system-message');
-  if (firstMessage && board.children.length === 1) {
-    board.innerHTML = '';
+  if(message.system != null) {
+    $firstMessage.text(message.system);
+    return;
   }
 
-  if (message.sender === 'system') {
-    lineClass = 'system-message';
-  } else if (message.sender === currentUserNo.username) {
+  if(message.userNo == currentUserNo) {
     lineClass = 'my-message';
   } else {
     lineClass = 'other-message';
     senderHtml = `<div class="sender">${message.sender}</div>`;
   }
 
-  const contentHtml = message.content.replace(/\n/g, '<br>');
+  const contentHtml = message.message.replace(/\n/g, '<br>');
   const newLineHtml = `<div class="message-line ${lineClass}">${senderHtml}<div>${contentHtml}</div></div>`;
 
-  board.insertAdjacentHTML('beforeend', newLineHtml);
-  board.scrollTop = board.scrollHeight;
+  $board.append(newLineHtml);
+  $board.scrollTop = $board.scrollHeight;
 }
