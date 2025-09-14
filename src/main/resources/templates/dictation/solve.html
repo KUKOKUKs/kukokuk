@@ -102,7 +102,9 @@
         </div>
 
         <input type="hidden" id="skipInput" name="skip" value="0" />
-        <button type="submit" class="btn primary">
+        <input type="hidden" id="flash-correct" th:if="${correct}" value="1">
+        <input type="hidden" id="flash-second-fail" th:if="${secondFail}" value="1">
+        <button type="submit" id="submitAnswer" class="btn primary">
             정답 제출 (<span th:text="|남은 기회: ${triesLeft}회|">남은 기회: n회</span>)
         </button>
     </form>
