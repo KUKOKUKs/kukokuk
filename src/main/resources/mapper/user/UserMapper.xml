@@ -120,6 +120,7 @@
         <result column="CREATED_DATE" property="createdDate"/>
         <result column="UPDATED_DATE" property="updatedDate"/>
         <result column="NEXT_LEVEL_EXP" property="maxExp"/>
+        <result column="GROUP_NO" property="groupNo"/>
         <collection column="USER_NO" property="roleNames"
             ofType="string" select="getUserRoleNamesByUserNo"/>
     </resultMap>
@@ -149,8 +150,10 @@
              , U.CREATED_DATE
              , U.UPDATED_DATE
              , (L.MAX_EXP + 1) AS NEXT_LEVEL_EXP
+             , GU.GROUP_NO
         FROM KUKOKUK_USERS U
              JOIN KUKOKUK_LEVEL L ON U.LEVEL = L.LEVEL
+             LEFT JOIN KUKOKUK_GROUP_USERS GU ON GU.USER_NO = U.USER_NO
         WHERE U.USER_NO = #{userNo}
     </select>
 
@@ -181,8 +184,10 @@
              , U.UPDATED_DATE
              , L.MAX_EXP
              , (L.MAX_EXP + 1) AS NEXT_LEVEL_EXP
+             , GU.GROUP_NO
         FROM KUKOKUK_USERS U
              JOIN KUKOKUK_LEVEL L ON U.LEVEL = L.LEVEL
+             LEFT JOIN KUKOKUK_GROUP_USERS GU ON GU.USER_NO = U.USER_NO
         WHERE U.USERNAME = #{username}
     </select>
 
