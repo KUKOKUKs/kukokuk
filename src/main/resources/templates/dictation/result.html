@@ -54,9 +54,9 @@
                         <div class="color_blue bold pos_r">
                             A
                             <span class="result_icon incorrect icon large"
-                                  th:classappend="${result.success ? 'correct' : 'incorrect'}">정답 여부</span>
+                                  th:classappend="${result.success ? 'Y' : 'N'}"></span>
                         </div>
-                        <p th:text="${result.getOption(result.selectedChoice) ?: '입력하지 않음'}">입력한 내용</p>
+                        <p th:text="${result.userAnswer ?: '입력하지 않음'}">입력한 내용</p>
                     </div>
                 </div>
 

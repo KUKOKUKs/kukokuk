@@ -7,6 +7,8 @@ import com.kukokuk.ai.GeminiClient;
 import com.kukokuk.common.exception.AppException;
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
 import com.kukokuk.domain.dictation.dto.DictationResultLogDto;
+import com.kukokuk.domain.dictation.dto.DictationResultSummaryDto;
+import com.kukokuk.domain.dictation.dto.DictationResultsDto;
 import com.kukokuk.domain.dictation.mapper.DictationQuestionLogMapper;
 import com.kukokuk.domain.dictation.mapper.DictationQuestionMapper;
 import com.kukokuk.domain.dictation.mapper.DictationSessionMapper;
@@ -427,17 +429,17 @@ public class DictationService {
         log.info("createDictationSession 서비스 실행");
 
             try {
-                DictationSession session = new DictationSession();
-                session.setUserNo(userNo);
-                session.setStartDate(new Date());
-                session.setEndDate(new Date());
-                dictationSessionMapper.insertDictationSession(session);
+                DictationSession dictationSession = new DictationSession();
+                dictationSession.setUserNo(userNo);
+                dictationSession.setStartDate(new Date());
+                dictationSession.setEndDate(new Date());
+                dictationSessionMapper.insertDictationSession(dictationSession);
 
-                if (session.getDictationSessionNo() == 0) {
+                if (dictationSession.getDictationSessionNo() == 0) {
                     log.info("createDictationSession 자동으로 세션번호 추가 실패 또는 세션 번호 없음");
                     throw new AppException("세션번호 예외처리에 의해 문제 세트를 생성하지 못했습니다.");
                 }
-                return session.getDictationSessionNo(); // MyBatis에서 자동 채번되어 들어간다고 가정
+                return dictationSession.getDictationSessionNo(); // MyBatis에서 자동 채번되어 들어간다고 가정
             } catch (DataAccessException e) {
                 throw new AppException("문제 세트를 생성하지 못했습니다.");
         }
@@ -517,12 +519,12 @@ public class DictationService {
 
         for (int i = 0; i < dictationQuestions.size(); i++) {
             DictationQuestion q = dictationQuestions.get(i);
-            DictationQuestionLogDto dto = dictationQuestionLogDtoList.get(i);
+            DictationQuestionLogDto dictationQuestionLogDto = dictationQuestionLogDtoList.get(i);
 
-            String userAnswer = dto.getUserAnswer();
-            String isSuccess  = dto.getIsSuccess();
-            int tryCount      = dto.getTryCount();
-            String usedHint   = (dto.getUsedHint() == null) ? "N" : dto.getUsedHint();
+            String userAnswer = dictationQuestionLogDto.getUserAnswer();
+            String isSuccess  = dictationQuestionLogDto.getIsSuccess();
+            int tryCount      = dictationQuestionLogDto.getTryCount();
+            String usedHint   = (dictationQuestionLogDto.getUsedHint() == null) ? "N" : dictationQuestionLogDto.getUsedHint();
 
             log.info("[saveDictationLogs] 문제{}: 문제 번호: {}, 제출문장: {}, 맞춤 여부: {}, 시도 횟수: {}, 힌트 사용: {}",
                 i + 1, q.getDictationQuestionNo(), userAnswer, isSuccess, tryCount, usedHint);
@@ -541,4 +543,49 @@ public class DictationService {
         dictationQuestionLogDto.setTryCount(2);
         dictationQuestionLogDto.setUserAnswer("<정답 보기 사용>");
     }
+
+    public DictationResultSummaryDto getDictationResultSummaryDto(DictationSession dictationSession,
+        List<DictationQuestion> dictationQuestions, int currentUserNo, int dictationSessionNo) {
+
+        if (dictationSession == null || dictationSession.getUserNo() != currentUserNo) {
+            throw new AppException("다른 사용자의 세트이거나 세트가 없습니다");
+        }
+
+        int totalQuestion = dictationQuestions.size();
+
+        int correctAnswers = dictationSession.getCorrectCount();
+
+        Date start = dictationSession.getStartDate();
+        Date end   = dictationSession.getEndDate();
+
+        long ts = Math.max(0L, end.getTime() - start.getTime()); // 음수 방지
+        double totalTimeSec = Math.round((ts / 1000.0) * 1000.0) / 1000.0;
+
+        double averageTimePerQuestion = Math.round((totalTimeSec / totalQuestion) * 1000.0) / 1000.0;
+
+        DictationResultSummaryDto dictationResultSummaryDto = new DictationResultSummaryDto();
+        dictationResultSummaryDto.setTotalQuestion(totalQuestion);
+        dictationResultSummaryDto.setCorrectAnswers(correctAnswers);
+        dictationResultSummaryDto.setTotalTimeSec(totalTimeSec);
+        dictationResultSummaryDto.setAverageTimePerQuestion(averageTimePerQuestion);
+
+        List<DictationResultLogDto> dictationResultLogDtos =
+            dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo, currentUserNo);
+
+        List<DictationResultsDto> dictationResultLogDtoList = new ArrayList<>();
+
+        for (DictationResultLogDto r : dictationResultLogDtos) {
+            DictationResultsDto dictationResultsDto = new DictationResultsDto();
+            dictationResultsDto.setQuestion(r.getCorrectAnswer());
+            dictationResultsDto.setSuccess("Y".equals(r.getIsSuccess()));
+            dictationResultsDto.setUserAnswer(r.getUserAnswer());
+            dictationResultLogDtoList.add(dictationResultsDto);
+        }
+
+        return dictationResultSummaryDto;
+    }
+
+
+
+
 }

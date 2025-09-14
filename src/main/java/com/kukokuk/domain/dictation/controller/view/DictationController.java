@@ -309,17 +309,20 @@ public class DictationController {
      */
     @GetMapping("/result")
     public String resultPage(@RequestParam("dictationSessionNo") int dictationSessionNo,
+        @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
+        @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
-        log.info("받아쓰기 결과 페이지 이동 - sessionNo: {}", dictationSessionNo);
+        log.info("받아쓰기 결과 페이지 이동 - dictationSession: {}", dictationSessionNo);
 
-        DictationSession session = dictationService.getDictationSessionByDictationSessionNo(dictationSessionNo);
+        int userNo = securityUser.getUser().getUserNo();
 
-        // result.html로 전달할 값들
-        model.addAttribute("startTime", session.getStartDate());
-        model.addAttribute("endTime", session.getEndDate());
-        model.addAttribute("score", session.getCorrectScore());
-        model.addAttribute("correctCount", session.getCorrectCount());
-        model.addAttribute("hintUsedCount", session.getHintUsedCount());
+        DictationSession dictationSession = dictationService.getDictationSessionByDictationSessionNo(dictationSessionNo);
+
+        model.addAttribute("correctScore", dictationSession.getCorrectScore());
+
+        model.addAttribute("summary", dictationService.getDictationResultSummaryDto(dictationSession, dictationQuestions, userNo, dictationSessionNo));
+
+        model.addAttribute("results", dictationService.getDictationResultSummaryDto(dictationSession, dictationQuestions, userNo, dictationSessionNo));
 
         return "dictation/result";
     }
