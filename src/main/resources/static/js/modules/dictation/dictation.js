@@ -97,7 +97,7 @@ $(document).ready(() => {
             요소를 제거하는게 가능 좋아 보임(제일 간편한 방법)
         */
         // $("#AnswerBtn, #HintBtn1, #HintBtn2, #HintBtn3")
-        // .addClass("disabled");
+        // .addClass("disabled")
 
         $hintsInfo.fadeOut(150, function () {
             $(this).remove();
@@ -105,7 +105,7 @@ $(document).ready(() => {
     }
 
     // 정답 보기 서버 반영 (오답 처리 + tryCount=2)
-    async function ShowAnswerAndSkip() {
+    async function showAnswerAndSkip() {
         console.log("[markShowAnswer] 함수 실행됨");
         try {
             const response = await $.ajax({
@@ -137,8 +137,14 @@ $(document).ready(() => {
         } else {
             showAnswerInSquares(questionInformation.correctAnswer);
         }
+
+        // 정답 보기 사용시 '정답 입력' 부분 작성 불가
+        // [/submit-answer] 부분 @RequestParam("userAnswer") 값을 넘겨야 하므로 값은 넘기고(db에는 저장x)
+        // '정답 입력' 부분 비활성화
+        $('#user-answer').prop('readonly', true).addClass('disabled');
+
         disableAllHintButtons();
-        await ShowAnswerAndSkip();
+        await showAnswerAndSkip();
     });
 
     // 힌트 사용 Ajax 호출 함수
@@ -330,4 +336,19 @@ $(document).ready(() => {
             }, 10);
         }
     });
+
+    // 서버 리다이렉트 후 hidden으로 숨겨둔 (#flash-correct / #flash-second-fail)를 읽어
+    // 알림을 표시 (val값이 '1'일때 활성)
+    flashAlerts();
+
+    function flashAlerts() {
+        if ($('#flash-correct').val() === '1') {
+            alert('정답입니다.\n다음 문제로 이동합니다.');
+            // 2번째 시도 후 정답일 경우 둘 다 활성화되기 때문에 이 알림 한 번만 띄우도록 함
+            return;
+        }
+        if ($('#flash-second-fail').val() === '1') {
+            alert('오답입니다.\n다음 문제로 이동합니다.');
+        }
+    }
 }); // 정상적으로 닫히도록 추가함

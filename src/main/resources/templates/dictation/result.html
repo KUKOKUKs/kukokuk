@@ -42,7 +42,7 @@
         </div>
 
         <!--/* 문제 풀이 상세 결과 */-->
-        <div class="component tiny_list_component quiz_detail_component show_scroll">
+        <div class="component tiny_list_component h_100 show_scroll">
             <div class="component_info with_icon align_start sub_font"
                  th:each="result, iterStat : ${results}">
                 <div class="list_info ov_v" style="--cols: 18; --indexCols: 2;">
@@ -54,9 +54,9 @@
                         <div class="color_blue bold pos_r">
                             A
                             <span class="result_icon incorrect icon large"
-                                  th:classappend="${result.success ? 'correct' : 'incorrect'}">정답 여부</span>
+                                  th:classappend="${result.success ? 'Y' : 'N'}"></span>
                         </div>
-                        <p th:text="${result.getOption(result.selectedChoice) ?: '입력하지 않음'}">입력한 내용</p>
+                        <p th:text="${result.userAnswer ?: '입력하지 않음'}">입력한 내용</p>
                     </div>
                 </div>
 
