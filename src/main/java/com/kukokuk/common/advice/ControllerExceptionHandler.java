@@ -62,4 +62,5 @@ public class ControllerExceptionHandler {
         return buildErrorPage(response, model, 400, "Bad Request", "요청값이 올바르지 않습니다." + ex.getMessage());
     }
 
+
 }

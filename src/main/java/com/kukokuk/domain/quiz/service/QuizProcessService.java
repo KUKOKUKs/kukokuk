@@ -71,9 +71,9 @@ public class QuizProcessService {
         log.info("[전체 처리 완료] 세션 {}, 정답 수: {}, 상위 {}%에 속함",
             sessionNo, correctAnswers, summary.getPercentile());
 
-        // 스피드퀴즈 점수 계산 및 랭킹 처리
+        // 스피드퀴즈 점수 계산 및 월별 랭킹 처리
         if (QUIZ_MODE_SPEED.equals(summary.getQuizMode())) {
-            processSpeedQuizRanking(summary, correctAnswers, totalQuestion);
+            processSpeedQuizMonthlyRanking(summary, correctAnswers, totalQuestion);
         }
 
         // 스피드 퀴즈 풀 유지
@@ -208,22 +208,22 @@ public class QuizProcessService {
     }
 
     /**
-     * 스피드퀴즈 점수 계산 및 랭킹 처리
+     * 스피드퀴즈 점수 계산 및 월별 랭킹 처리
      * @param summary 퀴즈 세션 요약
      * @param correctAnswers 정답 수
      * @param totalQuestion 전체 문제 수
      */
-    private void processSpeedQuizRanking(QuizSessionSummary summary, int correctAnswers, int totalQuestion) {
-        log.info("[랭킹 처리 시작] 사용자: {}, 정답: {}/{}", summary.getUserNo(), correctAnswers, totalQuestion);
+    private void processSpeedQuizMonthlyRanking(QuizSessionSummary summary, int correctAnswers, int totalQuestion) {
+        log.info("[월별 랭킹 처리 시작] 사용자: {}, 정답: {}/{}", summary.getUserNo(), correctAnswers, totalQuestion);
 
         double finalScore = calculateSpeedQuizScore(summary, correctAnswers, totalQuestion);
 
-        // 랭킹 처리 (신규 등록 또는 평균 업데이트)
+        // 월별 랭킹 처리 (현재 월 기준으로 신규 등록 또는 평균 업데이트)
         try {
-            rankingService.processRanking(CONTENT_TYPE_SPEED, finalScore, summary.getUserNo());
-            log.info("[랭킹 처리 완료] 사용자: {}, 점수: {:.2f}", summary.getUserNo(), finalScore);
+            rankingService.processMonthlyRanking(CONTENT_TYPE_SPEED, finalScore, summary.getUserNo());
+            log.info("[월별 랭킹 처리 완료] 사용자: {}, 점수: {:.2f}", summary.getUserNo(), finalScore);
         } catch (Exception e) {
-            log.error("[랭킹 처리 실패] 사용자: {}, 점수: {:.2f}", summary.getUserNo(), finalScore, e);
+            log.error("[월별 랭킹 처리 실패] 사용자: {}, 점수: {:.2f}", summary.getUserNo(), finalScore, e);
             // 랭킹 실패가 퀴즈 처리 전체를 망치지 않도록 예외를 잡아서 로그만 남김
         }
     }
@@ -250,4 +250,5 @@ public class QuizProcessService {
 
         return finalScore;
     }
+
 }
