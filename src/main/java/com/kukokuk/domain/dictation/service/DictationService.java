@@ -582,6 +582,8 @@ public class DictationService {
             dictationResultLogDtoList.add(dictationResultsDto);
         }
 
+        dictationResultSummaryDto.setResults(dictationResultLogDtoList);
+
         return dictationResultSummaryDto;
     }
 

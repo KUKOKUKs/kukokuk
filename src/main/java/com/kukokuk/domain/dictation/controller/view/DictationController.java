@@ -4,6 +4,7 @@ package com.kukokuk.domain.dictation.controller.view;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
+import com.kukokuk.domain.dictation.dto.DictationResultSummaryDto;
 import com.kukokuk.domain.dictation.service.DictationService;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationSession;
@@ -136,6 +137,8 @@ public class DictationController {
         // 뷰로 전달(triesLeft는 화면 표시용 1회성 값으로 세션과 db와 관련 없음)
         model.addAttribute("triesLeft", triesLeft);
 
+        // 힌트 사용 여부
+
         log.info("[/solve] 문제번호: {}, tryCount: {}, triesLeft: {}",
             currentQuestion.getDictationQuestionNo(), tryCount, triesLeft);
 
@@ -151,14 +154,18 @@ public class DictationController {
     @PostMapping("/use-hint")
     @ResponseBody
     public ResponseEntity<ApiResponse<Void>> useHint(
+        Integer hintNum,
         @ModelAttribute("questionIndex") int questionIndex,
-        @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList
+        @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
+        @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions
     ) {
         log.info("[/use-hint] 실행 - questionIndex: {}", questionIndex);
 
         // 현재 문제만 힌트 사용 처리
         DictationQuestionLogDto dto = dictationQuestionLogDtoList.get(questionIndex);
         dto.setUsedHint("Y");
+
+        dictationQuestions.get(questionIndex).setUsedHintNum(hintNum);
 
         log.info("[/use-hint] index: {}, usedHint: Y", questionIndex);
         return ResponseEntityUtils.ok("힌트 사용 완료");
@@ -320,9 +327,9 @@ public class DictationController {
 
         model.addAttribute("correctScore", dictationSession.getCorrectScore());
 
-        model.addAttribute("summary", dictationService.getDictationResultSummaryDto(dictationSession, dictationQuestions, userNo, dictationSessionNo));
-
-        model.addAttribute("results", dictationService.getDictationResultSummaryDto(dictationSession, dictationQuestions, userNo, dictationSessionNo));
+        DictationResultSummaryDto summary = dictationService.getDictationResultSummaryDto(dictationSession, dictationQuestions, userNo, dictationSessionNo);
+        model.addAttribute("summary", summary);
+        model.addAttribute("results", summary.getResults());
 
         return "dictation/result";
     }

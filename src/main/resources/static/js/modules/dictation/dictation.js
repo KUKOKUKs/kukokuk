@@ -97,7 +97,7 @@ $(document).ready(() => {
             요소를 제거하는게 가능 좋아 보임(제일 간편한 방법)
         */
         // $("#AnswerBtn, #HintBtn1, #HintBtn2, #HintBtn3")
-        // .addClass("disabled");
+        // .addClass("disabled")
 
         $hintsInfo.fadeOut(150, function () {
             $(this).remove();
@@ -105,7 +105,7 @@ $(document).ready(() => {
     }
 
     // 정답 보기 서버 반영 (오답 처리 + tryCount=2)
-    async function ShowAnswerAndSkip() {
+    async function showAnswerAndSkip() {
         console.log("[markShowAnswer] 함수 실행됨");
         try {
             const response = await $.ajax({
@@ -144,7 +144,7 @@ $(document).ready(() => {
         $('#user-answer').prop('readonly', true).addClass('disabled');
 
         disableAllHintButtons();
-        await ShowAnswerAndSkip();
+        await showAnswerAndSkip();
     });
 
     // 힌트 사용 Ajax 호출 함수
