@@ -45,6 +45,10 @@ function connectWebSocket() {
         deactivateAllInputs();
       }
     });
+    // 교사가 게임 종료 버튼을 누르거나,
+    stompClient.subscribe(`/topic/TeacherDisconnect/${currentRoomNo}`,function(result) {
+      window.close();
+    })
 
     // 입장할 때마다, 누가 들어왔는지 신호 보내기
     stompClient.send(`/app/join/${currentRoomNo}`, {}, JSON.stringify({}));
@@ -68,13 +72,16 @@ document.addEventListener('DOMContentLoaded', function() {
       stompClient.send(`/app/chatSend/${currentRoomNo}`, {}, JSON.stringify({}));
     });
 
-    $btnEnd.click(function() {
-      let response = $.ajax({
+  $btnEnd.click(function() {
+    let sendData = {
+      roomNo: currentRoomNo,
+    };
+    let response = $.ajax({
         url : '/api/twenty/gameOver',
         type :'POST',
         dataType: 'json',
         contentType : 'application/json',
-        data : {'roomNo': currentRoomNo},
+        data :  JSON.stringify(sendData),
       });
       window.close();
 
@@ -186,7 +193,7 @@ function appendBoardLine(message) {
 
   if (message.sender === 'system') {
     lineClass = 'system-message';
-  } else if (message.sender === currentUser.username) {
+  } else if (message.sender === currentUserNo.username) {
     lineClass = 'my-message';
   } else {
     lineClass = 'other-message';

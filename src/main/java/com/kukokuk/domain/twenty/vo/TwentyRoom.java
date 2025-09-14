@@ -1,6 +1,7 @@
 package com.kukokuk.domain.twenty.vo;
 
 import com.kukokuk.domain.user.vo.User;
+import java.security.PrivateKey;
 import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class TwentyRoom {
   private Date updatedDate;
   private int groupNo;
   private int winnerNo;
+  private int tryCnt;
 
   private User user;
 }

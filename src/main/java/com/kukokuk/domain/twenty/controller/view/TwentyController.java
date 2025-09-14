@@ -52,12 +52,14 @@ public class TwentyController {
    *    그 사용자의 상태를 변경
    * 2. roomNo로 최신의 게임방 참여자를 조회하여 브로드 캐스팅
    * @param currentRoomNo
-   * @param principal Authentication의 객체이다.
+   * @param principal => 웹소켓 서버에서는 사용자 정보를 이 객체를 통해 꺼내야 한다.
+   * @parma accessor => 웹소켓 세션에 부가적인 정보를 저장하기 위한 객체
    *
    * 추가로 Http에서는 @PathVariabel을 사용하지만, 웹소켓 서버에서는 @DestinationVariable을 사용
    */
   @MessageMapping("/join/{currentRoomNo}")
-  public void joinGameroom(@DestinationVariable int currentRoomNo, Principal principal) {
+  public void joinGameroom(@DestinationVariable int currentRoomNo, Principal principal , StompHeaderAccessor accessor) {
+    accessor.getSessionAttributes().put("currentRoomNo", currentRoomNo);
 
     // 웹소켓 세션으로 핸드쉐이킹한 로그인 사용자 정보를 다시 SecurityUser로 변경해서 로직 수행
     if(principal instanceof Authentication auth) {

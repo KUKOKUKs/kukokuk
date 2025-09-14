@@ -28,9 +28,16 @@ public interface TwentyMapper {
   public void updateRoomUserStatus(Map<String, Object> map);
 
   /**
-   * TwentyRoom 객체를 받아, 게임방의 상태를 변경
+   * 게임방의 상태를 변경
    */
   public void updateRoomStaus(Map<String, Object> map);
 
+
+  /**
+   * 단일의 게임방을 조회
+   * @param roomNo
+   * @return
+   */
+  public TwentyRoom getTwentyRoomByRoomNo(int roomNo);
 
 }
