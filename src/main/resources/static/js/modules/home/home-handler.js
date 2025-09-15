@@ -1,3 +1,10 @@
+
+/*
+    정호형님 확인 후 삭제 !!!
+    home-handler대신 study-poll.js로 옮김
+    그리고 이 렌더링 UI 수정 필요 ( 기존에는 목록 전체에서 스피너 하나 돌아가는 방식이었으나,
+    이젠 카드별로 로딩 혹은 스켈레톤 UI로 수정해야함
+ */
 /**
  * 백그라운드 작업 처리되는
  * JobStatusResponse<List<DailyStudySummaryResponse>>를 활용한 
@@ -6,6 +13,7 @@
  * @param message 메세지
  * @param $studyListContainer 진행률이 표시될 부모 요소
  */
+/*
 export function updateHomeDailyStudyProgressUI(progress, message, $studyListContainer) {
     const $loadingElement = $studyListContainer.find(".loading_spinner"); // 스피너 로딩 요소
 
@@ -29,3 +37,4 @@ export function updateHomeDailyStudyProgressUI(progress, message, $studyListCont
         }
     }
 }
+*/

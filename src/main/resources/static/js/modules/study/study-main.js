@@ -1,15 +1,14 @@
 import {apiGetDailyStudies} from "./study-api.js";
-import {renderStudyListCard} from "./study-renderer.js";
 
 // 학습 자료 카드가 삽입될 목록 컨테이너
 const $studyListContainer = $('.study_list_container');
-$(document).ready(() => {
+$(document).ready(async () => {
     // userInfo(사용자의 학습수준/진도)가 모두 null이 아니면 ready는 true
     const ready = userInfo.difficulty && userInfo.school && userInfo.grade;
     if (ready) {
         const rows = 10;
         // 학습 수준이 준비된 경우 학습자료 목록 조회
-        getDailyStudies(rows);
+        await getDailyStudies(rows);
     } else {
         // 학습 수준이 설정되지 않은 경우 학습수준설정 버튼 렌더링
         renderSetUpBtn();
@@ -30,29 +29,16 @@ async function getDailyStudies(rows) {
                 `);
 
         // 사용자 맞춤 학습자료 목록을 조회하는 rest API 요청 호출
-        // 반환받은 studyList는 학습자료 정보를 담은 객체의 리스트
-        const studyList = await apiGetDailyStudies(rows);
-
-        // 비동기 요청이 성공적이면 로딩 컴포넌트 제거
-        $studyListContainer.empty();
+        const jobStatusList = await apiGetDailyStudies(rows, $studyListContainer);
 
         // 조회된 학습자료가 없는 경우
-        if (studyList.length === 0) {
+        if (jobStatusList.length === 0) {
             $studyListContainer.empty().html(`
                 <div class="loading_spinner">
                     <div class="info_text">더이상 조회할 학습자료가 없습니다. 학습수준과 진도를 변경해서 학습해보세요. </div>
                 </div>
                 `);
-            return;
         }
-
-        // studyList를 순회하며
-        studyList.forEach((study, index) => {
-            // 각 학습자료를 렌더링할 Html 생성
-            const studyCardHtml = renderStudyListCard(study, index);
-            // 학습 목록 컨테이너에 html을 append
-            $studyListContainer.append(studyCardHtml);
-        });
     } catch (err) {
         // 에러 발생 시 에러메세지 렌더링
         $studyListContainer.html(`
@@ -67,7 +53,7 @@ async function getDailyStudies(rows) {
  * 사용자의 학습수준/진도가 설정되어 있지 않을 때 버튼 렌더링
  *
  */
-function renderSetUpBtn() {
+function renderSetUpBtn($studyListContainer) {
     $studyListContainer.append(`
         <button class="modal_study_level_btn btn white">
         학습수준 설정하고 일일학습하기
@@ -81,7 +67,7 @@ function renderSetUpBtn() {
 $(document).on('click', '.daily_study_card', function () {
 
     // 이미 버튼이 있으면 추가하지 않음
-    if ($(this).find('.study_btn_list').length === 0) {
+    if ($(this).find('.btn_list').length === 0) {
         // 커스텀 속성에서 상태 텍스트 가져오기
         const statusText = $(this).attr('data-study-status');
         const dailyStudyNo = $(this).attr('data-study-no');
@@ -89,7 +75,7 @@ $(document).on('click', '.daily_study_card', function () {
 
         // 버튼 HTML
         const buttonsHtml = `
-            <div class="study_btn_list">
+            <div class="btn_list column">
               <a href="/study/${dailyStudyNo}" class="btn dark">${statusText}</a>
               <a href="/study/${dailyStudyNo}/essay" class="btn white ${essayBtnClass}">AI 피드백 기반 논술형 퀴즈 풀기</a>
             </div>
