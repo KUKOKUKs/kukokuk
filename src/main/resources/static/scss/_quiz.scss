@@ -1,0 +1,46 @@
+/* 보기 리스트 관련 */
+#quiz-options {
+    .option_btns {
+        border-radius: var(--bdrs);
+        background-color: var(--baseBackground);
+        border: var(--baseBorder);
+        box-shadow: var(--bxsh);
+
+        &:hover, &.selected {
+            font-weight: bold;
+            background-color: var(--subColor);
+        }
+    }
+}
+
+/* 정답 확인 */
+.check_correct {
+    width: 100%;
+    padding: var(--tinyPadding);
+    background-color: #fff;
+    border-radius: var(--bdrs);
+    overflow: hidden;
+    position: relative;
+
+    &::after {
+        content: '정답 확인';
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--blueColor);
+        text-align: center;
+        background-color: #fff;
+        transition: opacity var(--trst) ease, visibility 0s linear var(--trst);
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    &.checked::after {
+        opacity: 0;
+        visibility: hidden;
+    }
+}

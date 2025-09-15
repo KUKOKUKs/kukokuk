@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<th:block th:fragment="study-nav-fragment(studyProgress)">
+    <!--/* logo */-->
+    <button type="button" id="study_log_btn" class="logo fixed">
+        <span class="a11y-hidden">국어국</span>
+    </button>
+
+    <div id="nav-container" class="nav_container study_nav_container">
+        <div class="nav_wrap">
+            <div class="nav_list base_gap">
+                <div class="study_content_list">
+                    <div class="study_list_icon">
+                        <iconify-icon class="icon title_font" icon="streamline-kameleon-color:pencil-2-duo"></iconify-icon>
+                        학습
+                    </div>
+
+                    <ul class="study_content">
+                        <li class="study_content_info"
+                            th:each="card, state : ${studyProgress.cards}"
+                            th:data-card-index="${state.count}">
+                            <p class="study_content_info_title" th:text="|${state.count}. ${card.title}|">학습 목차</p>
+
+                            <th:block th:if="${studyProgress.log != null && studyProgress.log.studiedCardCount >= state.count}">
+                                <iconify-icon class="icon sub_font" icon="streamline-sharp-color:check"></iconify-icon>
+                            </th:block>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="study_content_list">
+                    <div class="study_list_icon">
+                        <iconify-icon class="icon title_font" icon="streamline-color:help-question-1"></iconify-icon>
+                        퀴즈
+                    </div>
+
+                    <ul class="study_content">
+                        <li class="study_content_info"
+                            th:each="quiz, state : ${studyProgress.quizWithLogDtos}"
+                            th:attr="data-quiz-index=${state.count},
+                                 data-quiz-no=${quiz.dailyStudyQuizNo}">
+                            <p class="study_content_info_title" th:text="|퀴즈 ${state.count}|">퀴즈 목차</p>
+
+                            <th:block th:if="${quiz.dailyStudyQuizLog != null}">
+                                <th:block th:if="${'Y'.equals(quiz.dailyStudyQuizLog.isSuccess)}">
+                                    <iconify-icon class="icon sub_font" style="color: var(--blueColor)" icon="proicons:circle"></iconify-icon>
+                                </th:block>
+                                <th:block th:if="${'N'.equals(quiz.dailyStudyQuizLog.isSuccess)}">
+                                    <iconify-icon class="icon sub_font" style="color: var(--redColor)" icon="proicons:cancel"></iconify-icon>
+                                </th:block>
+                            </th:block>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- footer -->
+            <div th:replace="~{fragments/common/footer :: footer-fragment}"></div>
+        </div>
+
+        <!--/* nav toggle btn */-->
+        <button type="button" id="nav-toggle-btn" class="nav_toggle_btn"></button>
+
+        <div th:replace="~{fragments/modal/modal-study-exit :: modal-study-exit-fragment}"></div>
+
+        <script>
+            // 학습 진행 중단 모달창 열기
+            const $logo = $('#study_log_btn');
+            const $modalExit = $('#modal-study-exit');
+            $logo.click(function() {
+                if ($modalExit.length) {
+                    // 해당 모달창 요소가 있을 경우 열기
+                    $modalExit.show();
+
+                    // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+                    setTimeout(() => {
+                        $modalExit.addClass("open");
+                    }, 10);
+                }
+            });
+        </script>
+    </div>
+</th:block>
+</html>

@@ -1,50 +1,47 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/center}">
-
+<html layout:decorate="~{layout/center}">
 <!--/* 학습 진행화면에서 표시할 네비바 */-->
-<div id="study-nav-fragment" layout:fragment="fixed-nav-fragment">
-    <div th:replace="~{fragments/common/study-nav :: study-nav-fragment(data=${data})}"></div>
-</div>
+<div layout:fragment="custom-nav-fragment"
+     th:replace="~{fragments/study/study-nav :: study-nav-fragment(studyProgress=${data})}"></div>
 
 <div layout:fragment="content">
+    <div id="center-content" class="content_container">
+        <div class="content_info">
+            <div class="bar_gauge">
+                <div id="study-progress" class="gauge"></div>
+                <iconify-icon id="study-quiz-marker" class="icon title_font marker" icon="streamline-color:help-question-1"></iconify-icon>
+            </div>
 
-    <!-- 학습진행바 -->
-    <div class="level_info study_progress">
-        <div class="bar_gauge">
-            <!--/* 퀴즈는 항상 4개 */-->
-            <div class="gauge"></div>
-            <div class="marker">
-                <div class="line"></div>
-                <div class="label">퀴즈</div>
+
+        </div>
+
+        <div class="component study_component">
+            <div id="main-study-content">
+                <div class="study_progress_card">
+                    <div class="title">학습제목</div>
+                    <div class="paragraph">학습내용 paragraph</div>
+                    <div class="example">학습내용예시 example</div>
+                    <div class="definition">학습내용정의 definition</div>
+                    <div class="quote">학습내용인용 quote</div>
+                    <div class="list">학습내용리스트 list</div>
+                </div>
+                <!--    <th:block th:each="card : ${data.cards}">-->
+                <!--      <p th:text="${card.cardIndex}"></p>-->
+                <!--      <p th:text="${card.content}"></p>-->
+                <!--      <p th:text="${card.dailyStudyCardNo}"></p>-->
+                <!--    </th:block>-->
             </div>
         </div>
-    </div>
 
-    <!-- 학습 카드 -->
-    <div id="main-study-content">
-        <div class="component study_progress_card">
-            <div class="title">학습제목</div>
-            <div class="paragraph">학습내용 paragraph</div>
-            <div class="example">학습내용예시 example</div>
-            <div class="definition">학습내용정의 definition</div>
-            <div class="quote">학습내용인용 quote</div>
-            <div class="list">학습내용리스트 list</div>
+        <div class="btn_list base_gap justify_content_center">
+            <button class="circle_btn" id="prev-btn">
+                <iconify-icon class="icon large" icon="emojione:left-arrow"></iconify-icon>
+            </button>
+            <button class="circle_btn" id="next-btn">
+                <iconify-icon class="icon large" icon="emojione:right-arrow"></iconify-icon>
+            </button>
         </div>
-        <!--    <th:block th:each="card : ${data.cards}">-->
-        <!--      <p th:text="${card.cardIndex}"></p>-->
-        <!--      <p th:text="${card.content}"></p>-->
-        <!--      <p th:text="${card.dailyStudyCardNo}"></p>-->
-        <!--    </th:block>-->
     </div>
-
-    <!-- 카드 넘기는 버튼 -->
-    <div class="btn_list daily_study">
-        <button class="btn white" id="prev-btn">이전</button>
-        <button class="btn white" id="next-btn">다음</button>
-    </div>
-
 </div>
 
 <th:block layout:fragment="script">
@@ -59,7 +56,7 @@
         let quizLogs = /*[[${data.quizLogs}]]*/ [];
         /*]]>*/
     </script>
-    <script type="module" th:src="@{/js/modules/study/study-progress.js}"></script>
+<!--    <script type="module" th:src="@{/js/modules/study/study-progress.js}"></script>-->
 </th:block>
 
 </html>

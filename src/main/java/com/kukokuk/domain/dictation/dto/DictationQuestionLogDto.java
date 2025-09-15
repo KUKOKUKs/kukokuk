@@ -12,4 +12,9 @@ public class DictationQuestionLogDto {
     private int tryCount;                // 시도횟수
     private String isSuccess;            // ENUM('Y','N')
     private String usedHint;             // ENUM('Y','N')
+
+    public boolean isUsedHint() {
+        return "Y".equals(usedHint);
+    }
+
 }

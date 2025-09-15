@@ -1,3 +1,10 @@
+/*
+    스피드 퀴즈와 반복되는 구조와 로직이라면 
+    하나로 처리하는게 가능해 보임
+    따로 관리하는편이 맞아 보이지만 같은 컨텐츠라고 봐도 무방하기에
+    스피드, 단계별 퀴즈에 대한 로직은 하나로 통합이 오히려 효율적일 것 같음
+    (구분을 위한 값이 필요 현재 타입으로 구분이 가능해 보임)
+ */
 $(document).ready(function () {
     // 현재 퀴즈 인덱스 (0부터 시작)
     let currentQuizIndex = 0;
@@ -13,11 +20,15 @@ $(document).ready(function () {
 
     console.log("quizzes length =", quizzes.length); // 서버에서 전달된 퀴즈 데이터 확인용
 
+    // 컨트롤러에서 내려줄 때 조건에 따라 처리
+    // 예기치 못한 오류로 인해 아래와 같은 예외 처리 로직이 있다면 결과 처리까지도 필요함
+    // 현재 데이터를 못 불러온 상황이라면 오류가난 엉망인 페이지에서
+    // alert만 띄우고 말거면 경고창 없이 루트페이지를 가는게 나아보임
     // 퀴즈 데이터 유효성 검사
-    if (!Array.isArray(quizzes) || quizzes.length === 0) {
-        alert("퀴즈를 불러오지 못했습니다.");
-        return;
-    }
+    // if (!Array.isArray(quizzes) || quizzes.length === 0) {
+    //     alert("퀴즈를 불러오지 못했습니다.");
+    //     return;
+    // }
 
     // 사용자가 선택한 답안을 저장할 배열 초기화
     selectedAnswers = new Array(quizzes.length).fill(null);
@@ -86,7 +97,7 @@ $(document).ready(function () {
      * 진행률 바의 너비를 현재 문제 번호에 맞게 업데이트
      */
     function renderProgressBar() {
-        const $experiencePoint = $('.timer_experience_point'); // 진행률 바 내부 채움 영역
+        const $experiencePoint = $('#step-progress-bar'); // 진행률 바 내부 채움 영역
         const progressPercent = ((currentQuizIndex + 1) / quizzes.length) * 100;
         $experiencePoint.css('width', progressPercent + '%');
     }
@@ -176,4 +187,19 @@ $(document).ready(function () {
         // 폼 전송
         $form.submit();
     }
+
+    // 퀴즈 진행 종료 안내 모달창 열기
+    const $quizEndBtn = $(".quiz_end_btn"); // 모달창 열기 버튼
+    const $modalQuizExit = $("#modal-quiz-exit"); // 모달창
+    $quizEndBtn.click(function () {
+        if ($modalQuizExit.length) {
+            // 해당 모달창 요소가 있을 경우 열기
+            $modalQuizExit.show();
+
+            // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+            setTimeout(() => {
+                $modalQuizExit.addClass("open");
+            }, 10);
+        }
+    });
 });

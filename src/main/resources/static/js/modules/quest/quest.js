@@ -63,10 +63,20 @@ $(document).ready(async function () {
                 // 보상 수령건이 모든 퀘스트 수와 같다면 모든 퀘스트 완료+보상수령으로 판단
                 $questContainer.remove();
             } else {
-                // 퀘스트리스트 추가
-                $questListContainer.html(content);
                 $qusetTotalCount.text(totalCount); // 일일 도전과제 총 개수 입력
                 $qusetObtainedCount.text(obtainedCount); // 보상 수령 개수 입력
+
+                // 퀘스트리스트 추가
+                $questListContainer.html(content);
+
+                if (totalCount >= 2) {
+                    // totalCount가 2개 이상일 경우 토글버튼 추가(컴포넌트 높이 줄이거나 늘리기)
+                    $questContainer.addClass("pb_0").append(`
+                        <button type="button" id="quest-list-toggle-btn" class="vertical_toggle_btn">
+                            <iconify-icon class="arrow" icon="ep:arrow-down"></iconify-icon>
+                        </button>
+                    `);
+                }
             }
 
             // 퀘스트 완료 개수와 보상 획득 수가 같다면 일괄 획득 버튼 비활성화
@@ -98,6 +108,7 @@ $(document).ready(async function () {
 
     // 일일 도전과제 보상 관련
     const $getHintBtn = $(".get_hint_btn"); // 힌트 획득 버튼
+    const $questListToggleBtn = $("#quest-list-toggle-btn"); // 퀘스트 리스트 토글 버튼
 
     // 힌트 획득 처리 및 획득 후 힌트 개수 요청 버튼 이벤트
     $getHintBtn.click(async function () {
@@ -122,6 +133,12 @@ $(document).ready(async function () {
                     // 일일 도전과제 컴포넌트 fragment로 사용되는 곳에서만 수행
                     $this.closest(".component_info").remove(); // 퀘스트 리스트 제거
                     getHintCountAction(response); // 프로필 힌트 개수 업데이트
+                    
+                    if ($questListToggleBtn.length && totalCount - obtainedCount <= 2) {
+                        // 남은 퀘스트가 2개 이하로 남았을 경우 토글버튼 제거
+                        $questListToggleBtn.remove();
+                        $questContainer.removeClass("pb_0"); // 부모요소 패딩값 조정
+                    }
 
                     if (obtainedCount === totalCount) {
                         // 보상 수령건이 모든 퀘스트 수와 같다면 모든 퀘스트 완료+보상수령으로 판단
@@ -160,4 +177,10 @@ $(document).ready(async function () {
         // 일정 시간 지난 후 제거
         setTimeout(() => $profileHintCount.removeClass("action"), 200);
     }
+    
+    // 퀘스트 토글 버튼 이벤트
+    $questListToggleBtn.click(function() {
+        $(this).toggleClass("open"); // 버튼 화살표 효과
+        $questContainer.toggleClass("open"); // 컨테이터 max-heignt 값 조정
+    });
 });

@@ -13,6 +13,15 @@ $(document).ready(() => {
 
         this.submit();
     });
+    
+    // 네이바 토글
+    const $navContainer = $('#nav-container'); // 네비 컨테이너 요소
+    const $navToggleBtn = $("#nav-toggle-btn"); // 네비 토글 버튼
+    $navToggleBtn.click(function () {
+        if ($navContainer.length) {
+            $navContainer.toggleClass("closed");
+        }
+    });
 
     // 모달창 닫기
     const $modalCloseBtns = $(".modal_close"); // 모달창 닫기 버튼
@@ -25,7 +34,7 @@ $(document).ready(() => {
                 this.reset();
             });
             // 모달창 닫기
-            $modalAll.hide();
+            $modalAll.hide().removeClass("open");
         }
     });
 
@@ -50,5 +59,15 @@ $(document).ready(() => {
             // 선택한 탭 컨텐츠 활성화
             $tabContents.eq(index).addClass("selected").siblings().removeClass("selected");
         }
+    });
+    
+    // 정답 확인 버튼 핸들러
+    const $checkCorrect = $(".check_correct"); // 정답 확인 버튼
+    $checkCorrect.click(function () {
+        const $this = $(this);
+        
+        // 버튼에 클라스 추가 및 자식 요소 텍스트 전부 보이도록 클래스 제거
+        $this.addClass("checked")
+            .find(".correct_answer").removeClass("text_ellipsis");
     });
 });

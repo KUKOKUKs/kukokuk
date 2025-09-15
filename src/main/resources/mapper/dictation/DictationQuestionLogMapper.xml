@@ -17,6 +17,7 @@
          ,USER_ANSWER
          ,TRY_COUNT
          ,IS_SUCCESS
+         ,USED_HINT
     ) VALUES (
          #{userNo}
         ,#{dictationQuestionNo}
@@ -24,25 +25,9 @@
         ,#{userAnswer}
         ,#{tryCount}
         ,#{isSuccess}
+        ,#{usedHint}
     )
   </insert>
-
-  <!--
-  /**
-   * 식별자 받아쓰기 힌트 사용 여부
-   * @param dictationQuestionLogNo 식별자
-   * @param userHint 힌트 사용 여부
-   */
-   updateHintUsed(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("userHint") String userHint)
-   -->
-  <update id="updateHintUsed" parameterType="DictationQuestionLog">
-    UPDATE
-        KUKOKUK_DICTATION_QUESTION_LOGS
-    SET
-        USER_HINT = #{userHint}
-    WHERE
-        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
-  </update>
 
   <!--
    /**
@@ -58,6 +43,7 @@
        IS_SUCCESS = #{isSuccess}
       ,TRY_COUNT = #{tryCount}
       ,USER_ANSWER = #{userAnswer}
+      ,USED_HINT = #{usedHint}
     WHERE
        DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
   </update>

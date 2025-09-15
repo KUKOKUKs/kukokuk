@@ -2,10 +2,12 @@
     /* font */
     --baseFontSize: 16px;
     --subFontSize: 0.9em;
-    --titleFontSize: 26px;
+    --titleFontSize: 24px;
     --smallFontSize: 0.8em;
     --largeFontSize: 1.2em;
     --tinyFontSize: 0.65em;
+    --fixEtcTinyFontSize: 11px;
+    --fixEtcSmallFontSize: 14px;
 
     /* color palette */
     --primaryColor: #009b90;
@@ -19,7 +21,7 @@
     --blueColor: #2783D9;
     --borderColor: #d9d9d9;
     --dimmedColor: rgba(0, 0, 0, 0.3);
-    --baseBackGround: rgba(255, 255, 255, 0.5);
+    --baseBackground: rgba(255, 255, 255, 0.5);
 
     /* element property */
     --logoWidth: 100px;
@@ -33,7 +35,7 @@
     --modalWidth: 400px;
     --modalHeight: 450px;
     --modalSmallHeight: 200px;
-    --navWidth: 250px;
+    --navWidth: 230px;
     --baseIcon: 30px;
     --smallIcon: 14px;
     --largeIcon: 40px;
@@ -49,6 +51,7 @@
     --basePadding: 18px;
     --smallPadding: 0.75em;
     --tinyPadding: 0.3em;
+    --studyNavListPadding: 0.5em var(--basePadding);
     --inputPadding: 19px 15px 5px;
     --modalPadding: 16px;
     --modalTitlePadding: 10px var(--modalPadding);
@@ -59,6 +62,7 @@
     --tagBdrs: 2em;
     --bxsh: 2px 2px 10px rgba(0, 0, 0, .05);
     --insetBxsh: inset -1px -1px 1px rgba(0, 0, 0, .25);
+    --switchToggleInsetBxsh: inset 1px 1px 1px rgba(0, 0, 0, .1);
     --trst: .2s ease-in-out;
 
     --baseGap: 1.25rem;
@@ -100,7 +104,7 @@ img {
 
 button {
     cursor: pointer;
-    background-color: inherit;
+    background-color: transparent;
 }
 
 input {
@@ -146,6 +150,7 @@ body {
     color: var(--blackColor);
     background: url("/images/background-img.webp");
     word-break: keep-all;
+    overflow-wrap: break-word;
 }
 
 ol, ul {
@@ -170,25 +175,17 @@ table {
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
-    border-spacing: 0;
-    overflow: hidden;
 }
 
 th, td {
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-    max-height: 80px;
-    overflow: hidden;          /* 넘치는 내용 숨김 */
-    text-overflow: ellipsis;   /* 말줄임 (...) 처리 */
-    white-space: nowrap; /* 한줄로 처리 */
+    font-size: var(--subFontSize);
+    padding: 0.3em;
+    border-bottom: var(--baseBorder);
 }
 
 th {
-    background-color: #f9f9f9;
+    background-color: var(--lightGrayColor);
     font-weight: bold;
-    color: #2c3e50;
 }
 
 /* 스크롤 커스텀 */
@@ -197,6 +194,15 @@ th {
     scrollbar-width: thin; /* Firefox 전용: 스크롤 두께를 얇게 지정 */
     scrollbar-color: transparent transparent;
     /* Firefox 전용: (thumb 색상, track 색상) → 둘 다 투명으로 해서 기본 상태에서는 스크롤이 보이지 않음 */
+
+    &.show_scroll {
+        overflow-y: auto;
+        scrollbar-color: var(--borderColor) transparent;
+
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--borderColor);
+        }
+    }
 }
 
 /* 크롬, 사파리, 엣지 브라우저에서 스크롤 공간 정의 */
@@ -217,11 +223,11 @@ th {
 
 /* hover 시 활성화 */
 *:hover::-webkit-scrollbar-thumb {
-    background-color: #999;
+    background-color: var(--borderColor);
 }
 
 *:hover {
-    scrollbar-color: #999 transparent;
+    scrollbar-color: var(--borderColor) transparent;
 }
 
 /* 예외 처리: 원래 브라우저 스크롤 유지 */

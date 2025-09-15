@@ -1,71 +1,106 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{/layout/base}" th:with="menu='quiz', title='단계별 퀴즈 설정'">
-
-<head>
-    <link rel="stylesheet" href="/css/main.css"/>
-</head>
-<body>
+<html layout:decorate="~{/layout/base}" th:with="menu='quiz', title='단계별 퀴즈 설정'">
 <div layout:fragment="content">
-    <div id="main-content" class="d_flex column base_gap">
-        <div>
-            <h1 class="content_title">단계별 퀴즈 설정</h1>
-        </div>
+    <div id="main-content" class="content_container">
+        <form class="w_100 d_flex column large_gap"
+              th:action="@{/quiz/level}"
+              method="get"
+              id="levelQuizForm">
+            <div class="content_info">
+                <div class="content_title">
+                    <iconify-icon icon="token-branded:step"></iconify-icon>
+                    문제 유형 선택
+                </div>
 
-        <form id="levelQuizForm" th:action="@{/quiz/level}" method="get"
-              class="d_flex column base_gap">
-
-            <!-- 난이도 선택 -->
-            <div>
-                <p class="bold small_font tac">난이도 선택</p>
-                <div class="btn_list column">
-                    <label class="btn level_select">
-                        <input type="radio" name="difficulty" value="상" required>
-                        상 (어려움)
+                <!--/* 출제 유형 선택 */-->
+                <div class="grid_list_component">
+                    <label class="component grid_list elevate_on_hover">
+                        <input type="radio" name="questionType" value="뜻">
+                        <div class="component_title">
+                            <p class="title_info column">
+                                이 뜻, 어떤 단어일까?
+                                <span class="component_sub_title">
+                                    뜻을 보고 알맞은 단어를 골라보세요!
+                                </span>
+                            </p>
+                        </div>
                     </label>
-                    <label class="btn level_select">
-                        <input type="radio" name="difficulty" value="중" required>
-                        중 (보통)
-                    </label>
-                    <label class="btn level_select">
-                        <input type="radio" name="difficulty" value="하" required>
-                        하 (쉬움)
+                    <label class="component grid_list elevate_on_hover">
+                        <input type="radio" name="questionType" value="단어">
+                        <div class="component_title">
+                            <p class="title_info column">
+                                이 단어, 무슨 뜻일까?
+                                <span class="component_sub_title">
+                                    단어를 보고 정확한 뜻을 찾아보세요!
+                                </span>
+                            </p>
+                        </div>
                     </label>
                 </div>
             </div>
 
-            <!-- 출제 유형 선택 -->
-            <div>
-                <p class="bold small_font tac">출제 유형</p>
-                <div class="btn_list column">
-                    <label class="btn level_select">
-                        <input type="radio" name="questionType" value="뜻" required>
-                        뜻 보고 단어 고르기
+            <div class="content_info">
+                <div class="content_title">
+                    <iconify-icon icon="token-branded:step"></iconify-icon>
+                    난이도 선택
+                </div>
+
+                <!--/* 난이도 선택 */-->
+                <div class="grid_list_component">
+                    <label class="component grid_list elevate_on_hover">
+                        <input type="radio" name="difficulty" value="하">
+                        <div class="component_title">
+                            <p class="title_info column">
+                                쉬움
+                                <span class="component_sub_title">
+                                    뇌가 움직일 차례
+                                </span>
+                            </p>
+                        </div>
                     </label>
-                    <label class="btn level_select">
-                        <input type="radio" name="questionType" value="단어" required>
-                        단어 보고 뜻 고르기
+                    <label class="component grid_list elevate_on_hover">
+                        <input type="radio" name="difficulty" value="중">
+                        <div class="component_title">
+                            <p class="title_info column">
+                                보통
+                                <span class="component_sub_title">
+                                    살짝 땀 날지도?
+                                </span>
+                            </p>
+                        </div>
+                    </label>
+                    <label class="component grid_list elevate_on_hover">
+                        <input type="radio" name="difficulty" value="상">
+                        <div class="component_title">
+                            <p class="title_info column">
+                                어려움
+                                <span class="component_sub_title">
+                                    집중 회로 풀가동
+                                </span>
+                            </p>
+                        </div>
                     </label>
                 </div>
             </div>
 
-            <!-- 시작 버튼 -->
-            <button type="submit" class="btn primary bold">단계별 퀴즈 시작</button>
+            <button type="submit" class="btn primary">시작하기</button>
+        </form>
+
+        <!--/* 이 폼이 왜 있는지 이해가 안됨 */-->
+        <form id="quiz-result-form" th:action="@{/quiz/submit}" method="post">
+            <input type="hidden" name="difficulty" th:value="${difficulty}">
+            <input type="hidden" name="questionType" th:value="${questionType}">
         </form>
     </div>
 
-    <form id="quiz-result-form" th:action="@{/quiz/submit}" method="post">
-        <input type="hidden" name="difficulty" th:value="${difficulty}">
-        <input type="hidden" name="questionType" th:value="${questionType}">
-    </form>
-
-    <div id="sub-content">
+    <div id="sub-content" class="content_container">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
+        <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
     </div>
-
 </div>
-<script type="module" src="/js/modules/quiz/level-select.js"></script>
-</body>
+
+<th:block layout:fragment="script">
+    <script type="module" th:src="@{/js/modules/quiz/level-select.js}"></script>
+</th:block>
 </html>
 

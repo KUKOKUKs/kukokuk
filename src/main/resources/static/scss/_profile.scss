@@ -76,18 +76,8 @@
         gap: var(--smallGap);
 
         .experience_points_info {
-            font-size: var(--tinyFontSize);
+            font-size: var(--fixEtcTinyFontSize);
             color: var(--grayColor);
-        }
-    }
-
-    &.study_list {
-        .level_bar {
-            height: 10px;
-
-            .experience_point {
-                background-color: var(--primaryColor);
-            }
         }
     }
 

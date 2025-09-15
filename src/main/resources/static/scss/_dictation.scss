@@ -1,87 +1,67 @@
-.question_container {
-    width: 100%;
-    max-width: var(--subContentWidth);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-radius: var(--bdrs);
-    border: var(--baseBorder);
-    overflow: hidden;
+/* speech effecter */
+#dictation-speaking-component {
+    padding: var(--basePadding) 0;
 
-    &.blue {
-        border-color: var(--blueColor);
+    &:has(.dictation_hint_info) {
+        padding: var(--basePadding) 0 0 0;
     }
 
-    &.yellow {
-        border-color: var(--yellowColor);
+    &.action {
+        .callout.speaker_btn {
+            background-color: var(--blueColor);
+
+            &:after {
+                border-top: 5px solid var(--blueColor);
+            }
+        }
+
+        .callout_info .speaker_btn {
+            display: inline-block;
+            color: var(--blueColor);
+        }
+
+        .callout_info .speaker_btn,
+        .speaker_icon {
+            transform-origin: center;
+            animation: loop-scale 1.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+    }
+
+    /* hint btn */
+    .dictation_hint_btn {
+        border-radius: var(--bdrs);
+        background-color: var(--yellowColor);
+        color: var(--blackColor);
+        position: relative;
+
+        /* 아이콘이 아닌 직접 텍스트로 입력한 경우 스타일 조정 */
+        .initial_hint {
+            font-size: var(--tinyFontSize); /* 글자 크기 */
+            font-weight: 500;               /* 아이콘 두께에 맞춰 조정 */
+            line-height: 1;                 /* 글자 높이 */
+            letter-spacing: -0.4em;         /* 자간 */
+            transform: translateX(-0.15em); /* 자간 조정으로 인한 위치 조정 */
+        }
     }
 }
 
-.question_info {
+@keyframes loop-scale {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.05); }
+    50% { transform: scale(0.95); }
+    75% { transform: scale(1.05); }
+}
+
+/* hint information */
+.dictation_hint_info {
     width: 100%;
-    padding: var(--containerPadding);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--baseGap);
+    margin-top: var(--smallPadding);
+    background-color: var(--blueColor);
+    border-radius: 0 0 var(--bdrs) var(--bdrs);
 
-    .question_title_info {
-        color: var(--blueColor);
-        border-bottom: 2px solid var(--blueColor);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 3px;
-        cursor: pointer;
-
-        .speaker_icon {
-            font-size: var(--titleFontSize);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        &:hover {
-            border-color: var(--primaryColor);
-            color: var(--primaryColor);
-
-            .question_title {
-                color: var(--primaryColor);
-            }
-        }
-    }
-
-    .hint_btns {
-        display: flex;
-        gap: var(--smallGap);
-        cursor: pointer;
-
-        .hint_btn {
-            padding: 0.3em;
-            cursor: pointer;
-            border-color: var(--borderColor);
-            box-shadow: var(--insetBxsh);
-            border-radius: var(--bdrs);
-            border: 1px solid var(--subColor);
-            background-color: var(--subColor);
-            line-height: 1;
-            font-size: var(--smallFontSize);
-            transition: border-color var(--trst), color var(--trst), background-color var(--trst);
-
-            &.disabled {
-                pointer-events: none;
-                opacity: .5;
-            }
-
-            &:hover {
-                border-color: var(--primaryColor);
-                color: var(--primaryColor);
-                background-color: #fff;
-            }
-        }
-    }
-
-    .square_info {
+    .square_list {
+        width: 100%;
+        padding: var(--basePadding);
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -106,35 +86,6 @@
             margin: 0 5px;
         }
     }
-}
-
-.answer_info {
-    width: 100%;
-    padding: var(--containerPadding);
-    display: flex;
-    flex-direction: column;
-    gap: var(--smallGap);
-
-    &:has(input[type='text']) {
-        input {
-            font-size: var(--largeFontSize);
-            padding-bottom: var(--smallGap);
-            border-bottom: var(--baseBorder);
-        }
-    }
-}
-
-.answer_btn_list {
-    width: 100%;
-    max-width: var(--subContentWidth);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--baseGap);
-}
-
-.question_result_title {
-    font-size: 35px;
 }
 
 .question_result_content {

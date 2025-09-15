@@ -16,13 +16,6 @@ public interface DictationQuestionLogMapper {
   void insertDictationQuestionLog(DictationQuestionLog dictationQuestionLog);
 
   /**
-   * 식별자로 받아쓰기 힌트 사용 여부 반영
-   * @param dictationQuestionLogNo 식별자
-   * @param userHint 힌트 사용 여부
-   */
-  void updateHintUsed(@Param("dictationQuestionLogNo") int dictationQuestionLogNo, @Param("userHint") String userHint);
-
-  /**
    * 정답 제출 버튼을 눌렀을 때 제출문장, 시도 누적 횟수, 정답 여부 반영
    * @param dictationQuestionLog 받아쓰기 문제 풀이 이력
    */
