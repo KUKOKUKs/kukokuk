@@ -2,10 +2,25 @@ package com.kukokuk.domain.group.mapper;
 
 import com.kukokuk.domain.group.vo.Group;
 import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface GroupMapper {
+
+    /**
+     * 조건에 맞는 그룹 목록 조회
+     * @param condition 조회할 데이터의 조건 값들이 담겨 있는 Map 객체
+     * @return 그룹 목록 정보
+     */
+    List<Group> getGroups(Map<String, Object> condition);
+
+    /**
+     * 조회할 데이터의 총 행의 수 조회
+     * @param condition 조회할 데이터의 조건 값들이 담겨 있는 Map 객체
+     * @return 조회할 데이터의 총 데이터 행의 수
+     */
+    int getTotalRows(Map<String, Object> condition);
 
     /**
      * 전달 받은 조회할 행의 개수로 최초 랜더링 시 기본 그룹 리스트 조회(임의의 행 조회)
