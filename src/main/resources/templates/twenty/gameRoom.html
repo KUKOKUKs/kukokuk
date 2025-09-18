@@ -93,7 +93,7 @@
   .message-line { max-width: 70%; padding: 8px 12px; border-radius: 12px; line-height: 1.5; }
   .my-message { background-color: #FFEB33; align-self: flex-end; }
   .other-message { background-color: #f1f1f1; align-self: flex-start; }
-  .system-message { color: #888; font-style: italic; text-align: center; align-self: center; background: none; padding: 4px; font-size: 0.9em; }
+  .system_message { color: #888; font-style: italic; text-align: center; align-self: center; background: none; padding: 4px; font-size: 0.9em; }
   .sender { font-weight: bold; font-size: 0.9em; margin-bottom: 4px; color: #555; }
 
   /* 오른쪽 참가자 영역 */
@@ -242,22 +242,27 @@
 
   <div class="room_container">
     <div class="left_panel">
+      <!-- 채팅 영역 표시-->
       <div class="board_area" id="board-area">
-        <div class="system-message">게임이 시작되면 이곳에 질문과 답변이 표시됩니다.</div>
+        <div class="system_message">
+
+        </div>
       </div>
 
+      <!-- 교사 버튼 -->
       <div class="teacher_controls" id="teacher-controls" sec:authorize="hasRole('TEACHER')">
         <div class="button_row">
-          <button class="big_button" id="btn-o">O</button>
-          <button class="big_button" id="btn-x">X</button>
-          <button class="big_button" id="btn-end">게임종료</button>
+          <button class="big_button" id="btn-o" disabled>O</button>
+          <button class="big_button" id="btn-x" disabled>X</button>
+          <button class="big_button" id="btn-end" disabled>게임종료</button>
+          <button class="big_button" id="btn-start">게임시작</button>
         </div>
         <div class="answer_box" id="answer-box">정답 : <span th:text="${correctAnswer}"></span></div>
       </div>
-
+      <!-- 학생 버튼-->
       <div class="student_controls" id="student-controls" sec:authorize="hasRole('STUDENT')">
         <div class="input_group">
-          <div class="input_label">질문입력</div>
+          <div class="input_label" >질문입력</div>
           <input class="text_input" id="question-input" placeholder="질문을 입력하세요" disabled/>
           <button class="arrow_button" id="send-question" disabled>↗</button>
         </div>
@@ -266,7 +271,7 @@
           <input class="text_input" id="answer-input" placeholder="정답을 입력하세요" disabled/>
           <button class="arrow_button" id="send-answer" disabled>↗</button>
         </div>
-        <button class="raise_button" id="raise-hand">손들기</button>
+        <button class="raise_button" id="raise-hand" disabled>손들기</button>
       </div>
     </div>
 

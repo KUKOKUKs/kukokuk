@@ -1,6 +1,7 @@
 package com.kukokuk.domain.ranking.vo;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.ibatis.type.Alias;
 
@@ -8,17 +9,21 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 랭킹 정보 VO
+ * 월별 랭킹 정보 VO
+ * KUKOKUK_RANKS 테이블과 매핑
  */
 @Getter
 @Setter
+@NoArgsConstructor
 @Alias("Ranking")
 public class Ranking {
 
+    // 기본 필드
     private int rankNo;
     private String contentType;
     private int playCount;
     private BigDecimal totalScore;
+    private String rankMonth;        // 월별 랭킹 구분 (YYYY-MM 형태)
     private int userNo;
     private Date createdDate;
     private Date updatedDate;
