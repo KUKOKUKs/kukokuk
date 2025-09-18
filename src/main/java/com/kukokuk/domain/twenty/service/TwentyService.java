@@ -8,6 +8,7 @@ import com.kukokuk.domain.user.vo.User;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ public class TwentyService {
 
   @Autowired
   private TwentyMapper twentyMapper;
+
+  private final AtomicReference<Integer> currentQuestioner = new AtomicReference<>(null);
 
   /**
    * 게임방의 참여자 리스트를 조회. "참여자 명단"에 뿌릴 때 사용.
@@ -113,4 +116,16 @@ public class TwentyService {
   public TwentyRoom getTwentyRoomByRoomNo(int roomNo) {
     return twentyMapper.getTwentyRoomByRoomNo(roomNo);
   }
+
+  /**
+   * 유저가 손들기 버튼을 눌렀을 경우, 누가 가장 먼저 눌렀는지 확인하는 메소드.
+   * AtomiceReference라는 객체를 사용하면, 먼저 요청한 유저의 no만 true로 동작되고, 다른 유저들은 전부 false로 반환.
+   * 서버 단에서는 0.01초의 차이는 있어도, 똑같은 시간에 들어오지는 않는다고 한다.
+   * @param userNo
+   * @return
+   */
+  public boolean trySetQuestioner(int userNo){
+    return currentQuestioner.compareAndSet(null, userNo);
+  }
+
 }

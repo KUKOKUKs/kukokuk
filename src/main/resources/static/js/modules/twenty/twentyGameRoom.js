@@ -11,6 +11,19 @@ const currentRoomNo = parseInt(StringroomNo);
 let stompClient = null;
 let turnTimer = null;
 
+// 교사 버튼
+let $btnO = $('#btn-o');
+let $btnX = $('#btn-x');
+let $btnEnd = $("#btn-end");
+let $btnStart = $("#btn-start");
+
+// 학생 버튼
+let $sendQuestionBtn = $("#send-question");
+let $sendAnswerBtn = $("#send-answer");
+let $raiseHandBtn = $("#raise-hand");
+let $questionInput = $("#question-input");
+let $answerInput = $("#answer-input");
+
 // WebSocket 연결
 function connectWebSocket() {
   const socket = new SockJS('/ws');
@@ -41,8 +54,6 @@ function connectWebSocket() {
           updateParticipantList(userList);
         });
 
-    // - 학생이 손들기 버튼을 눌렀을 때, 브로드 캐스팅
-
     // - 학생이 질문 or 정답 + 교사 OX 버튼 눌렀을 때 실시간 채팅 브로드 캐스팅
 
     stompClient.subscribe(`/topic/turnOff/${currentRoomNo}`, function (result) {
@@ -52,12 +63,20 @@ function connectWebSocket() {
     // 손든 사람!!
     stompClient.subscribe(`/topic/raisehand/${currentRoomNo}`,
         function (result) {
-          const winner = JSON.parse(result.body);
-          if (winner.userNo == currentUserNo) {
-            activateQuestionMode();
+          const winnerNo = JSON.parse(result.body);
+          console.log("result: ", result);
+          console.log("winnerNo: ", winnerNo);
+          if(currentUserNo == winnerNo) {
+            $raiseHandBtn.prop('disabled', true);
+            $sendQuestionBtn.prop('disabled', false);
+            $sendAnswerBtn.prop('disabled', false);
+            $questionInput.prop('disabled', false);
+            $answerInput.prop('disabled', false);
+            // + 40초 제한시간 부여
           } else {
-            deactivateAllInputs();
+            $raiseHandBtn.prop('disabled', true);
           }
+
         });
     // 교사가 게임 종료 버튼 클릭 or 서버 팅김 or 웹 브라우저 탭 닫기 시, 학생들은 그룹 페이지로 이동
     stompClient.subscribe(`/topic/TeacherDisconnect/${currentRoomNo}`, function (result) {
@@ -71,16 +90,10 @@ function connectWebSocket() {
   });
 }
 
-// 이벤트 리스너: DOM이 로드된 후 실행되도록 변경 (기존의 $(function(){...})와 동일한 역할)
-document.addEventListener('DOMContentLoaded', function () {
+$(function() {
   connectWebSocket();
 
   // --- 교사 기능 ---
-  let $btnO = $('#btn-o');
-  let $btnX = $('#btn-x');
-  let $btnEnd = $("#btn-end");
-  let $btnStart = $("#btn-start");
-
   $btnO.click(function () {
     stompClient.send(`/app/chatSend/${currentRoomNo}`, {}, JSON.stringify({}));
     // 아직 어떤 값을 보낼지 정하지 않았음
@@ -111,23 +124,20 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // --- 학생 기능 ---
-  const sendQuestionBtn = document.getElementById('send-question');
-  const sendAnswerBtn = document.getElementById('send-answer');
-  const raiseHandBtn = document.getElementById('raise-hand');
+  // 손들기 버튼을 눌렀을 때, 실시간 신호를 보냄.
+  $raiseHandBtn.click(function () {
+    stompClient.send(`/app/raisehand/${currentRoomNo}`, {},
+        JSON.stringify({}));
+  });
 
-  if (sendQuestionBtn) {
-    sendQuestionBtn.addEventListener('click', handleSendClick);
-  }
-  if (sendAnswerBtn) {
-    sendAnswerBtn.addEventListener('click', handleSendClick);
-  }
-  if (raiseHandBtn) {
-    raiseHandBtn.addEventListener('click', function () {
-      stompClient.send(`/app/raisehand/${currentRoomNo}`, {},
-          JSON.stringify({}));
-    });
-  }
+  $sendQuestionBtn.click(function () {
 
+  });
+  $sendAnswerBtn.click(function () {
+
+  });
+
+  // 수정 예정
   function handleSendClick(event) {
     const isQuestion = event.target.id === 'send-question';
     const input = document.getElementById(
@@ -146,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
     stompClient.send(`/app/turnOff/${currentRoomNo}`, {}, JSON.stringify({}));
   }
 });
+
 
 // --- UI 상태 변경 함수들 ---
 function activateQuestionMode() {
