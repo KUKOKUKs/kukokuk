@@ -26,7 +26,7 @@ public class ApiTwentyController {
   @PostMapping("/gameOver")
   public void gameOver(@AuthenticationPrincipal SecurityUser securityUser,
                        @RequestBody GameOverDto gameOverDto) {
-    twentyService.updateRoomAndUser(gameOverDto.getRoomNo());
+    twentyService.updateRoomAndUserLeft(gameOverDto.getRoomNo());
 
     /* - 게임 결과도 저장하는 서비스 메소드 호출
     * 1. roomNo를 가지고 스무고개 log 테이블에서 정답을 말한 유저No와 총 질문 횟수 값을 조회.

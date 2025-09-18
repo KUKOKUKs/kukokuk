@@ -35,4 +35,14 @@ public interface DailyStudyMapper {
     * @return 학습자료
     */
     DailyStudy getDailyStudyByNo(int dailyStudyNo);
+
+    /**
+     * 학습 원본데이터 번호와 학습수준으로 학습자료를 조회
+     * @param dailyStudyMaterialNo 학습 원본 데이터 번호
+     * @param studyDifficultyNo 학습 수준 번호
+     * @return 조회된 학습자료
+     */
+    UserStudyRecommendationDto getDailyStudyByMaterialNoAndDifficulty(
+        @Param("dailyStudyMaterialNo") int dailyStudyMaterialNo,
+        @Param("studyDifficultyNo") int studyDifficultyNo);
 }

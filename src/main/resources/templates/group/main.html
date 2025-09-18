@@ -13,17 +13,28 @@
                     반 찾기
                 </div>
 
-                <div class="component h_100 base_list_component">
-                    <form class="search_form" id="group-search-form">
-                        <input type="text" class="search_input" placeholder="반 이름 또는 닉네임을 입력해 주세요">
-                        <button type="submit" class="serch_btn">
-                            <iconify-icon class="icon title_font" icon="marketeq:search-alt-3"></iconify-icon>
+                <div id="search-component" class="component h_100 base_list_component">
+                    <div class="d_flex justify_content_between align_center small_gap">
+                        <form class="search_form" id="group-search-form">
+                            <input type="text"
+                                   class="search_input"
+                                   name="keyword"
+                                   placeholder="반 이름 또는 닉네임을 입력해 주세요" th:value="${param.keyword}">
+                            <button type="submit" class="serch_btn">
+                                <iconify-icon class="icon title_font" icon="marketeq:search-alt-3"></iconify-icon>
+                            </button>
+                        </form>
+
+                        <button th:if="${#lists.isEmpty(param.keyword) or #strings.isEmpty(param.keyword[0])}"
+                                type="button"
+                                class="icon title_font">
+                            <iconify-icon class="icon title_font" icon="marketeq:refresh-round"></iconify-icon>
                         </button>
-                    </form>
+                    </div>
 
                     <div class="full show_scroll">
                         <div id="group-search-list-component" class="grid_list_component column">
-                            <div class="group_serach_list" th:each="group : ${randomGroups}">
+                            <div class="group_serach_list" th:each="group : ${groups.items}">
                                 <div class="list_info">
                                     <div class="group_info group_title_info">
                                         <iconify-icon th:if="${group.password != null}"
@@ -34,10 +45,9 @@
                                     </div>
 
                                     <div class="group_info motto_info">
-                                        <iconify-icon class="icon base_font tooltip"
-                                                      data-label="급훈"
-                                                      icon="fluent-color:chat-32"></iconify-icon>
+                                        <span class="max_content">급훈 [</span>
                                         <p class="motto text_ellipsis" th:text="${group.motto ?: '-'}">급훈</p>
+                                        <span>]</span>
                                     </div>
                                 </div>
 
@@ -66,9 +76,8 @@
                         </div>
                     </div>
 
-                    <div class="btn_list">
-                        <div class="btn">페이지네이션</div>
-                    </div>
+                    <!--/* pagination(총 페이지 수가 1보다 클 경우) */-->
+                    <th:block th:replace="~{fragments/common/pagination :: pagination-fragment(paging=${groups.pagination})}"></th:block>
                 </div>
             </div>
         </th:block>

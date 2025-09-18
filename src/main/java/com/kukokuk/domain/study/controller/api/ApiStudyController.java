@@ -1,15 +1,17 @@
 package com.kukokuk.domain.study.controller.api;
 
 import com.kukokuk.common.dto.ApiResponse;
+import com.kukokuk.common.dto.JobStatusResponse;
+import com.kukokuk.common.exception.BadRequestException;
+import com.kukokuk.common.store.JobStatusStore;
 import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
 import com.kukokuk.domain.study.dto.ParseMaterialRequest;
 import com.kukokuk.domain.study.dto.UserStudyRecommendationDto;
+import com.kukokuk.domain.study.service.StudyAsyncService;
 import com.kukokuk.domain.study.service.StudyService;
-import com.kukokuk.domain.study.vo.DailyStudy;
 import com.kukokuk.domain.study.vo.DailyStudyEssayQuizLog;
 import com.kukokuk.domain.study.vo.DailyStudyLog;
-import com.kukokuk.domain.study.vo.DailyStudyMaterial;
 import com.kukokuk.domain.study.vo.DailyStudyQuizLog;
 import com.kukokuk.domain.study.vo.StudyDifficulty;
 import com.kukokuk.domain.study.dto.CreateStudyLogRequest;
@@ -43,7 +45,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiStudyController {
 
     private final StudyService studyService;
+    private final StudyAsyncService studyAsyncService;
     private final ModelMapper modelMapper;
+    private final JobStatusStore<DailyStudySummaryResponse> studyJobStatusStore;
 
     /**
      * POST /api/studies/parse-materials
@@ -82,7 +86,9 @@ public class ApiStudyController {
     /**
      * GET /api/studies?rows=
      * 사용자의 수준, 진도에 맞는 학습자료 목록을 제공하는 API
-     * 응답 바디 : { "dailyStudyNo": 1,
+     * 응답으로 JobStatusResponse<DailyStudySummaryResponse>의 목록이 반환됨
+     *
+     * 응답 바디 : [{ "dailyStudyNo": 1,
      *              "title": "문단 배우기: 중심 문장과 뒷받침 문장",
      *              "explanation" : "학습 메인설명",
      *              "cardCount" : 3, // 일일학습의 총 카드개수
@@ -92,22 +98,18 @@ public class ApiStudyController {
      *              "school" : "초등", // "초등", "중등",
      *              grade" : 1,
      *              "sequence" : 3 // 학년 내 자료의 순서
-     *          }
+     *          }]
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<DailyStudySummaryResponse>>> getStudiesByUser(
+    public ResponseEntity<ApiResponse<List<JobStatusResponse<DailyStudySummaryResponse>>>> getStudiesByUser(
         @RequestParam(defaultValue = "5") int rows,
         @AuthenticationPrincipal SecurityUser securityUser) {
-        log.info("getStudiesByUser 컨트롤러 실헹");
+        log.info("ApiStudyController getStudiesByUser() 컨트롤러 실헹");
 
-        // 사용자의 수준과 진도에 맞는 추천 학습자료(DailyStudy) 목록을 조회하는 메소드 호출
-        List<UserStudyRecommendationDto> dtos = studyService.getUserDailyStudies(
+        List<JobStatusResponse<DailyStudySummaryResponse>> responses = studyAsyncService.getUserDailyStudies(
             securityUser.getUser(), rows);
 
-        // UserStudyRecommendationDto에서 응답에 필요한 정보만 반환하도록 ResponseDTO에 매핑
-        List<DailyStudySummaryResponse> responses = studyService.mapToDailyStudySummaryResponse(dtos);
-
-        return ResponseEntityUtils.ok("사용자 맞춤 학습자료 목록 조회 성공", responses);
+        return ResponseEntityUtils.ok(responses);
     }
 
     /**
@@ -258,5 +260,21 @@ public class ApiStudyController {
         GeminiEssayResponse response = studyService.generateAiFeedback(essayQuizLog, securityUser.getUser().getStudyDifficulty());
 
         return ResponseEntityUtils.ok("AI 피드백 생성 및 저장 완료", response);
+    }
+
+    // 맞춤 학습 자료 폴링(최초 요청시 응답 받은 jobId)
+    @GetMapping("/status/{jobId}")
+    public ResponseEntity<ApiResponse<JobStatusResponse<?>>> getStudiesByUserStatus(
+        @PathVariable("jobId") String jobId) {
+        log.info("ApiHomeController getStudiesByUserStatus() 컨트롤러 실헹");
+
+        // 상태 조회
+        JobStatusResponse<?> status = studyJobStatusStore.get(jobId);
+
+        if (status == null) {
+            throw new BadRequestException(jobId + "의 상태를 찾을 수 없습니다.");
+        }
+
+        return ResponseEntityUtils.ok(status);
     }
 }

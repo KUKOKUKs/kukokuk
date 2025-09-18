@@ -55,7 +55,8 @@
                 정답 확인
             </div>
 
-            <div class="callout right pd_0 box_shadow_none"
+            <div th:if="${currentQuestion.usedHintNum == null}"
+                 class="callout right pd_0 box_shadow_none"
                  style="--callout-color: transparent;">
                 <div class="hints_info">
                     <button type="button"
@@ -84,14 +85,12 @@
                       th:text="|${questionIndex  + 1}번 받아쓰기 문장 듣기|"></span>
             </p>
 
-            <!--/*
-                힌트 내용 표시 UI(받아쓰기 전용)
-                <div class="dictation_hint_info">
-                    <div class="square_list">
-                        <span class="square"></span> * n개
-                    </div>
+            <!--/* 힌트 내용 표시 UI(받아쓰기 전용) */-->
+            <div th:if="${currentQuestion.usedHintNum != null}" class="dictation_hint_info">
+                <div class="square_list">
+                    <span class="square" th:each="info : ${currentQuestion.hintChars}" th:text="${info}"></span>
                 </div>
-            */-->
+            </div>
         </div>
 
         <div class="form_input_list">
