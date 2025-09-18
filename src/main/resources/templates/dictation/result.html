@@ -12,11 +12,12 @@
                 <div class="component grid_list full_grid bg_primary color_white highlight">
                     <div class="component_title">
                         <th:block th:with="
+                                percent='${(summary.correctAnswers / summary.totalQuestion) * 100}',
                                 resultMsg=${
-                                    correctScore == 100 ? '완벽, 받아쓰기의 끝판왕 👑' :
-                                    correctScore >= 90 ? '감 잡았어! 집중력 최고 🔥' :
-                                    correctScore >= 70 ? '흐름 탔어! 바로 다시 가보자 🚀' :
-                                    correctScore >= 50 ? '이제부터 시작이지! ⚡' :
+                                    percent == 10 ? '완벽, 받아쓰기의 끝판왕 👑' :
+                                    percent >= 90 ? '감 잡았어! 집중력 최고 🔥' :
+                                    percent >= 70 ? '흐름 탔어! 바로 다시 가보자 🚀' :
+                                    percent >= 50 ? '이제부터 시작이지! ⚡' :
                                     '배운 건 더 많아! 한번 더! 💡'
                                 }">
                             <p class="title_info center" th:utext="${resultMsg}"></p>
@@ -53,8 +54,8 @@
                     <div class="index_list">
                         <div class="color_blue bold pos_r">
                             A
-                            <span class="result_icon incorrect icon large"
-                                  th:classappend="${result.success ? 'Y' : 'N'}"></span>
+                            <span class="result_icon icon large"
+                                  th:classappend="${result.success ? 'correct' : 'incorrect'}"></span>
                         </div>
                         <p th:text="${result.userAnswer ?: '입력하지 않음'}">입력한 내용</p>
                     </div>

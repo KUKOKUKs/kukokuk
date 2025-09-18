@@ -32,9 +32,12 @@ public class WebSocketEventListener {
       SecurityUser securityUser = (SecurityUser) auth.getPrincipal();
       List<String> role = securityUser.getUser().getRoleNames();
       int userNo = securityUser.getUser().getUserNo();
+
+      //교사가 게임을 나갈 경우, 참여 중인 학생들 상태 및 게임방 상태 변경 -> 그룹 페이지로 이동
       if (role.contains("ROLE_TEACHER") && roomNo != null) {
         twentyService.handleTeacherDisconnect(roomNo);
-        template.convertAndSend("/topic/TeacherDisconnect/" + roomNo);
+        List<RoomUser> list = twentyService.handleStudentDisconnect(roomNo, userNo);
+        template.convertAndSend("/topic/TeacherDisconnect/" + roomNo, list);
       } else {
         List<RoomUser> list = twentyService.handleStudentDisconnect(roomNo, userNo);
         template.convertAndSend("/topic/participants/" + roomNo, list);

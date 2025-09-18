@@ -1,6 +1,10 @@
 // noinspection ES6UnusedImports
 
 import {apiErrorProcessByXhr} from '../../utils/api-error-util.js';
+import {
+    renderStudyListCard, renderStudyListCardFirstSkeleton
+} from "./study-renderer.js";
+import {pollStudyJob} from "./study-poll.js";
 
 // 학습 단계 정보 비동기 요청
 export async function apiGetStudyDifficultyList() {
@@ -36,7 +40,7 @@ export async function apiGetStudyDifficultyList() {
  *    }
  *  ]
  */
-export async function apiGetDailyStudies(rows) {
+export async function apiGetDailyStudiesSync(rows) {
     console.log("apiGetDailyStudies() api 요청 실행");
     try {
         const response = await $.ajax({
@@ -52,6 +56,79 @@ export async function apiGetDailyStudies(rows) {
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);
         throw xhr; // 반드시 다시 throw 해줘야 상위에서 catch 가능
+    }
+}
+
+/**
+ * 요청할 자료 수를 전달받아 맞춤 학습 자료 비동기 요청
+ * <p>
+ *     List<>JobStatusResponse<DailyStudySummaryResponse>> 객체 응답으로
+ *     폴링 처리 하여 진행 상태 확인
+ * @param rows 조회할 학습자료 개수
+ * @param $studyListContainer 진행률이 표시될 부모 요소
+ * @returns 맞춤 학습 자료 목록
+ */
+export async function apiGetDailyStudies(rows, $studyListContainer) {
+    console.log("apiGetHomeUserDailyStudies() api 요청 실행");
+
+    try {
+        // 최초 요청
+        const response = await $.ajax({
+            method: "GET",
+            url: "/api/studies",
+            data: {rows},
+            dataType: "json",
+        });
+
+        console.log("apiGetHomeUserDailyStudies() api 요청 response: ", response);
+
+        // DONE일 경우 바로 렌더링
+        console.log(typeof response.data);
+
+        // 동작을 기다리지 않고 응답
+        pollAndRenderJobStatusList(response.data, $studyListContainer);
+
+        // 최초 응답
+        return response.data; // JobStatusResponse의 리스트
+    } catch (xhr) {
+        apiErrorProcessByXhr(xhr.responseJSON);
+    }
+}
+
+/**
+ * Job 상태 목록을 순회하며 즉시 렌더링 + 폴링 처리
+ * @param jobStatusList JobStatusResponse[]
+ * @param $studyListContainer jQuery 컨테이너
+ */
+export async function pollAndRenderJobStatusList(jobStatusList, $studyListContainer) {
+    $studyListContainer.empty();
+
+    // 모든 스켈레톤 카드 먼저 렌더링
+    jobStatusList.forEach(job => {
+        renderStudyListCardFirstSkeleton(job.jobId, $studyListContainer);
+    });
+
+    // forEach문은 비동기처리(await)를 기다려주지 않음
+    // forEach는 콜백을 호출만 하고, 콜백 안의 비동기 처리 결과를 Promise로 모아서 기다리는 로직이 없다
+    for (const [index, job] of jobStatusList.entries()) { // entries() : 인덱스와 값을 동시에 꺼냄
+        // 이미 데이터가 존재하는 경우, 바로 렌더링
+        if (job.status === "DONE") {
+            renderStudyListCard(job, index, $studyListContainer);
+        }
+
+        // 폴링 시작 -> 상태 DONE/FAILED 되면 다시 renderStudyListCard 호출
+        else if (job.status === "PROCESSING") {
+            const $studyCardContainer = $studyListContainer.find(`[data-job-id="${job.jobId}"]`);
+            try {
+                // index 순서대로 순차적으로 폴링을 처리하고, job이 DONE이되고 Promise가 resolve되면 다음 동작 실행
+                const updatedJob = await pollStudyJob(job.jobId, $studyCardContainer);
+                renderStudyListCard(updatedJob, index, $studyListContainer);
+            } catch (err) {
+                console.error(`jobId=${job.jobId} 실패`, err);
+                job.status = "FAILED";
+                renderStudyListCard(job, index, $studyListContainer);
+            }
+        }
     }
 }
 
@@ -84,7 +161,6 @@ export async function apiCreateStudyLog(dailyStudyNo) {
         return response.data;
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);
-        throw xhr;
     }
 }
 
@@ -118,7 +194,6 @@ export async function apiUpdateStudyLog(studyLogNo, requestBody = {}) {
         return response.data;
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);
-        throw xhr;
     }
 }
 
@@ -154,7 +229,6 @@ export async function apiCreateQuizLog(dailyStudyQuizNo, selectedChoice) {
         return response.data;
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);
-        throw xhr;
     }
 }
 
@@ -189,7 +263,6 @@ export async function apiUpdateQuizLog(studyQuizLogNo, selectedChoice) {
         return response.data;
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);
-        throw xhr;
     }
 }
 
@@ -212,7 +285,6 @@ export async function apiCreateEssayQuizLog(dailyStudyEssayQuizNo, userAnswer) {
         return response;
     } catch (xhr) {
         console.error("서술형 퀴즈 이력 생성 실패:", xhr);
-        throw xhr;
     }
 }
 
@@ -235,7 +307,6 @@ export async function apiUpdateEssayQuizLog(essayQuizLogNo, dailyStudyEssayQuizN
         return response;
     } catch (xhr) {
         console.error("서술형 퀴즈 이력 수정 실패:", xhr);
-        throw xhr;
     }
 }
 
@@ -274,6 +345,5 @@ export async function apiRequestEssayFeedback(essayQuizLogNo, dailyStudyEssayQui
         return response.data;
     } catch (xhr) {
         console.error("AI 피드백 요청 실패:", xhr);
-        throw xhr;
     }
 }

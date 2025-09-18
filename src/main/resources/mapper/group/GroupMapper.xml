@@ -24,11 +24,65 @@
             <result property="name" column="TEACHER_NAME"/>
             <result property="nickname" column="TEACHER_NICKNAME"/>
             <result property="birthDate" column="TEACHER_BIRTH_DATE"/>
-            <result property="gender" column="TEACHER_GENDER"/>
             <result property="profileFilename" column="TEACHER_PROFILE_FILENAME"/>
-            <result property="level" column="TEACHER_LEVEL"/>
         </association>
     </resultMap>
+
+    <!--
+         * 조건에 맞는 그룹 목록 조회
+         * @param condition 조회할 데이터의 조건 값들이 담겨 있는 Map 객체
+         * @return 그룹 목록 정보
+        List<Group> getGroups(Map<String, Object> condition);
+    -->
+    <select id="getGroups" resultMap="GroupResultMap">
+        SELECT G.GROUP_NO
+             , G.TITLE
+             , G.MOTTO
+             , G.PASSWORD
+             , IFNULL(GU.MEMBER_COUNT, 0) AS MEMBER_COUNT
+             , G.IS_DELETED
+             , G.CREATED_DATE
+             , G.UPDATED_DATE
+             , U.USER_NO                  AS TEACHER_USER_NO
+             , U.NICKNAME                 AS TEACHER_NICKNAME
+             , U.PROFILE_FILENAME         AS TEACHER_PROFILE_FILENAME
+        FROM KUKOKUK_GROUPS G
+                 JOIN KUKOKUK_USERS U ON G.USER_NO = U.USER_NO
+                 LEFT JOIN (SELECT GROUP_NO, COUNT(*) AS MEMBER_COUNT
+                            FROM KUKOKUK_GROUP_USERS
+                            GROUP BY GROUP_NO) GU ON G.GROUP_NO = GU.GROUP_NO
+        WHERE G.IS_DELETED = 'N'
+        <if test="keyword != null">
+            AND (G.TITLE LIKE CONCAT('%', #{keyword}, '%')
+            OR U.NICKNAME LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY
+            <if test="keyword != null">
+                (G.TITLE LIKE CONCAT('%', #{keyword}, '%')) DESC,
+                (U.NICKNAME LIKE CONCAT('%', #{keyword}, '%')) DESC,
+            </if>
+            G.TITLE,
+            U.NICKNAME,
+            G.CREATED_DATE DESC
+        LIMIT #{rows} OFFSET #{offset}
+    </select>
+
+    <!--
+         * 조회할 데이터의 총 행의 수 조회
+         * @param condition 조회할 데이터의 조건 값들이 담겨 있는 Map 객체
+         * @return 조회할 데이터의 총 데이터 행의 수
+        int getTotalRows(Map<String, Object> condition);
+    -->
+    <select id="getTotalRows" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM KUKOKUK_GROUPS G
+        JOIN KUKOKUK_USERS U ON G.USER_NO = U.USER_NO
+        WHERE G.IS_DELETED = 'N'
+        <if test="keyword != null">
+            AND (G.TITLE LIKE CONCAT('%', #{keyword}, '%')
+            OR U.NICKNAME LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </select>
 
     <!--
          * 전달 받은 조회할 행의 개수로 최초 랜더링 시 기본 그룹 리스트 조회(임의의 행 조회)
@@ -52,9 +106,7 @@
                    , U.NAME                     AS TEACHER_NAME
                    , U.NICKNAME                 AS TEACHER_NICKNAME
                    , U.BIRTH_DATE               AS TEACHER_BIRTH_DATE
-                   , U.GENDER                   AS TEACHER_GENDER
                    , U.PROFILE_FILENAME         AS TEACHER_PROFILE_FILENAME
-                   , U.LEVEL                    AS TEACHER_LEVEL
               FROM KUKOKUK_GROUPS G
                        JOIN KUKOKUK_USERS U ON G.USER_NO = U.USER_NO
                        LEFT JOIN (SELECT GROUP_NO, COUNT(*) AS MEMBER_COUNT

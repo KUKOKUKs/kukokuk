@@ -48,18 +48,19 @@
     -->
     <select id="getTwentyRoomByRoomNo" resultType="TwentyRoom">
         SELECT
-            TWENTY_ROOM_NO              AS roomNo
-            ,CORRECT_ANSWER             AS correctAnswer
-            ,STATUS                     AS status
-            ,WINNER_NO                  AS winnerNo
-            ,GROUP_NO                   AS groupNo
-            ,IS_SUCCESS                 AS isSuccess
-            ,TRY_COUNT                  AS tryCnt
+            TWENTY_ROOM_NO               AS roomNo
+             ,CORRECT_ANSWER             AS correctAnswer
+             ,STATUS                     AS status
+             ,WINNER_NO                  AS winnerNo
+             ,GROUP_NO                   AS groupNo
+             ,IS_SUCCESS                 AS isSuccess
+             ,TRY_COUNT                  AS tryCnt
 
         FROM
             KUKOKUK_TWENTY_ROOMS
         WHERE
             TWENTY_ROOM_NO = #{roomNo}
+          AND STATUS NOT IN('COMPLETED', 'STOPPED')
 
     </select>
 

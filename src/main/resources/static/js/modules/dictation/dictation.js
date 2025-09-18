@@ -148,11 +148,12 @@ $(document).ready(() => {
     });
 
     // 힌트 사용 Ajax 호출 함수
-    async function useHint() {
+    async function useHint(hintNum) {
         try {
             const response = await $.ajax({
                 url: "/dictation/use-hint",
                 method: "POST",
+                data: {hintNum},
                 dataType: "json"
             });
             console.log("힌트 사용 반영 완료", response);
@@ -176,7 +177,7 @@ $(document).ready(() => {
             showAnswerInSquares(questionInformation.hint1);
         }
         disableAllHintButtons();
-        await useHint();
+        await useHint(1);
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 
@@ -195,7 +196,7 @@ $(document).ready(() => {
             showAnswerInSquares(questionInformation.hint2);
         }
         disableAllHintButtons();
-        await useHint();
+        await useHint(2);
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 
@@ -214,7 +215,7 @@ $(document).ready(() => {
             showAnswerInSquares(questionInformation.hint3);
         }
         disableAllHintButtons();
-        await useHint();
+        await useHint(3);
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 

@@ -4,10 +4,9 @@
 @use 'profile';
 @use 'sign';
 @use 'study';
-@use 'quiz-common';
-@use "quiz-play";
 @use "quiz-bookmark";
 @use 'dictation';
 @use 'quiz';
 @use 'group';
+@use 'pagination';
 @use 'ranking';

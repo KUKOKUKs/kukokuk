@@ -55,8 +55,8 @@
                         <div class="color_blue bold pos_r">
                             A<span th:if="${result.selectedChoice != 0}"
                                    th:text="${result.selectedChoice}">선택한 보기 번호</span>
-                            <span class="result_icon incorrect icon large"
-                                  th:classappend="${result.success ? 'correct' : 'incorrect'}">정답 여부</span>
+                            <span class="result_icon icon large"
+                                  th:classappend="${result.success ? 'correct' : 'incorrect'}"></span>
                         </div>
                         <p th:text="${result.getOption(result.selectedChoice) ?: '시간 초과'}">선택한 보기 내용</p>
                     </div>

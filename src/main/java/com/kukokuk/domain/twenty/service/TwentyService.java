@@ -37,7 +37,7 @@ public class TwentyService {
    * @param userNo
    * @param roomNo
    */
-  public void updateTwentyRoomUser(int userNo, int roomNo) {
+  public void updateRoomUserJoin(int userNo, int roomNo) {
     Map<String, Object> map = new HashMap<>();
     map.put("roomNo", roomNo);
     map.put("userNo", userNo);
@@ -47,10 +47,9 @@ public class TwentyService {
 
   /**
    * 교사가 게임 종료 버튼 누를 때, roomNo로 게임방 상태를 변경하고, 모든 유저의 상태 또한 나감으로 처리한다.
-   *
    * @param roomNo
    */
-  public void updateRoomAndUser(int roomNo) {
+  public void updateRoomAndUserLeft(int roomNo) {
     Map<String, Object> map = new HashMap<>();
 
     map.put("roomNo", roomNo);
@@ -63,7 +62,6 @@ public class TwentyService {
 
   /**
    * 교사가 게임 종료를 누르거나, 서버 팅김 or 웹 브라우저 탭을 닫을 경우 이에 따른 게임방 상태 변화, 참여자 상태 변화
-   *
    * @param roomNo
    */
   public void handleTeacherDisconnect(int roomNo) {
@@ -99,5 +97,20 @@ public class TwentyService {
 
     List<RoomUser> list = twentyMapper.getTwentyPlayerList(roomNo);
     return list;
+  }
+
+  /**
+   * 게임방의 상태를 IN_PROGRESS로 변경
+   * @param roomNo
+   */
+  public void updateRoomStausInProgess(int roomNo) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("roomNo", roomNo);
+    map.put("roomStatus", "IN_PROGRESS");
+    twentyMapper.updateRoomStaus(map);
+  }
+
+  public TwentyRoom getTwentyRoomByRoomNo(int roomNo) {
+    return twentyMapper.getTwentyRoomByRoomNo(roomNo);
   }
 }
