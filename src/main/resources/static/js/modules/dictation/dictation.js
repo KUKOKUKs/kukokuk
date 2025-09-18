@@ -34,6 +34,7 @@ $(document).ready(() => {
      */
     // 스피커 버튼 클릭 시에만 서버에서 받아서 읽기 (DOM에 정답 안 심음)
     $(document).on("click", ".speaker_btn", async function () {
+        console.log("스피커 버튼 클릭됨");
         // const no = $(this).attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
         const data = await fetchQuestion(dictationQuestionNo);
         const text = data?.correctAnswer || "";
@@ -72,6 +73,35 @@ $(document).ready(() => {
         speechSynthesis.speak(u);
         $dictationSpeakingComponent.addClass("action");
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
+    });
+
+    let repeatNo = "";
+    $(".repeat_btn").click(function () {
+        const $btn = $(this);
+        const questionNo = $btn.data("question-no");
+        const text = $btn.data("question");
+
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "ko-KR";
+
+        u.onend = () => {
+            console.log("읽기 완료");
+        };
+
+        // 현재 읽는 중인지 체크
+        if (speechSynthesis.speaking) {
+            // 읽고있는 중이라면 중단
+            speechSynthesis.cancel();
+
+            if (repeatNo === questionNo) {
+                repeatNo = "";
+                return;
+            }
+        }
+
+        // 읽기 실행
+        repeatNo = questionNo;
+        speechSynthesis.speak(u);
     });
 
     /*

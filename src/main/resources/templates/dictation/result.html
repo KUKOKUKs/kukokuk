@@ -63,6 +63,8 @@
                 <!--/* 다시 듣기 버튼 */-->
                 <button type="button"
                         class="repeat_btn tooltip"
+                        th:data-question-no="${result.dictationQuestionNo}"
+                        th:data-question="${result.question}"
                         data-label="다시 듣기">
                     <iconify-icon class="icon title_font color_primary" icon="fluent:speaker-2-16-regular"></iconify-icon>
                 </button>
@@ -76,4 +78,8 @@
         </div>
     </div>
 </div>
+
+<th:block layout:fragment="script">
+    <script type="module" th:src="@{/js/modules/dictation/dictation.js}"></script>
+</th:block>
 </html>

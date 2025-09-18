@@ -15,6 +15,11 @@ import com.kukokuk.domain.dictation.mapper.DictationSessionMapper;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationQuestionLog;
 import com.kukokuk.domain.dictation.vo.DictationSession;
+import com.kukokuk.domain.exp.dto.ExpProcessingDto;
+import com.kukokuk.domain.exp.mapper.ExpMapper;
+import com.kukokuk.domain.exp.service.ExpProcessingService;
+import com.kukokuk.domain.exp.service.ExpService;
+import com.kukokuk.domain.exp.vo.ExpLog;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +40,7 @@ public class DictationService {
     private final DictationQuestionLogMapper dictationQuestionLogMapper;
     private final DictationSessionMapper dictationSessionMapper;
     private final GeminiClient geminiClient;
+    private final ExpProcessingService  expProcessingService;
 
     /**
      * Gemini를 통해 문장을 받아와서 힌트들을 생성하고 DB에 저장하는 메소드
@@ -539,6 +545,7 @@ public class DictationService {
      */
     @Transactional
     public void insertShowAnswerAndSkip(DictationQuestionLogDto dictationQuestionLogDto) {
+        log.info("insertShowAnswerAndSkip 실행");
         dictationQuestionLogDto.setIsSuccess("N");
         dictationQuestionLogDto.setTryCount(2);
         dictationQuestionLogDto.setUserAnswer("<정답 보기 사용>");
@@ -547,22 +554,39 @@ public class DictationService {
     /**
      * 결과 페이지에 전달될 데이터 담기
      * @param dictationSession 받아쓰기 세트
-     * @param dictationQuestions 받아쓰기 문제
      * @param currentUserNo 현재 로그인 된 사용자
      * @param dictationSessionNo 받아쓰기 세트 번호
      * @return 결과 페이지에 담길 데이터들
      */
     public DictationResultSummaryDto getDictationResultSummaryDto(DictationSession dictationSession,
-        List<DictationQuestion> dictationQuestions, int currentUserNo, int dictationSessionNo) {
+         int currentUserNo, int dictationSessionNo) {
 
         // 다른 사용자이거나 세트 번호 없으면 예외처리
         if (dictationSession == null || dictationSession.getUserNo() != currentUserNo) {
             throw new AppException("다른 사용자의 세트이거나 세트가 없습니다");
         }
 
+        log.info("getDictationResultSummaryDto 실행 {}:",dictationSessionNo);
+
+        // results 부분
+        List<DictationResultLogDto> dictationResultLogDtos =
+            dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo, currentUserNo);
+
+        List<DictationResultsDto> dictationResultLogDtoList = new ArrayList<>();
+
+        // 문제 푼 세트의 이력 가져오기(문제, 제출문장, 정답여부)
+        for (DictationResultLogDto r : dictationResultLogDtos) {
+            DictationResultsDto dictationResultsDto = new DictationResultsDto();
+            dictationResultsDto.setDictationQuestionNo(r.getDictationQuestionNo());
+            dictationResultsDto.setQuestion(r.getCorrectAnswer());
+            dictationResultsDto.setSuccess("Y".equals(r.getIsSuccess()));
+            dictationResultsDto.setUserAnswer(r.getUserAnswer());
+            dictationResultLogDtoList.add(dictationResultsDto);
+        }
+
         // summary 부분
         // 문제 총 개수
-        int totalQuestion = dictationQuestions.size();
+        int totalQuestion = dictationResultLogDtoList.size();
 
         // 문제 맞은 개수
         int correctAnswers = dictationSession.getCorrectCount();
@@ -583,25 +607,26 @@ public class DictationService {
         dictationResultSummaryDto.setTotalTimeSec(totalTimeSec);
         dictationResultSummaryDto.setAverageTimePerQuestion(averageTimePerQuestion);
 
-        // results 부분
-        List<DictationResultLogDto> dictationResultLogDtos =
-            dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo, currentUserNo);
-
-        List<DictationResultsDto> dictationResultLogDtoList = new ArrayList<>();
-
-        // 문제 푼 세트의 이력 가져오기(문제, 제출문장, 정답여부)
-        for (DictationResultLogDto r : dictationResultLogDtos) {
-            DictationResultsDto dictationResultsDto = new DictationResultsDto();
-            dictationResultsDto.setQuestion(r.getCorrectAnswer());
-            dictationResultsDto.setSuccess("Y".equals(r.getIsSuccess()));
-            dictationResultsDto.setUserAnswer(r.getUserAnswer());
-            dictationResultLogDtoList.add(dictationResultsDto);
-        }
-
         dictationResultSummaryDto.setResults(dictationResultLogDtoList);
 
         return dictationResultSummaryDto;
     }
 
 
+    /**
+     * expProcessing 부분에 넘길 값
+     * @param userNo 사용자 번호
+     * @param dailyQuestNo 일일 도전과제 식별자 번호
+     */
+    @Transactional
+    public void insertSaveExpLog(int userNo, Integer dailyQuestNo) {
+        ExpProcessingDto dto = new ExpProcessingDto(
+            userNo,             // 사용자 번호
+            "DICTATION",        // 컨텐츠 타입
+            3,                  // contentNo(임시)
+            50,                 // EXP(임시)
+            dailyQuestNo        // 일일 도전과제 식별자 번호(없으면 null)
+        );
+        expProcessingService.expProcessing(dto);
+    }
 }
