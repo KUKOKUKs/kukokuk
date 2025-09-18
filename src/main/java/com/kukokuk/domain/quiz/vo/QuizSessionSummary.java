@@ -22,4 +22,8 @@ public class QuizSessionSummary {
 
     private Date createdDate;
     private Date updatedDate;
+
+    public boolean isSpeedMode() {
+        return "speed".equals(quizMode);
+    }
 }

@@ -180,6 +180,7 @@ public class QuizController {
         List<QuizMaster> quizList = quizBookmarkService.getBookmarkedQuizList(userNo);
         model.addAttribute("quizList", quizList);
         model.addAttribute("listType", "bookmark");
+        /*DailyQuestEnum.QUIZ_SPEED.getDailyQuestNo()*/
         return "quiz/bookmark"; // templates/quiz/bookmark.html
 
     }
