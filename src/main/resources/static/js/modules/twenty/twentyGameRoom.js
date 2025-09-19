@@ -3,7 +3,6 @@
  */
 
 const pageContainer = $(".page_container");
-
 const currentUserNo = pageContainer.data("user-no");
 const StringroomNo = pageContainer.data("room-no");
 const currentRoomNo = parseInt(StringroomNo);
@@ -24,6 +23,8 @@ let $raiseHandBtn = $("#raise-hand");
 let $questionInput = $("#question-input");
 let $answerInput = $("#answer-input");
 
+let roomStatus = null;
+
 // WebSocket 연결
 function connectWebSocket() {
   const socket = new SockJS('/ws');
@@ -32,56 +33,40 @@ function connectWebSocket() {
     console.log('Connected: ' + frame);
 
     // 구독 코드
-    // - 교사가 게임 시작 버튼 눌렀을 때 브로드 캐스팅 =>
-    stompClient.subscribe(`/topic/gameStart/${currentRoomNo}`,
-        function (result) {
-          const message = JSON.parse(result.body);
-          console.log("message: ",message);
-          appendBoardLine(message);
-
-          $("#btn-o").prop('disabled', false);
-          $("#btn-x").prop('disabled', false);
-          $("#btn-end").prop('disabled', false);
-          $("#btn-start").prop('disabled', true);
-          $("#raise-hand").prop('disabled', false);
-        });
-
     // - 참여자 명단 실시간 반영 - 입장 또는 나감 처리
     stompClient.subscribe(`/topic/participants/${currentRoomNo}`,
         function (result) {
-          const userList = JSON.parse(result.body);
-          console.log("userList: ", userList);
-          updateParticipantList(userList);
+          const data = JSON.parse(result.body);
+          updateParticipantList(data.List);
+          updateBtnByRoomStatus(data);
+        });
+
+    // - 교사가 게임 시작 버튼을 눌렀을 때 UI 변화
+    stompClient.subscribe(`/topic/gameStart/${currentRoomNo}`,
+        function (result) {
+          const data = JSON.parse(result.body);
+          console.log("data: ",data);
+          appendBoardLine(data);
+          updateBtnByRoomStatus(data)
+        });
+
+    // 손들기 버튼을 눌렀을 경우 UI 변화
+    stompClient.subscribe(`/topic/raisehand/${currentRoomNo}`, function (result) {
+      let data = JSON.parse(result.body);
+      updateBtnByRoomStatus(data)
         });
 
     // - 학생이 질문 or 정답 + 교사 OX 버튼 눌렀을 때 실시간 채팅 브로드 캐스팅
-
     stompClient.subscribe(`/topic/turnOff/${currentRoomNo}`, function (result) {
       resetToDefault();
     });
 
-    // 손든 사람!!
-    stompClient.subscribe(`/topic/raisehand/${currentRoomNo}`,
-        function (result) {
-          const winnerNo = JSON.parse(result.body);
-          console.log("result: ", result);
-          console.log("winnerNo: ", winnerNo);
-          if(currentUserNo == winnerNo) {
-            $raiseHandBtn.prop('disabled', true);
-            $sendQuestionBtn.prop('disabled', false);
-            $sendAnswerBtn.prop('disabled', false);
-            $questionInput.prop('disabled', false);
-            $answerInput.prop('disabled', false);
-            // + 40초 제한시간 부여
-          } else {
-            $raiseHandBtn.prop('disabled', true);
-          }
-
-        });
     // 교사가 게임 종료 버튼 클릭 or 서버 팅김 or 웹 브라우저 탭 닫기 시, 학생들은 그룹 페이지로 이동
     stompClient.subscribe(`/topic/TeacherDisconnect/${currentRoomNo}`, function (result) {
-      const userList = JSON.parse(result.body);
+      const data = JSON.parse(result.body);
+      let userList = data.userList;
       updateParticipantList(userList);
+      updateBtnByRoomStatus(data);
       window.location.href ='/group';
         })
 
@@ -92,15 +77,19 @@ function connectWebSocket() {
 
 $(function() {
   connectWebSocket();
-
   // --- 교사 기능 ---
+  // o 버튼 누를 때
   $btnO.click(function () {
     stompClient.send(`/app/chatSend/${currentRoomNo}`, {}, JSON.stringify({}));
     // 아직 어떤 값을 보낼지 정하지 않았음
   });
-
+  // x 버튼 누를 때
   $btnX.click(function () {
     stompClient.send(`/app/chatSend/${currentRoomNo}`, {}, JSON.stringify({}));
+  });
+  //게임 시작 버튼 눌렀을 때, 게임방 상태 변경
+  $btnStart.click(function () {
+    stompClient.send(`/app/gameStart/${currentRoomNo}`, {}, JSON.stringify({}));
   });
 
   //게임 종료 버튼을 눌렀을 때
@@ -118,10 +107,6 @@ $(function() {
     window.location.href ='/group';
   });
 
-  //게임 시작 버튼 눌렀을 때, 게임방 상태 변경
-  $btnStart.click(function () {
-    stompClient.send(`/app/gameStart/${currentRoomNo}`, {}, JSON.stringify({}));
-  });
 
   // --- 학생 기능 ---
   // 손들기 버튼을 눌렀을 때, 실시간 신호를 보냄.
@@ -194,7 +179,7 @@ function resetToDefault() {
 
 
 /**
- * 게임방의 참여자가 입장 시, UI 변화
+ * 게임방에 참여자가 입장할 때, 명단 UI 변화
  * @param participants
  */
 function updateParticipantList(userList) {
@@ -248,4 +233,59 @@ function appendBoardLine(message) {
 
   $board.append(newLineHtml);
   $board.scrollTop = $board.scrollHeight;
+}
+
+/**
+ * 교사가 게임 시작 버튼을 눌렀을 때 UI 변화 메소드
+ */
+function clickGameStart(status) {
+  if(status == 'IN_PROGRESS') {
+    $("#btn-o").prop('disabled', false);
+    $("#btn-x").prop('disabled', false);
+    $("#btn-end").prop('disabled', false);
+    $("#btn-start").prop('disabled', true);
+    $("#raise-hand").prop('disabled', false);
+  }
+}
+
+/**
+ * 게임방의 상태에 따라, 교사 or 학생 버튼 변화
+ */
+function updateBtnByRoomStatus(data) {
+  let roomStatus = data.roomStatus;
+  let winnerNo = data.userNo != null ? data.userNo : null;
+
+  $btnO.prop('disabled', true);
+  $btnX.prop('disabled', true);
+  $btnEnd.prop('disabled', true);
+  $btnStart.prop('disabled', true);
+  $sendQuestionBtn.prop('disabled', true);
+  $sendAnswerBtn.prop('disabled', true);
+  $raiseHandBtn.prop('disabled', true);
+  $questionInput.prop('disabled', true);
+  $answerInput.prop('disabled', true);
+
+  switch (roomStatus) {
+    case 'WAITING' :  // 대기 중
+      $btnStart.prop('disabled', false);
+      break;
+    case 'IN_PROGRESS': // 게임 시작
+      $btnEnd.prop('disabled', false);
+      $raiseHandBtn.prop('disabled', false);
+      break;
+    case 'AWAITING_INPUT' : // 학생이 질문 답변 중일 때 상황
+        if(currentUserNo == winnerNo) {
+          $sendQuestionBtn.prop('disabled', false);
+          $sendAnswerBtn.prop('disabled', false);
+          $questionInput.prop('disabled', false);
+          $answerInput.prop('disabled', false);
+        }
+      break;
+    case 'AWAITING_RESPONSE': // 교사가 답변 중일 때
+      $btnO.prop('disabled', false);
+      $btnX.prop('disabled', false);
+      break;
+    default:
+      break;
+  }
 }

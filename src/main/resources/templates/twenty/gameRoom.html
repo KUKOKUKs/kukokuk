@@ -252,9 +252,9 @@
       <!-- 교사 버튼 -->
       <div class="teacher_controls" id="teacher-controls" sec:authorize="hasRole('TEACHER')">
         <div class="button_row">
-          <button class="big_button" id="btn-o" disabled>O</button>
-          <button class="big_button" id="btn-x" disabled>X</button>
-          <button class="big_button" id="btn-end" disabled>게임종료</button>
+          <button class="big_button" id="btn-o">O</button>
+          <button class="big_button" id="btn-x">X</button>
+          <button class="big_button" id="btn-end">게임종료</button>
           <button class="big_button" id="btn-start">게임시작</button>
         </div>
         <div class="answer_box" id="answer-box">정답 : <span th:text="${correctAnswer}"></span></div>
@@ -264,15 +264,15 @@
       <div class="student_controls" id="student-controls" sec:authorize="hasRole('STUDENT')">
         <div class="input_group">
           <div class="input_label" >질문입력</div>
-          <input class="text_input" id="question-input" placeholder="질문을 입력하세요" disabled/>
-          <button class="arrow_button" id="send-question" disabled>↗</button>
+          <input class="text_input" id="question-input" placeholder="질문을 입력하세요"/>
+          <button class="arrow_button" id="send-question">↗</button>
         </div>
         <div class="input_group">
           <div class="input_label">정답 입력</div>
-          <input class="text_input" id="answer-input" placeholder="정답을 입력하세요" disabled/>
-          <button class="arrow_button" id="send-answer" disabled>↗</button>
+          <input class="text_input" id="answer-input" placeholder="정답을 입력하세요"/>
+          <button class="arrow_button" id="send-answer">↗</button>
         </div>
-        <button class="raise_button" id="raise-hand" disabled>손들기</button>
+        <button class="raise_button" id="raise-hand">손들기</button>
       </div>
     </div>
 
