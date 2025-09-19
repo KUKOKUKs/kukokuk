@@ -94,11 +94,11 @@ public class TwentyController {
    */
   @MessageMapping("/raisehand/{currentRoomNo}")
   public void raiseHand(@DestinationVariable int currentRoomNo, Principal principal) {
-
     if (principal instanceof Authentication auth) {
       SecurityUser securityUser = (SecurityUser) auth.getPrincipal();
       int userNo = securityUser.getUser().getUserNo();
-      twentyService.raiseHand(currentRoomNo, userNo);
+      String userName = securityUser.getUser().getNickname();
+      twentyService.raiseHand(currentRoomNo, userNo,userName);
     }
 
   }

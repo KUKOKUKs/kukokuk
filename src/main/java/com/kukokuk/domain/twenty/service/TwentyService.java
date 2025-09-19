@@ -1,17 +1,18 @@
 package com.kukokuk.domain.twenty.service;
 
+import com.kukokuk.domain.twenty.AddComponent.RedisLockManager;
 import com.kukokuk.domain.twenty.dto.RoomUser;
 import com.kukokuk.domain.twenty.mapper.TwentyMapper;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
-import com.kukokuk.domain.twenty.vo.TwentyRoomUser;
-import com.kukokuk.domain.user.vo.User;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ScheduledFuture;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +23,19 @@ public class TwentyService {
 
   @Autowired
   private TwentyMapper twentyMapper;
+
   @Autowired
   private SimpMessagingTemplate template;
 
-  private final AtomicReference<Integer> currentQuestioner = new AtomicReference<>(null);
+  @Autowired
+  private RedisLockManager redisLockManager;
+
+  @Autowired
+  private TaskScheduler taskScheduler;
+  //TaskScheduler 미래에 해야되는 일을 예약해주는 객체
+
+  private final Map<Integer, ScheduledFuture<?>>  scheduledTasks = new HashMap<>();
+
 
   /**
    * 게임방의 참여자 리스트를 조회. "참여자 명단"에 뿌릴 때 사용.
@@ -120,7 +130,7 @@ public class TwentyService {
     TwentyRoom room = twentyMapper.getTwentyRoomByRoomNo(roomNo);
     Map<String, Object> map = new HashMap<>();
     if (room != null) {
-      if (room.getStatus() == "COMPLETED") {
+      if ("COMPLETED".equals(room.getStatus())) {
         return;
       } else {
         map.put("roomNo", roomNo);
@@ -131,9 +141,8 @@ public class TwentyService {
         map.clear();
 
         List<RoomUser> list = twentyMapper.getTwentyPlayerList(roomNo);
-        TwentyRoom updateRoom = twentyMapper.getTwentyRoomByRoomNo(roomNo);
         map.put("list",list);
-        map.put("roomStatus", updateRoom.getStatus());
+        map.put("roomStatus", "STOPPED");
         template.convertAndSend("/topic/TeacherDisconnect/" + roomNo, map);
       }
     }
@@ -155,9 +164,11 @@ public class TwentyService {
     map.put("userNo", userNo);
     map.put("status", "LEFT");
     twentyMapper.updateRoomUserStatus(map);
+    map.clear();
 
     List<RoomUser> list = twentyMapper.getTwentyPlayerList(roomNo);
-    template.convertAndSend("/topic/participants/" + roomNo, list);
+    map.put("list",list);
+    template.convertAndSend("/topic/participants/" + roomNo, map);
   }
 
   /**
@@ -169,18 +180,70 @@ public class TwentyService {
    * @param roomNo
    * @param userNo
    */
-  public void raiseHand(int roomNo, int userNo) {
+  public void raiseHand(int roomNo, int userNo,String nickname) {
     Map<String, Object> map = new HashMap<>();
-    map.put("roomNo", roomNo);
-    map.put("roomStatus", "AWAITING_INPUT");
-    twentyMapper.updateRoomStaus(map);
-    map.clear();
-
-    boolean result = currentQuestioner.compareAndSet(null, userNo);         // 가장 빨리 처리가 유저인지 확인하는 코드임.
-    map.put("roomStatus", "AWAITING_INPUT");
+    boolean result = redisLockManager.trySetQuestioner(roomNo,userNo);     // 동시성 제어
     if(result) {
+      map.put("roomNo", roomNo);
+      map.put("roomStatus", "AWAITING_INPUT");
+      twentyMapper.updateRoomStaus(map);
+      map.clear();
+
+      //taskScheduler.schedule(..) : 40초 뒤에 해야되는 행위를 정의해주는 메소드
+      //ScheduledFuture<?> scheduledFuture : 위의 행위들을 저장해줄 수 있는 객체
+      ScheduledFuture<?> scheduledFuture = taskScheduler.schedule(() -> turnTimeout(roomNo),
+          Instant.now().plusSeconds(40));
+      scheduledTasks.put(roomNo, scheduledFuture);
+
+      map.put("roomStatus", "AWAITING_INPUT");
       map.put("userNo",userNo);
+      map.put("name",nickname);
+      map.put("time",40);
       template.convertAndSend("/topic/raisehand/" + roomNo, map);
     }
+  }
+  /**
+   * 40초 제한 시간안에 답변을 제출하지 못한 경우
+   * 1.Redis에 저장된 1등으로 선별된 유저를 먼저 초기화
+   * 2.게임방을 조회해서, AWAITING_INPUT 인지 확인.
+   * 3.IN_PROGRESS로 변경
+   * 4.system 메세지 설정, 이 방의 상태값을 map에 담아 브로드캐스팅
+   * 5.40초 제한시간 해제
+   */
+  public void turnTimeout(int roomNo) {
+    Map<String,Object> map = new HashMap<>();
+    redisLockManager.releaseQuestionerLock(roomNo);
+    TwentyRoom room = twentyMapper.getTwentyRoomByRoomNo(roomNo);
+    if("AWAITING_INPUT".equals(room.getStatus())) {
+      map.put("roomNo", roomNo);
+      map.put("roomStatus", "IN_PROGRESS");
+      twentyMapper.updateRoomStaus(map);
+      map.clear();
+
+      map.put("roomStatus","IN_PROGRESS");
+      template.convertAndSend("/topic/~~/" + roomNo, map);
+      // 나중에 정하자..
+    }
+    scheduledTasks.remove(roomNo);
+  }
+
+  /**
+   * 학생이 40초 안에 질문 또는 답변을 제출했을 경우
+   * 1. 먼저 타이머를 취소
+   * 2. Redis에 저장된 1등 학생을 삭제한다.
+   * 3. 게임방의 상태를 "AWAITING_RESPONSE"로 변경
+   * 4. 학생이 제출한 메세지가 질문인지 답변인지 확인 -> log 테이블에 할당
+   * 5. 메세지와, 게임방의 상태 값을 map 객체에 담아 브로드 캐스팅
+   */
+  public void submitAnswerOrQuestion(int roomNo, int userNo) {
+    Map<String, Object> map = new HashMap<>();
+    ScheduledFuture<?> scheduledTask = scheduledTasks.get(roomNo);
+    if (scheduledTask != null) {
+      //아까 그 40초 뒤에 일어나는 행위들을 전부 취소 시켜주는 메소드.
+      scheduledTask.cancel(false);
+      scheduledTasks.remove(roomNo);
+    }
+    redisLockManager.releaseQuestionerLock(roomNo);
+    //... 기타 로직 작성
   }
 }

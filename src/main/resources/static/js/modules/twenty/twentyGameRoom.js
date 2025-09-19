@@ -23,7 +23,7 @@ let $raiseHandBtn = $("#raise-hand");
 let $questionInput = $("#question-input");
 let $answerInput = $("#answer-input");
 
-let roomStatus = null;
+let visualTimer = null; // 화면 타이머 ID를 저장할 전역 변수
 
 // WebSocket 연결
 function connectWebSocket() {
@@ -37,7 +37,7 @@ function connectWebSocket() {
     stompClient.subscribe(`/topic/participants/${currentRoomNo}`,
         function (result) {
           const data = JSON.parse(result.body);
-          updateParticipantList(data.List);
+          updateParticipantList(data.list);
           updateBtnByRoomStatus(data);
         });
 
@@ -53,6 +53,9 @@ function connectWebSocket() {
     // 손들기 버튼을 눌렀을 경우 UI 변화
     stompClient.subscribe(`/topic/raisehand/${currentRoomNo}`, function (result) {
       let data = JSON.parse(result.body);
+      $("#turn-holder-name").text(data.name);
+      $("#turn-info-panel").show();
+      startVisualTimer(data.time);
       updateBtnByRoomStatus(data)
         });
 
@@ -144,25 +147,7 @@ $(function() {
 
 
 // --- UI 상태 변경 함수들 ---
-function activateQuestionMode() {
-  clearTimeout(turnTimer);
-  document.querySelectorAll(
-      '#question-input, #answer-input, #send-question, #send-answer').forEach(
-      el => el.disabled = false);
-  document.getElementById('raise-hand').disabled = true;
-  document.getElementById('question-input').focus();
 
-  turnTimer = setTimeout(() => {
-    appendBoardLine({sender: 'system', content: '시간이 초과되었습니다. 턴이 종료됩니다.'});
-    stompClient.send(`/app/turnOff/${currentRoomNo}`, {}, JSON.stringify({}));
-  }, 60000);
-}
-
-function deactivateAllInputs() {
-  document.querySelectorAll(
-      '#question-input, #answer-input, #send-question, #send-answer, #raise-hand').forEach(
-      el => el.disabled = true);
-}
 
 function resetToDefault() {
   clearTimeout(turnTimer);
@@ -235,18 +220,6 @@ function appendBoardLine(message) {
   $board.scrollTop = $board.scrollHeight;
 }
 
-/**
- * 교사가 게임 시작 버튼을 눌렀을 때 UI 변화 메소드
- */
-function clickGameStart(status) {
-  if(status == 'IN_PROGRESS') {
-    $("#btn-o").prop('disabled', false);
-    $("#btn-x").prop('disabled', false);
-    $("#btn-end").prop('disabled', false);
-    $("#btn-start").prop('disabled', true);
-    $("#raise-hand").prop('disabled', false);
-  }
-}
 
 /**
  * 게임방의 상태에 따라, 교사 or 학생 버튼 변화
@@ -274,6 +247,7 @@ function updateBtnByRoomStatus(data) {
       $raiseHandBtn.prop('disabled', false);
       break;
     case 'AWAITING_INPUT' : // 학생이 질문 답변 중일 때 상황
+
         if(currentUserNo == winnerNo) {
           $sendQuestionBtn.prop('disabled', false);
           $sendAnswerBtn.prop('disabled', false);
@@ -288,4 +262,42 @@ function updateBtnByRoomStatus(data) {
     default:
       break;
   }
+}
+
+/**
+ * 타이머 움직이게 하는 메소드
+ * @param time
+ */
+function startVisualTimer(time) {
+  // 1. 이전에 실행되던 타이머가 있다면 완전히 제거
+  if (visualTimer) {
+    clearInterval(visualTimer);
+  }
+
+  let remainingTime = time;
+
+  // 2. 화면에 초기 시간을 먼저 표시
+  $('#timer-display').text(remainingTime);
+
+  // 3. 1초(1000ms)마다 실행되는 인터벌 설정
+  visualTimer = setInterval(() => {
+    remainingTime--; // 시간을 1초 줄임
+    $('#timer-display').text(remainingTime);
+
+    // 4. 화면 타이머가 0초가 되면 인터벌 종료
+    if (remainingTime <= 0) {
+      stopVisualTimer();
+    }
+  }, 1000);
+}
+
+/**
+ * 타이머 종료 메소드
+ */
+function stopVisualTimer() {
+  if (visualTimer) {
+    clearInterval(visualTimer);
+  }
+  // 필요하다면 타이머 패널을 다시 숨깁니다.
+  $('#turn-info-panel').hide();
 }

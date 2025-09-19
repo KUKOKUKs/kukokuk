@@ -1,16 +1,11 @@
-package com.kukokuk.domain.twenty.EventListener;
+package com.kukokuk.domain.twenty.AddComponent;
 
-import com.kukokuk.domain.twenty.dto.RoomUser;
 import com.kukokuk.domain.twenty.service.TwentyService;
-import com.kukokuk.domain.twenty.vo.TwentyRoom;
 import com.kukokuk.security.SecurityUser;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;

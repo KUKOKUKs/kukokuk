@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.WebSocketHandler;
@@ -16,12 +17,13 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 @Configuration
 @EnableWebSocketMessageBroker
+@EnableScheduling
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   // 웹소켓 기본 설정
   @Override
   public void registerStompEndpoints (StompEndpointRegistry registry) {
     registry.addEndpoint("/ws")                           // 웹소켓 엔드포인트 지정
-        .setAllowedOrigins("http://localhost:8080 ")            // 이 포트로 웹소켓 사용을 허가.
+        .setAllowedOrigins("http://localhost:8080")            // 이 포트로 웹소켓 사용을 허가.
         .setHandshakeHandler(new DefaultHandshakeHandler(){
           protected Principal determineCurrentPrincipal(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
