@@ -776,6 +776,13 @@
     font-size: var(--subFontSize);
 }
 
+.search_form_wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--smallGap);
+}
+
 .search_form {
     width: 100%;
     display: flex;

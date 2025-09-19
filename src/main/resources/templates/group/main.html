@@ -14,7 +14,7 @@
                 </div>
 
                 <div id="search-component" class="component h_100 base_list_component">
-                    <div class="d_flex justify_content_between align_center small_gap">
+                    <div class="search_form_wrap">
                         <form class="search_form" id="group-search-form">
                             <input type="text"
                                    class="search_input"
@@ -27,7 +27,8 @@
 
                         <button th:if="${#lists.isEmpty(param.keyword) or #strings.isEmpty(param.keyword[0])}"
                                 type="button"
-                                class="icon title_font">
+                                class="icon title_font"
+                                id="reset-btn">
                             <iconify-icon class="icon title_font" icon="marketeq:refresh-round"></iconify-icon>
                         </button>
                     </div>
@@ -55,12 +56,12 @@
                                     <div class="group_teacher_profile">
                                         <div class="icon title group_profile_img">
                                             <!--/* 프로필 이미지가 있는 경우 */-->
-                                            <img th:if="${user.profileFilename != null}"
-                                                 th:src="${user.profileFileUrl}"
+                                            <img th:if="${group.teacher.profileFilename != null}"
+                                                 th:src="${group.teacher.profileFileUrl}"
                                                  alt="profile thumbnail">
 
                                             <!--/* 프로필 이미지가 없는 경우 (기본 아이콘 출력) */-->
-                                            <img th:if="${user.profileFilename == null}"
+                                            <img th:if="${group.teacher.profileFilename == null}"
                                                  th:src="@{/images/basic_profile_img.jpg}"
                                                  alt="profile thumbnail">
                                         </div>
@@ -84,7 +85,7 @@
 
         <!--/* 그룹에 속해 있거나 교사 권한 사용자인 경우 */-->
         <th:block th:if="${isTeacher or user.groupNo != null}">
-            <div class="content_info">
+            <div class="content_info h_100">
                 <div class="content_title">
                     <iconify-icon icon="streamline-plump-color:class-lesson-flat"></iconify-icon>
                     우리반 학습
@@ -102,32 +103,27 @@
                 </div>
             </div>
 
-            <div class="content_info">
+            <div class="content_info h_100">
                 <div class="content_title">
-                    <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
-                    우리반 학습 내용/교사일 경우 학습 자료 관리 컨텐츠
-                </div>
-
-                <div class="component">
-                    <p>사용자의 권한 리스트: <span sec:authentication="authorities"></span></p>
-                    sec:authorize="hasRole('TEACHER')" 로 교사 권한 인증
-                    교사 권한이 생성한 그룹에 포함이 되어있다면 해당 그룹의 교사가 학습 자료를 AI로 재구성해준 학습진행 가능
-                    자료 등록이 없을 경우 자료 등록되지 않음을 사용자에게 안내
-                    <hr>
-                    교사일 경우 학습 자료 리스트, 등록, 삭제(수정 불가)
-                </div>
-            </div>
-
-            <div class="content_info">
-                <div class="content_title">
-                    <iconify-icon icon="streamline-color:desktop-help-flat"></iconify-icon>
+                    <iconify-icon icon="streamline-flex-color:help-chat-1-flat"></iconify-icon>
                     스무고개
                 </div>
 
-                <div class="component">
-                    교사일 경우 스무고개 방을 생성할 설정값 입력란 및 생성버튼
-                    사용자일 경우 스무고개 방이 열렸는지 여부에 대한 표시 및 참여버튼
-                </div>
+                <form th:if="${isTeacher}"
+                      class="component"
+                      method="post"
+                      th:action="@{/twenty/gameRoom}">
+                    <input type="text" name="correct" value="" placeholder="스무고개 정답을 입력해 주세요">
+                    <button type="submit">생성하기</button>
+                </form>
+
+                <form th:if="${!isTeacher}"
+                      class="component"
+                      method="get"
+                      action="">
+                    <p>당일에 대한 스무고개방 리스트에 대한 대기중/진행중/종료</p>
+                    <button type="submit">참여하기</button>
+                </form>
             </div>
 
         </th:block>
@@ -137,12 +133,12 @@
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
 
         <div class="component">
-            <div class="component_title">반 찾기</div>
-            반 검색 리스트/검색란/페이지네이션 없이 5개 정도만 정렬하여 노출(그룹 랭킹순?/최근 생성일순?/최다 인원순?...등 회의를 통해 정하기)
+            <div class="component_title">반 정보 및 각종 기능 버튼 구현</div>
         </div>
 
         <div class="component">
             <div class="component_title">우리반 순위</div>
+            컨텐츠별 탭 버튼으로 변환(스피드, 받아쓰기, 스무고개)
             반에서 기준이 될 데이터로 1~5순위 정도로 정렬하여 노출(사용자가 1~5순위에 포함되지 않았다면 최하단에 사용자의 순위로 사용자 점수 표시)
             1~3순위는 특수 프레임 이미지/스타일 적용
         </div>
@@ -150,6 +146,6 @@
 </div>
 
 <th:block layout:fragment="script">
-
+    <script type="module" th:src="@{/js/modules/group/group.js}"></script>
 </th:block>
 </html>
