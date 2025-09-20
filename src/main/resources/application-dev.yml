@@ -54,3 +54,12 @@ gemini:
   api:
     key: ${GEMINI_API_KEY}
     baseUrl: https://generativelanguage.googleapis.com
+
+# 임시 설정 : 수정필요
+nhn:
+  s3:
+    endpoint: https://kr.objectstorage.nhncloudservice.com
+    access-key: YOUR_ACCESS_KEY
+    secret-key: YOUR_SECRET_KEY
+    bucket: kukokuk-materials
+    region-name: KR1

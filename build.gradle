@@ -76,6 +76,8 @@ dependencies {
 	// .env로 환경변수 관리
 	implementation("io.github.cdimascio:java-dotenv:5.2.2")
 
+	// AWS SDK v1 계열
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.772'
 }
 
 tasks.named('test') {
