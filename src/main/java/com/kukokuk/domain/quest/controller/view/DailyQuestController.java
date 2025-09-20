@@ -6,7 +6,6 @@ import com.kukokuk.security.SecurityUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/daily-quests")
 public class DailyQuestController {
 
-    private final ModelMapper modelMapper;
     private final DailyQuestService dailyQuestService;
 
     // 일일 도전과제 페이지

@@ -4,6 +4,7 @@ import com.kukokuk.common.dto.Page;
 import com.kukokuk.common.dto.Pagination;
 import com.kukokuk.domain.group.mapper.GroupMapper;
 import com.kukokuk.domain.group.vo.Group;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +27,20 @@ public class GroupService {
      * @return 페이지네이션, 그룹 목록 정보
      */
     public Page<Group> getGroups(int page, Map<String, Object> condition) {
+        log.info("getGroups() 서비스 실행 page: {}, condition: {}", page, condition);
+
         Page<Group> groupPage = new Page<>(); // 그룹 목록을 담을 Page 객체 생성
         int totalRows = groupMapper.getTotalRows(condition); // 조건에 맞는 모든 데이터 행의 수
-        Pagination pagination = new Pagination(page, totalRows); // 페이지네이션 객체 생성
+
+        if (totalRows == 0) {
+            // 조회할 데이터 행의 수가 없다면 빈 리스트 반환
+            // 불필요한 DB 쿼리 발생 방지
+            groupPage.setItems(Collections.emptyList());
+            return groupPage;
+        }
 
         // 페이징 처리 조건
+        Pagination pagination = new Pagination(page, totalRows); // 페이지네이션 객체 생성
         condition.put("offset", pagination.getOffset());
         condition.put("rows", pagination.getRows());
 
@@ -52,6 +62,7 @@ public class GroupService {
      * @return 그룹 목록 정보
      */
     public List<Group> getRandomGroups(int groupCount) {
+        log.info("getRandomGroups() 서비스 실행 groupCount: {}", groupCount);
         return groupMapper.getRandomGroups(groupCount);
     }
 

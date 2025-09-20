@@ -76,3 +76,106 @@ export function addStudyDifficultyList($studyDifficultyElement, studyDifficultyL
     // 부모 요소에 리스트 추가
     $studyDifficultyElement.html(content);
 }
+
+/**
+ * 페이지네이션 정보와 페이징요소가 추가될 부모 요소를 전달 받아
+ * 이미 변경 작업 된 url 정보를 가져와 href를 적용한 페이징 요소를 부모 요소에 세팅
+ * 비동기로 처리하는 페이징일 경우 href의 쿼리스트링을 활용하여 해당 버튼에 이벤트로 실행
+ * @param paging 페이지네이션 정보
+ * @param $parentElement 페이징 요소가 추가될 부모 요소(컨텐츠 특정 필수)
+ */
+export function setPagination(paging, $parentElement) {
+    console.log("setPagination() paging: ", paging);
+
+    const path = location.pathname; // 현재 경로
+
+    // 페이지네이션이 null이 아니고 총 페이지 개수가 1보다 클 경우
+    if (paging && paging.totalPages > 1) {
+        // 기존 요소 확인
+        let $paginationElement = $parentElement.find(".pagination");
+
+        // 없으면 생성 후 부모에 추가
+        if (!$paginationElement.length) {
+            $paginationElement = $("<nav>").addClass("pagination");
+            $parentElement.append($paginationElement);
+        }
+
+        // 페이징 요소
+        const $paging = $("<ul>").addClass("paging");
+
+        // 항상 새로운 params 객체 생성(중복/누적 처리된 키가 적용되지 않도록)
+        const makeParams = (pageNum) => {
+            const params = new URLSearchParams(location.search);
+            params.set("page", pageNum); // 페이지는 새로 덮어쓰기
+            return params.toString();
+        };
+
+        // 1번 페이지로(첫 번째 블록이 아닐 경우)
+        if (paging.currentBlock > 1) {
+            $paging.append(`
+                <li class="page_btn">
+                    <a class="page_link first icon" href="${path}?${makeParams(1)}">
+                        <iconify-icon icon="mage:double-arrow-left"></iconify-icon>
+                    </a>
+                </li>
+            `);
+        }
+
+        // 이전 페이지로(첫 번째 페이지가 아닐 경우)
+        if (paging.totalBlocks > 1 && !paging.first) {
+            $paging.append(`
+                <li class="page_btn">
+                    <a class="page_link prev icon" href="${path}?${makeParams(paging.prevPage)}">
+                        <iconify-icon icon="mage:arrow-left"></iconify-icon>
+                    </a>
+                </li>
+            `);
+        }
+
+        // 페이지 버튼
+        for (let num = paging.beginPage; num <= paging.endPage; num++) {
+            if (paging.currentPage !== num) {
+                // 현재 페이지가 아닌 버튼
+                $paging.append(`
+                    <li class="page_btn">
+                        <a class="page_link" href="${path}?${makeParams(num)}">${num}</a>
+                    </li>
+                `);
+            } else {
+                // 현재 페이지인 버튼
+                $paging.append(`
+                    <li class="page_btn">
+                        <span class="page_link current">${num}</span>
+                    </li>
+                `);
+            }
+        }
+
+        // 다음 페이지로(마지막 페이지가 아닐 경우)
+        if (paging.totalBlocks > 1 && !paging.last) {
+            $paging.append(`
+                <li class="page_btn">
+                    <a class="page_link next icon" href="${path}?${makeParams(paging.nextPage)}">
+                        <iconify-icon icon="mage:arrow-right"></iconify-icon>
+                    </a>
+                </li>
+            `);
+        }
+
+        // 마지막 페이지로(마지막 블록이 아닐 경우)
+        if (paging.currentBlock < paging.totalBlocks) {
+            $paging.append(`
+                <li class="page_btn">
+                    <a class="page_link last icon" href="${path}?${makeParams(paging.totalPages)}">
+                        <iconify-icon icon="mage:double-arrow-right"></iconify-icon>
+                    </a>
+                </li>
+            `);
+        }
+
+        $paginationElement.html($paging);
+    } else {
+        // paging이 없거나 totalPages가 0일 경우 페이지네이션 제거
+        $parentElement.find(".pagination").remove();
+    }
+}
