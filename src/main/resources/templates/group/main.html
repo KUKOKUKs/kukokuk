@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/base}" th:with="title='우리반', menu='group'">
+<html layout:decorate="~{/layout/base}"
+      th:with="title='우리반'
+      , menu='group'
+      , isTeacher=${#authorization.expression('hasRole(''TEACHER'')')}">
 <div layout:fragment="content">
-    <div id="main-content"
-         class="content_container"
-         th:with="user=${#authentication.principal.user}
-                , isTeacher=${#authorization.expression('hasRole(''TEACHER'')')}">
+    <div id="main-content" class="content_container">
         <!--/* 그룹에 속하지 않은 일반 사용자인 경우 */-->
-        <th:block th:if="${!isTeacher and user.groupNo == null}">
+        <th:block th:if="${!isTeacher and myGroup == null}">
             <div class="content_info h_100">
                 <div class="content_title">
                     <iconify-icon icon="streamline-flex-color:search-category-flat"></iconify-icon>
@@ -84,7 +84,7 @@
         </th:block>
 
         <!--/* 그룹에 속해 있거나 교사 권한 사용자인 경우 */-->
-        <th:block th:if="${isTeacher or user.groupNo != null}">
+        <th:block th:if="${isTeacher or myGroup != null}">
             <div class="content_info h_100">
                 <div class="content_title">
                     <iconify-icon icon="streamline-plump-color:class-lesson-flat"></iconify-icon>
@@ -99,67 +99,109 @@
                 </div>
             </div>
 
-            <div th:if="${isTeacher}" class="content_info h_100">
+            <div class="content_info h_100">
                 <div class="content_title">
                     <iconify-icon icon="streamline-flex-color:help-chat-1-flat"></iconify-icon>
                     스무고개
                 </div>
 
-                <div class="component small_list_component">
-                    <div class="component_title">
-                        <div class="title_info column">
-                            <div class="d_flex align_center">
-                                <p class="text_ellipsis">[그룹명]</p>
-                                <p class="max_content">반 스무고개 만들기</p>
+                <!--/* 교사면서 소유한 그룹이 있을 경우 스무고개 방을 생성할 수 있음 */-->
+                <th:block th:if="${isTeacher && currentGruop != null}">
+                    <div class="component small_list_component">
+                        <div class="component_title">
+                            <div class="title_info column">
+                                <div class="d_flex align_center">
+                                    <p class="text_ellipsis" th:text="|[${currentGruop.title}]|">[그룹명]</p>
+                                    <p class="max_content">반 스무고개 만들기</p>
+                                </div>
+                                <span class="component_sub_title">스무고개를 만들어 우리 반과 함께 즐겨보세요</span>
                             </div>
-                            <span class="component_sub_title">스무고개를 만들어 우리 반과 함께 즐겨보세요</span>
                         </div>
-                    </div>
 
-                    <form class="form_wrap small_gap"
-                          method="post"
-                          th:action="@{/twenty/gameRoom}">
-                        <div class="form_input_list">
-                            <div class="input_info">
-                                <input type="text" name="title" id="title" placeholder=" ">
-                                <label for="title" class="input_title">스무고개 방 이름</label>
+                        <form class="form_wrap small_gap"
+                              method="post"
+                              th:action="@{/twenty/gameRoom}">
+                            <div class="form_input_list">
+                                <div class="input_info">
+                                    <input type="text" name="title" id="title" placeholder=" ">
+                                    <label for="title" class="input_title">스무고개 방 이름</label>
+                                </div>
+                                <div class="input_info">
+                                    <input type="text" name="correct" id="correct" placeholder=" ">
+                                    <label for="correct" class="input_title">스무고개 정답</label>
+                                </div>
                             </div>
-                            <div class="input_info">
-                                <input type="text" name="correct" id="correct" placeholder=" ">
-                                <label for="correct" class="input_title">스무고개 정답</label>
+                            <button type="submit" class="btn primary">만들기</button>
+                        </form>
+                    </div>
+                </th:block>
+
+                <!--/* 그룹에 속한 일반 사용자인 경우 */-->
+                <th:block th:if="${!isTeacher && myGroup}">
+                    <form class="component"
+                          method="get"
+                          action="">
+                        <div class="component_title">
+                            <div class="title_info column">
+                                스무 번 안에 정답 추리하기
+                                <span class="component_sub_title">우리 반과 함께 정답을 찾아가는 스무고개에 참여해보세요</span>
                             </div>
                         </div>
-                        <button type="submit" class="btn primary">만들기</button>
+
+                        <p>당일에 대한 스무고개방 리스트에 대한 대기중/진행중/종료</p>
+                        <button type="submit">참여하기</button>
                     </form>
-                </div>
-
-                <form th:if="${!isTeacher}"
-                      class="component"
-                      method="get"
-                      action="">
-                    <div class="component_title">
-                        <div class="title_info column">
-                            스무 번 안에 정답 추리하기
-                            <span class="component_sub_title">우리 반과 함께 정답을 찾아가는 스무고개에 참여해보세요</span>
-                        </div>
-                    </div>
-
-                    <p>당일에 대한 스무고개방 리스트에 대한 대기중/진행중/종료</p>
-                    <button type="submit">참여하기</button>
-                </form>
+                </th:block>
             </div>
-
         </th:block>
     </div>
 
     <div id="sub-content" class="content_container">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
 
-        <div class="component">
-            <div class="component_title">반 정보 및 각종 기능 버튼 구현</div>
+        <!--/* 그룹에 속하지 않은 일반 사용자인 경우 */-->
+        <div th:if="${!isTeacher and myGroup == null}"
+             class="component small_list_component">
+            <div class="component_title">
+                <div class="title_info column">
+                    입반하면
+                    <div class="component_info">
+                        <div class="list_info small_font normal" style="--cols: 24; --indexCols: 2;">
+                            <div class="index_list">
+                                <span class="marker tac">📖</span>
+                                <p>우리 반의 AI 맞춤 학습</p>
+                            </div>
+                            <div class="index_list">
+                                <span class="marker tac">💡</span>
+                                <p>우리 반과 함께 스무고개</p>
+                            </div>
+                            <div class="index_list">
+                                <span class="marker tac">👑</span>
+                                <p>우리 반 월간 순위 경쟁</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="component">
+        <div th:if="${isTeacher or myGroup != null}"
+             class="component small_list_component">
+            <div class="component_title">
+                <div class="title_info column">
+                    <div class="d_flex justify_content_between align_center small_gap">
+                        <p class="text_ellipsis">우리반 이름</p>
+                        <button type="button"
+                                id="group-out-btn"
+                                class="btn tiny white"
+                                th:data-mygroup-no="${myGroup.groupNo}">나가기</button>
+                    </div>
+                    <span class="component_sub_title">[급훈]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="component small_list_component">
             <div class="component_title">우리반 순위</div>
             컨텐츠별 탭 버튼으로 변환(스피드, 받아쓰기, 스무고개)
             반에서 기준이 될 데이터로 1~5순위 정도로 정렬하여 노출(사용자가 1~5순위에 포함되지 않았다면 최하단에 사용자의 순위로 사용자 점수 표시)
