@@ -92,35 +92,58 @@
                 </div>
 
                 <div class="component">
-                    그룹에 대한 정보 또는 교사일 경우 생성
+                    교사가 등록한 학습 자료
                     <hr>
-                    그룹명, 교사 닉네임, 그룹 인원, 등록된 학습 자료 개수, 생성일자, ...등
-                    프레그먼츠로 서브 컨텐츠로 사용해도 되고 메인 컨텐츠에 표시해도 되고
-                    프로필에 그룹이 있을경우 내용 추가해도 되구..
-                    교사일 경우 여러 그룹을 생성할 수 있고
-                    하나의 그룹에 참여자로 있을 수 있으므로
-                    그룹 선택란 추가
+                    교사일 경우 등록한 학습 자료에 대한
+                    내역 및 등록 삭제 기능
                 </div>
             </div>
 
-            <div class="content_info h_100">
+            <div th:if="${isTeacher}" class="content_info h_100">
                 <div class="content_title">
                     <iconify-icon icon="streamline-flex-color:help-chat-1-flat"></iconify-icon>
                     스무고개
                 </div>
 
-                <form th:if="${isTeacher}"
-                      class="component"
-                      method="post"
-                      th:action="@{/twenty/gameRoom}">
-                    <input type="text" name="correct" value="" placeholder="스무고개 정답을 입력해 주세요">
-                    <button type="submit">생성하기</button>
-                </form>
+                <div class="component small_list_component">
+                    <div class="component_title">
+                        <div class="title_info column">
+                            <div class="d_flex align_center">
+                                <p class="text_ellipsis">[그룹명]</p>
+                                <p class="max_content">반 스무고개 만들기</p>
+                            </div>
+                            <span class="component_sub_title">스무고개를 만들어 우리 반과 함께 즐겨보세요</span>
+                        </div>
+                    </div>
+
+                    <form class="form_wrap small_gap"
+                          method="post"
+                          th:action="@{/twenty/gameRoom}">
+                        <div class="form_input_list">
+                            <div class="input_info">
+                                <input type="text" name="title" id="title" placeholder=" ">
+                                <label for="title" class="input_title">스무고개 방 이름</label>
+                            </div>
+                            <div class="input_info">
+                                <input type="text" name="correct" id="correct" placeholder=" ">
+                                <label for="correct" class="input_title">스무고개 정답</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn primary">만들기</button>
+                    </form>
+                </div>
 
                 <form th:if="${!isTeacher}"
                       class="component"
                       method="get"
                       action="">
+                    <div class="component_title">
+                        <div class="title_info column">
+                            스무 번 안에 정답 추리하기
+                            <span class="component_sub_title">우리 반과 함께 정답을 찾아가는 스무고개에 참여해보세요</span>
+                        </div>
+                    </div>
+
                     <p>당일에 대한 스무고개방 리스트에 대한 대기중/진행중/종료</p>
                     <button type="submit">참여하기</button>
                 </form>

@@ -12,7 +12,7 @@
                 <div class="component grid_list full_grid bg_primary color_white highlight">
                     <div class="component_title">
                         <th:block th:with="
-                                percent='${(summary.correctAnswers / summary.totalQuestion) * 100}',
+                                percent=${(summary.correctAnswers / summary.totalQuestion) * 100},
                                 resultMsg=${
                                     percent == 10 ? '완벽, 받아쓰기의 끝판왕 👑' :
                                     percent >= 90 ? '감 잡았어! 집중력 최고 🔥' :
