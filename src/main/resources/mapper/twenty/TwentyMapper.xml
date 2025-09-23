@@ -65,9 +65,10 @@
     </select>
 
     <!--
-        public List<TwentyRoom> getTwentyRoomListByGroupNo(int groupNo);
+            public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(@Param("groupNo") int groupNo,
+                                                       @Param("limitCnt") int limitCnt );
     -->
-    <select id="getTwentyRoomListByGroupNo" resultType="TwentyRoom">
+    <select id="getRecentTodayTwentyRoomListByGroupNo" resultType="TwentyRoom">
          SELECT
              TWENTY_ROOM_NO                     AS roomNo
              ,CORRECT_ANSWER                    AS correctAnswer
@@ -82,6 +83,9 @@
              KUKOKUK_TWENTY_ROOMS
          WHERE
              GROUP_NO = #{groupNo}
+            AND DATE(CREATED_DATE) = CURDATE()
+        ORDER BY CREATED_DATE DESC
+        LIMIT  #{limitCnt}
     </select>
 
 </mapper>
