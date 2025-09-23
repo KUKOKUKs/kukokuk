@@ -83,17 +83,17 @@
 }
 
 /* 학습 진행 화면 */
-.study_component {
-    height: 100%;
-    overflow-y: auto;
-}
-
 .daily_study_card {
     min-height: 200px;
+    cursor: pointer;
 
     &.center {
         justify-content: center;
         align-items: center;
+    }
+
+    &.no_cursor {
+        cursor: default;
     }
 
     .study_info {
