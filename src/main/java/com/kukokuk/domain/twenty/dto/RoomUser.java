@@ -8,8 +8,9 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @Alias("RoomUser")
 public class RoomUser {
-  private int userNo;
-  private String status;
-  private String name;
+
+    private int userNo;
+    private String status;
+    private String nickName;
 
 }
