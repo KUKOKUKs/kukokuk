@@ -8,5 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class GameOverDto {
-  private int roomNo;
+
+    private int roomNo;
 }
