@@ -227,4 +227,14 @@ public class TwentyService {
         redisLockManager.releaseQuestionerLock(roomNo);
         //... 기타 로직 작성
     }
+
+    /**
+     * 그룹 번호로 오늘 만들어진 스무고개방 중 최근 몇 건만 조회해오는 메소드
+     * @param groupNo 그룹 번호
+     * @param limitCnt 제한 건 수
+     * @return
+     */
+    public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(int groupNo ,int limitCnt) {
+        return twentyMapper.getRecentTodayTwentyRoomListByGroupNo(groupNo, limitCnt);
+    }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface TwentyMapper {
@@ -45,6 +46,7 @@ public interface TwentyMapper {
      * @param groupNo
      * @return
      */
-    public List<TwentyRoom> getTwentyRoomListByGroupNo(int groupNo);
+    public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(@Param("groupNo") int groupNo,
+                                                       @Param("limitCnt") int limitCnt );
 
 }
