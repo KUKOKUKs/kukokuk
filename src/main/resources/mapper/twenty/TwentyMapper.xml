@@ -9,7 +9,7 @@
         SELECT
             RU.USER_NO                        AS userNo
              ,RU.STATUS                       AS status
-             ,U.NAME                          AS name
+             ,U.NICKNAME                      AS nickName
         FROM
             KUKOKUK_TWENTY_ROOM_USERS RU
                 JOIN KUKOKUK_USERS U ON RU.USER_NO = U.USER_NO
@@ -62,6 +62,30 @@
             TWENTY_ROOM_NO = #{roomNo}
           AND STATUS NOT IN('COMPLETED', 'STOPPED')
 
+    </select>
+
+    <!--
+            public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(@Param("groupNo") int groupNo,
+                                                       @Param("limitCnt") int limitCnt );
+    -->
+    <select id="getRecentTodayTwentyRoomListByGroupNo" resultType="TwentyRoom">
+         SELECT
+             TWENTY_ROOM_NO                     AS roomNo
+             ,CORRECT_ANSWER                    AS correctAnswer
+             ,IS_SUCCESS                        AS isSuccess
+             ,TRY_COUNT                         AS tryCnt
+             ,STATUS                            AS status
+             ,CREATED_DATE                      AS createdDate
+             ,UPDATED_DATE                      AS updatedDate
+             ,GROUP_NO                          AS groupNo
+             ,WINNER_NO                         AS winnerNo
+         FROM
+             KUKOKUK_TWENTY_ROOMS
+         WHERE
+             GROUP_NO = #{groupNo}
+            AND DATE(CREATED_DATE) = CURDATE()
+        ORDER BY CREATED_DATE DESC
+        LIMIT  #{limitCnt}
     </select>
 
 </mapper>
