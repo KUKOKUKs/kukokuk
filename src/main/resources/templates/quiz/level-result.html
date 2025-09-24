@@ -11,30 +11,34 @@
             <div class="grid_list_component" style="--cols: 2;">
                 <div class="component grid_list full_grid bg_primary color_white highlight">
                     <div class="component_title">
-                        <th:block th:with="
-                                percent='${(summary.correctAnswer / summary.totalQuestion) * 100}',
-                                resultMsg=
-                                    ${summary.difficulty == '하' ?
-                                        (percent == 100 ? '만점! 기본기 끝판왕! 🏆' :
-                                        percent >= 90 ? '교과서 그 자체! 완벽에 한 발짝! ✨' :
-                                        percent >= 70 ? '기본기 탄탄, 성장 가속 중! 🚀' :
-                                        percent >= 50 ? '기초는 잡혔다! 조금만 더! 📈' :
-                                        '연습이 곧 실력! 한번 더! 💪')
-                                    : summary.difficulty == '중' ?
-                                        (percent == 100 ? '만점! 실력자 인증 완료! 🎉' :
-                                        percent >= 90 ? '감 잡았어! 집중력 최고! 🔥' :
-                                        percent >= 70 ? '흐름 탔다! 실력이 눈에 보인다! 🏃' :
-                                        percent >= 50 ? '지금부터 시작이다! ⚡' :
-                                        '포기 금지! 한번 더! 💪')
-                                    : summary.difficulty == '상' ?
-                                        (percent == 100 ? '만점! 챌린지 정복자 등극! 👑' :
-                                        percent >= 90 ? '흔들림 없는 실력! 🦾' :
-                                        percent >= 70 ? '집중해서 다시! 할 수 있다! 🔥' :
-                                        percent >= 50 ? '이제부터 진짜! 기세 올리자! ⚡' :
-                                        '이 정도로 만족할 순 없지! 한번 더! 💪')
-                                    : '결과 메시지를 불러올 수 없습니다.'
-                                ">
-                            <p class="title_info center" th:utext="|${summary.difficulty} 단계<br>${resultMsg}|"></p>
+                        <th:block th:with="percent=${(summary.correctAnswers * 100) / summary.totalQuestion}">
+                            <th:block th:if="${difficulty == '하'}">
+                                <p class="title_info center" th:utext="|${difficulty} 단계<br>
+                                    ${percent == 100 ? '만점! 기본기 끝판왕! 🏆' :
+                                    percent >= 90 ? '교과서 그 자체! 완벽에 한 발짝! ✨' :
+                                    percent >= 70 ? '기본기 탄탄, 성장 가속 중! 🚀' :
+                                    percent >= 50 ? '기초는 잡혔다! 조금만 더! 📈' :
+                                    '연습이 곧 실력! 한번 더! 💪'}|"></p>
+                            </th:block>
+                            <th:block th:if="${difficulty == '중'}">
+                                <p class="title_info center" th:utext="|${difficulty} 단계<br>
+                                    ${percent == 100 ? '만점! 실력자 인증 완료! 🎉' :
+                                    percent >= 90 ? '감 잡았어! 집중력 최고! 🔥' :
+                                    percent >= 70 ? '흐름 탔다! 실력이 눈에 보인다! 🏃' :
+                                    percent >= 50 ? '지금부터 시작이다! ⚡' :
+                                    '포기 금지! 한번 더! 💪'}|"></p>
+                            </th:block>
+                            <th:block th:if="${difficulty == '상'}">
+                                <p class="title_info center" th:utext="|${difficulty} 단계<br>
+                                    ${percent == 100 ? '만점! 챌린지 정복자 등극! 👑' :
+                                    percent >= 90 ? '흔들림 없는 실력! 🦾' :
+                                    percent >= 70 ? '집중해서 다시! 할 수 있다! 🔥' :
+                                    percent >= 50 ? '이제부터 진짜! 기세 올리자! ⚡' :
+                                    '이 정도로 만족할 순 없지! 한번 더! 💪'}|"></p>
+                            </th:block>
+                            <th:block th:unless="${difficulty == '하' or difficulty == '중' or difficulty == '상'}">
+                                <p class="title_info center" th:utext="|${difficulty} 단계<br>결과 메시지를 불러올 수 없습니다.|"></p>
+                            </th:block>
                         </th:block>
                     </div>
                 </div>
@@ -91,10 +95,10 @@
                 <!--/* 북마크 추가/제거 버튼 */-->
                 <button type="button"
                         class="bookmark_btn tooltip"
-                        th:data-bookmarked="${result.bookmarked}"
-                        th:data-label="|북마크 ${result.bookmarked ? '제거' : '추가'}|">
+                        th:data-bookmarked="${result.bookmarked ?: false}"
+                        th:data-label="|북마크 ${(result.bookmarked ?: false) ? '제거' : '추가'}|">
                     <iconify-icon class="icon title_font"
-                                  th:classappend="${result.bookmarked ? 'color_yellow' : 'color_border'}"
+                                  th:classappend="${(result.bookmarked ?: false) ? 'color_yellow' : 'color_border'}"
                                   icon="material-symbols:bookmark-star"></iconify-icon>
                 </button>
             </div>
