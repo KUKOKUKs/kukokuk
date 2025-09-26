@@ -87,5 +87,4 @@
         ORDER BY CREATED_DATE DESC
         LIMIT  #{limitCnt}
     </select>
-
 </mapper>
