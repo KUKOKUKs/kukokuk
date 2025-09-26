@@ -48,5 +48,4 @@ public interface TwentyMapper {
      */
     public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(@Param("groupNo") int groupNo,
                                                        @Param("limitCnt") int limitCnt );
-
 }

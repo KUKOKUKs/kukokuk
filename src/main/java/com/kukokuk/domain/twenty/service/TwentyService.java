@@ -76,7 +76,7 @@ public class TwentyService {
      * @param roomNo
      */
     public void gameStart(int roomNo) {
-        String system = "게임을 시작하겠습니다.";
+        String system = "스무고개를 시작합니다.";
 
         Map<String, Object> map = new HashMap<>();
         map.put("roomNo", roomNo);
@@ -230,11 +230,24 @@ public class TwentyService {
 
     /**
      * 그룹 번호로 오늘 만들어진 스무고개방 중 최근 몇 건만 조회해오는 메소드
-     * @param groupNo 그룹 번호
+     *
+     * @param groupNo  그룹 번호
      * @param limitCnt 제한 건 수
      * @return
      */
-    public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(int groupNo ,int limitCnt) {
+    public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(int groupNo, int limitCnt) {
         return twentyMapper.getRecentTodayTwentyRoomListByGroupNo(groupNo, limitCnt);
     }
+
+    public Integer getRoomNoByRoomList(List<TwentyRoom> list) {
+        if(list == null || list.isEmpty()) return null;
+        for(TwentyRoom room : list) {
+            if(!"COMPLETED".equals(room.getStatus()) && !"STOPPED".equals(room.getStatus())) {
+                return room.getRoomNo();
+            }
+        }
+        return null;
+    }
+
+
 }
