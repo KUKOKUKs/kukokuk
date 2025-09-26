@@ -4,6 +4,8 @@ import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.Page;
 import com.kukokuk.domain.group.service.GroupService;
 import com.kukokuk.domain.group.vo.Group;
+import com.kukokuk.domain.twenty.service.TwentyService;
+import com.kukokuk.domain.twenty.vo.TwentyRoom;
 import com.kukokuk.security.SecurityUser;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class GroupController {
 
     private final GroupService groupService;
+    private final TwentyService twentyService;
 
     /**
      * 그룹 메인 페이지
@@ -86,16 +89,25 @@ public class GroupController {
         int userNo = securityUser.getUser().getUserNo();
         Integer memberGroupNo = securityUser.getUser().getGroupNo();
 
-        // 내가 가입한 그룹(일반/교사 공통 로직)
+        // 내가 가입한 그룹, 그룹의 스무고개 방 리스트 최근 3건(일반/교사 공통 로직)
         Group myGroup = null;
+        List<TwentyRoom> myGroupTwentyRooms = Collections.emptyList();
+        Integer myGroupActiveRoomNo = null; // 그룹의 스무고개 방을 생성했을 경우 방 번호
         if (memberGroupNo != null) {
             myGroup = groupService.getGroupByGroupNo(memberGroupNo);
+            myGroupTwentyRooms = twentyService.getRecentTodayTwentyRoomListByGroupNo(memberGroupNo, 3);
         }
         model.addAttribute("myGroup", myGroup);
-        
+        model.addAttribute("myGroupTwentyRooms", myGroupTwentyRooms);
+        model.addAttribute("myGroupActiveRoomNo", myGroupActiveRoomNo);
+
         // 교사 권한 전용 로직
-        Group currentGruop = null; // 현재 선택된 그룹
         List<Group> teacherGroups = Collections.emptyList(); // 교사가 소유한 그룹
+
+        // 현재 선택된 그룹, 그룹의 스무고개 방 리스트 최근 3건
+        Group currentGruop = null;
+        List<TwentyRoom> currentGroupTwentyRooms = Collections.emptyList();
+        Integer currentGroupActiveRoomNo = null; // 그룹의 스무고개 방을 생성했을 경우 방 번호
 
         if (isTeacher) {
             teacherGroups = groupService.getTeacherGroups(userNo); // 최신순 정렬
@@ -131,6 +143,7 @@ public class GroupController {
                 teacherGroups = teacherGroups.stream()
                     .filter(group -> !Objects.equals(group.getGroupNo(), currentGroupNo))
                     .toList();
+                currentGroupTwentyRooms = twentyService.getRecentTodayTwentyRoomListByGroupNo(currentGroupNo, 3);
             }
         } else {
             // 일반 사용자면서 groupNo가 넘어온 경우(잘못된 접근)
@@ -142,6 +155,8 @@ public class GroupController {
 
         model.addAttribute("currentGruop", currentGruop);
         model.addAttribute("teacherGroups", teacherGroups);
+        model.addAttribute("currentGroupTwentyRooms", currentGroupTwentyRooms);
+        model.addAttribute("currentGroupActiveRoomNo", currentGroupActiveRoomNo);
 
         return "group/main";
     }
