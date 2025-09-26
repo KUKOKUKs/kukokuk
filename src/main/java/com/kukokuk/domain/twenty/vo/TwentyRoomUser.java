@@ -14,11 +14,11 @@ import org.apache.ibatis.type.Alias;
 @NoArgsConstructor
 public class TwentyRoomUser {
 
-  private int userNo;
-  private int roomNo;
-  private String status;
-  private Date createdDate;
-  private Date updatedDate;
+    private int userNo;
+    private int roomNo;
+    private String status;
+    private Date createdDate;
+    private Date updatedDate;
 
-  private User user;
+    private User user;
 }

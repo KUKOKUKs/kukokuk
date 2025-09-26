@@ -27,7 +27,10 @@
                     </div>
                     <div class="progress_info">
                         <div class="hints_info">
-                            <div class="hint_icon"></div>
+                            <!-- 힌트 버튼으로 변경 -->
+                            <button id="hint-btn" type="button" class="hint_icon btn" title="힌트 사용">
+                                <iconify-icon icon="material-symbols:lightbulb-outline"></iconify-icon>
+                            </button>
                             <span class="hint_count">x <span id="hint-count" th:text="${user.hintCount}">0</span></span>
                         </div>
                     </div>
