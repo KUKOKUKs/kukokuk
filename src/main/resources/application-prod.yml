@@ -11,6 +11,10 @@ spring:
     redis:
       host: localhost
       port: 6379
+  session:
+    store-type: redis
+    timeout: 30m
+
 
   # env 관련 설정 추가
   config:
@@ -54,3 +58,7 @@ gemini:
   api:
     key: ${GEMINI_API_KEY}
     baseUrl: https://generativelanguage.googleapis.com
+
+#WebSocket 주소
+ws:
+  url: http://localhost:8081/ws

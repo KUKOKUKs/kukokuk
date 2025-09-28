@@ -6,6 +6,7 @@ const pageContainer = $(".page_container");
 const currentUserNo = pageContainer.data("user-no");
 const StringroomNo = pageContainer.data("room-no");
 const currentRoomNo = parseInt(StringroomNo);
+const wsUrl = pageContainer.data("ws-url");
 
 let stompClient = null;
 let turnTimer = null;
@@ -27,7 +28,7 @@ let visualTimer = null; // 화면 타이머 ID를 저장할 전역 변수
 
 // WebSocket 연결
 function connectWebSocket() {
-    const socket = new SockJS('/ws');
+    const socket = new SockJS('wsUrl');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
@@ -37,6 +38,7 @@ function connectWebSocket() {
         stompClient.subscribe(`/topic/participants/${currentRoomNo}`,
             function (result) {
                 const data = JSON.parse(result.body);
+                //data => list, roomStatus
                 updateParticipantList(data.list);
                 updateBtnByRoomStatus(data);
             });
@@ -167,8 +169,9 @@ function resetToDefault() {
 }
 
 /**
- * 게임방에 참여자가 입장할 때, 명단 UI 변화
- * @param participants
+ * 참여자의 리스트를 가지고,
+ * 참여자의 상태에 따라 스타일이 달라진다.
+ * @param userList 참여자 리스트
  */
 function updateParticipantList(userList) {
     console.log("userList2: ", userList);
