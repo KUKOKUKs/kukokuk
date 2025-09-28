@@ -251,4 +251,12 @@ public class QuizProcessService {
         return finalScore;
     }
 
+    /**
+     * @deprecated 월별 랭킹으로 변경됨. processSpeedQuizMonthlyRanking() 사용 권장
+     */
+    @Deprecated
+    private void processSpeedQuizRanking(QuizSessionSummary summary, int correctAnswers, int totalQuestion) {
+        log.warn("Deprecated processSpeedQuizRanking() 호출됨. processSpeedQuizMonthlyRanking() 사용 권장");
+        processSpeedQuizMonthlyRanking(summary, correctAnswers, totalQuestion);
+    }
 }

@@ -1,0 +1,256 @@
+/* 랭킹 위젯 스타일 */
+#ranking-widget-container {
+    min-height: 200px;
+
+    .ranking-type-toggle {
+        display: flex;
+        gap: var(--tinyGap);
+
+        .toggle-btn {
+            width: var(--baseIcon);
+            min-width: var(--baseIcon);
+            height: var(--baseIcon);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: var(--baseBorder);
+            background: #fff;
+            border-radius: calc(var(--bdrs) / 1.5);
+            cursor: pointer;
+            transition: all var(--trst);
+            color: var(--grayColor);
+            font-size: var(--smallFontSize);
+
+            &:hover {
+                background: var(--lightGrayColor);
+                border-color: var(--primaryColor);
+            }
+
+            &.active {
+                background: var(--primaryColor);
+                color: #fff;
+                border-color: var(--primaryColor);
+            }
+        }
+    }
+
+    .my-rank-info {
+        margin-bottom: var(--smallGap);
+        padding: var(--smallPadding);
+        background: var(--subColor);
+        border-radius: var(--bdrs);
+
+        .rank-item {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+
+            &.active {
+                display: flex;
+            }
+
+            .rank-label {
+                font-size: var(--smallFontSize);
+                color: var(--grayColor);
+            }
+
+            .rank-value {
+                font-weight: bold;
+                color: var(--primaryColor);
+                font-size: var(--baseFontSize);
+            }
+        }
+    }
+
+    .ranking_list_container {
+        .ranking-list {
+            display: none;
+
+            &.active {
+                display: block;
+            }
+
+            .ranking-item {
+                display: flex;
+                align-items: center;
+                padding: var(--tinyPadding) 0;
+                border-bottom: 1px solid var(--lightBorderColor);
+                gap: var(--smallGap);
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                .rank-number {
+                    width: var(--smallIcon);
+                    height: var(--smallIcon);
+                    min-width: var(--smallIcon);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: var(--tinyFontSize);
+                    font-weight: bold;
+
+                    &.rank-1 {
+                        background: gold;
+                        color: #333;
+                        border-radius: 50%;
+                    }
+
+                    &.rank-2 {
+                        background: silver;
+                        color: #333;
+                        border-radius: 50%;
+                    }
+
+                    &.rank-3 {
+                        background: #cd7f32;
+                        color: #fff;
+                        border-radius: 50%;
+                    }
+
+                    &.rank-other {
+                        color: var(--grayColor);
+                    }
+                }
+
+                .user-info {
+                    display: flex;
+                    align-items: center;
+                    flex: 1;
+                    gap: var(--tinyGap);
+
+                    .user-avatar {
+                        width: var(--smallIcon);
+                        height: var(--smallIcon);
+                        border-radius: 50%;
+                        object-fit: cover;
+
+                        &.default {
+                            background: var(--lightGrayColor);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: var(--grayColor);
+                            font-size: var(--tinyFontSize);
+                        }
+                    }
+
+                    .user-name {
+                        font-size: var(--smallFontSize);
+                        font-weight: 500;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+
+                .ranking-score {
+                    font-size: var(--tinyFontSize);
+                    color: var(--primaryColor);
+                    font-weight: bold;
+                    min-width: fit-content;
+                }
+            }
+
+            .empty-ranking {
+                text-align: center;
+                padding: var(--basePadding);
+                color: var(--grayColor);
+                font-size: var(--smallFontSize);
+            }
+
+            .loading {
+                text-align: center;
+                padding: var(--basePadding);
+                color: var(--grayColor);
+                font-size: var(--smallFontSize);
+            }
+
+            .error {
+                text-align: center;
+                padding: var(--basePadding);
+                color: var(--errorColor, #dc3545);
+                font-size: var(--smallFontSize);
+            }
+        }
+    }
+
+    .ranking-footer {
+        padding-top: var(--smallGap);
+        border-top: 1px solid var(--lightBorderColor);
+        margin-top: var(--smallGap);
+
+        .view-more-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--tinyGap);
+            width: 100%;
+            text-decoration: none;
+            transition: background var(--trst);
+            border-radius: var(--bdrs);
+
+            &:hover {
+                background: var(--lightGrayColor);
+            }
+        }
+    }
+
+    // 로그인 필요 상태
+    .login-required {
+        padding: var(--basePadding);
+        text-align: center;
+        color: var(--grayColor);
+
+        p {
+            margin-bottom: var(--smallGap);
+            font-size: var(--smallFontSize);
+        }
+    }
+
+    // 토글 애니메이션
+    .ranking-list,
+    .rank-item {
+        transition: opacity var(--trst);
+
+        &:not(.active) {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
+        &.active {
+            opacity: 1;
+            height: auto;
+        }
+    }
+
+    // 반응형
+    @media (max-width: 768px) {
+        .my-rank-info {
+            .rank-item {
+                .rank-label,
+                .rank-value {
+                    font-size: var(--tinyFontSize);
+                }
+            }
+        }
+
+        .ranking_list_container {
+            .ranking-list {
+                .ranking-item {
+                    .user-info {
+                        .user-name {
+                            font-size: var(--tinyFontSize);
+                        }
+                    }
+
+                    .ranking-score {
+                        font-size: var(--fixEtcTinyFontSize);
+                    }
+                }
+            }
+        }
+    }
+}

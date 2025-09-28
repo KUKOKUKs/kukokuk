@@ -27,6 +27,9 @@ public class GroupController {
      * <p>
      * 검색 후(비동기 요청) 새로고침 시에도 유지되도록
      * keyword 유무에 따라 랜덤리스트(기본값)/검색 리스트 전달
+     * @param page 조회할 페이지 번호 (기본값 1)
+     * @param keyword 검색어
+     * @return 그룹 목록 정보, 페이지네이션(랜덤리스트일 경우 null)
      */
     @GetMapping
     public String groupPage(
@@ -37,7 +40,7 @@ public class GroupController {
 
         if (keyword == null || keyword.isBlank()) {
             // 검색어 없으면 랜덤 그룹 보여주기
-            log.info("GroupController groupPage() 랜덤 그룹 목록 조회(기본값)");
+            log.info("GroupController getRandomGroups() 랜덤 그룹 목록 조회(기본값)");
             
             // 템플릿 구조를 통일하기 위해 Page객체에 담기
             Page<Group> randomGroups = new Page<>();
@@ -45,7 +48,7 @@ public class GroupController {
             model.addAttribute("groups", randomGroups);
         } else {
             // 검색어 있으면 검색 결과 보여주기
-            log.info("GroupController groupPage() 검색 그룹 목록 조회(비동기 요청 이후 새로고침)");
+            log.info("GroupController getGroups() 검색 그룹 목록 조회(비동기 요청 이후 새로고침)");
             Map<String, Object> condition = new HashMap<>();
             condition.put("keyword", keyword);
             model.addAttribute("groups", groupService.getGroups(page, condition));

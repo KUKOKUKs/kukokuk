@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<th:block th:fragment="ranking-widget-fragment"
+          th:with="isAuth=${#authorization.expression('isAuthenticated()')}">
+
+    <!--/* 인증완료 */-->
+    <div th:if="${isAuth}"
+         th:data-logged-in="${isAuth}"
+         id="ranking-widget-container"
+         class="component small_list_component limit">
+        <th:block th:replace="~{fragments/common/ranking :: ranking-widget-body}"></th:block>
+    </div>
+
+    <!--/* 미인증 */-->
+    <div th:if="${!isAuth}"
+         th:data-logged-in="${isAuth}"
+         id="ranking-widget-container"
+         class="component small_list_component limit">
+        <div class="component_title">
+            <div class="title_info">
+                랭킹
+                <div class="sub_title">로그인이 필요합니다</div>
+            </div>
+        </div>
+        <div class="login-required">
+            <p>랭킹을 확인하려면 로그인해주세요.</p>
+            <a href="/login" class="btn small primary">로그인</a>
+        </div>
+    </div>
+
+    <script type="module" th:src="@{/js/modules/ranking/ranking-widget.js}"></script>
+</th:block>
+
+<!--/* 랭킹 위젯 컴포넌트 내용 */-->
+<th:block th:fragment="ranking-widget-body">
+    <div class="component_title">
+        <div class="title_info">
+            랭킹
+            <div class="sub_title">
+                (<span id="ranking-period"></span>)
+            </div>
+        </div>
+
+        <!--/* 랭킹 타입 토글 버튼 */-->
+        <div class="ranking-type-toggle">
+            <button type="button" id="speed-ranking-btn" class="toggle-btn active" data-type="SPEED">
+                <iconify-icon icon="mdi:lightning-bolt"></iconify-icon>
+            </button>
+            <button type="button" id="dictation-ranking-btn" class="toggle-btn" data-type="DICTATION">
+                <iconify-icon icon="mdi:pencil"></iconify-icon>
+            </button>
+        </div>
+    </div>
+
+    <!--/* 내 순위 표시 */-->
+    <div class="my-rank-info">
+        <div class="rank-item speed-rank active">
+            <div class="rank-label">스피드퀴즈</div>
+            <div class="rank-value" id="my-speed-rank">-</div>
+        </div>
+        <div class="rank-item dictation-rank">
+            <div class="rank-label">받아쓰기</div>
+            <div class="rank-value" id="my-dictation-rank">-</div>
+        </div>
+    </div>
+
+    <!--/* 랭킹 리스트 */-->
+    <div class="tiny_list_component ranking_list_container show_scroll">
+        <!--/* 스피드퀴즈 랭킹 */-->
+        <div id="speed-ranking-list" class="ranking-list active"></div>
+
+        <!--/* 받아쓰기 랭킹 */-->
+        <div id="dictation-ranking-list" class="ranking-list"></div>
+    </div>
+
+    <!--/* 더보기 버튼 */-->
+    <div class="ranking-footer">
+        <a href="/ranking" class="btn small white view-more-btn">
+            전체 랭킹 보기
+            <iconify-icon icon="mdi:arrow-right"></iconify-icon>
+        </a>
+    </div>
+</th:block>
+</html>
+</html>
