@@ -19,15 +19,7 @@ $(document).ready(() => {
         hint2: '',      // 초성 힌트
         hint3: ''       // 첫 글자 힌트
     };
-
-    let sessionsInformation = {
-        dictationSessionNo: '', // 받아쓰기 세트 번호
-        correctScore: '', // 점수
-        correctCount: '', // 맞춘 개수
-        hintUsedCount: '', // 힌트 총 사용 개수
-        createdDate: '', // 세트 이력 생성일
-    }
-
+    
     // 받아쓰기 관련 요소
     const $dictationSpeakingComponent = $("#dictation-speaking-component"); // 문제, 힌트 제공 컴포넌트
     const dictationQuestionNo = $dictationSpeakingComponent.data("question-no"); // 해당 문제 식별 번호
@@ -390,31 +382,6 @@ $(document).ready(() => {
             alert('오답입니다.\n다음 문제로 이동합니다.');
         }
     }
-
-    // 받아쓰기 이력 컴포넌트에 쓸 데이터 가져오기
-    async function getResultSessionsApi(limit = 5) {
-        console.log("요청 시작: /api/dictation/result/sessions", limit);
-        try {
-            const response = await $.ajax({
-                url: '/api/dictation/result/sessions',
-                method: 'GET',
-                data: { limit },
-                dataType: 'json'
-            });
-
-            sessionsInformation = response.data;
-            return sessionsInformation;
-
-        } catch (error) {
-            console.error("에러 발생", error);
-        }
-    }
-
-    (async () => {
-        const arr = await getResultSessionsApi(5); // response.data가 배열
-        const s = Array.isArray(arr) ? arr[0] : arr;
-        console.log('first:', s);
-    })();
 
 }); // 정상적으로 닫히도록 추가함
 
