@@ -154,7 +154,7 @@ public class DictationController {
     @PostMapping("/use-hint")
     @ResponseBody
     public ResponseEntity<ApiResponse<Void>> useHint(
-        Integer hintNum,
+        @RequestParam("hintNum") Integer hintNum,
         @ModelAttribute("questionIndex") int questionIndex,
         @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
         @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
@@ -342,24 +342,24 @@ public class DictationController {
         return "dictation/result";
     }
 
-    /**
-     * 로그인한 사용자의 전체 받아쓰기 세트 결과 목록을 조회하여 뷰에 전달
-     * @param securityUser 현재 로그인한 사용자 정보
-     * @param model 결과 목록이 담길 모델
-     * @return 결과 목록을 보여주는 HTML (result-list.html)
-     */
-    @GetMapping("/results")
-    public String showAllResults(@AuthenticationPrincipal SecurityUser securityUser,
-        Model model) {
-        int userNo = securityUser.getUser().getUserNo();
-        log.info("사용자 번호: {}", userNo);
-        List<DictationSession> results = dictationService.getResultsByUserNo(userNo);
-        if (results == null) {
-            results = new ArrayList<>();
-        }
-        log.info("받아쓰기 결과 조회 완료 - 총 {}개 세트 반환", results.size());
-        model.addAttribute("results", results);
-        log.info("results: {}", results);
-        return "dictation/result-list";
-    }
+//    /**
+//     * 로그인한 사용자의 전체 받아쓰기 세트 결과 목록을 조회하여 뷰에 전달
+//     * @param securityUser 현재 로그인한 사용자 정보
+//     * @param model 결과 목록이 담길 모델
+//     * @return 결과 목록을 보여주는 HTML (result-list.html)
+//     */
+//    @GetMapping("/results")
+//    public String showAllResults(@AuthenticationPrincipal SecurityUser securityUser,
+//        Model model) {
+//        int userNo = securityUser.getUser().getUserNo();
+//        log.info("사용자 번호: {}", userNo);
+//        List<DictationSession> results = dictationService.getResultsByUserNo(userNo, limit);
+//        if (results == null) {
+//            results = new ArrayList<>();
+//        }
+//        log.info("받아쓰기 결과 조회 완료 - 총 {}개 세트 반환", results.size());
+//        model.addAttribute("results", results);
+//        log.info("results: {}", results);
+//        return "dictation/result-list";
+//    }
 }

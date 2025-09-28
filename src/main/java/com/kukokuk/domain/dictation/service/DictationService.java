@@ -20,6 +20,7 @@ import com.kukokuk.domain.exp.mapper.ExpMapper;
 import com.kukokuk.domain.exp.service.ExpProcessingService;
 import com.kukokuk.domain.exp.service.ExpService;
 import com.kukokuk.domain.exp.vo.ExpLog;
+import io.lettuce.core.Limit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -451,14 +452,6 @@ public class DictationService {
         }
     }
 
-    /**
-     * 받아쓰기 세트 조회
-     * @param userNo 사용자 번호
-     * @return 받아쓰기 세트
-     */
-    public List<DictationSession> getResultsByUserNo(int userNo) {
-        return dictationSessionMapper.getDictationSessionResultsByUserNo(userNo);
-    }
 
     /**
      * 받아쓰기 세트의 이력 조회
@@ -620,13 +613,30 @@ public class DictationService {
      */
     @Transactional
     public void insertSaveExpLog(int userNo, Integer dailyQuestNo) {
-        ExpProcessingDto dto = new ExpProcessingDto(
+        ExpProcessingDto expProcessingDto = new ExpProcessingDto(
             userNo,             // 사용자 번호
             "DICTATION",        // 컨텐츠 타입
             3,                  // contentNo(임시)
             50,                 // EXP(임시)
             dailyQuestNo        // 일일 도전과제 식별자 번호(없으면 null)
         );
-        expProcessingService.expProcessing(dto);
+        expProcessingService.expProcessing(expProcessingDto);
     }
+
+    /**
+     * 결과 이력 컴포넌트에 쓰일 받아쓰기 세트 조회
+     * @param userNo 사용자 번호
+     * @param limit 개수
+     * @return 받아쓰기 세트 결과
+     */
+    public List<DictationSession> getResultsSessionsByUserNo(int userNo, int limit) {
+        try {
+            return dictationSessionMapper.getDictationSessionResultsByUserNo(userNo, limit);
+        } catch (DataAccessException e) {
+            log.info("getResultsByUserNo 예외처리 실행");
+            throw new AppException("이력 컴포넌트를 불러오지 못했습니다");
+        }
+    }
+
+
 }

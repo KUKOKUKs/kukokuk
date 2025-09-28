@@ -3,6 +3,7 @@ package com.kukokuk.domain.dictation.mapper;
 import com.kukokuk.domain.dictation.vo.DictationSession;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface DictationSessionMapper {
@@ -24,7 +25,7 @@ public interface DictationSessionMapper {
    * @param userNo 사용자 번호
    * @return 받아쓰기 세트 결과 내용
    */
-  List<DictationSession> getDictationSessionResultsByUserNo(int userNo);
+  List<DictationSession> getDictationSessionResultsByUserNo(@Param("userNo") int userNo, @Param("limit") int limit);
 
 
   /**

@@ -12,9 +12,9 @@
                 <div class="component grid_list full_grid bg_primary color_white highlight">
                     <div class="component_title">
                         <th:block th:with="
-                                percent='${(summary.correctAnswers / summary.totalQuestion) * 100}',
+                                percent=${(summary.correctAnswers * 100) / summary.totalQuestion },
                                 resultMsg=${
-                                    percent == 10 ? '완벽, 받아쓰기의 끝판왕 👑' :
+                                    percent == 100 ? '완벽, 받아쓰기의 끝판왕 👑' :
                                     percent >= 90 ? '감 잡았어! 집중력 최고 🔥' :
                                     percent >= 70 ? '흐름 탔어! 바로 다시 가보자 🚀' :
                                     percent >= 50 ? '이제부터 시작이지! ⚡' :
@@ -76,6 +76,14 @@
             <a href="/quiz" class="btn">국어 놀이터로</a>
             <a href="/" class="btn white">마당으로</a>
             <a href="/dictation/start" class="btn primary">다시 도전!</a>
+        </div>
+
+        <div id="sessions-check" style="padding:12px;border:1px dashed #bbb;border-radius:8px;margin:12px 0;font-size:14px;line-height:1.6;">
+            <div><strong>세트번호</strong> : <span id="v-dictationSessionNo">-</span></div>
+            <div><strong>점수</strong> : <span id="v-correctScore">-</span></div>
+            <div><strong>맞춘 개수</strong> : <span id="v-correctCount">-</span></div>
+            <div><strong>힌트 총 사용</strong> : <span id="v-hintUsedCount">-</span></div>
+            <div><strong>생성일</strong> : <span id="v-createdDate">-</span></div>
         </div>
     </div>
 </div>
