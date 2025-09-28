@@ -54,4 +54,5 @@ public interface QuizSessionSummaryMapper {
      * @return 전체 세션 수
      */
     int getTotalSessionCount();
+
 }
