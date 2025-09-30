@@ -54,7 +54,7 @@ public class GroupController {
      * @param groupNo 교사 전용: 현재 선택할 그룹 번호 (nullable)
      * @param securityUser 로그인 사용자 정보
      * @param redirectAttributes redirect 시 Flash 메시지 전달
-     * @param model 뷰에 전달할 데이터 (groups, myGroup, currentGroup, teacherGroups)
+     * @param model 뷰에 전달할 데이터
      * @return group/main 템플릿
      */
     @GetMapping
