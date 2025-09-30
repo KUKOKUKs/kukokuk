@@ -46,7 +46,7 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     /*
-        스프링 기본 인터페이스로 
+        스프링 기본 인터페이스로
         현재 활성화된 프로파일 등 환경설정을 담은 Environment 객체를 자동으로 주입
      */
     private final Environment environment;
@@ -109,6 +109,7 @@ public class SecurityConfig {
                         , "/js/**"                      // javascript
                         , "/images/**"                  // 정적 이미지 경로
                     ).permitAll();
+                auth.requestMatchers("/api/twenty/**").permitAll();  // 웹소켓 REST API 요청 일단 허용.
 
                 // DevTools, 브라우저 프록시 확장기능 요청 시 허용(개발환경만 적용)
                 // 개발환경(dev)에서만 허용할 경로
@@ -165,7 +166,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-
 
 
 

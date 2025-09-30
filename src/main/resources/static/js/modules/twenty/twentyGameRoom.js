@@ -28,7 +28,8 @@ let visualTimer = null; // 화면 타이머 ID를 저장할 전역 변수
 
 // WebSocket 연결
 function connectWebSocket() {
-    const socket = new SockJS('wsUrl');
+    console.log("ws: ", wsUrl);
+    const socket = new SockJS('http://localhost:8081/ws');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
