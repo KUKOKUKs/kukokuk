@@ -144,4 +144,19 @@ $(document).ready(function () {
             $groupSearchToggleInfo.addClass("search_on");
         }
     });
+
+    // 그룹 생성/수정/삭제 모달창 열기
+    const $modalGruopEditBtn = $(".modal_gruop_edit_btn"); // 모달창 열기 버튼
+    const $modalGroupEdit = $("#modal-group-edit"); // 모달창
+    $modalGruopEditBtn.click(function () {
+        if ($modalGroupEdit.length) {
+            // 해당 모달창 요소가 있을 경우 열기
+            $modalGroupEdit.show();
+
+            // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+            setTimeout(() => {
+                $modalGroupEdit.addClass("open");
+            }, 10);
+        }
+    });
 });

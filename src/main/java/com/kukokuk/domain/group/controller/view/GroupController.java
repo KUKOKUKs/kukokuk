@@ -96,6 +96,7 @@ public class GroupController {
         if (memberGroupNo != null) {
             myGroup = groupService.getGroupByGroupNo(memberGroupNo);
             myGroupTwentyRooms = twentyService.getRecentTodayTwentyRoomListByGroupNo(memberGroupNo, 3);
+            myGroupActiveRoomNo = twentyService.getRoomNoByRoomList(myGroupTwentyRooms);
         }
         model.addAttribute("myGroup", myGroup);
         model.addAttribute("myGroupTwentyRooms", myGroupTwentyRooms);
@@ -105,7 +106,7 @@ public class GroupController {
         List<Group> teacherGroups = Collections.emptyList(); // 교사가 소유한 그룹
 
         // 현재 선택된 그룹, 그룹의 스무고개 방 리스트 최근 3건
-        Group currentGruop = null;
+        Group currentGroup = null;
         List<TwentyRoom> currentGroupTwentyRooms = Collections.emptyList();
         Integer currentGroupActiveRoomNo = null; // 그룹의 스무고개 방을 생성했을 경우 방 번호
 
@@ -121,7 +122,7 @@ public class GroupController {
             } else {
                 if (groupNo == null) {
                     // groupNo가 없을 경우 최신 그룹 fallback
-                    currentGruop = teacherGroups.get(0);
+                    currentGroup = teacherGroups.get(0);
                 } else {
                     // groupNo가 있을 경우 소유 그룹인지 확인
                     Optional<Group> owned = teacherGroups.stream()
@@ -135,15 +136,16 @@ public class GroupController {
                     }
 
                     // 소유한 그룹이 있다면
-                    currentGruop = owned.get();
+                    currentGroup = owned.get();
                 }
 
                 // teacherGroups에서 currentGroup 제거(사용하기 적합하게 가공)
-                int currentGroupNo = currentGruop.getGroupNo();
+                int currentGroupNo = currentGroup.getGroupNo();
                 teacherGroups = teacherGroups.stream()
                     .filter(group -> !Objects.equals(group.getGroupNo(), currentGroupNo))
                     .toList();
                 currentGroupTwentyRooms = twentyService.getRecentTodayTwentyRoomListByGroupNo(currentGroupNo, 3);
+                currentGroupActiveRoomNo = twentyService.getRoomNoByRoomList(currentGroupTwentyRooms);
             }
         } else {
             // 일반 사용자면서 groupNo가 넘어온 경우(잘못된 접근)
@@ -153,7 +155,7 @@ public class GroupController {
             }
         }
 
-        model.addAttribute("currentGruop", currentGruop);
+        model.addAttribute("currentGroup", currentGroup);
         model.addAttribute("teacherGroups", teacherGroups);
         model.addAttribute("currentGroupTwentyRooms", currentGroupTwentyRooms);
         model.addAttribute("currentGroupActiveRoomNo", currentGroupActiveRoomNo);

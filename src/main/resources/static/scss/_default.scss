@@ -771,6 +771,15 @@
     }
 }
 
+.input_checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--tinyGap);
+    color: var(--grayColor);
+    font-size: var(--smallFontSize);
+    padding: 0 var(--tinyGap);
+}
+
 .input_description {
     width: 100%;
     font-size: var(--subFontSize);
@@ -811,7 +820,7 @@
 /* tab content */
 .tab_btn_list {
     width: 100%;
-    background-color: var(--subColor);
+    background-color: #fff;
     display: flex;
     align-items: center;
     border-radius: var(--bdrs) var(--bdrs) 0 0;
@@ -837,7 +846,7 @@
             display: none;
             width: calc(100% + (var(--bdrs) * 4));
             height: calc(var(--bdrs) * 2);
-            background-color: #fff;
+            background-color: var(--subColor);
             position: absolute;
             bottom: -1px;
             left: 50%;
@@ -849,7 +858,7 @@
                 display: block;
                 width: calc(var(--bdrs) * 2);
                 height: calc(var(--bdrs) * 2);
-                background-color: var(--subColor);
+                background-color: #fff;
                 border-width: 0 1px 1px 0;
                 border-style: solid;
                 border-color: var(--borderColor);
@@ -865,7 +874,7 @@
                 display: block;
                 width: calc(var(--bdrs) * 2);
                 height: calc(var(--bdrs) * 2);
-                background-color: var(--subColor);
+                background-color: #fff;
                 border-width: 0 0 1px 1px;
                 border-style: solid;
                 border-color: var(--borderColor);
@@ -880,7 +889,7 @@
         &.selected {
             font-weight: bold;
             color: var(--primaryColor);
-            background-color: #fff;
+            background-color: var(--subColor);
             border-bottom-color: transparent;
             border-left: var(--baseBorder);
             border-radius: var(--bdrs) var(--bdrs) 0 0;
@@ -922,6 +931,10 @@
     .input_info:first-child {
         border-radius: 0;
         border-top: none;
+
+        &:has(input:focus)::after {
+            border-radius: 0;
+        }
     }
 
     .input_info.one_input {
@@ -942,7 +955,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1;
+    z-index: 3;
 
     .modal_container {
         width: var(--modalWidth);
@@ -986,7 +999,6 @@
 
         .modal_info {
             width: 100%;
-            min-height: var(--modalHeight);
             max-height: var(--modalHeight);
             padding: var(--modalPadding);
             justify-content: space-between;
@@ -1011,10 +1023,6 @@
                     left: 0;
                     bottom: 0;
                 }
-            }
-
-            &.small {
-                min-height: var(--modalSmallHeight);
             }
         }
     }
@@ -1399,6 +1407,18 @@
     padding: 0 !important;
 }
 
+.pl_0 {
+    padding-left: 0 !important;
+}
+
+.pt_tiny {
+    padding-top: var(--tinyGap) !important;
+}
+
+.pb_tiny {
+    padding-bottom: var(--tinyGap) !important;
+}
+
 .pb_0 {
     padding-bottom: 0 !important;
 }
@@ -1414,6 +1434,10 @@
 
 .pt_base {
     padding-top: var(--basePadding) !important;
+}
+
+.pb_base {
+    padding-bottom: var(--basePadding) !important;
 }
 
 /* 테두리 */

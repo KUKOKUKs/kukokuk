@@ -81,7 +81,7 @@ del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
 b, u, i, center,
 dl, dt, dd, ol, ul, li,
-fieldset, form, input, button, label, legend,
+fieldset, form, input, select, button, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
@@ -113,10 +113,15 @@ input {
     background-color: transparent;
 }
 
+input[type=checkbox] {
+    width: max-content;
+    margin-top: 3px;
+}
+
 select {
     width: 100%;
     height: 100%;
-    padding: 0 15px;
+    padding: 0 30px;
     border: none;
     outline: none;
     -webkit-appearance: none;
