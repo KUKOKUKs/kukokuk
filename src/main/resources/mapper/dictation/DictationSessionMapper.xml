@@ -57,6 +57,7 @@
    * @param userNo 사용자 번호
    * @return 받아쓰기 세트 결과 내용
    */
+  List<DictationSession> getDictationSessionResultsByUserNo(@Param("userNo") int userNo, @Param("limit") int limit);
   -->
   <select id="getDictationSessionResultsByUserNo" resultMap="DictationSessionResultMap">
     SELECT
@@ -73,6 +74,7 @@
       USER_NO = #{userNo}
     ORDER BY
       CREATED_DATE DESC
+      LIMIT #{limit}
   </select>
 
   <!--

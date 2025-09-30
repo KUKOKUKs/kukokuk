@@ -2,6 +2,8 @@ package com.kukokuk.domain.history.controller.api;
 
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
+import com.kukokuk.domain.dictation.service.DictationService;
+import com.kukokuk.domain.dictation.vo.DictationSession;
 import com.kukokuk.domain.history.dto.GameHistoryDto;
 import com.kukokuk.domain.history.service.GameHistoryService;
 import com.kukokuk.security.SecurityUser;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiHistoryController {
 
     private final GameHistoryService gameHistoryService;
+    private final DictationService dictationService;
     /**
      * 스피드 퀴즈 최근 이력 조회
      */
@@ -52,5 +55,23 @@ public class ApiHistoryController {
         return ResponseEntityUtils.ok(historyList);
     }
 
+    /**
+     * 받아쓰기 세트 결과 조회
+     * @param limit 조회 개수(최대 5개)
+     * @param securityUser 사용자
+     * @return 받아쓰기 세트 결과
+     */
+    @GetMapping("/widget/recent/dictation")
+    public ResponseEntity<ApiResponse<List<DictationSession>>> getResultDictationHistory(
+        @RequestParam(defaultValue = "5") int limit,
+        @AuthenticationPrincipal SecurityUser securityUser) {
+
+        int userNo = securityUser.getUser().getUserNo();
+
+        List<DictationSession> dictationHistoryList = dictationService.getResultsSessionsByUserNo(userNo, limit);
+        log.info("이력 컴포넌트 조회 성공 - 사용자 번호 : {}, 개수: {}", userNo, limit);
+
+        return ResponseEntityUtils.ok(dictationHistoryList);
+    }
 
 }

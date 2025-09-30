@@ -8,6 +8,7 @@ import com.kukokuk.domain.dictation.dto.DictationResultSummaryDto;
 import com.kukokuk.domain.dictation.service.DictationService;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationSession;
+import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.security.SecurityUser;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,23 +38,24 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class DictationController {
 
     private final DictationService dictationService;
+    private final UserService userService;
 
-    @ModelAttribute("dictationQuestions")
+    final @ModelAttribute("dictationQuestions")
     public List<DictationQuestion> initQuestions() {
         return new ArrayList<>();
     }
 
-    @ModelAttribute("dictationQuestionLogDto")
-    public List<DictationQuestionLogDto> initQuestionLogs() {
+    final @ModelAttribute("dictationQuestionLogDto")
+    public  List<DictationQuestionLogDto> initQuestionLogs() {
         return new ArrayList<>();
     }
 
     @ModelAttribute("startDate")
-    public Date initStartDate() {
+    public final Date initStartDate() {
         return new Date();
     }
 
-    @ModelAttribute("questionIndex")
+    final @ModelAttribute("questionIndex")
     public int initQuestionIndex() {
         return 0;
     }
@@ -137,8 +139,6 @@ public class DictationController {
         // 뷰로 전달(triesLeft는 화면 표시용 1회성 값으로 세션과 db와 관련 없음)
         model.addAttribute("triesLeft", triesLeft);
 
-        // 힌트 사용 여부
-
         log.info("[/solve] 문제번호: {}, tryCount: {}, triesLeft: {}",
             currentQuestion.getDictationQuestionNo(), tryCount, triesLeft);
 
@@ -154,20 +154,26 @@ public class DictationController {
     @PostMapping("/use-hint")
     @ResponseBody
     public ResponseEntity<ApiResponse<Void>> useHint(
-        Integer hintNum,
+        @RequestParam("hintNum") Integer hintNum,
         @ModelAttribute("questionIndex") int questionIndex,
         @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
-        @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions
+        @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
+        @AuthenticationPrincipal SecurityUser securityUser
     ) {
         log.info("[/use-hint] 실행 - questionIndex: {}", questionIndex);
+
+        //int userNo = securityUser.getUser().getUserNo();
 
         // 현재 문제만 힌트 사용 처리
         DictationQuestionLogDto dto = dictationQuestionLogDtoList.get(questionIndex);
         dto.setUsedHint("Y");
 
         dictationQuestions.get(questionIndex).setUsedHintNum(hintNum);
-
         log.info("[/use-hint] index: {}, usedHint: Y", questionIndex);
+
+        // 힌트 사용 시 유저 힌트 수 -1 차감
+        // userService.updateUserHintCountMinus(userNo);
+
         return ResponseEntityUtils.ok("힌트 사용 완료");
     }
 
@@ -322,37 +328,38 @@ public class DictationController {
         log.info("받아쓰기 결과 페이지 이동 - dictationSession: {}", dictationSessionNo);
 
         int userNo = securityUser.getUser().getUserNo();
+        log.info("사용자 번호: {}", userNo);
 
         DictationSession dictationSession = dictationService.getDictationSessionByDictationSessionNo(dictationSessionNo);
 
         model.addAttribute("correctScore", dictationSession.getCorrectScore());
 
         // 결과 페이지 전달될 데이터 담기
-        DictationResultSummaryDto summary = dictationService.getDictationResultSummaryDto(dictationSession, dictationQuestions, userNo, dictationSessionNo);
+        DictationResultSummaryDto summary = dictationService.getDictationResultSummaryDto(dictationSession, userNo, dictationSessionNo);
         model.addAttribute("summary", summary);
         model.addAttribute("results", summary.getResults());
 
         return "dictation/result";
     }
 
-    /**
-     * 로그인한 사용자의 전체 받아쓰기 세트 결과 목록을 조회하여 뷰에 전달
-     * @param securityUser 현재 로그인한 사용자 정보
-     * @param model 결과 목록이 담길 모델
-     * @return 결과 목록을 보여주는 HTML (result-list.html)
-     */
-    @GetMapping("/results")
-    public String showAllResults(@AuthenticationPrincipal SecurityUser securityUser,
-        Model model) {
-        int userNo = securityUser.getUser().getUserNo();
-        log.info("사용자 번호: {}", userNo);
-        List<DictationSession> results = dictationService.getResultsByUserNo(userNo);
-        if (results == null) {
-            results = new ArrayList<>();
-        }
-        log.info("받아쓰기 결과 조회 완료 - 총 {}개 세트 반환", results.size());
-        model.addAttribute("results", results);
-        log.info("results: {}", results);
-        return "dictation/result-list";
-    }
+//    /**
+//     * 로그인한 사용자의 전체 받아쓰기 세트 결과 목록을 조회하여 뷰에 전달
+//     * @param securityUser 현재 로그인한 사용자 정보
+//     * @param model 결과 목록이 담길 모델
+//     * @return 결과 목록을 보여주는 HTML (result-list.html)
+//     */
+//    @GetMapping("/results")
+//    public String showAllResults(@AuthenticationPrincipal SecurityUser securityUser,
+//        Model model) {
+//        int userNo = securityUser.getUser().getUserNo();
+//        log.info("사용자 번호: {}", userNo);
+//        List<DictationSession> results = dictationService.getResultsByUserNo(userNo, limit);
+//        if (results == null) {
+//            results = new ArrayList<>();
+//        }
+//        log.info("받아쓰기 결과 조회 완료 - 총 {}개 세트 반환", results.size());
+//        model.addAttribute("results", results);
+//        log.info("results: {}", results);
+//        return "dictation/result-list";
+//    }
 }
