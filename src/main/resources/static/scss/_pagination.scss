@@ -16,14 +16,22 @@
         box-sizing: content-box;
         transition: background-color var(--trst);
 
-        &.current {
-            color: var(--blueColor);
-            transform: scale(1.12);
-        }
-
         &:hover:not(.current) {
             color: var(--blackColor);
             background-color: var(--lightGrayColor);
         }
+    }
+
+    /* 버튼 이벤트로 다른 독립 클래스 사용 */
+    .current {
+        display: inline-block;
+        min-width: var(--fixEtcSmallFontSize);
+        font-size: var(--fixEtcSmallFontSize);
+        line-height: 1;
+        text-align: center;
+        padding: var(--tinyPadding);
+        box-sizing: content-box;
+        color: var(--blueColor);
+        transform: scale(1.12);
     }
 }

@@ -5,6 +5,7 @@ import com.kukokuk.common.exception.BadRequestException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -55,12 +56,18 @@ public class ControllerExceptionHandler {
         return buildErrorPage(response, model, 400, "Bad Request", "입력 값이 올바르지 않습니다." + ex.getMessage());
     }
 
+    // 인가 실패
+    @ExceptionHandler(AccessDeniedException.class)
+    public String handleAccessDenied(AccessDeniedException ex, HttpServletResponse response,
+        Model model) {
+        return buildErrorPage(response, model, 403, "Access Denied", "접근 권한이 없습니다.: " + ex.getMessage());
+    }
+
     // 범용 요청값 오류 처리
     @ExceptionHandler(BadRequestException.class)
     public String handleBadRequest(BadRequestException ex, HttpServletResponse response,
         Model model) {
         return buildErrorPage(response, model, 400, "Bad Request", "요청값이 올바르지 않습니다." + ex.getMessage());
     }
-
 
 }

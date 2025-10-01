@@ -145,7 +145,7 @@ export function setPagination(paging, $parentElement) {
                 // 현재 페이지인 버튼
                 $paging.append(`
                     <li class="page_btn">
-                        <span class="page_link current">${num}</span>
+                        <span class="current">${num}</span>
                     </li>
                 `);
             }

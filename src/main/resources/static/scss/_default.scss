@@ -260,7 +260,7 @@
 .grid_list_component {
     display: grid;
     grid-template-columns: repeat(var(--cols, 3), 1fr); /* --cols 없으면 3분할로 기본값 적용 */
-    gap: var(--smallGap);
+    gap: var(--tinyGap);
 
     /* 리스트가 1개일 때 → 전체 차지 */
     &:has(.grid_list:first-child:last-child) {
@@ -771,6 +771,15 @@
     }
 }
 
+.input_checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--tinyGap);
+    color: var(--grayColor);
+    font-size: var(--smallFontSize);
+    padding: 0 var(--tinyGap);
+}
+
 .input_description {
     width: 100%;
     font-size: var(--subFontSize);
@@ -811,7 +820,7 @@
 /* tab content */
 .tab_btn_list {
     width: 100%;
-    background-color: var(--subColor);
+    background-color: #fff;
     display: flex;
     align-items: center;
     border-radius: var(--bdrs) var(--bdrs) 0 0;
@@ -837,7 +846,7 @@
             display: none;
             width: calc(100% + (var(--bdrs) * 4));
             height: calc(var(--bdrs) * 2);
-            background-color: #fff;
+            background-color: var(--subColor);
             position: absolute;
             bottom: -1px;
             left: 50%;
@@ -849,7 +858,7 @@
                 display: block;
                 width: calc(var(--bdrs) * 2);
                 height: calc(var(--bdrs) * 2);
-                background-color: var(--subColor);
+                background-color: #fff;
                 border-width: 0 1px 1px 0;
                 border-style: solid;
                 border-color: var(--borderColor);
@@ -865,7 +874,7 @@
                 display: block;
                 width: calc(var(--bdrs) * 2);
                 height: calc(var(--bdrs) * 2);
-                background-color: var(--subColor);
+                background-color: #fff;
                 border-width: 0 0 1px 1px;
                 border-style: solid;
                 border-color: var(--borderColor);
@@ -880,7 +889,7 @@
         &.selected {
             font-weight: bold;
             color: var(--primaryColor);
-            background-color: #fff;
+            background-color: var(--subColor);
             border-bottom-color: transparent;
             border-left: var(--baseBorder);
             border-radius: var(--bdrs) var(--bdrs) 0 0;
@@ -922,6 +931,10 @@
     .input_info:first-child {
         border-radius: 0;
         border-top: none;
+
+        &:has(input:focus)::after {
+            border-radius: 0;
+        }
     }
 
     .input_info.one_input {
@@ -942,7 +955,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1;
+    z-index: 3;
 
     .modal_container {
         width: var(--modalWidth);
@@ -986,7 +999,6 @@
 
         .modal_info {
             width: 100%;
-            min-height: var(--modalHeight);
             max-height: var(--modalHeight);
             padding: var(--modalPadding);
             justify-content: space-between;
@@ -1011,10 +1023,6 @@
                     left: 0;
                     bottom: 0;
                 }
-            }
-
-            &.small {
-                min-height: var(--modalSmallHeight);
             }
         }
     }
@@ -1113,12 +1121,16 @@
 }
 
 /*
-    일반/구릅 전용 토글 버튼(범용성으로 사용하지 않음) 기본값 off
-    <div class="group_toggle_btn">
+    스위치 토글 버튼 기본값 before
+    on 클래스 추가 시 after
+    * switch_toggle_btn에 id를 붙여 js로 각 콘텐츠별 컨트롤
+    <div class="switch_toggle_btn"
+        data-before="일반"
+        data-after="우리반">
         <div class="toggle_switch"></div>
     </div>
 */
-.group_toggle_btn {
+.switch_toggle_btn {
     display: inline-grid;
     grid-template-columns: 1fr 1fr;
     margin-left: auto; /* 보통 우측에 사용되어지므로 flex 요소 내부에 있을 경우 우측 위치 시킴 */
@@ -1144,14 +1156,14 @@
     }
 
     &::before {
-        content: "일반";
+        content: attr(data-before);
         font-weight: bold;
         color: var(--primaryColor);
         grid-column: 1; // 왼쪽 칸 명시
     }
 
     &::after {
-        content: "우리반";
+        content: attr(data-after);
         font-weight: normal;
         color: var(--grayColor);
         grid-column: 2; // 오른쪽 칸 명시
@@ -1381,12 +1393,30 @@
     height: 100%;
 }
 
-.max_content {
+.w_max_content {
     min-width: max-content;
+    max-width: max-content;
+}
+
+.h_max_content {
+    min-height: max-content;
+    max-height: max-content;
 }
 
 .pd_0 {
     padding: 0 !important;
+}
+
+.pl_0 {
+    padding-left: 0 !important;
+}
+
+.pt_tiny {
+    padding-top: var(--tinyGap) !important;
+}
+
+.pb_tiny {
+    padding-bottom: var(--tinyGap) !important;
 }
 
 .pb_0 {
@@ -1404,6 +1434,10 @@
 
 .pt_base {
     padding-top: var(--basePadding) !important;
+}
+
+.pb_base {
+    padding-bottom: var(--basePadding) !important;
 }
 
 /* 테두리 */
@@ -1488,6 +1522,10 @@
 
 .bold {
     font-weight: bold !important;
+}
+
+.normal {
+    font-weight: normal !important;
 }
 
 .color_primary {

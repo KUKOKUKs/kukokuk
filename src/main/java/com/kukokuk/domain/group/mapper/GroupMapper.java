@@ -9,6 +9,20 @@ import org.apache.ibatis.annotations.Mapper;
 public interface GroupMapper {
 
     /**
+     * 그룹 번호로 그룹 정보 조회
+     * @param groupNo 그룹 번호
+     * @return 그룹 정보
+     */
+    Group getGroupByGroupNo(int groupNo);
+
+    /**
+     * 사용자 번호로 그룹 목록 정보 조회
+     * @param teacherNo 사용자 번호(교사권한)
+     * @return 그룹 목록 정보(최신순)
+     */
+    List<Group> getTeacherGroups(int teacherNo);
+
+    /**
      * 조건에 맞는 그룹 목록 조회
      * @param condition 조회할 데이터의 조건 값들이 담겨 있는 Map 객체
      * @return 그룹 목록 정보

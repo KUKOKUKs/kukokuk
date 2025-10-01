@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<div th:fragment="modal-group-edit-fragment(currentGroup, teacherGroups)"
+     id="modal-group-edit"
+     class="modal_wrap">
+    <div id="modal_dimmed" class="dimmed modal_close"></div>
+    <div class="modal_container">
+        <div class="modal_top">
+            <p class="modal_title" th:text="|우리반 (${teacherGroups.size()}/5)|">우리반 (0/5)</p>
+            <button type="button" class="modal_close_btn modal_close">
+                <iconify-icon icon="basil:cancel-outline"></iconify-icon>
+            </button>
+        </div>
+
+        <!--/* modal content */-->
+        <div class="modal_info form_wrap">
+            <div class="form_input_list">
+                <!--/* 교사가 생성할 수 있는 최대 그룹수 5개 */-->
+                <div class="tab_btn_list">
+                    <button th:if="${teacherGroups.size() < 5}"
+                            type="button"
+                            class="tab_btn selected">만들기<span class="active"></span></button>
+
+                    <th:block th:if="${currentGroup != null}">
+                        <button type="button"
+                                class="tab_btn"
+                                th:classappend="${teacherGroups.size() >= 5 ? 'selected' : ''}">수정<span class="active"></span></button>
+                        <button type="button"
+                                class="tab_btn">삭제<span class="active"></span></button>
+                    </th:block>
+                </div>
+
+                <!--/* 만들기 */-->
+                <form th:if="${teacherGroups.size() < 5}"
+                      id="create-group-form"
+                      class="tab_content selected"
+                      method="post"
+                      action="">
+                    <div>
+                        <div class="input_info">
+                            <input type="text" id="create-group-title" name="title" placeholder=" ">
+                            <label for="create-group-title" class="input_title"><span class="color_red">*</span>우리반 이름</label>
+                        </div>
+                        <div class="input_info">
+                            <input type="text" id="create-group-motto" name="motto" placeholder=" ">
+                            <label for="create-group-motto" class="input_title">급훈</label>
+                        </div>
+                        <div class="input_info">
+                            <input type="password" id="create-group-password" name="password" autocomplete="new-password" placeholder=" ">
+                            <label for="create-group-password" class="input_title">비밀번호 설정 시 비공개 반</label>
+                        </div>
+                    </div>
+
+                    <div class="modal_explanation_info pt_base pb_base">
+                        <div class="modal_explanation">
+                            <p class="explanation">우리반은 최대 5개 반까지 만들 수 있습니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="btn_list">
+                        <button type="button" class="btn white modal_close">취소</button>
+                        <button type="submit" id="create-group-btn" class="btn primary disabled">만들기</button>
+                    </div>
+                </form>
+
+                <!--/* 수정 */-->
+                <form th:if="${currentGroup != null}"
+                      id="modify-group-form"
+                      class="tab_content"
+                      th:classappend="${teacherGroups.size() >= 5 ? 'selected' : ''}"
+                      method="post"
+                      action="">
+                    <input type="hidden" name="groupNo" th:value="${currentGroup.groupNo}">
+
+                    <div>
+                        <div class="input_info">
+                            <input type="text" id="modify-group-title" name="title" placeholder=" " th:value="${currentGroup.title}">
+                            <label for="modify-group-title" class="input_title"><span class="color_red">*</span>우리반 이름</label>
+                        </div>
+                        <div class="input_info">
+                            <input type="text" id="modify-group-motto" name="motto" placeholder=" " th:value="${currentGroup.motto}" autocomplete="off">
+                            <label for="modify-group-motto" class="input_title">급훈</label>
+                        </div>
+                        <div class="input_info">
+                            <input type="password" id="modify-group-password" name="password" autocomplete="new-password" placeholder=" ">
+                            <label for="modify-group-password" class="input_title">비밀번호 설정 시 비공개 반</label>
+                        </div>
+                    </div>
+
+                    <label class="input_checkbox pt_tiny">
+                        <input type="checkbox" name="delete_password">
+                        비밀번호 지우기(공개반으로 변경)
+                    </label>
+
+                    <div class="modal_explanation_info pt_base pb_base">
+                        <div class="modal_explanation">
+                            <p class="explanation">기존 비밀번호를 등록/변경 할 경우만 비밀번호를 입력해 주세요. 기존 비밀번호를 유지할 경우 입력하지 마세요.</p>
+                        </div>
+                    </div>
+
+                    <div class="btn_list">
+                        <button type="button" class="btn white modal_close">취소</button>
+                        <button type="submit" id="modify-group-btn" class="btn primary disabled">수정</button>
+                    </div>
+                </form>
+
+                <!--/* 삭제 */-->
+                <form th:if="${currentGroup != null}"
+                      id="delete-group-form"
+                      class="tab_content"
+                      method="post"
+                      action="">
+                    <input type="hidden" name="groupNo" th:value="${currentGroup.groupNo}">
+
+                    <div class="input_info one_input pd_base h_max_content">
+                        <p class="d_flex align_center tiny_gap bold color_primary pb_tiny">
+                            [<span class="text_ellipsis" th:text="${currentGroup.title}">선택된 우리반 이름</span>]
+                        </p>
+                        <p>반 삭제 시 등록한 우리반 학습 자료, 우리반 가입자, 우리반 스무고개 등 복구가 불가능 합니다.</p>
+                    </div>
+
+                    <label class="input_checkbox pt_tiny pb_base sub_font bold color_black">
+                        <input type="checkbox" name="delete_group">
+                        그래도 삭제하시겠습니까?
+                    </label>
+
+                    <div class="btn_list">
+                        <button type="button" class="btn white modal_close">취소</button>
+                        <button type="submit" id="delete-group-btn" class="btn primary disabled">삭제</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
