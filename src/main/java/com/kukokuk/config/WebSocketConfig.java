@@ -1,3 +1,4 @@
+/*
 package com.kukokuk.config;
 
 import java.security.Principal;
@@ -44,3 +45,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     registry.setUserDestinationPrefix("/user");
   }
 }
+*/

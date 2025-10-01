@@ -79,6 +79,10 @@ dependencies {
 	//WebSocket 및 STOMP 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+	// Redis 세션 저장소 (Spring Session)
+	implementation 'org.springframework.session:spring-session-data-redis'
+
+
 }
 
 tasks.named('test') {

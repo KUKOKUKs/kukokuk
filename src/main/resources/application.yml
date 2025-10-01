@@ -42,3 +42,6 @@ mybatis:
 
     # MyBatis 로그 출력 방식 (log4j2 사용)
     log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl
+#WebSocket 주소
+ws:
+  url: "http://localhost:8081/ws"
