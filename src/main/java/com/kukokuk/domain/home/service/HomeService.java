@@ -1,11 +1,15 @@
 package com.kukokuk.domain.home.service;
 
+import com.kukokuk.common.exception.AppException;
 import com.kukokuk.common.store.RedisJobStatusStore;
 import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
+import com.kukokuk.domain.study.dto.UserStudyRecommendationDto;
 import com.kukokuk.domain.study.service.StudyService;
+import com.kukokuk.domain.user.vo.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -73,7 +77,7 @@ public class HomeService {
 //            });
 //
 //            log.error("맞춤 학습자료 생성 실패: {}", e.getMessage(), e);
-//            
+//
 //            // @Async 비동기 처리로 최초 요청시에 클라이언트에서 예외상황을 알 수 없음
 //            throw new AppException("맞춤 학습자료 생성에 실패하였습니다.: " + e.getMessage());
 //        }
