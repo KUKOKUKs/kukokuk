@@ -38,28 +38,36 @@
                       action="">
                     <div>
                         <div class="input_info">
-                            <input type="text" id="create-group-title" name="title" placeholder=" ">
+                            <input type="text" id="create-group-title" name="title" maxlength="20" placeholder=" ">
                             <label for="create-group-title" class="input_title"><span class="color_red">*</span>우리반 이름</label>
                         </div>
                         <div class="input_info">
-                            <input type="text" id="create-group-motto" name="motto" placeholder=" ">
+                            <input type="text" id="create-group-motto" name="motto" maxlength="20" placeholder=" ">
                             <label for="create-group-motto" class="input_title">급훈</label>
                         </div>
                         <div class="input_info">
-                            <input type="password" id="create-group-password" name="password" autocomplete="new-password" placeholder=" ">
-                            <label for="create-group-password" class="input_title">비밀번호 설정 시 비공개 반</label>
+                            <input type="password"
+                                   id="create-group-password"
+                                   class="only_digit"
+                                   name="password"
+                                   autocomplete="new-password"
+                                   maxlength="4"
+                                   placeholder=" ">
+                            <label for="create-group-password" class="input_title">숫자 4자리</label>
                         </div>
                     </div>
 
                     <div class="modal_explanation_info pt_base pb_base">
-                        <div class="modal_explanation">
+                        <div class="modal_explanation column tiny_gap">
                             <p class="explanation">우리반은 최대 5개 반까지 만들 수 있습니다.</p>
+                            <p class="explanation">이름과 급훈은 최대 20자까지 입력할 수 있습니다.</p>
+                            <p class="explanation">비밀번호 설정 시 비공개 반으로 생성됩니다.</p>
                         </div>
                     </div>
 
                     <div class="btn_list">
                         <button type="button" class="btn white modal_close">취소</button>
-                        <button type="submit" id="create-group-btn" class="btn primary disabled">만들기</button>
+                        <button type="submit" id="create-group-btn" class="btn primary">만들기</button>
                     </div>
                 </form>
 
@@ -93,14 +101,15 @@
                     </label>
 
                     <div class="modal_explanation_info pt_base pb_base">
-                        <div class="modal_explanation">
-                            <p class="explanation">기존 비밀번호를 등록/변경 할 경우만 비밀번호를 입력해 주세요. 기존 비밀번호를 유지할 경우 입력하지 마세요.</p>
+                        <div class="modal_explanation column tiny_gap">
+                            <p class="explanation">기존 비밀번호를 등록/변경 할 경우만 비밀번호를 입력해 주세요.</p>
+                            <p class="explanation">기존 비밀번호를 유지할 경우 입력하지 마세요.</p>
                         </div>
                     </div>
 
                     <div class="btn_list">
                         <button type="button" class="btn white modal_close">취소</button>
-                        <button type="submit" id="modify-group-btn" class="btn primary disabled">수정</button>
+                        <button type="submit" id="modify-group-btn" class="btn primary">수정</button>
                     </div>
                 </form>
 
@@ -126,7 +135,7 @@
 
                     <div class="btn_list">
                         <button type="button" class="btn white modal_close">취소</button>
-                        <button type="submit" id="delete-group-btn" class="btn primary disabled">삭제</button>
+                        <button type="submit" id="delete-group-btn" class="btn primary">삭제</button>
                     </div>
                 </form>
             </div>

@@ -235,7 +235,7 @@
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
 
         <!--/* 교사이면서 소유한 그룹이 없을 경우 */-->
-        <div th:if="${isTeacher && teacherGroups.size() == 0}"
+        <div th:if="${isTeacher && currentGroup == null}"
              class="component small_list_component">
             <div class="component_title">
                 <div class="title_info column">
@@ -266,12 +266,18 @@
         </div>
 
         <!--/* 교사이면서 소유한 그룹이 있는 경우 */-->
-        <div th:if="${isTeacher && teacherGroups.size() != 0}"
+        <div th:if="${isTeacher && currentGroup != null}"
              class="component small_list_component">
             <div class="component_title">
                 <div class="title_info column">
                     <div class="d_flex justify_content_between align_center small_gap">
-                        <select name="teacherGroups" class="pl_0 text_ellipsis"
+                        <p th:if="${teacherGroups.size() == 0}"
+                           class="text_ellipsis"
+                           th:text="${currentGroup.title}">현재 우리반 이름</p>
+
+                        <select th:if="${teacherGroups.size() > 0}"
+                                name="teacherGroups"
+                                class="pl_0 text_ellipsis"
                                 th:onchange="|location.href='@{/group}?groupNo=' + this.value|">
                             <option th:text="${currentGroup.title}"
                                     selected
