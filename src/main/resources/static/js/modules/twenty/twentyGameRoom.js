@@ -7,6 +7,7 @@ const currentUserNo = pageContainer.data("user-no");
 const StringroomNo = pageContainer.data("room-no");
 const currentRoomNo = parseInt(StringroomNo);
 const wsUrl = pageContainer.data("ws-url");
+const ACCESS_TOKEN = pageContainer.data("access-token");
 
 let stompClient = null;
 let turnTimer = null;
@@ -29,7 +30,7 @@ let visualTimer = null; // 화면 타이머 ID를 저장할 전역 변수
 // WebSocket 연결
 function connectWebSocket() {
     console.log("ws: ", wsUrl);
-    const socket = new SockJS('http://localhost:8081/ws');
+    const socket = new SockJS('http://localhost:8081/ws?token=' +ACCESS_TOKEN);
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
@@ -126,9 +127,12 @@ $(function () {
             JSON.stringify({}));
     });
 
+    // 질문을 눌렀을 때
     $sendQuestionBtn.click(function () {
 
     });
+
+    // 정답을 눌렀을 때
     $sendAnswerBtn.click(function () {
 
     });

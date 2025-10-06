@@ -80,7 +80,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 	// Redis 세션 저장소 (Spring Session)
-	implementation 'org.springframework.session:spring-session-data-redis'
+	/*implementation 'org.springframework.session:spring-session-data-redis'*/
 
 
 }
