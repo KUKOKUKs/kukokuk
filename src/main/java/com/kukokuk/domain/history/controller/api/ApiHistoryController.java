@@ -41,7 +41,7 @@ public class ApiHistoryController {
     }
 
     /**
-     * 단계별 퀴즈 최근 이력 조회
+     * 단계별 퀴즈 최근 이력 조회https://www.notion.so/NHN-2827d704051d80fcb35fc757873bdbb0https://www.notion.so/NHN-2827d704051d80fcb35fc757873bdbb0
      */
     @GetMapping("/widget/recent/level")
     public ResponseEntity<ApiResponse<List<GameHistoryDto>>> getRecentLevelHistory(
