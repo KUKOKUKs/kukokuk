@@ -160,7 +160,7 @@ function animateMedals() {
  */
 function showContentTypeLoading() {
     const $rankingTable = $('.ranking_table');
-    const $loadingSpinner = $('<div class="ranking_loading"><div class="spinner"></div><p>랭킹 데이터 로딩중...</p></div>');
+    const $loadingSpinner = $('<div class="ranking_loading"><p>랭킹 데이터 로딩중...</p></div>');
 
     $rankingTable.fadeOut(300, function() {
         $rankingTable.parent().append($loadingSpinner);

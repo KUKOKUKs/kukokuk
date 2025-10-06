@@ -29,7 +29,6 @@ export function updateHomeDailyStudyProgressUI(progress, message, $studyListCont
             $studyListContainer.html(
                 `<div class="component base_list_component">
                     <div class="loading_spinner pd_base">
-                        <div class="spinner"></div>
                         <p class="info" style="--percent: ${progress}%;">${message}</p>
                     </div>
                 </div>`

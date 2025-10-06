@@ -39,3 +39,19 @@ export function validateModifyGroupForm($form) {
 
     return isValid;
 }
+
+// 그룹 삭제 폼 유효성 검사
+export function validateDeleteGroupForm($form) {
+    let isValid = true;
+
+    // 그룹 삭제 동의 여부
+    const isDeleteCheck = $form.find("input[name='deleteGroup']").is(":checked");
+
+    // 유효성 검사
+    if (!isDeleteCheck) {
+        alert("우리반 삭제는 복구가 불가능합니다.\n삭제를 원하실 경우 '예'를 선택해 주세요.");
+        isValid = false;
+    }
+
+    return isValid;
+}

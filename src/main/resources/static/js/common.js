@@ -95,11 +95,4 @@ $(document).ready(() => {
         $this.addClass("checked")
             .find(".correct_answer").removeClass("text_ellipsis");
     });
-
-    // 숫자만 입력 이벤트 핸들러(인풋 요소에 클라스 추가하여 사용)
-    $(document).on("input change", ".only_digit", function () {
-        const $this = $(this);
-        const value = $this.val().replace(/[^0-9]/g, ""); // 숫자만 남김
-        $this.val(value);
-    });
 });
