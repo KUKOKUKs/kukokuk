@@ -35,7 +35,6 @@ $('#essay-feedback-btn').click(async function() {
     // 응답받기 전까지 로딩표시 추가
     $aiFeedbackContainer.html(`
             <div class="loading_spinner">
-                <div class="spinner"></div>
                 <div class="info_text">AI 피드백 생성 중...</div>
             </div>
         `);

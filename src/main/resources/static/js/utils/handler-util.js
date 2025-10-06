@@ -10,11 +10,35 @@ export const middleSchool = setGradeOptions(3);
  * @returns 생성된 옵션 리스트(string)
  */
 export function setGradeOptions(count) {
+    console.log("setGradeOptions() 실행");
+
     let options = '';
     for (let i = 1; i <= count; i++) {
         options += `<option value="${i}">${i}학년</option>`;
     }
+
     return options;
+}
+
+/**
+ * FormData 모든 정보 로그
+ * @param formData FormData
+ */
+export function consoleLogForm(formData) {
+    // entries()는 [key, value] 배열을 순회할 수 있게 해줌
+    for (const [key, value] of formData.entries()) {
+        console.log(`폼 데이터: ${key} = ${value}`);
+    }
+}
+/**
+ * 숫자만 입력 가능하도록 인풋 요소(제이쿼리 선택자)를 전달받아
+ * 값을 숫자만 남겨 적용
+ * @param $inputElement 숫자 입력만 되도록 적용시킬 인풋 요소(제이쿼리 선택자)
+ */
+export function setOnlyDigit($inputElement) {
+    console.log("setOnlyDigit() 실행");
+    const value = $inputElement.val().replace(/[^0-9]/g, "").trim(); // 숫자만 남김
+    $inputElement.val(value); // 해당 인풋 요소값 변경
 }
 
 /**

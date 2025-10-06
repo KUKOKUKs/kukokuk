@@ -32,7 +32,6 @@ export function updateHomeDailyStudyProgressUI(progress, message, $studyCardCont
             // 스피너 로딩 요소가 없다면 생성하여 적용
             $studyCardContainer.html(
                 `<div class="loading_spinner pd_base">
-                        <div class="spinner"></div>
                         <p class="info" style="--percent: ${progress}%;">${message}</p>
                 </div>`
             );

@@ -113,7 +113,8 @@ input {
     background-color: transparent;
 }
 
-input[type=checkbox] {
+input[type=checkbox],
+input[type=radio]{
     width: max-content;
     margin-top: 3px;
 }

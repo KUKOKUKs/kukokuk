@@ -1,5 +1,6 @@
 package com.kukokuk.domain.user.vo;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.apache.ibatis.type.Alias;
 @AllArgsConstructor
 @Alias("User")
 public class User implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private int userNo;                         // 사용자 번호

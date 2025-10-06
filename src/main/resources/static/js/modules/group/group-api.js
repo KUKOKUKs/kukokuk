@@ -1,4 +1,5 @@
 import {apiErrorProcessByXhr} from "../../utils/api-error-util.js";
+import {consoleLogForm} from "../../utils/handler-util.js";
 
 /**
  * 그룹 검색(페이지네이션) 비동기 요청
@@ -19,6 +20,102 @@ export async function apiGetGroupsAndPagination(keyword = null, page = 1) {
         });
 
         console.log("apiGetGroupsAndPagination() api 요청 response: ", response);
+        return response.data;
+    } catch (xhr) {
+        apiErrorProcessByXhr(xhr.responseJSON);
+    }
+}
+
+/**
+ * 그룹 생성 비동기 요청
+ * @param createFormElement 생성 폼 요소
+ * @returns {Promise<*>} 성공 응답의 data 객체를 반환
+ * <p>
+ *     예: { isValid: true, groupNo: 123 } 또는 { isValid:false, errors: {...} }
+ */
+export async function apiPostGroups(createFormElement) {
+    console.log("apiPostGroups() api 요청 실행");
+
+    // FormData 생성
+    const formData = new FormData(createFormElement);
+    consoleLogForm(formData); // 폼 데이타 값 로그
+
+    try {
+        const response = await $.ajax({
+            method: "POST",
+            url: "/api/groups",
+            data: formData,
+            processData: false,       // FormData를 문자열(직렬화)로 바꾸지 않음
+            contentType: false,       // 브라우저가 boundary 포함한 content-type을 설정하게 함
+            dataType: "json",
+        });
+
+        console.log("apiPostGroups() api 요청 response: ", response);
+        return response.data;
+    } catch (xhr) {
+        apiErrorProcessByXhr(xhr.responseJSON);
+    }
+}
+
+/**
+ * 그룹 수정 비동기 요청
+ * @param modifyFormElement 수정 폼 요소
+ * @returns {Promise<*>} 성공 응답의 data 객체를 반환
+ * <p>
+ *     예: { isValid: true, groupNo: 123 } 또는 { isValid:false, errors: {...} }
+ */
+export async function apiPutGroups(modifyFormElement) {
+    console.log("apiPutGroups() api 요청 실행");
+
+    // FormData 생성
+    const formData = new FormData(modifyFormElement);
+    consoleLogForm(formData); // 폼 데이타 값 로그
+
+    try {
+        const response = await $.ajax({
+            method: "PUT",
+            url: "/api/groups",
+            data: formData,
+            processData: false,       // FormData를 문자열(직렬화)로 바꾸지 않음
+            contentType: false,       // 브라우저가 boundary 포함한 content-type을 설정하게 함
+            dataType: "json",
+        });
+
+        console.log("apiPutGroups() api 요청 response: ", response);
+        return response.data;
+    } catch (xhr) {
+        apiErrorProcessByXhr(xhr.responseJSON);
+    }
+}
+
+/**
+ * 그룹 삭제 비동기 요청
+ * @param $deleteFormElement 삭제 폼 요소
+ * @returns {Promise<*>} 성공 응답의 data 객체를 반환
+ * <p>
+ *     예: { isSuccess: true } 또는 { isSuccess:false, message: "..." }
+ */
+export async function apiDeleteGroups($deleteFormElement) {
+    console.log("apiDeleteGroups() api 요청 실행");
+
+    const groupNo = $deleteFormElement.find("input[name='groupNo']").val();
+    const isDeleteCheck = $deleteFormElement.find("input[name='deleteGroup']").is(":checked");
+
+    // 삭제 여부 체크 재검증
+    if (!isDeleteCheck) {
+        alert("우리반 삭제는 동의가 필요합니다.\n삭제를 원하실 경우 '예'를 선택해 주세요.");
+        return;
+    }
+
+    try {
+        const response = await $.ajax({
+            method: "DELETE",
+            url: `/api/groups/${groupNo}`,
+            data: {isDeleteCheck},
+            dataType: "json",
+        });
+
+        console.log("apiDeleteGroups() api 요청 response: ", response);
         return response.data;
     } catch (xhr) {
         apiErrorProcessByXhr(xhr.responseJSON);

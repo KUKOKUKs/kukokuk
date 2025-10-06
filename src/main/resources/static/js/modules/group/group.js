@@ -130,7 +130,7 @@ $(document).ready(function () {
         }
     });
     
-    //  그룹 학습/검색 스위치 토글 버튼 이벤트
+    // 그룹 학습/검색 스위치 토글 버튼 이벤트
     const $groupSearchToggleInfo = $(".group_search_toggle_info"); // 학습/검색 요소들의 부모 요소
     const $groupSwitchToggleBtn = $("#group-switch-toggle-btn"); // 스위치 토글 버튼
     $groupSwitchToggleBtn.click(function () {
@@ -152,6 +152,9 @@ $(document).ready(function () {
         if ($modalGroupEdit.length) {
             // 해당 모달창 요소가 있을 경우 열기
             $modalGroupEdit.show();
+            
+            // 제출 버튼 모두 활성화 실시간 비활성화 기능 사용하지 않음
+            $modalGroupEdit.find("button[type='submit']").removeClass("disabled");
 
             // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
             setTimeout(() => {

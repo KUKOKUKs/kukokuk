@@ -21,6 +21,36 @@ public class GroupService {
     private final GroupMapper groupMapper;
 
     /**
+     * 그룹 정보를 전달받아 그룹 삭제
+     * @param group 삭제할 그룹 정보
+     */
+    public void deleteGroup(Group group) {
+        log.info("deleteGroup() 서비스 실행");
+        groupMapper.deleteGroup(group);
+    }
+
+    /**
+     * 그룹 정보를 전달받아 그룹 수정
+     * @param group 수정할 그룹 정보
+     */
+    public void updateGroup(Group group) {
+        log.info("updateGroup() 서비스 실행");
+        groupMapper.updateGroup(group);
+    }
+
+    /**
+     * 그룹 정보를 전달받아 그룹 등록
+     * @param teacherNo 교사 권한 사용자 번호
+     * @param group 그룹 정보
+     * @return 생성된 groupNo
+     */
+    public int insertGroup(int teacherNo, Group group) {
+        log.info("insertGroup() 서비스 실행");
+        groupMapper.insertGroup(teacherNo, group);
+        return group.getGroupNo(); // XML에서 useGeneratedKeys 설정
+    }
+
+    /**
      * 그룹 번호로 그룹 정보 조회
      * @param groupNo 그룹 번호
      * @return 그룹 정보
