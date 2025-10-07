@@ -199,16 +199,17 @@
         border-radius: var(--bdrs);
         box-shadow: var(--bxsh);
         position: absolute;
-        bottom: 70%;
+        top: 0;
         left: 50%;
         transform: translateX(-50%);
-        transition: opacity var(--trst), bottom var(--trst);
+        transition: opacity var(--trst), top var(--trst);
+        pointer-events: none;
     }
 
     &:hover {
         &::after {
             opacity: 1;
-            bottom: 80%;
+            top: calc(var(--fixEtcTinyFontSize) - (var(--fixEtcTinyFontSize) * 2.5));
         }
     }
 }
