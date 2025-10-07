@@ -1,15 +1,20 @@
 package com.kukokuk.domain.twenty.controller.api;
 
+import com.kukokuk.common.dto.ApiResponse;
+import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.twenty.dto.GameOverDto;
 import com.kukokuk.domain.twenty.dto.RoomUser;
+import com.kukokuk.domain.twenty.dto.SendStdMsg;
 import com.kukokuk.domain.twenty.service.TwentyService;
+import com.kukokuk.domain.twenty.vo.TwentyLog;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
 import com.kukokuk.security.SecurityUser;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,35 +56,60 @@ public class ApiTwentyController {
 
     // 방 상태 변경
     @PostMapping("/room/{roomNo}/status")
-    public void updateRoomStatus(@PathVariable int roomNo, @RequestParam String status) {
+    public ResponseEntity<ApiResponse<Void>> updateRoomStatus(@PathVariable int roomNo, @RequestParam String status){
         Map<String, Object> map = Map.of("roomNo", roomNo, "roomStatus", status);
         twentyService.updateRoomStaus(map);
+        return ResponseEntityUtils.ok("방 상태가 성공적으로 변경.");
     }
+
 
     // 참여자 상태 변경
     @PostMapping("/room/user/status")
-    public void updateRoomUserStatus(@RequestBody Map<String, Object> req) {
-        twentyService.updateRoomUserStatus(req);
+    public ResponseEntity<ApiResponse<Void>> updateRoomUserStatus(@RequestBody Map<String,Object> map) {
+        twentyService.updateRoomUserStatus(map);
+        return ResponseEntityUtils.ok("참여자 상태가 성공적으로 변경.");
     }
+
+
 
     // 방 참여자 목록 조회
     @GetMapping("/room/{roomNo}/players")
-    public List<RoomUser> getTwentyPlayerList(@PathVariable int roomNo) {
-        return twentyService.getTwentyPlayerList(roomNo);
+    public ResponseEntity<ApiResponse<List<RoomUser>>> getTwentyPlayerList(@PathVariable int roomNo) {
+        List<RoomUser> list =  twentyService.getTwentyPlayerList(roomNo);
+        return ResponseEntityUtils.ok(list);
     }
+
 
     // 방 정보 조회
     @GetMapping("/room/{roomNo}")
-    public TwentyRoom getTwentyRoom(@PathVariable int roomNo) {
-        return twentyService.getTwentyRoomByRoomNo(roomNo);
+    public ResponseEntity<ApiResponse<TwentyRoom>> getTwentyRoom(@PathVariable int roomNo) {
+        TwentyRoom room = twentyService.getTwentyRoomByRoomNo(roomNo);
+        return ResponseEntityUtils.ok(room);
     }
 
     // 교사 disconnect 처리
     @PostMapping("/room/disconnect/teacher")
-    public void handleTeacherDisconnect(@RequestBody Map<String,Object> map) {
+    public ResponseEntity<ApiResponse<Void>> handleTeacherDisconnect (@RequestBody Map<String,Object> map) {
         twentyService.handleTeacherDisconnect(map);
+        return ResponseEntityUtils.ok("서버 끊긴 이벤트를 성공적으로 마쳤습니다.");
     }
-    //-> 서비스에서(handleTeacherDisconnect)
-    // twentyMapper.updateRoomStaus(map); 와
-    //   twentyMapper.updateRoomUserStatus(map);를 실행하도록 한다.
+
+    //학생이 질문 또는 정답을 제출할 때, DB에 저장-> 저장된 message 객체를 반환
+    @PostMapping("/saveLog")
+    public ResponseEntity<ApiResponse<SendStdMsg>> saveLog(@RequestBody SendStdMsg msg) {
+        SendStdMsg log = twentyService.insertTwentyLog(msg);
+        return ResponseEntityUtils.ok(log);
+    }
+
+    /**
+     * 해당 게임방의 전체 메세지 개수를 조회.
+     * @param roomNo
+     * @return
+     */
+    @GetMapping("/room/{roomNo}/msgCnt")
+    public ResponseEntity<ApiResponse<Integer>> getmsgCntByRoomNo(@PathVariable int roomNo) {
+         Integer msgCnt = twentyService.getmsgCntByRoomNo(roomNo);
+        return ResponseEntityUtils.ok(msgCnt);
+    }
+
 }

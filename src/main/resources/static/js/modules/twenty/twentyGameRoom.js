@@ -19,11 +19,11 @@ let $teacherEndBtn = $("#teacher-end-btn");
 let $teacherStartBtn = $("#teacher-start-btn");
 
 // 학생 버튼
-let $sendQuestionBtn = $("#send-question");
-let $sendAnswerBtn = $("#send-answer");
-let $raiseHandBtn = $("#raise-hand");
-let $questionInput = $("#question-input");
-let $answerInput = $("#answer-input");
+let $sendQuestionBtn = $("#send-question");     // 질문 전송 버튼
+let $questionInput = $("#question-input");      // 질문 입력풋
+let $sendAnswerBtn = $("#send-answer");         // 정답 전송 버튼
+let $answerInput = $("#answer-input");          // 정답 입력풋
+let $raiseHandBtn = $("#raise-hand");           // 손들기 버튼
 
 let visualTimer = null; // 화면 타이머 ID를 저장할 전역 변수
 
@@ -36,7 +36,7 @@ function connectWebSocket() {
         console.log('Connected: ' + frame);
 
         // 구독 코드
-        // - 참여자 명단 실시간 반영 - 입장 또는 나감 처리
+        // 참여자가 입장하면, 누가 입장했는지 알 수 있도록,
         stompClient.subscribe(`/topic/participants/${currentRoomNo}`,
             function (result) {
                 const data = JSON.parse(result.body);
@@ -57,26 +57,42 @@ function connectWebSocket() {
         // 손들기 버튼을 눌렀을 경우 UI 변화
         stompClient.subscribe(`/topic/raisehand/${currentRoomNo}`,
             function (result) {
-                let data = JSON.parse(result.body);
+                const data = JSON.parse(result.body);
+                console.log("data: ", data);
                 $("#turn-holder-name").text(data.name);
                 $("#turn-info-panel").show();
                 startVisualTimer(data.time);
-                updateBtnByRoomStatus(data)
+
+                if(data.msgCnt == null) { // 질문 횟수가 19개 미만일 때는, 자유롭게 입력
+                    updateBtnByRoomStatus(data)
+                } else {                  // 질문 횟수가 19개 이상일 때, 시스템 메세지 + 정답 입력풋만 활성화
+                    appendBoardLine(data);
+                    $answerInput.prop("disabled", false);
+                    $sendAnswerBtn.prop("disabled", false);
+                }
             });
 
-        // - 학생이 질문 or 정답 + 교사 OX 버튼 눌렀을 때 실시간 채팅 브로드 캐스팅
-        stompClient.subscribe(`/topic/turnOff/${currentRoomNo}`,
+        // 40초 제한시간이 지났을 때, 버튼 변화
+        stompClient.subscribe(`/topic/turnTimeout/${currentRoomNo}`,
             function (result) {
-                resetToDefault();
+            const data = JSON.parse(result.body);
+            updateBtnByRoomStatus(data);
+            });
+
+        // 학생이 질문&정답을 서버에 던졌을 때, 화면에 표시 하기.
+        stompClient.subscribe(`/topic/sendStdMsg/${currentRoomNo}`,
+            function (result) {
+            let data1 = JSON.parse(result.body);
+            console.log("data: ", data1);
+                updateBtnByRoomStatus(data1);
+                appendBoardLine(data1);
+                stopVisualTimer(); // UI에서 타이머도 종료
+
             });
 
         // 교사가 게임 종료 버튼 클릭 or 서버 팅김 or 웹 브라우저 탭 닫기 시, 학생들은 그룹 페이지로 이동
-        stompClient.subscribe(`/topic/TeacherDisconnect/${currentRoomNo}`,
+        stompClient.subscribe(`/topic/TeacherDisconnect`,
             function (result) {
-                const data = JSON.parse(result.body);
-                let userList = data.userList;
-                updateParticipantList(userList);
-                updateBtnByRoomStatus(data);
                 window.location.href = '/group';
             })
 
@@ -86,7 +102,12 @@ function connectWebSocket() {
 }
 
 $(function () {
+    //웹소켓 연결
     connectWebSocket();
+
+    //이 게임방의 모든 채팅 이력을 보여주는 코드 - ajax
+    
+    
     // --- 교사 기능 ---
     // o 버튼 누를 때
     $teacherObtn.click(function () {
@@ -127,14 +148,38 @@ $(function () {
             JSON.stringify({}));
     });
 
-    // 질문을 눌렀을 때
-    $sendQuestionBtn.click(function () {
+    // 질문 전송 버튼을 누를 때
+    $sendQuestionBtn.click(function (e) {
+        e.preventDefault();
 
+         let content = $questionInput.val().trim();
+         if(content == null) {return;}
+
+         let msgData = {
+             userNo : currentUserNo,
+             roomNo : currentRoomNo,
+             type : "Q",
+             content : content
+         };
+         stompClient.send("/app/sendStdMsg",{},JSON.stringify(msgData));
+        $questionInput.val('');
     });
 
-    // 정답을 눌렀을 때
-    $sendAnswerBtn.click(function () {
+    // 정답 전송 버튼을 누를 때
+    $sendAnswerBtn.click(function (e) {
+        e.preventDefault();
 
+        let content = $answerInput.val().trim();
+        if(content == null) {return;}
+
+        let msgData = {
+            userNo : currentUserNo,
+            roomNo : currentRoomNo,
+            type : "A",
+            content : content
+        };
+        stompClient.send("/app/sendStdMsg",{},JSON.stringify(msgData));
+        $answerInput.val('');
     });
 
     // 수정 예정
@@ -159,20 +204,6 @@ $(function () {
 });
 
 // --- UI 상태 변경 함수들 ---
-
-function resetToDefault() {
-    clearTimeout(turnTimer);
-    document.querySelectorAll(
-        '#question-input, #answer-input, #send-question, #send-answer').forEach(
-        el => {
-            el.disabled = true;
-            if (el.tagName === 'INPUT') {
-                el.value = '';
-            }
-        });
-    document.getElementById('raise-hand').disabled = false;
-}
-
 /**
  * 참여자의 리스트를 가지고,
  * 참여자의 상태에 따라 스타일이 달라진다.
@@ -205,72 +236,124 @@ function updateParticipantList(userList) {
  * 채팅 메세지 표시
  * @param message
  */
-function appendBoardLine(message) {
-    let $board = $("#board-area");
-    let $firstMessage = $(".system_message");
+function appendBoardLine(data) {
+    const $board = $("#board-area");
+    const $firstMessage = $(".system_message");
 
-    let lineClass = '';
-    let senderHtml = '';
-
-    if (message.system != null) {
-        $firstMessage.text(message.system);
+    // 1️⃣ 시스템 메시지일 경우 (예: "스무고개를 시작합니다.")
+    if (data.system != null) {
+        $firstMessage.text(data.system);
         return;
     }
 
-    if (message.userNo == currentUserNo) {
+    // 2️⃣ 기본 스타일 변수 초기화
+    let lineClass = '';
+    let senderHtml = '';
+    let bubbleClass = '';
+
+    // 3️⃣ 본인/타인 구분
+    if (data.userNo == currentUserNo) {
+        // 내 메시지 → 오른쪽 정렬
         lineClass = 'my-message';
     } else {
+        // 다른 사람 메시지 → 왼쪽 정렬 + 닉네임 표시
         lineClass = 'other-message';
-        senderHtml = `<div class="sender">${message.sender}</div>`;
+        senderHtml = `<div class="sender">${data.nickName}</div>`;
     }
 
-    const contentHtml = message.message.replace(/\n/g, '<br>');
-    const newLineHtml = `<div class="message-line ${lineClass}">${senderHtml}<div>${contentHtml}</div></div>`;
+    // 4️⃣ 메시지 타입(Q/A)에 따른 색상 구분
+    switch (data.type) {
+        case 'Q':
+            bubbleClass = 'question-bubble';
+            break;
+        case 'A':
+            bubbleClass = 'answer-bubble';
+            break;
+        default:
+            bubbleClass = 'normal-bubble';
+            break;
+    }
 
+    // 5️⃣ 개행 처리
+    const contentHtml = data.content ? data.content.replace(/\n/g, '<br>') : '';
+
+    // 6️⃣ 최종 HTML 조립
+    const newLineHtml = `
+        <div class="message-line ${lineClass}" data-user-no="${data.userNo}" data-log-no="${data.logNo}">
+            ${senderHtml}
+            <div class="message-bubble ${bubbleClass}">
+                ${contentHtml}
+            </div>
+        </div>
+    `;
+
+    // 7️⃣ DOM 추가
     $board.append(newLineHtml);
+
+    // 8️⃣ 스크롤 맨 아래로 이동
     $board.scrollTop = $board.scrollHeight;
 }
 
 /**
- * 게임방의 상태에 따라, 교사 or 학생 버튼 변화
+ * 게임방의 상태에 따른 버튼 변화
  */
 function updateBtnByRoomStatus(data) {
     let roomStatus = data.roomStatus;
     let winnerNo = data.userNo != null ? data.userNo : null;
 
-    $teacherObtn.prop('disabled', true);
-    $teacherXbtn.prop('disabled', true);
-    $teacherEndBtn.prop('disabled', true);
-    $teacherStartBtn.prop('disabled', true);
-    $sendQuestionBtn.prop('disabled', true);
-    $sendAnswerBtn.prop('disabled', true);
-    $raiseHandBtn.prop('disabled', true);
+    // 모든 버튼 초기화 + glow 제거
+    [
+        $teacherObtn, $teacherXbtn, $teacherEndBtn, $teacherStartBtn,
+        $sendQuestionBtn, $sendAnswerBtn, $raiseHandBtn
+    ].forEach(btn => {
+        btn.prop('disabled', true);
+        toggleGlow(btn, false);
+    });
+
     $questionInput.prop('disabled', true);
     $answerInput.prop('disabled', true);
 
+    // 상태에 따른 활성화 처리
     switch (roomStatus) {
-        case 'WAITING' :  // 대기 중
+        case 'WAITING':
             $teacherStartBtn.prop('disabled', false);
+            toggleGlow($teacherStartBtn, true);
             break;
-        case 'IN_PROGRESS': // 게임 시작
-            $teacherEndBtn.prop('disabled', false);
+        case 'IN_PROGRESS':
             $raiseHandBtn.prop('disabled', false);
+            toggleGlow($raiseHandBtn, true);
             break;
-        case 'AWAITING_INPUT' : // 학생이 질문 답변 중일 때 상황
-
+        case 'AWAITING_INPUT':
             if (currentUserNo == winnerNo) {
                 $sendQuestionBtn.prop('disabled', false);
                 $sendAnswerBtn.prop('disabled', false);
                 $questionInput.prop('disabled', false);
                 $answerInput.prop('disabled', false);
+                toggleGlow($sendQuestionBtn, true);
+                toggleGlow($sendAnswerBtn, true);
             }
             break;
-        case 'AWAITING_RESPONSE': // 교사가 답변 중일 때
+        case 'AWAITING_RESPONSE':
             $teacherObtn.prop('disabled', false);
             $teacherXbtn.prop('disabled', false);
+            toggleGlow($teacherObtn, true);
+            toggleGlow($teacherXbtn, true);
             break;
         default:
             break;
+    }
+}
+
+/**
+ * 버튼의 glow 효과 부여
+ * @param $el
+ * @param enabled
+ */
+function toggleGlow($el, enabled) {
+    if (enabled) {
+        $el.addClass('enabled-glow');
+    } else {
+        $el.removeClass('enabled-glow');
     }
 }
 

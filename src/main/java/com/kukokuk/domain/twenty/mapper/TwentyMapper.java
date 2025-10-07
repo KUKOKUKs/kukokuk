@@ -1,6 +1,7 @@
 package com.kukokuk.domain.twenty.mapper;
 
 import com.kukokuk.domain.twenty.dto.RoomUser;
+import com.kukokuk.domain.twenty.dto.SendStdMsg;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
 import com.kukokuk.domain.twenty.vo.TwentyRoomUser;
 import java.util.List;
@@ -47,5 +48,18 @@ public interface TwentyMapper {
      * @return
      */
     public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(@Param("groupNo") int groupNo,
-                                                       @Param("limitCnt") int limitCnt );
+                                                                  @Param("limitCnt") int limitCnt );
+
+    /**
+     * 학생이 보낸 데이터를 DB에 할당한다.
+     * @param msg
+     */
+    public void insertTwentyLog(SendStdMsg msg);
+
+    /**
+     * 해당 게임방의 전체 메세지 개수를 조회.
+     * @param roomNo
+     * @return
+     */
+    public Integer getmsgCntByRoomNo(int roomNo);
 }

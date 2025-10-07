@@ -87,4 +87,32 @@
         ORDER BY CREATED_DATE DESC
         LIMIT  #{limitCnt}
     </select>
+    <!--
+        public void insertTwentyLog(SendStdMsg msg);
+        useGeneratedKeys="true" keyProperty="logNo"
+        이렇게 사용하면 Oracle에서 사용하던 select keyt와 동일한 효과를 가진다.
+    -->
+    <insert id="insertTwentyLog" parameterType="SendStdMsg" useGeneratedKeys="true" keyProperty="logNo" >
+        INSERT INTO KUKOKUK_TWENTY_LOGS
+            (USER_NO,
+             TWENTY_ROOM_NO,
+             TYPE,
+             MESSAGE)
+        VALUES (#{userNo},
+                #{roomNo},
+                #{type},
+                #{content})
+    </insert>
+    <!--
+       public Integer getmsgCntByRoomNo(int roomNo);
+    -->
+    <select id="getmsgCntByRoomNo" resultType="Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            KUKOKUK_TWENTY_LOGS
+        WHERE
+            TWENTY_ROOM_NO = #{roomNo}
+    </select>
+
 </mapper>
