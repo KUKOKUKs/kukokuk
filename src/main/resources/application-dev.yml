@@ -13,7 +13,7 @@ spring:
       port: 6379
 
   session:
-    store-type: redis
+    store-type: none
 
   # env 관련 설정 추가
   config:

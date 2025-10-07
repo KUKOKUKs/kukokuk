@@ -6,9 +6,12 @@ import com.kukokuk.domain.twenty.vo.TwentyRoom;
 import com.kukokuk.security.SecurityUser;
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -28,15 +31,39 @@ public class TwentyController {
 
     private final TwentyService twentyService;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Value("${ws.url}")
     private String wsUrl;
 
     // 학생들의 경우, 이 경로로 게임방을 이동!
+
+    /**
+     * 학생의 경우, 이 경로로 게임방을 이동!
+     * 1. 먼저 분린된 웹소켓 서버에 사용자 정보를 넘기기 위해,
+     *    사용자 정보 토큰화 -> Redis에 담기 -> Model에 담기
+     * 2. roomNo를 사용하여 게임방 조회 -> 없다면 group 페이지로 이동
+     * 3. 있다면, 게임방 페이지로 이동.(사용자 정보 및 웹소켓 주소)
+     * @param roomNo
+     * @param model
+     * @param securityUser
+     * @return
+     */
     @GetMapping("/gameRoom/{roomNo}")
     public String gameRoom(@PathVariable int roomNo,
         Model model,
         @AuthenticationPrincipal SecurityUser securityUser) {
 
+        // 1. 토큰화 -> Redis -> Model
+        int userNo = securityUser.getUser().getUserNo();
+        String token = UUID.randomUUID().toString();
+        String key = "ws:token:" +  token;
+
+        redisTemplate.opsForValue().setIfAbsent(key,userNo,15, TimeUnit.MINUTES);
+        System.out.println("Access Token 토큰 발급 완료!");
+        model.addAttribute("token", token);
+
+        //2.게임방 조회 후 게임방 유무에 따라 그룹 페이지 또는 게임방 페이지로 이동
         TwentyRoom room = twentyService.getTwentyRoomByRoomNo(roomNo);
         if (room == null) {
             model.addAttribute("error", "존재하지 않는 게임방입니다.");
@@ -46,7 +73,7 @@ public class TwentyController {
         List<RoomUser> list = twentyService.getTwentyPlayerList(roomNo);
         model.addAttribute("list", list);
 
-        int userNo = securityUser.getUser().getUserNo();
+
         model.addAttribute("userNo", userNo);
         model.addAttribute("wsUrl",wsUrl);
         return "twenty/gameRoom";
