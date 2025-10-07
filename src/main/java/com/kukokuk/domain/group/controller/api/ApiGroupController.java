@@ -175,7 +175,7 @@ public class ApiGroupController {
         data.put("isValid", true);
         data.put("groupNo", groupFormDto.getGroupNo());
 
-        return ResponseEntityUtils.ok("그룹 생성 성공", data);
+        return ResponseEntityUtils.ok("그룹 수정 성공", data);
     }
 
     /**

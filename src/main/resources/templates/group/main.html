@@ -101,7 +101,10 @@
                 </div>
 
                 <!--/* pagination(총 페이지 수가 1보다 클 경우) */-->
-                <th:block th:replace="~{fragments/common/pagination :: pagination-fragment(paging=${groups.pagination})}"></th:block>
+                <th:block th:replace="~{fragments/common/pagination :: pagination-fragment(
+                    paging=${groups.pagination}
+                    , conditionQuery=${groups.getConditionQuery()}
+                )}"></th:block>
             </div>
 
             <!--/* 그룹에 속해 있거나 교사 권한 사용자인 경우 */-->
@@ -243,7 +246,6 @@
                         <p class="text_ellipsis">우리 반이 없습니다</p>
                         <button type="button" class="modal_gruop_edit_btn btn tiny primary">만들기</button>
                     </div>
-                    <span class="component_sub_title">우리 반을 만들어 함께 즐겨보세요</span>
 
                     <div class="component_info small_font w_100">
                         <div class="list_info small_font normal" style="--cols: 24; --indexCols: 2;">
@@ -289,25 +291,27 @@
 
                         <button type="button" class="modal_gruop_edit_btn btn tiny white">편집</button>
                     </div>
-                    <div class="component_sub_title d_flex align_center tiny_gap">
-                        [<p class="text_ellipsis" th:text="${currentGroup.motto ?: '-'}">급훈</p>]
-                    </div>
 
                     <div class="component_info small_font w_100">
-                        <div class="list_info small_font normal" style="--cols: 24; --indexCols: 2;">
+                        <div class="list_info ov_v small_font normal" style="--cols: 24; --indexCols: 2;">
                             <div class="index_list">
-                                <span class="marker tac">📖</span>
-                                <p>우리 반의 AI 맞춤 학습</p>
+                                <span class="marker tac tooltip" data-label="급훈">📜</span>
+                                <p th:text="${currentGroup.motto ?: '-'}">급훈</p>
                             </div>
                             <div class="index_list">
-                                <span class="marker tac">💡</span>
-                                <p>우리 반과 함께 스무고개</p>
+                                <span class="marker tac tooltip" data-label="인원수">👩‍👧‍👧</span>
+                                <p th:text="|${currentGroup.getMemberCountFormatted()} 명|">인원 수</p>
                             </div>
                             <div class="index_list">
-                                <span class="marker tac">👑</span>
-                                <p>우리 반 월간 순위 경쟁</p>
+                                <span class="marker tac tooltip" data-label="생성일">📅</span>
+                                <p th:text="${#dates.format(currentGroup.createdDate, 'yyyy-MM-dd')}">생성일</p>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="btn_list justify_content_between">
+                        <button class="btn tiny white">학습자료관리</button>
+                        <button class="btn tiny white">내가 입반한 반으로</button>
                     </div>
                 </div>
             </div>
@@ -343,21 +347,6 @@
 
         <!--/* 그룹에 속한 일반 사용자인 경우 */-->
 
-        <div th:if="${isTeacher or myGroup != null}"
-             class="component small_list_component">
-            <div class="component_title">
-                <div class="title_info column">
-                    <div class="d_flex justify_content_between align_center small_gap">
-                        <p class="text_ellipsis">우리반 이름</p>
-                        <button th:if="${!isTeacher}" type="button"
-                                id="group-out-btn"
-                                class="btn tiny white"
-                        >나가기</button>
-                    </div>
-                    <span class="component_sub_title">[급훈]</span>
-                </div>
-            </div>
-        </div>
 
         <div class="component small_list_component">
             <div class="component_title">우리반 순위</div>

@@ -30,6 +30,7 @@ export function consoleLogForm(formData) {
         console.log(`폼 데이터: ${key} = ${value}`);
     }
 }
+
 /**
  * 숫자만 입력 가능하도록 인풋 요소(제이쿼리 선택자)를 전달받아
  * 값을 숫자만 남겨 적용
@@ -129,7 +130,7 @@ export function setPagination(paging, $parentElement) {
 
         // 항상 새로운 params 객체 생성(중복/누적 처리된 키가 적용되지 않도록)
         const makeParams = (pageNum) => {
-            const params = new URLSearchParams(location.search);
+            const params = new URLSearchParams(location.search); // 기존 쿼리스트링 유지
             params.set("page", pageNum); // 페이지는 새로 덮어쓰기
             return params.toString();
         };
