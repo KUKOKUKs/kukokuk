@@ -8,11 +8,9 @@ import com.kukokuk.ai.GeminiStudyResponse;
 import com.kukokuk.ai.GeminiStudyResponse.Card;
 import com.kukokuk.ai.GeminiStudyResponse.EssayQuiz;
 import com.kukokuk.ai.GeminiStudyResponse.Quiz;
-import com.kukokuk.common.dto.JobStatusResponse;
 import com.kukokuk.common.exception.AppException;
 import com.kukokuk.common.store.RedisJobStatusStore;
 import com.kukokuk.common.util.DailyQuestEnum;
-import com.kukokuk.common.util.SchoolGradeUtils;
 import com.kukokuk.domain.quest.mapper.DailyQuestMapper;
 import com.kukokuk.domain.quest.mapper.DailyQuestUserMapper;
 import com.kukokuk.domain.quest.vo.DailyQuest;
@@ -46,7 +44,6 @@ import com.kukokuk.domain.study.vo.DailyStudyQuiz;
 import com.kukokuk.domain.study.vo.DailyStudyQuizLog;
 import com.kukokuk.domain.study.vo.MaterialParseJob;
 import com.kukokuk.domain.study.vo.StudyDifficulty;
-import com.kukokuk.domain.user.mapper.UserMapper;
 import com.kukokuk.domain.user.vo.User;
 import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
 import com.kukokuk.domain.study.dto.StudyQuizLogRequest;
@@ -54,9 +51,8 @@ import com.kukokuk.domain.study.dto.UpdateStudyLogRequest;
 import com.kukokuk.domain.study.dto.DailyStudyLogResponse;
 import com.kukokuk.domain.study.dto.GeminiEssayResponse;
 import com.kukokuk.domain.study.dto.ParseMaterialResponse;
-import com.kukokuk.integration.redis.DailyStudyWorker;
+import com.kukokuk.integration.redis.WorkerMaterialCallbackRequest;
 import com.kukokuk.security.SecurityUser;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -66,11 +62,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.Pair;
 import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -206,7 +199,7 @@ public class StudyService {
             });
 
             // AI 호출 및 생성된 학습자료 DB 저장
-            DailyStudy dailyStudy = createDailyStudy(payload.getDailyStudyMaterialNo(),
+            DailyStudy dailyStudy = createDailyStudyByAi(payload.getDailyStudyMaterialNo(),
                 payload.getStudyDifficultyNo());
 
             // 생성된 학습자료를 기존의 dto에 업데이트
@@ -329,7 +322,7 @@ public class StudyService {
      * @param studyDifficultyNo
      * @return
      */
-    public DailyStudy createDailyStudy(int dailyStudyMaterialNo, int studyDifficultyNo) {
+    public DailyStudy createDailyStudyByAi(int dailyStudyMaterialNo, int studyDifficultyNo) {
         log.info("createDailyStudy 학습자료 생성 메소드 호출 | dailyStudyMaterialNo : " + dailyStudyMaterialNo + ", studyDifficultyNo : " + studyDifficultyNo);
         // dailyStudyMaterialNo 로 학습자료 원본데이터 조회
          DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);

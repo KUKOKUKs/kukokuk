@@ -7,7 +7,6 @@ import com.kukokuk.common.store.JobStatusStore;
 import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
 import com.kukokuk.domain.study.dto.ParseMaterialRequest;
-import com.kukokuk.domain.study.dto.UserStudyRecommendationDto;
 import com.kukokuk.domain.study.service.StudyAsyncService;
 import com.kukokuk.domain.study.service.StudyService;
 import com.kukokuk.domain.study.vo.DailyStudyEssayQuizLog;
@@ -76,7 +75,7 @@ public class ApiStudyController {
     @PostMapping()
     public ResponseEntity<ApiResponse> createStudy() {
 
-        studyService.createDailyStudy(3, 1);
+        studyService.createDailyStudyByAi(3, 1);
 
         return ResponseEntity
             .ok()

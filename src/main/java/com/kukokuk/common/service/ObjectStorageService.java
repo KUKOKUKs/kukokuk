@@ -18,15 +18,21 @@ public class ObjectStorageService {
     @Value("${nhn.s3.bucket}") // application.yml에서 버킷 이름 주입
     private String bucket;
 
-    public String uploadGroupMaterial(MultipartFile file, int groupId) throws IOException {
+    @Value("${nhn.s3.tenant-id}") // application.yml에서 버킷 이름 주입
+    private String tenantId;
+
+    @Value("${nhn.s3.endpoint}") // application.yml에서 버킷 이름 주입
+    private String endpoint;
+
+    public String uploadGroupMaterial(MultipartFile file, int groupNo) throws IOException {
         // 1. 파일 확장자 추출 (.hwp, .hwpx, .pdf 등))
         String ext = file.getOriginalFilename()
             .substring(file.getOriginalFilename().lastIndexOf("."));
 
         // 2. 업로드할 객체의 key 생성 (이 키로 파일이 저장됨)
-        // materials/{groupId}/{랜덤UUID}.확장자
+        // materials/{groupNo}/{랜덤UUID}.확장자
         // 원본파일명은 DB에 저장하고 키에는 사용하지 않음
-        String key = "materials/" + groupId + "/" + UUID.randomUUID() + ext;
+        String key = "materials/" + groupNo + "/" + UUID.randomUUID() + ext;
 
         // 3. Object Storage에 저장할 메타데이터 설정
         ObjectMetadata metadata = new ObjectMetadata();
@@ -42,7 +48,12 @@ public class ObjectStorageService {
 
         // 5. 업로드된 객체의 접근 URL 반환
         // (버킷이 public이면 그대로 접근 가능, private이면 presigned URL 필요)
-        return s3Client.getUrl(bucket, key).toString();
+        String fullUrl = String.format(
+            "%s/v1/%s/%s/%s",
+            endpoint, tenantId, bucket, key
+        );
+
+        return fullUrl;
     }
 
 }

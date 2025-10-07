@@ -18,12 +18,14 @@ public class DailyStudyMaterial {
 
     private int dailyStudyMaterialNo;
     private String school;
-    private int grade;
+    private Integer grade;
     private String materialTitle;
     private String keywords;
     private String content;
     private String sourceFilename;
-    private int sequence;
+    private String filePath;
+    private Integer groupNo;
+    private Integer sequence;
     private Date createdDate;
     private Date updatedDate;
 }

@@ -1,5 +1,6 @@
 package com.kukokuk.domain.study.mapper;
 
+import com.kukokuk.domain.study.dto.TeacherDailyStudyResponse;
 import com.kukokuk.domain.study.dto.UserStudyRecommendationDto;
 import com.kukokuk.domain.study.vo.DailyStudy;
 import java.util.List;
@@ -45,4 +46,5 @@ public interface DailyStudyMapper {
     UserStudyRecommendationDto getDailyStudyByMaterialNoAndDifficulty(
         @Param("dailyStudyMaterialNo") int dailyStudyMaterialNo,
         @Param("studyDifficultyNo") int studyDifficultyNo);
+
 }

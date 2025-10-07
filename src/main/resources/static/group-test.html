@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>그룹 학습자료 업로드 테스트</title>
+</head>
+<body>
+<h2>📘 그룹 학습자료 업로드 테스트</h2>
+
+<form id="uploadForm">
+    <label>Group No:
+        <input type="number" id="groupNo" value="1" />
+    </label>
+    <br><br>
+
+    <label>Difficulty (1~6):
+        <input type="number" id="difficulty" value="3" />
+    </label>
+    <br><br>
+
+    <label>파일 선택:
+        <input type="file" id="files" multiple />
+    </label>
+    <br><br>
+
+    <button type="submit">업로드</button>
+</form>
+
+<pre id="result"></pre>
+
+<script>
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const groupNo = document.getElementById("groupNo").value;
+        const difficulty = document.getElementById("difficulty").value;
+        const files = document.getElementById("files").files;
+
+        const formData = new FormData();
+        for (const file of files) {
+            formData.append("files", file); // files 파라미터 이름 주의: @RequestParam("files")와 일치해야 함
+        }
+        formData.append("difficulty", difficulty);
+
+        try {
+            const res = await fetch(`/api/teachers/groups/1/materials/upload`, {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await res.json();
+            document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+            document.getElementById("result").textContent = "오류 발생: " + err;
+        }
+    });
+</script>
+</body>
+</html>

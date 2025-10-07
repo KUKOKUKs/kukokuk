@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.study.mapper.GroupStudyMapper">
+
+    <!--
+     List<TeacherDailyStudyResponse> getTeacherDailyStudiesByGroupNo(int groupNo);
+    -->
+    <select id="getTeacherDailyStudiesByGroupNo" resultType="TeacherDailyStudyResponse">
+        SELECT
+            S.DAILY_STUDY_NO AS dailyStudyNo,
+            S.TITLE AS dailyStudyTitle,
+            S.EXPLANATION,
+            S.STUDY_DIFFICULTY AS difficulty,
+            S.CREATED_DATE AS createdDate,
+            M.MATERIAL_TITLE AS materialTitle,
+            M.SOURCE_FILENAME AS sourceFileUrl
+        FROM KUKOKUK_DAILY_STUDIES S
+                 JOIN KUKOKUK_DAILY_STUDY_MATERIALS M
+                      ON M.DAILY_STUDY_MATERIAL_NO = S.DAILY_STUDY_MATERIAL_NO
+        WHERE
+            S.GROUP_NO = #{groupNo}
+        ORDER BY
+            S.CREATED_DATE DESC
+    </select>
+
+    <!--
+    int countCompletedStudents(int dailyStudyNo);
+    -->
+    <select id="countCompletedStudents">
+        SELECT COUNT(DISTINCT USER_NO)
+        FROM KUKOKUK_DAILY_STUDY_LOGS
+        WHERE DAILY_STUDY_NO = #{dailyStudyNo}
+            AND STATUS = "COMPLETED"
+    </select>
+
+    <!--
+    int countEssayCompletedStudents(int dailyStudyNo);
+    -->
+    <select id="countEssayCompletedStudents">
+        SELECT COUNT(DISTINCT EL.USER_NO)
+        FROM KUKOKUK_DAILY_STUDY_ESSAY_QUIZ_LOGS EL
+            JOIN KUKOKUK_DAILY_STUDY_ESSAY_QUIZZES E
+            ON EL.DAILY_STUDY_ESSAY_QUIZ_NO = E.DAILY_STUDY_ESSAY_QUIZ_NO
+        WHERE E.DAILY_STUDY_NO = #{dailyStudyNo}
+    </select>
+
+    <!--
+    int getMaxSequenceByGroupNo(int groupNo);
+    -->
+    <select id="getMaxSequenceByGroupNo" resultType="int">
+        SELECT
+            IFNULL(MAX(SEQUENCE), 0)
+        FROM
+            KUKOKUK_DAILY_STUDY_MATERIALS
+        WHERE
+           GROUP_NO = #{groupNo}
+    </select>
+
+</mapper>
