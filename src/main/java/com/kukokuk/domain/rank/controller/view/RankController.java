@@ -28,6 +28,12 @@ public class RankController {
 
     private final RankService rankService;
 
+    /**
+     * 순위 페이지
+     * @param securityUser 사용자 정보
+     * @param model speedQuizRanks, levelQuizRanks, dictationQuizRanks
+     * @return 순위 페이지
+     */
     @GetMapping
     public String rankPage(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
         log.info("RankController rankPage() 컨트롤러 실행");
@@ -46,7 +52,7 @@ public class RankController {
         int userNo = securityUser.getUser().getUserNo(); // 사용자 번호
 
         // contentTypes을 순환하며 model에 담기
-        // sppedQuizRanks, levelQuizRanks, dictationQuizRanks
+        // speedQuizRanks, levelQuizRanks, dictationQuizRanks
         for (ContentTypeEnum type : contentTypes) {
             RankRequestDto rankRequestDto = RankRequestDto.builder()
                 .userNo(userNo)
