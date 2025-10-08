@@ -64,7 +64,7 @@ public class ExpProcessingService {
         // 일일 도전과제가 아닌 경우 종료
         // dailyQuestNo가 잘못입력되었거나 null일 경우 
         // dailyQuestEnum가 null이거나 타입이 expProcessingDto의 contentType과 일치하지 않을 경우
-        if (dailyQuestEnum == null || !dailyQuestEnum.getType().name().equals(contentType)) return;
+        if (dailyQuestEnum == null || !dailyQuestEnum.getType().equals(contentType)) return;
 
         // 일일 도전과제 컨텐츠 일 경우 완료 내역 조회
         DailyQuestUser savedDailyQuestUser = dailyQuestUserService

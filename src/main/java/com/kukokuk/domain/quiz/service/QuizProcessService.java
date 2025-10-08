@@ -1,11 +1,14 @@
 package com.kukokuk.domain.quiz.service;
 
+import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.domain.quiz.mapper.QuizMasterMapper;
 import com.kukokuk.domain.quiz.mapper.QuizResultMapper;
 import com.kukokuk.domain.quiz.mapper.QuizSessionSummaryMapper;
 import com.kukokuk.domain.quiz.vo.QuizResult;
 import com.kukokuk.domain.quiz.vo.QuizSessionSummary;
+import com.kukokuk.domain.rank.dto.RankProcessingDto;
 import com.kukokuk.domain.rank.service.RankService;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,7 +31,7 @@ public class QuizProcessService {
     private static final int TARGET_COUNT = 200;
 
     // 컨텐츠 타입 상수
-    private static final String CONTENT_TYPE_SPEED = "SPEED";
+//    private static final String CONTENT_TYPE_SPEED = "SPEED"; // enum 사용
     private static final String QUIZ_MODE_SPEED = "speed";
     private static final String QUESTION_TYPE_MEANING = "뜻";
     private static final String QUESTION_TYPE_WORD = "단어";
@@ -38,7 +41,7 @@ public class QuizProcessService {
     private final QuizMasterMapper quizMasterMapper;
     private final QuizService quizService;
     private final QuizSessionSummaryService quizSessionSummaryService;
-    private final RankService rankingService;
+    private final RankService rankService;
 
     /**
      * 퀴즈 세션 요약과 결과 저장 + 퀴즈 자동 보충 처리
@@ -220,7 +223,13 @@ public class QuizProcessService {
 
         // 월별 랭킹 처리 (현재 월 기준으로 신규 등록 또는 평균 업데이트)
         try {
-            rankingService.processMonthlyRanking(CONTENT_TYPE_SPEED, finalScore, summary.getUserNo());
+            rankService.rankProcessing(
+                RankProcessingDto.builder()
+                    .userNo(summary.getUserNo())
+                    .contentType(ContentTypeEnum.SPEED.name())
+                    .score(BigDecimal.valueOf(finalScore))
+                    .build()
+            );
             log.info("[월별 랭킹 처리 완료] 사용자: {}, 점수: {:.2f}", summary.getUserNo(), finalScore);
         } catch (Exception e) {
             log.error("[월별 랭킹 처리 실패] 사용자: {}, 점수: {:.2f}", summary.getUserNo(), finalScore, e);

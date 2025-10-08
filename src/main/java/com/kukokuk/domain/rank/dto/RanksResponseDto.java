@@ -1,6 +1,6 @@
 package com.kukokuk.domain.rank.dto;
 
-import com.kukokuk.common.util.ContentTypeUtil;
+import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.domain.rank.vo.Rank;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ public class RanksResponseDto {
     private List<Rank> ranks;
 
     public String getContentTypeName() {
-        return ContentTypeUtil.getContentTypeName(contentType);
+        return ContentTypeEnum.getDescriptionByType(contentType);
     }
 
 }

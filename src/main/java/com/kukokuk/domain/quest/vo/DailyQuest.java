@@ -1,5 +1,6 @@
 package com.kukokuk.domain.quest.vo;
 
+import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.domain.quest.util.DailyQuestUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,11 +13,11 @@ import org.apache.ibatis.type.Alias;
 @Alias("DailyQuest")
 public class DailyQuest {
 
-    private int dailyQuestNo;       // 일일도전과제 번호
-    private String contentType;     // ENUM
-    private String contentText;     // 컨텐츠 타이틀
-    private Integer point;          // 경험치 목표 퀘스트에서만 사용
-    private Integer count;          // 횟수 목표 퀘스트에서만 사용
+    private int dailyQuestNo;               // 일일도전과제 번호
+    private ContentTypeEnum contentType;    // 컨텐츠 타입
+    private String contentText;             // 컨텐츠 타이틀
+    private Integer point;                  // 경험치 목표 퀘스트에서만 사용
+    private Integer count;                  // 횟수 목표 퀘스트에서만 사용
 
     // 횟수를 목표로한 퀘스트인지 여부
     public boolean isCountType() {

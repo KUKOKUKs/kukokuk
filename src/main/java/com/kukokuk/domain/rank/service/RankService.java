@@ -36,7 +36,7 @@ public class RankService {
         // 필요한 값 추출
         int userNo = rankProcessingDto.getUserNo();
         String contentType = rankProcessingDto.getContentType();
-        BigDecimal score = BigDecimal.valueOf(rankProcessingDto.getScore());
+        BigDecimal score = rankProcessingDto.getScore();
 
         // 해당하는 정보가 이미 등록되어있는지 확인
         Rank savedRank = rankMapper.getContentRankByUserNo(

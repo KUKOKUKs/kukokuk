@@ -1,5 +1,6 @@
 package com.kukokuk.domain.quest.dto;
 
+import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.domain.quest.util.DailyQuestUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,15 +17,15 @@ import lombok.ToString;
 @NoArgsConstructor
 public class DailyQuestStatusDto {
 
-    private int dailyQuestNo;           // 일일도전과제 번호
-    private String contentType;         // ENUM
-    private String contentText;         // 컨텐츠 타이틀
-    private Integer point;              // 경험치 목표 퀘스트에서만 사용
-    private Integer count;              // 횟수 목표 퀘스트에서만 사용
-    private Integer progressValue;      // 사용자별 진행도(횟수/경험치 합)
+    private int dailyQuestNo;               // 일일도전과제 번호
+    private ContentTypeEnum contentType;    // 컨텐츠 타입 enum
+    private String contentText;             // 컨텐츠 타이틀
+    private Integer point;                  // 경험치 목표 퀘스트에서만 사용
+    private Integer count;                  // 횟수 목표 퀘스트에서만 사용
+    private Integer progressValue;          // 사용자별 진행도(횟수/경험치 합)
 
-    private Integer dailyQuestUserNo;   // 일일도전과제 완료 번호(일일도전과제 완료 테이블에 이력이 없다면 미완료로 null)
-    private String isObtained;          // 사용자별 보상 수령 여부("Y", "N")(일일도전과제 완료 테이블에 이력이 없다면 미완료로 null)
+    private Integer dailyQuestUserNo;       // 일일도전과제 완료 번호(일일도전과제 완료 테이블에 이력이 없다면 미완료로 null)
+    private String isObtained;              // 사용자별 보상 수령 여부("Y", "N")(일일도전과제 완료 테이블에 이력이 없다면 미완료로 null)
 
     // 횟수를 목표로한 퀘스트인지 여부
     public boolean isCountType() {

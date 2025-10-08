@@ -1,5 +1,6 @@
 package com.kukokuk.domain.rank.dto;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,13 +19,13 @@ import lombok.ToString;
 @AllArgsConstructor
 public class RankProcessingDto {
 
-    private int userNo;             // 사용자 번호
-    private String contentType;     // 컨텐츠 타입
-    private Integer score;       // 절대적 점수
+    private int userNo;                 // 사용자 번호
+    private String contentType;         // 컨텐츠 타입
+    private BigDecimal score;           // 절대적 점수
 
     // null값 방지
-    public int getScore() {
-        return score == null ? 0 : score;
+    public BigDecimal getScore() {
+        return score == null ? BigDecimal.ZERO : score;
     }
 
 }

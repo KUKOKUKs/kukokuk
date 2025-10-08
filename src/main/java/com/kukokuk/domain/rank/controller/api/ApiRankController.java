@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/rank")
 @RequiredArgsConstructor
-public class ApiRankingController {
+public class ApiRankController {
 
     private final RankService rankService;
 
