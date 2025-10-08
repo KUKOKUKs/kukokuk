@@ -5,7 +5,7 @@ import com.kukokuk.domain.quiz.mapper.QuizResultMapper;
 import com.kukokuk.domain.quiz.mapper.QuizSessionSummaryMapper;
 import com.kukokuk.domain.quiz.vo.QuizResult;
 import com.kukokuk.domain.quiz.vo.QuizSessionSummary;
-import com.kukokuk.domain.ranking.service.RankingService;
+import com.kukokuk.domain.rank.service.RankService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -38,7 +38,7 @@ public class QuizProcessService {
     private final QuizMasterMapper quizMasterMapper;
     private final QuizService quizService;
     private final QuizSessionSummaryService quizSessionSummaryService;
-    private final RankingService rankingService;
+    private final RankService rankingService;
 
     /**
      * 퀴즈 세션 요약과 결과 저장 + 퀴즈 자동 보충 처리

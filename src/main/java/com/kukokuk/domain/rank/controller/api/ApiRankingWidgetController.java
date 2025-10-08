@@ -1,17 +1,19 @@
-package com.kukokuk.domain.ranking.controller.api;
+package com.kukokuk.domain.rank.controller.api;
 
 import com.kukokuk.common.dto.ApiResponse;
-import com.kukokuk.domain.ranking.dto.RankingDto;
-import com.kukokuk.domain.ranking.dto.RankingWidgetDto;
-import com.kukokuk.domain.ranking.service.RankingService;
+import com.kukokuk.domain.rank.dto.RankingWidgetDto;
+import com.kukokuk.domain.rank.dto.RanksResponseDto;
+import com.kukokuk.domain.rank.service.RankService;
 import com.kukokuk.security.SecurityUser;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 랭킹 위젯용 API 컨트롤러
@@ -24,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApiRankingWidgetController {
 
-    private final RankingService rankingService;
+    private final RankService rankingService;
     private static final int WIDGET_LIMIT = 5;
 
     /**
@@ -42,13 +44,13 @@ public class ApiRankingWidgetController {
         try {
             RankingWidgetDto widgetData = new RankingWidgetDto();
 
-            List<RankingDto> speedRankings = rankingService.getGlobalRankingDtos("SPEED", WIDGET_LIMIT);
+            List<RanksResponseDto> speedRankings = rankingService.getGlobalRankingDtos("SPEED", WIDGET_LIMIT);
             widgetData.setSpeedRankings(speedRankings);
 
-            List<RankingDto> stepRankings = rankingService.getGlobalRankingDtos("LEVEL", WIDGET_LIMIT);
+            List<RanksResponseDto> stepRankings = rankingService.getGlobalRankingDtos("LEVEL", WIDGET_LIMIT);
             widgetData.setStepRankings(stepRankings);
 
-            List<RankingDto> dictationRankings = rankingService.getGlobalRankingDtos("DICTATION", WIDGET_LIMIT);
+            List<RanksResponseDto> dictationRankings = rankingService.getGlobalRankingDtos("DICTATION", WIDGET_LIMIT);
             widgetData.setDictationRankings(dictationRankings);
 
             try {
@@ -92,18 +94,18 @@ public class ApiRankingWidgetController {
      * @return 상위 랭킹 목록
      */
     @GetMapping("/top")
-    public ResponseEntity<ApiResponse<List<RankingDto>>> getTopRankingsForWidget(
+    public ResponseEntity<ApiResponse<List<RanksResponseDto>>> getTopRankingsForWidget(
         @RequestParam String contentType,
         @RequestParam(defaultValue = "5") int limit) {
 
         log.info("getTopRankingsForWidget API 호출 - contentType: {}, limit: {}", contentType, limit);
 
         try {
-            List<RankingDto> rankings = rankingService.getGlobalRankingDtos(contentType, limit);
+            List<RanksResponseDto> rankings = rankingService.getGlobalRankingDtos(contentType, limit);
             return ResponseEntity.ok(ApiResponse.success(rankings));
         } catch (Exception e) {
             log.error("위젯용 상위 랭킹 조회 실패 - contentType: {}, limit: {}", contentType, limit, e);
-            ApiResponse<List<RankingDto>> errorResponse =
+            ApiResponse<List<RanksResponseDto>> errorResponse =
                 new ApiResponse<>(false, 500, "랭킹 조회에 실패했습니다.", null);
             return ResponseEntity.internalServerError().body(errorResponse);
         }

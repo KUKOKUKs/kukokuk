@@ -1,10 +1,9 @@
-package com.kukokuk.domain.ranking.dto;
+package com.kukokuk.domain.rank.dto;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * 랭킹 위젯용 데이터 전송 객체
@@ -15,9 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 public class RankingWidgetDto {
 
-    private List<RankingDto> speedRankings;
-    private List<RankingDto> stepRankings;
-    private List<RankingDto> dictationRankings;
+    private List<RanksResponseDto> speedRankings;
+    private List<RanksResponseDto> stepRankings;
+    private List<RanksResponseDto> dictationRankings;
 
     private Integer mySpeedRank;
     private Integer myStepRank;

@@ -1,12 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{layout/base}">
-<head>
-    <title>랭킹 - KUKOKUK</title>
-</head>
+<html layout:decorate="~{layout/base}" th:with="title='순위', menu='rank'">
 
 <th:block layout:fragment="content">
     <div class="content_info">
@@ -28,19 +21,19 @@
                     게임 종류
                 </div>
                 <div class="content_type_selector">
-                    <a th:href="@{/ranking(contentType='SPEED', rankMonth=${rankMonth})}"
+                    <a th:href="@{/templates/rank(contentType='SPEED', rankMonth=${rankMonth})}"
                        class="content_type_btn"
                        th:classappend="${contentType == 'SPEED'} ? 'active' : ''">
                         <iconify-icon icon="flat-color-icons:flash-on"></iconify-icon>
                         스피드퀴즈
                     </a>
-                    <a th:href="@{/ranking(contentType='LEVEL', rankMonth=${rankMonth})}"
+                    <a th:href="@{/templates/rank(contentType='LEVEL', rankMonth=${rankMonth})}"
                        class="content_type_btn"
                        th:classappend="${contentType == 'LEVEL'} ? 'active' : ''">
                         <iconify-icon icon="flat-color-icons:graduation-cap"></iconify-icon>
                         단계별 퀴즈
                     </a>
-                    <a th:href="@{/ranking(contentType='DICTATION', rankMonth=${rankMonth})}"
+                    <a th:href="@{/templates/rank(contentType='DICTATION', rankMonth=${rankMonth})}"
                        class="content_type_btn"
                        th:classappend="${contentType == 'DICTATION'} ? 'active' : ''">
                         <iconify-icon icon="flat-color-icons:edit"></iconify-icon>
@@ -57,7 +50,7 @@
                 </div>
                 <div class="month_selector">
                     <a th:if="${prevMonth != null}"
-                       th:href="@{/ranking(contentType=${contentType}, rankMonth=${prevMonth})}"
+                       th:href="@{/templates/rank(contentType=${contentType}, rankMonth=${prevMonth})}"
                        class="month_nav_btn">
                         <iconify-icon icon="fluent:arrow-left-24-filled"></iconify-icon>
                         <span th:text="${prevMonth}">2024-12</span>
@@ -69,7 +62,7 @@
                     </div>
 
                     <a th:if="${nextMonth != null}"
-                       th:href="@{/ranking(contentType=${contentType}, rankMonth=${nextMonth})}"
+                       th:href="@{/templates/rank(contentType=${contentType}, rankMonth=${nextMonth})}"
                        class="month_nav_btn">
                         <span th:text="${nextMonth}">2025-02</span>
                         <iconify-icon icon="fluent:arrow-right-24-filled"></iconify-icon>
