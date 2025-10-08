@@ -1,7 +1,8 @@
 /**
- * 게임방에 대한 UI 설정이 같이 들어 있는 js 코드
+ * 함수 및 이벤트 리스너에 사용된 HTML 요소들
+ * 전역 변수로 선언
+ * @type {jQuery|HTMLElement|*}
  */
-
 const pageContainer = $(".page_container");
 const currentUserNo = pageContainer.data("user-no");
 const StringroomNo = pageContainer.data("room-no");
@@ -27,16 +28,22 @@ let $raiseHandBtn = $("#raise-hand");           // 손들기 버튼
 
 let visualTimer = null; // 화면 타이머 ID를 저장할 전역 변수
 
-// WebSocket 연결
+/**
+ * 웹소켓 연결 및 구독 관리 함수
+ */
 function connectWebSocket() {
     console.log("ws: ", wsUrl);
     const socket = new SockJS('http://localhost:8081/ws?token=' +ACCESS_TOKEN);
     stompClient = Stomp.over(socket);
+    /**
+     * 웹소켓 연결
+     */
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-
-        // 구독 코드
-        // 참여자가 입장하면, 누가 입장했는지 알 수 있도록,
+        // 구독 관리 코드들
+        /**
+         * 참여자 입장 시, 실시간 UI 변화
+         */
         stompClient.subscribe(`/topic/participants/${currentRoomNo}`,
             function (result) {
                 const data = JSON.parse(result.body);
@@ -45,7 +52,9 @@ function connectWebSocket() {
                 updateBtnByRoomStatus(data);
             });
 
-        // - 교사가 게임 시작 버튼을 눌렀을 때 UI 변화
+        /**
+         * 게임 시작 버튼을 눌렀을 경우 UI 변화
+         */
         stompClient.subscribe(`/topic/gameStart/${currentRoomNo}`,
             function (result) {
                 const data = JSON.parse(result.body);
@@ -54,7 +63,9 @@ function connectWebSocket() {
                 updateBtnByRoomStatus(data)
             });
 
-        // 손들기 버튼을 눌렀을 경우 UI 변화
+        /**
+         * 손들기 버튼을 눌렀을 경우 UI 변화
+         */
         stompClient.subscribe(`/topic/raisehand/${currentRoomNo}`,
             function (result) {
                 const data = JSON.parse(result.body);
@@ -72,14 +83,18 @@ function connectWebSocket() {
                 }
             });
 
-        // 40초 제한시간이 지났을 때, 버튼 변화
+        /**
+         * 40초 제한 시간 넘겼을 경우, UI 변화
+         */
         stompClient.subscribe(`/topic/turnTimeout/${currentRoomNo}`,
             function (result) {
             const data = JSON.parse(result.body);
             updateBtnByRoomStatus(data);
             });
 
-        // 학생이 질문&정답을 서버에 던졌을 때, 화면에 표시 하기.
+        /**
+         * 학생이 질문&정답 입력 후 전송 버튼 눌렀을 경우 UI 변화
+         */
         stompClient.subscribe(`/topic/sendStdMsg/${currentRoomNo}`,
             function (result) {
             let data1 = JSON.parse(result.body);
@@ -90,43 +105,93 @@ function connectWebSocket() {
 
             });
 
-        // 교사가 게임 종료 버튼 클릭 or 서버 팅김 or 웹 브라우저 탭 닫기 시, 학생들은 그룹 페이지로 이동
+        /**
+         * 교사가, 게임 종료 버튼 or 서버 끊김 or 웹 브라우저 탭 닫을 경우
+         * 모든 참여자 group 페이지로 이동.
+         */
         stompClient.subscribe(`/topic/TeacherDisconnect`,
             function (result) {
                 window.location.href = '/group';
-            })
+            });
 
-        // 입장할 때마다, 누가 들어왔는지 신호 보내기
+        /**
+         * 교사 O&X 버튼을 눌렀을 경우,
+         */
+        stompClient.subscribe(`/topic/TeacherResponce`,
+            function (result) {
+            const data = JSON.parse(result.body);
+
+            //게임이 끝난경우
+            if(data.system != null) {
+                appendBoardLine(data);
+                $teacherEndBtn.prop('disabled', false);
+                toggleGlow($teacherEndBtn, true);
+                return;
+            }else { // 게임을 재개 해야하는 경우
+                updateBtnByRoomStatus(data);
+                renderMessageList(data.msgList);
+            }
+
+
+            });
+
+        /**
+         * 입장할 때마다, 누가 들어왔는지 신호 보내는 함수
+         */
         stompClient.send(`/app/join/${currentRoomNo}`, {}, JSON.stringify({}));
     });
 }
 
+/**
+ * 모든 HTML 요소가 만들어지고 나서, 아래 함수 및 이벤트 리스너들 실행.
+ */
 $(function () {
-    //웹소켓 연결
+    /**
+     * 웹소켓 연결 함수 실행.
+     */
     connectWebSocket();
 
     //이 게임방의 모든 채팅 이력을 보여주는 코드 - ajax
-    
-    
+
+
     // --- 교사 기능 ---
-    // o 버튼 누를 때
-    $teacherObtn.click(function () {
-        stompClient.send(`/app/chatSend/${currentRoomNo}`, {},
-            JSON.stringify({}));
-        // 아직 어떤 값을 보낼지 정하지 않았음
+
+    /**
+     * 교사가 O 버튼을 눌렀을 때
+     */
+    $teacherObtn.click(function (e) {
+        e.preventDefault();
+        const data = {
+            roomNo : currentRoomNo,
+            response : "Y"
+        };
+        stompClient.send(`/app/teacherResponse`,{}, JSON.stringify(data));
+
     });
-    // x 버튼 누를 때
-    $teacherXbtn.click(function () {
-        stompClient.send(`/app/chatSend/${currentRoomNo}`, {},
-            JSON.stringify({}));
+
+    /**
+     * 교사가 X 버튼 눌렀을 때
+     */
+    $teacherXbtn.click(function (e) {
+
+        const data = {
+            roomNo : currentRoomNo,
+            response : "N"
+        };
+        stompClient.send(`/app/teacherResponse`,{}, JSON.stringify(data));
     });
-    //게임 시작 버튼 눌렀을 때, 게임방 상태 변경
+
+    /**
+     * 교사가 게임 시작 버튼 눌렀을 때
+     */
     $teacherStartBtn.click(function () {
         stompClient.send(`/app/gameStart/${currentRoomNo}`, {},
             JSON.stringify({}));
     });
 
-    //게임 종료 버튼을 눌렀을 때
+    /**
+     * 교사가 게임 종료 버튼 눌렀을 때.
+     */
     $teacherEndBtn.click(function () {
         let sendData = {
             roomNo: currentRoomNo,
@@ -142,13 +207,18 @@ $(function () {
     });
 
     // --- 학생 기능 ---
-    // 손들기 버튼을 눌렀을 때, 실시간 신호를 보냄.
-    $raiseHandBtn.click(function () {
+    /**
+     * 학생이 손들기 버튼 눌렀을 때
+     */
+    $raiseHandBtn.click(function (e) {
+        e.preventDefault();
         stompClient.send(`/app/raisehand/${currentRoomNo}`, {},
             JSON.stringify({}));
     });
 
-    // 질문 전송 버튼을 누를 때
+    /**
+     * 학생이 질문 입력 후 질문 전송 버튼을 눌렀을 때
+     */
     $sendQuestionBtn.click(function (e) {
         e.preventDefault();
 
@@ -165,7 +235,9 @@ $(function () {
         $questionInput.val('');
     });
 
-    // 정답 전송 버튼을 누를 때
+    /**
+     * 학생이 정답 입력 후 정답 전송 버튼 눌렀을 때
+     */
     $sendAnswerBtn.click(function (e) {
         e.preventDefault();
 
@@ -346,6 +418,8 @@ function updateBtnByRoomStatus(data) {
 
 /**
  * 버튼의 glow 효과 부여
+ * enbaled가 true일 때 빛나는 효과 추가
+ * false일 때는 CSS 빛나는 효과 삭제
  * @param $el
  * @param enabled
  */
@@ -393,4 +467,26 @@ function stopVisualTimer() {
     }
     // 필요하다면 타이머 패널을 다시 숨깁니다.
     $('#turn-info-panel').hide();
+}
+
+/**
+ * 서버에서 받은 메시지 리스트를 화면에 렌더링하는 함수
+ * @param {Array} messageList - 서버에서 내려준 메시지 배열
+ */
+function renderMessageList(messageList) {
+    const $board = $("#board-area");
+    $board.empty(); // 이전 채팅 내용 초기화 (필요 시 제거 가능)
+
+    if (!Array.isArray(messageList) || messageList.length === 0) {
+        console.log("표시할 메시지가 없습니다.");
+        return;
+    }
+
+    // 서버에서 받은 메시지를 순서대로 화면에 출력
+    messageList.forEach((msg) => {
+        appendBoardLine(msg);
+    });
+
+    // 모든 메시지를 렌더링한 후 스크롤을 맨 아래로 이동
+    $board.scrollTop($board[0].scrollHeight);
 }

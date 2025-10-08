@@ -126,9 +126,48 @@ public class TwentyService {
         return msg;
     }
 
+    /**
+     * 이 게임방의 총 메세지 개수를 가져온다.
+     * @param roomNo
+     * @return
+     */
     public Integer getmsgCntByRoomNo(int roomNo) {
         Integer msgCnt = twentyMapper.getmsgCntByRoomNo(roomNo);
         return msgCnt;
+    }
+
+    /**
+     * 이 게임방의 가장 최신 메세지를 조회
+     * @param roomNo 게임방 식별자
+     * @return logNo, type,userNo,content, cnt
+     */
+    public SendStdMsg getRecentMsgByRoomNo(int roomNo){
+        SendStdMsg msg = twentyMapper.getRecentMsgByRoomNo(roomNo);
+        msg.setCnt(twentyMapper.getmsgCntByRoomNo(roomNo));
+        return msg;
+
+    }
+
+    /**
+     * 게임방의 결과를 update
+     * roomNo를 가진 게임방의 승리여부, 시도 횟수를 업데이트, 승리여부에 따라 winnerNo가 들어가게 된다.
+     * @param room :roomNo,isSuccess, tryCnt,winnerno(승리여부에 따라)
+     */
+    public void updateTwentyRoomResult(TwentyRoom room) {
+        twentyMapper.updateTwentyRoomResult(room);
+    }
+
+    /**
+     * 메세지를 업데이트 하고, 가장 최신의 메세지 리스트를 반환
+     * @param msg logNo, type,userNo,content, cnt, isSuccess, answer(질문이면 - answer, 정답이면 - isSuccess)
+     * @return 메세지 리스트 : logNo, userNo, nickName, type, content
+     */
+    public List<SendStdMsg> updateTwentyMsgLogAndGetMsgList(SendStdMsg msg) {
+        //메세지 업데이트
+        twentyMapper.updateTwentyLog(msg);
+
+        // 전체 메세지 조회
+        return twentyMapper.getTwentyLogList(msg.getRoomNo());
     }
 
 
