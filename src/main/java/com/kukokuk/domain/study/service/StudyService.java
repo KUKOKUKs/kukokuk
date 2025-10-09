@@ -8,9 +8,12 @@ import com.kukokuk.ai.GeminiStudyResponse;
 import com.kukokuk.ai.GeminiStudyResponse.Card;
 import com.kukokuk.ai.GeminiStudyResponse.EssayQuiz;
 import com.kukokuk.ai.GeminiStudyResponse.Quiz;
+import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.common.exception.AppException;
 import com.kukokuk.common.store.RedisJobStatusStore;
 import com.kukokuk.common.util.DailyQuestEnum;
+import com.kukokuk.domain.exp.dto.ExpProcessingDto;
+import com.kukokuk.domain.exp.service.ExpProcessingService;
 import com.kukokuk.domain.quest.mapper.DailyQuestMapper;
 import com.kukokuk.domain.quest.mapper.DailyQuestUserMapper;
 import com.kukokuk.domain.quest.vo.DailyQuest;
@@ -92,6 +95,8 @@ public class StudyService {
 
     private final ObjectMapper objectMapper;
     private final ModelMapper modelMapper;
+
+    private final ExpProcessingService expProcessingService;
 
     private final RedisJobStatusStore<DailyStudySummaryResponse> studyJobStatusStore;
 
@@ -638,24 +643,21 @@ public class StudyService {
         boolean questCompleted = false;
 
         // 수정 전 학습이력이 '학습완료'상태가 아니고, 수정 후 학습이력이 '학습완료' 상태일 경우
-        // 오늘 달성한 도전과제가 있는지 확인하고, 없으면 도전과제 달성이력을 추가한다
+        // 경험치 추가 및 도전과제 달성여부 확인& 업데이트 메소드 호출
         if (!alreadyCompleted && "COMPLETED".equals(updateStudyLogRequest.getStatus())) {
 
-            // 오늘 날짜의 도전과제 수행 이력이 존재하는지 확인
-            DailyQuestUser existQuestUser = dailyQuestUserMapper.getTodayQuestUserByUserNoAndQuestNo(userNo, DailyQuestEnum.COMPLETED_DAILY_STUDY.getDailyQuestNo());
-
-            // 오늘의 도전과제 수행 이력이 존재하지 않을 때만
-            if (existQuestUser == null) {
-                DailyQuestUser dailyQuestUser = new DailyQuestUser();
-                dailyQuestUser.setDailyQuestNo(DailyQuestEnum.COMPLETED_DAILY_STUDY.getDailyQuestNo());
-                dailyQuestUser.setUserNo(userNo);
-
-                dailyQuestUserMapper.insertDailyQuestUser(dailyQuestUser);
-                log.info("오늘의 도전과제를 달성했습니다");
-            }
-
-            questCompleted = true;
+            ExpProcessingDto expProcessingDto = new ExpProcessingDto(
+                userNo,
+                ContentTypeEnum.STUDY.name(),
+                existedlog.getDailyStudyNo(),
+                20,
+                DailyQuestEnum.COMPLETED_DAILY_STUDY.getDailyQuestNo()
+            );
+            expProcessingService.expProcessing(expProcessingDto);
+            log.info("오늘의 도전과제를 달성했습니다");
         }
+
+        questCompleted = true;
 
         // 수정할 컬럼만 담은 VO객체로 수정 mapper 호출
         DailyStudyLog updateLog = modelMapper.map(updateStudyLogRequest, DailyStudyLog.class);

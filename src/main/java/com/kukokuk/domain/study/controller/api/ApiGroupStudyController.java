@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/groups/{groupNo}")
 @RequiredArgsConstructor
-public class ApiGroupController {
+public class ApiGroupStudyController {
 
     private final GroupStudyService groupStudyService;
 
