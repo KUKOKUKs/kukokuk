@@ -37,6 +37,7 @@ public class Rank {
     private String nickname;
     private Integer level;
     private String profileFilename;
+    private Integer experiencePoints;  // 레벨 랭킹용 경험치 필드 추가
 
     // 프로필 이미지 경로 생성
     public String getProfileFileUrl() {

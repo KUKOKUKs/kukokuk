@@ -158,257 +158,29 @@ public class RankService {
         return ranks;
     }
 
-//    /**
-//     * 컨텐츠 타입 코드를 한글명으로 변환
-//     */
-//    private String getContentTypeName(String contentType) {
-//        switch (contentType) {
-//            case "SPEED":
-//                return "스피드퀴즈";
-//            case "LEVEL":
-//                return "단계별퀴즈";
-//            case "DICTATION":
-//                return "받아쓰기";
-//            default:
-//                return "알 수 없음";
-//        }
-//    }
-//
-//    /**
-//     * 새로운 월별 랭킹 등록 (첫 플레이)
-//     * @param contentType 컨텐츠 타입
-//     * @param score 계산된 점수
-//     * @param userNo 사용자 번호
-//     */
-//    @Transactional
-//    public void insertMonthlyRanking(String contentType, double score, int userNo) {
-//        String currentMonth = RankingUtil.getCurrentMonth();
-//        log.info("insertMonthlyRanking 서비스 실행 - 사용자: {}, 컨텐츠: {}, 점수: {}, 월: {}",
-//            userNo, contentType, score, currentMonth);
-//
-//        Ranking ranking = new Ranking();
-//        ranking.setContentType(contentType);
-//        ranking.setPlayCount(1);
-//        ranking.setTotalScore(BigDecimal.valueOf(score));
-//        ranking.setRankMonth(currentMonth);
-//        ranking.setUserNo(userNo);
-//
-//        rankingMapper.insertRanking(ranking);
-//        log.info("신규 월별 랭킹 등록 완료 - 랭킹번호: {}, 월: {}", ranking.getRankNo(), currentMonth);
-//    }
-//
-//    /**
-//     * 기존 월별 랭킹 업데이트 (재플레이 시 누적 평균 계산)
-//     * @param rankNo 기존 랭킹 번호
-//     * @param newScore 새로운 점수
-//     */
-//    @Transactional
-//    public void updateMonthlyRanking(int rankNo, double newScore) {
-//        log.info("updateMonthlyRanking 서비스 실행 - 랭킹번호: {}, 새점수: {}", rankNo, newScore);
-//
-//        Ranking existingRanking = rankingMapper.getRankingByRankNo(rankNo);
-//        if (existingRanking == null) {
-//            log.error("랭킹 정보를 찾을 수 없음: {}", rankNo);
-//            throw new IllegalArgumentException("랭킹 정보를 찾을 수 없습니다.");
-//        }
-//
-//        int currentPlayCount = existingRanking.getPlayCount();
-//        double currentTotalScore = existingRanking.getTotalScore().doubleValue();
-//
-//        double newCumulativeScore = (currentTotalScore * currentPlayCount) + newScore;
-//        int newPlayCount = currentPlayCount + 1;
-//        double newAverageScore = newCumulativeScore / newPlayCount;
-//
-//        log.info("월별 평균 점수 계산: {}회차 {} + 새점수 {} = 평균 {} ({}월)",
-//            currentPlayCount, currentTotalScore, newScore, newAverageScore,
-//            existingRanking.getRankMonth());
-//
-//        existingRanking.setPlayCount(newPlayCount);
-//        existingRanking.setTotalScore(BigDecimal.valueOf(newAverageScore));
-//
-//        rankingMapper.updateRanking(existingRanking);
-//        log.info("월별 랭킹 업데이트 완료");
-//    }
-//
-//    /**
-//     * 월별 랭킹 처리 (기존 랭킹이 있으면 업데이트, 없으면 신규 등록)
-//     * 각 컨텐츠 플레이 완료 후 호출되어야 함
-//     * @param contentType 컨텐츠 타입
-//     * @param score 점수
-//     * @param userNo 사용자 번호
-//     */
-//    @Transactional
-//    public void processMonthlyRanking(String contentType, double score, int userNo) {
-//        String currentMonth = RankingUtil.getCurrentMonth();
-//        log.info("processMonthlyRanking 서비스 실행 - 사용자: {}, 컨텐츠: {}, 점수: {}, 현재월: {}",
-//            userNo, contentType, score, currentMonth);
-//
-//        Ranking existingRanking = rankingMapper.getRankingByUserAndContent(userNo, contentType);
-//
-//        if (existingRanking == null) {
-//            insertMonthlyRanking(contentType, score, userNo);
-//            log.info("현재월({}) 신규 랭킹 등록 완료", currentMonth);
-//        } else {
-//            updateMonthlyRanking(existingRanking.getRankNo(), score);
-//            log.info("현재월({}) 기존 랭킹 업데이트 완료", currentMonth);
-//        }
-//    }
-//
-//    /**
-//     * 전체 월별 랭킹 목록 조회 (현재 월 기준)
-//     * @param contentType 컨텐츠 타입
-//     * @param limit 조회할 개수
-//     * @return 전체 랭킹 목록 (점수 높은 순)
-//     */
-//    public List<Ranking> getGlobalRankings(String contentType, int limit) {
-//        log.info("getGlobalRankings 서비스 실행 - 컨텐츠: {}, 개수: {}, 현재월: {}",
-//            contentType, limit, RankingUtil.getCurrentMonth());
-//        return rankingMapper.getGlobalRankings(contentType, limit);
-//    }
-//
-//    /**
-//     * 전체 월별 랭킹 목록 조회 (특정 월 기준)
-//     * @param contentType 컨텐츠 타입
-//     * @param rankMonth 조회할 월 (YYYY-MM 형태)
-//     * @param limit 조회할 개수
-//     * @return 전체 랭킹 목록 (점수 높은 순)
-//     */
-//    public List<Ranking> getGlobalRankingsByMonth(String contentType, String rankMonth, int limit) {
-//        log.info("getGlobalRankingsByMonth 서비스 실행 - 컨텐츠: {}, 월: {}, 개수: {}",
-//            contentType, rankMonth, limit);
-//        return rankingMapper.getGlobalRankingsByMonth(contentType, rankMonth, limit);
-//    }
-//
-//    /**
-//     * 전체 월별 랭킹 목록을 DTO로 변환하여 조회 (현재 월 기준)
-//     * @param contentType 컨텐츠 타입 코드
-//     * @param limit 조회할 개수
-//     * @return 랭킹 DTO 목록
-//     */
-//    public List<RankingDto> getGlobalRankingDtos(String contentType, int limit) {
-//        List<Ranking> rankings = getGlobalRankings(contentType, limit);
-//        String typeName = getContentTypeName(contentType);
-//
-//        return rankings.stream()
-//            .map(ranking -> new RankingDto(ranking, typeName))
-//            .collect(Collectors.toList());
-//    }
-//
-//    /**
-//     * 전체 월별 랭킹 목록을 DTO로 변환하여 조회 (특정 월 기준)
-//     * @param contentType 컨텐츠 타입 코드
-//     * @param rankMonth 조회할 월
-//     * @param limit 조회할 개수
-//     * @return 랭킹 DTO 목록
-//     */
-//    public List<RankingDto> getGlobalRankingDtosByMonth(String contentType, String rankMonth, int limit) {
-//        List<Ranking> rankings = getGlobalRankingsByMonth(contentType, rankMonth, limit);
-//        String typeName = getContentTypeName(contentType);
-//
-//        return rankings.stream()
-//            .map(ranking -> new RankingDto(ranking, typeName))
-//            .collect(Collectors.toList());
-//    }
-//
-//    /**
-//     * 그룹 내 월별 랭킹 목록 조회 (현재 월 기준)
-//     * @param contentType 컨텐츠 타입
-//     * @param groupNo 그룹 번호
-//     * @param limit 조회할 개수
-//     * @return 그룹 내 랭킹 목록 (점수 높은 순)
-//     */
-//    public List<Ranking> getGroupRankings(String contentType, int groupNo, int limit) {
-//        log.info("getGroupRankings 서비스 실행 - 컨텐츠: {}, 그룹: {}, 개수: {}, 현재월: {}",
-//            contentType, groupNo, limit, RankingUtil.getCurrentMonth());
-//        return rankingMapper.getGroupRankings(contentType, groupNo, limit);
-//    }
-//
-//    /**
-//     * 그룹 내 월별 랭킹 목록 조회 (특정 월 기준)
-//     * @param contentType 컨텐츠 타입
-//     * @param groupNo 그룹 번호
-//     * @param rankMonth 조회할 월 (YYYY-MM 형태)
-//     * @param limit 조회할 개수
-//     * @return 그룹 내 랭킹 목록 (점수 높은 순)
-//     */
-//    public List<Ranking> getGroupRankingsByMonth(String contentType, int groupNo, String rankMonth, int limit) {
-//        log.info("getGroupRankingsByMonth 서비스 실행 - 컨텐츠: {}, 그룹: {}, 월: {}, 개수: {}",
-//            contentType, groupNo, rankMonth, limit);
-//        return rankingMapper.getGroupRankingsByMonth(contentType, groupNo, rankMonth, limit);
-//    }
-//
-//    /**
-//     * 전체 랭킹에서 사용자 순위 조회 (현재 월 기준)
-//     * @param userNo 사용자 번호
-//     * @param contentType 컨텐츠 타입
-//     * @return 전체 순위 (1부터 시작)
-//     */
-//    public int getGlobalUserRanking(int userNo, String contentType) {
-//        log.info("getGlobalUserRanking 서비스 실행 - 사용자: {}, 컨텐츠: {}, 현재월: {}",
-//            userNo, contentType, RankingUtil.getCurrentMonth());
-//        return rankingMapper.getGlobalUserRanking(userNo, contentType);
-//    }
-//
-//    /**
-//     * 전체 랭킹에서 사용자 순위 조회 (특정 월 기준)
-//     * @param userNo 사용자 번호
-//     * @param contentType 컨텐츠 타입
-//     * @param rankMonth 조회할 월 (YYYY-MM 형태)
-//     * @return 전체 순위 (1부터 시작)
-//     */
-//    public int getGlobalUserRankingByMonth(int userNo, String contentType, String rankMonth) {
-//        log.info("getGlobalUserRankingByMonth 서비스 실행 - 사용자: {}, 컨텐츠: {}, 월: {}",
-//            userNo, contentType, rankMonth);
-//        return rankingMapper.getGlobalUserRankingByMonth(userNo, contentType, rankMonth);
-//    }
-//
-//    /**
-//     * 사용자의 특정 컨텐츠 현재 월 랭킹 조회
-//     * @param userNo 사용자 번호
-//     * @param contentType 컨텐츠 타입
-//     * @return 랭킹 정보, 없으면 null
-//     */
-//    public Ranking getRankingByUserAndContent(int userNo, String contentType) {
-//        log.info("getRankingByUserAndContent 서비스 실행 - 사용자: {}, 컨텐츠: {}, 현재월: {}",
-//            userNo, contentType, RankingUtil.getCurrentMonth());
-//        return rankingMapper.getRankingByUserAndContent(userNo, contentType);
-//    }
-//
-//    /**
-//     * 사용자의 특정 컨텐츠 특정 월 랭킹 조회
-//     * @param userNo 사용자 번호
-//     * @param contentType 컨텐츠 타입
-//     * @param rankMonth 조회할 월 (YYYY-MM 형태)
-//     * @return 랭킹 정보, 없으면 null
-//     */
-//    public Ranking getRankingByUserContentAndMonth(int userNo, String contentType, String rankMonth) {
-//        log.info("getRankingByUserContentAndMonth 서비스 실행 - 사용자: {}, 컨텐츠: {}, 월: {}",
-//            userNo, contentType, rankMonth);
-//        return rankingMapper.getRankingByUserContentAndMonth(userNo, contentType, rankMonth);
-//    }
-//
-//    /**
-//     * 사용자의 모든 랭킹 삭제
-//     * @param userNo 사용자 번호
-//     */
-//    @Transactional
-//    public void deleteRankingsByUser(int userNo) {
-//        log.info("deleteRankingsByUser 서비스 실행 - 사용자: {}", userNo);
-//        rankingMapper.deleteRankingsByUser(userNo);
-//        log.info("사용자 랭킹 삭제 완료");
-//    }
-//
-//    /**
-//     * 사용자의 월별 랭킹 히스토리 조회
-//     * @param userNo 사용자 번호
-//     * @param contentType 컨텐츠 타입
-//     * @param limit 조회할 개수 (최근 월부터)
-//     * @return 월별 랭킹 히스토리 목록
-//     */
-//    public List<Ranking> getUserMonthlyHistory(int userNo, String contentType, int limit) {
-//        log.info("getUserMonthlyHistory 서비스 실행 - 사용자: {}, 컨텐츠: {}, 개수: {}",
-//            userNo, contentType, limit);
-//        return rankingMapper.getUserMonthlyHistory(userNo, contentType, limit);
-//    }
+    /**
+     * 레벨 기준 사용자를 포함한 상위 랭크 목록 조회
+     * <p>
+     *     날짜 상관없이 레벨과 경험치로만 정렬
+     *     정확한 데이터를 가져오기 위해 RANK() 사용으로 limit 개수 보다 많을 수 있음
+     *     서비스단에서 가공 필요
+     * @param userNo 사용자 번호
+     * @param limit 조회할 개수
+     * @return 레벨 랭크 목록 정보(level DESC, experiencePoints DESC 정렬)
+     */
+    public List<Rank> getLevelRanksIncludeUser(int userNo, int limit) {
+        log.info("getLevelRanksIncludeUser() 서비스 실행 userNo: {}, limit: {}", userNo, limit);
 
+        // RankRequestDto 생성
+        RankRequestDto rankRequestDto = RankRequestDto.builder()
+            .userNo(userNo)
+            .limit(limit)
+            .build();
+
+        // DB에서 RANK() 적용하여 사용자를 포함한 레벨 랭크 목록 조회
+        List<Rank> fetchRanks = rankMapper.getLevelRanksIncludeUser(rankRequestDto);
+
+        // 가공 메소드 호출하여 limit 유지 + 내 순위 포함 처리
+        return processRanksIncludeUserRank(fetchRanks, userNo, limit);
+    }
 }
