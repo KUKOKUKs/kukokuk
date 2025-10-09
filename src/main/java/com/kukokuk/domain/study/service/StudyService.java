@@ -298,6 +298,14 @@ public class StudyService {
         // dailyStudyEssayQuizLogNo 가 null이 아니면 서술형퀴즈완료여부 true로 설정
         boolean essayQuizCompleted = dto.getDailyStudyEssayQuizLogNo() != null;
 
+        // material의 필드가 null일 경우 대비
+        String school = (material != null && material.getSchool() != null)
+            ? material.getSchool()
+            : null;
+        Integer grade = (material != null && material.getGrade() != null)
+            ? material.getGrade()
+            : null;
+
         return DailyStudySummaryResponse.builder()
             .dailyStudyNo(study.getDailyStudyNo())
             .title(study.getTitle())
@@ -306,8 +314,8 @@ public class StudyService {
             .status(status)
             .studiedCardCount(studiedCardCount)
             .progressRate(progressRate)
-            .school(material.getSchool())
-            .grade(material.getGrade())
+            .school(school)
+            .grade(grade)
             .sequence(material.getSequence())
             .essayQuizCompleted(essayQuizCompleted)
             .build();
@@ -351,6 +359,7 @@ public class StudyService {
             DailyStudy dailyStudy = insertDailyStudyWithOtherComponents(geminiStudyResponse, dailyStudyMaterialNo, studyDifficultyNo);
             log.info("저장된 학습자료 : " + dailyStudy.toString());
 
+            // 생성된 학습자료 반환 
             return dailyStudy;
 
         } catch (JsonProcessingException e){

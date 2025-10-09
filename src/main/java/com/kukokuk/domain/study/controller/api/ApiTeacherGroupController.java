@@ -40,35 +40,35 @@ public class ApiTeacherGroupController {
         // 그룹의 학습자료 업로드 요청을 처리하는 서비스. jobStatus를 생성하고, Redis 큐에 작업 적재
         List<String> jobIdList = groupStudyService.uploadGroupMaterials(files, groupNo, difficulty);
 
-        return ResponseEntityUtils.ok(jobIdList);
+        return ResponseEntityUtils.ok("그룹 자료 업로드 성공",jobIdList);
     }
 
     // 그룹 전체의 진행중인 job 목록 조회
     @GetMapping("/materials/jobs")
-    public ResponseEntity<List<JobStatusResponse<GroupParseMaterialResponse>>> getGroupJobs(
+    public ResponseEntity<ApiResponse<List<JobStatusResponse<GroupParseMaterialResponse>>>> getGroupJobs(
         @PathVariable int groupNo
     ) {
         List<JobStatusResponse<GroupParseMaterialResponse>> jobs =
             groupStudyService.getAllJobsByGroup(groupNo);
-        return ResponseEntity.ok(jobs);
+        return ResponseEntityUtils.ok(jobs);
     }
 
     // 특정 jobId 상태 조회 (폴링용)
     @GetMapping("/materials/{jobId}")
-    public ResponseEntity<JobStatusResponse<GroupParseMaterialResponse>> getJobStatus(
+    public ResponseEntity<ApiResponse<JobStatusResponse<GroupParseMaterialResponse>>> getJobStatus(
         @PathVariable int groupNo,
         @PathVariable String jobId
     ) {
         JobStatusResponse<GroupParseMaterialResponse> jobStatus =
             groupStudyService.getJobStatus(jobId);
-        return ResponseEntity.ok(jobStatus);
+        return ResponseEntityUtils.ok(jobStatus);
     }
 
     // 특정 그룹의 일일학습자료 목록 조회
     @GetMapping("/studies")
     public ResponseEntity<ApiResponse<List<TeacherDailyStudyResponse>>> getGroupDailyStudies(
         @PathVariable int groupNo) {
-        List<TeacherDailyStudyResponse> dailyStudies = groupStudyService.getGroupDailyStudies(groupNo);
+        List<TeacherDailyStudyResponse> dailyStudies = groupStudyService.getTeacherGroupDailyStudies(groupNo);
         return ResponseEntityUtils.ok(dailyStudies);
     }
 }

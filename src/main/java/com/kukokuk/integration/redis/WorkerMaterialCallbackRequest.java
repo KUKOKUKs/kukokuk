@@ -12,4 +12,5 @@ public class WorkerMaterialCallbackRequest {
     private int dailyStudyMaterialNo;
     private Integer difficulty;
     private String content;
+    private int groupNo;
 }

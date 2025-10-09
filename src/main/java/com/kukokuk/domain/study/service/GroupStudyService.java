@@ -9,26 +9,33 @@ import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
 import com.kukokuk.domain.study.dto.GroupParseMaterialResponse;
 import com.kukokuk.domain.study.dto.StudyMaterialJobPayload;
 import com.kukokuk.domain.study.dto.TeacherDailyStudyResponse;
+import com.kukokuk.domain.study.dto.UserStudyRecommendationDto;
 import com.kukokuk.domain.study.mapper.DailyStudyMapper;
 import com.kukokuk.domain.study.mapper.DailyStudyMaterialMapper;
 import com.kukokuk.domain.study.mapper.GroupStudyMapper;
+import com.kukokuk.domain.study.vo.DailyStudy;
 import com.kukokuk.domain.study.vo.DailyStudyMaterial;
+import com.kukokuk.domain.user.vo.User;
 import com.kukokuk.integration.redis.WorkerMaterialCallbackRequest;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class GroupStudyService {
@@ -140,8 +147,12 @@ public class GroupStudyService {
 
         // 3. difficulty가 null이 아니면, LLM AI 호출 및 재가공 자료 DB에 저장
         if(request.getDifficulty() != null) {
-            studyService.createDailyStudyByAi(dailyStudyMaterialNo, request.getDifficulty());
+            DailyStudy dailyStudy = studyService.createDailyStudyByAi(dailyStudyMaterialNo, request.getDifficulty());
+
+            // dailyStudy에 groupNo 추가
+            dailyStudyMapper.updateGroupNo(dailyStudy.getDailyStudyNo(), request.getGroupNo());
         }
+
 
         // dailyStudyMaterialNo로 material 조회
         material = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
@@ -183,7 +194,7 @@ public class GroupStudyService {
     }
 
     // 교사 화면에서 업로드한 파일을 기반으로 재가공된 일일학습자료 목록을 조회
-    public List<TeacherDailyStudyResponse> getGroupDailyStudies(int groupNo) {
+    public List<TeacherDailyStudyResponse> getTeacherGroupDailyStudies(int groupNo) {
         // 1. 그룹 내 일일학습 목록 조회
         List<TeacherDailyStudyResponse> studies  = groupStudyMapper.getTeacherDailyStudiesByGroupNo(groupNo);
 
@@ -197,5 +208,28 @@ public class GroupStudyService {
         }
 
         return studies;
+    }
+
+    /**
+     * 그룹 학습자료 목록 조회 서비스
+     * 그룹에 업로드된 학습자료는 이미 AI 재구성 완료 상태이므로
+     * 단순히 DB에서 조회 후 DTO 변환하여 반환한다.
+     */
+    public List<DailyStudySummaryResponse> getGroupDailyStudies(User user, int rows, int groupNo) {
+        log.info("getGroupDailyStudies() 실행 - groupNo={}, rows={}", groupNo, rows);
+
+        Map<String, Object> dailyStudyCondition = new HashMap<>();
+        dailyStudyCondition.put("rows", rows);
+
+        // Mapper 호출 (단순 SELECT)
+        List<UserStudyRecommendationDto> groupStudies = dailyStudyMapper.getDailyStudiessByGroupAndUser(
+            groupNo,
+            user.getUserNo(),
+            dailyStudyCondition);
+
+        // DTO 변환
+        return groupStudies.stream()
+            .map(studyService::mapToDailyStudySummaryResponse)
+            .collect(Collectors.toList());
     }
 }

@@ -25,7 +25,7 @@ public class DailyStudyMaterial {
     private String sourceFilename;
     private String filePath;
     private Integer groupNo;
-    private Integer sequence;
+    private int sequence;
     private Date createdDate;
     private Date updatedDate;
 }
