@@ -164,4 +164,102 @@
             DAILY_STUDY_LOG_NO = #{dailyStudyLogNo}
     </update>
 
+    <!--
+     List<DailyStudyLogDetailResponse> getStudyLogsDetailByUserNo(@Param("userNo") int userNo,
+        @Param("condition") Map<String, Object> condition);
+    -->
+    <select id="getStudyLogsDetailByUserNo" resultType="DailyStudyLogDetailResponse">
+        SELECT
+            l.DAILY_STUDY_LOG_NO      AS dailyStudyLogNo,        -- 학습 이력 번호
+            l.DAILY_STUDY_NO          AS dailyStudyNo,           -- 일일 학습 번호
+            s.TITLE                   AS dailyStudyTitle,        -- 일일 학습 제목
+            l.STATUS                  AS status,                 -- 학습 상태
+            l.CREATED_DATE            AS startedDate,            -- 학습 시작일
+            l.UPDATED_DATE            AS updatedDate,            -- 마지막 업데이트일
+            s.CARD_COUNT              AS totalCardCount,         -- 전체 학습 카드 수
+            l.STUDIED_CARD_COUNT    AS completedCardCount,       -- 완료 카드 수
+            s.DIFFICULTY              AS difficulty,             -- 학습 난이도 (1~6)
+            -- 퀴즈 관련
+            IFNULL(qt.totalQuizCount, 0) AS totalQuizCount,
+            IFNULL(qs.successedQuizCount, 0) AS successedQuizCount,
+
+            -- 서술형 제출 여부
+            CASE
+                WHEN eqLog.hasEssay > 0 THEN TRUE
+                ELSE FALSE
+            END AS essaySubmitted
+
+        FROM KUKOKUK_DAILY_STUDY_LOGS l
+            JOIN KUKOKUK_DAILY_STUDIES s
+            ON l.DAILY_STUDY_NO = s.DAILY_STUDY_NO
+
+            -- ✅ (1) 사용자별 정답 개수 서브쿼리
+            LEFT JOIN (
+                SELECT
+                    q.DAILY_STUDY_NO,
+                    ql.USER_NO,
+                    SUM(CASE WHEN ql.IS_SUCCESS = 'Y' THEN 1 ELSE 0 END) AS successedQuizCount
+                FROM KUKOKUK_DAILY_STUDY_QUIZZES q
+                    LEFT JOIN KUKOKUK_DAILY_STUDY_QUIZ_LOGS ql
+                    ON ql.DAILY_STUDY_QUIZ_NO = q.DAILY_STUDY_QUIZ_NO
+                GROUP BY q.DAILY_STUDY_NO, ql.USER_NO
+            ) qs
+            ON qs.DAILY_STUDY_NO = l.DAILY_STUDY_NO
+                AND qs.USER_NO = l.USER_NO
+
+            -- ✅ (2) 일일학습별 총 퀴즈 개수 서브쿼리
+            LEFT JOIN (
+                SELECT
+                    DAILY_STUDY_NO,
+                    COUNT(DISTINCT DAILY_STUDY_QUIZ_NO) AS totalQuizCount
+                FROM KUKOKUK_DAILY_STUDY_QUIZZES
+                GROUP BY DAILY_STUDY_NO
+            ) qt
+            ON qt.DAILY_STUDY_NO = l.DAILY_STUDY_NO
+
+            -- ✅ 서술형 제출 여부 (로그 단위 그룹화)
+            LEFT JOIN (
+                SELECT
+                    EQ.DAILY_STUDY_NO,
+                    EQL.USER_NO,
+                    COUNT(*) AS hasEssay
+                FROM KUKOKUK_DAILY_STUDY_ESSAY_QUIZ_LOGS EQL
+                    LEFT JOIN KUKOKUK_DAILY_STUDY_ESSAY_QUIZZES EQ
+                    ON EQL.DAILY_STUDY_ESSAY_QUIZ_NO = EQ.DAILY_STUDY_ESSAY_QUIZ_NO
+                GROUP BY EQ.DAILY_STUDY_NO, EQL.USER_NO
+            ) eqLog
+            ON eqLog.DAILY_STUDY_NO = s.DAILY_STUDY_NO
+                AND eqLog.USER_NO = l.USER_NO
+
+        WHERE l.USER_NO = #{userNo}
+
+        <if test="condition.status != null and condition.status != ''">
+            AND l.STATUS = #{condition.status}
+        </if>
+
+        <if test="condition.order != null">
+            <choose>
+                <when test="condition.order == 'updatedDate'">
+                    ORDER BY
+                    l.UPDATED_DATE
+                </when>
+                <otherwise>
+                    ORDER BY l.UPDATED_DATE DESC
+                </otherwise>
+            </choose>
+        </if>
+
+        <if test="condition.rows != null and condition.offset != null">
+            LIMIT #{condition.rows} OFFSET #{condition.offset}
+        </if>
+    </select>
+
+    <!--
+     int getStudyLogsTotalCount(int userNo);
+    -->
+    <select id="countStudyLogsByUserNo" resultType="int">
+        SELECT COUNT(*)
+        FROM KUKOKUK_DAILY_STUDY_LOGS
+        WHERE USER_NO = #{userNo}
+    </select>
 </mapper>

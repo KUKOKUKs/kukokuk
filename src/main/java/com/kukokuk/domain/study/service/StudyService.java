@@ -18,6 +18,7 @@ import com.kukokuk.domain.quest.vo.DailyQuestUser;
 import com.kukokuk.domain.quiz.dto.QuizWithLogDto;
 import com.kukokuk.domain.study.dto.DailyQuestDto;
 import com.kukokuk.domain.study.dto.DailyStudyJobPayload;
+import com.kukokuk.domain.study.dto.DailyStudyLogDetailResponse;
 import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
 import com.kukokuk.domain.study.dto.MainStudyViewDto;
 import com.kukokuk.domain.study.dto.ParseMaterialRequest;
@@ -911,5 +912,57 @@ public class StudyService {
         dto.setLog(studyLog);
 
         return dto;
+    }
+
+    /**
+     * 사용자의 일일 학습 이력 상세 목록을 조회한다.
+     *
+     * 페이징 처리(page, rows)에 따라 조회 범위를 계산하고,
+     * DB 조회 조건(Map)을 구성하여 Mapper를 호출한다.
+     *
+     * - SQL에서는 학습 로그(l) 기준으로 JOIN을 수행하며
+     *   퀴즈 통계(totalQuizCount, successedQuizCount)와
+     *   서술형 제출 여부(essaySubmitted)까지 한 번에 반환한다.
+     *
+     * @param userNo 조회할 사용자 번호
+     * @param page 현재 페이지 번호 (1부터 시작)
+     * @param rows 한 페이지당 조회할 행의 개수
+     * @return 사용자의 일일 학습 이력 상세 목록 리스트
+     */
+    public List<DailyStudyLogDetailResponse> getStudyLogsDetail(int userNo, int page, int rows){
+        log.info("getStudyLogsDetail 서비스 메소드 실행");
+
+        // (1) 페이지네이션 offset 계산
+        // ex) page=1 → offset=0, page=2 → offset=rows
+        int offset = (page - 1) * rows;
+
+        // (2) 조회 조건 맵 구성
+        // SQL에서 사용할 파라미터로 전달됨 (MyBatis의 @Param("condition") 매핑)
+        Map<String, Object> dailyStudyLogCondition = new HashMap<>();
+        dailyStudyLogCondition.put("rows", rows);
+        dailyStudyLogCondition.put("offset", offset);
+        dailyStudyLogCondition.put("order", "updatedDate");
+
+        // (3) Mapper 호출
+        // - SQL 내부에서 JOIN을 통해 아래 정보를 한 번에 조회
+        //   ① 학습 기본 정보 (제목, 상태, 카드 수)
+        //   ② 객관식 퀴즈 통계 (총 개수, 정답 개수)
+        //   ③ 서술형 퀴즈 제출 여부
+        List<DailyStudyLogDetailResponse> dailyStudyLogs = dailyStudyLogMapper.getStudyLogsDetailByUserNo(
+            userNo, dailyStudyLogCondition);
+
+        // (4) 결과 반환
+        return dailyStudyLogs;
+    }
+
+    /**
+     * 해당 사용자의 학습 이력 개수를 조회해서 반환하는 서비스
+     * @param userNo
+     * @return
+     */
+    public int getStudyLogCount(int userNo) {
+        log.info("getStudyLogCount 서비스 메소드 실행");
+
+        return dailyStudyLogMapper.getStudyLogsTotalCount(userNo);
     }
 }
