@@ -8,6 +8,7 @@ import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.rank.dto.RankRequestDto;
 import com.kukokuk.domain.rank.dto.RanksResponseDto;
 import com.kukokuk.domain.rank.service.RankService;
+import com.kukokuk.domain.rank.vo.Rank;
 import com.kukokuk.security.SecurityUser;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -87,5 +88,24 @@ public class ApiRankController {
         // 사용자 랭크 포함 랭크 목록 정보(groupNo 여부에 따라 그룹/일반 컨텐츠별 랭크 목록)
         return ResponseEntityUtils.ok(ranksResponseDtos);
     }
+    /**
+     * 레벨 기준 사용자를 포함한 상위 랭크 목록 조회
+     * @param securityUser 사용자 정보
+     * @return 레벨 랭크 목록 정보
+     */
+    @GetMapping("/level")
+    public ResponseEntity<ApiResponse<List<Rank>>> levelRanks(
+        @AuthenticationPrincipal SecurityUser securityUser) {
+        log.info("ApiRankController levelRanks() 컨트롤러 실행");
 
+        int userNo = securityUser.getUser().getUserNo(); // 사용자 번호
+
+        // 레벨 기준 랭크 목록 조회
+        List<Rank> levelRanks = rankService.getLevelRanksIncludeUser(
+            userNo
+            , PaginationEnum.COMPONENT_ROWS
+        );
+
+        return ResponseEntityUtils.ok(levelRanks);
+    }
 }

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * 랭킹 페이지 뷰 컨트롤러
- *
  */
 @Log4j2
 @Controller
@@ -30,8 +29,9 @@ public class RankController {
 
     /**
      * 순위 페이지
+     *
      * @param securityUser 사용자 정보
-     * @param model speedQuizRanks, levelQuizRanks, dictationQuizRanks
+     * @param model        speedQuizRanks, levelQuizRanks, dictationQuizRanks
      * @return 순위 페이지
      */
     @GetMapping
@@ -66,7 +66,10 @@ public class RankController {
                 rankService.getContentRanksIncludeUserByMonth(rankRequestDto)
             );
         }
-
+        // 레벨 랭킹 조회 (날짜 상관없이)
+        model.addAttribute("levelRanks",
+            rankService.getLevelRanksIncludeUser(userNo, PaginationEnum.COMPONENT_ROWS)
+        );
         return "rank/main";
     }
 }
