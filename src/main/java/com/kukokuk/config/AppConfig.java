@@ -30,6 +30,7 @@ public class AppConfig {
     public Dotenv dotenv() {
         // .env 파일을 읽어서 환경변수로 사용
         return Dotenv.configure().directory("./")
+            .ignoreIfMissing() // .env파일이 없으면, OS 환경변수(System.getenv)를 사용 - 배포 환경
             .load();
     }
 }

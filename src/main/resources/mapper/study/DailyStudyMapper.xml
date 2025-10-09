@@ -197,4 +197,86 @@
             M.DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo}
     </select>
 
+    <!--
+    void updateGroupNo(@Param("dailyStudyNo") int dailyStudyNo, @Param("groupNo") int groupNo);
+    -->
+    <update id="updateGroupNo">
+        UPDATE KUKOKUK_DAILY_STUDIES
+        SET GROUP_NO = #{groupNo}
+        WHERE DAILY_STUDY_NO = #{dailyStudyNo}
+    </update>
+
+    <!--
+    List<UserStudyRecommendationDto> getDailyStudiessByGroupAndUser(
+        @Param("groupNo") int groupNo,
+        @Param("userNo") int userNo,
+        @Param("condition") Map<String, Object> condition);
+    -->
+    <select id="getDailyStudiessByGroupAndUser" resultMap="UserStudyRecommendationDtoResultMap">
+        SELECT
+            S.DAILY_STUDY_NO,
+            S.TITLE,
+            S.EXPLANATION,
+            S.STUDY_DIFFICULTY,
+            S.CARD_COUNT,
+            S.CREATED_DATE AS STUDY_CREATED_DATE,
+            S.UPDATED_DATE AS STUDY_UPDATED_DATE,
+
+            L.DAILY_STUDY_LOG_NO,
+            L.STUDIED_CARD_COUNT,
+            L.STATUS,
+            L.CREATED_DATE AS LOG_CREATED_DATE,
+            L.UPDATED_DATE AS LOG_UPDATED_DATE,
+            L.USER_NO,
+
+            M.DAILY_STUDY_MATERIAL_NO,
+            M.SCHOOL,
+            M.GRADE,
+            M.SEQUENCE,
+
+            EL.DAILY_STUDY_ESSAY_QUIZ_LOG_NO
+        FROM
+            KUKOKUK_DAILY_STUDY_MATERIALS M
+                LEFT OUTER JOIN KUKOKUK_DAILY_STUDIES S
+                                ON M.DAILY_STUDY_MATERIAL_NO = S.DAILY_STUDY_MATERIAL_NO
+                LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_LOGS L
+                                ON S.DAILY_STUDY_NO = L.DAILY_STUDY_NO
+                LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_ESSAY_QUIZZES E
+                                ON S.DAILY_STUDY_NO = E.DAILY_STUDY_NO
+                LEFT OUTER JOIN KUKOKUK_DAILY_STUDY_ESSAY_QUIZ_LOGS EL
+                                ON E.DAILY_STUDY_ESSAY_QUIZ_NO = EL.DAILY_STUDY_ESSAY_QUIZ_NO
+                                    AND EL.USER_NO = #{userNo}
+        WHERE
+            /* 사용자의 학교/학년에 맞는 원본데이터 */
+            M.GROUP_NO = #{groupNo}
+            /* 그 원본데이터에 연결된 학습이력이 아예 존재하지 않거나,
+                해당 사용자와 연결된 학습이력이 있고 학습완료 상태가 아닐때만 포함 */
+          AND (
+            L.USER_NO IS NULL
+                OR (L.USER_NO = #{userNo}
+                AND (
+                        L.STATUS != 'COMPLETED'
+                            OR (L.STATUS = 'COMPLETED' AND EL.DAILY_STUDY_ESSAY_QUIZ_LOG_NO IS NULL)
+                        )
+                )
+            )
+        ORDER BY
+            /* 사용자가 이미 학습 진행중인 학습자료가 우선순위가 높도록 설정 */
+            CASE
+                WHEN L.STATUS = 'COMPLETED' THEN 0
+                WHEN L.STATUS = 'IN_PROGRESS' THEN 1
+                ELSE 2
+                END,
+            /* 사용자가 이미 학습 진행중인 학습자료 중에서도 가장 최근에 학습한 학습자료가 먼저
+                학습이력이 아예 NULL일 경우는 UPDATE_DATE 정렬해서 고려되지 않아야 하므로 후순위로 */
+            CASE
+                WHEN L.UPDATED_DATE IS NULL THEN 1
+                ELSE 0
+                END,
+            L.UPDATED_DATE DESC,
+            /* 학습자료 원본데이터의 자료순서대로 */
+            M.SEQUENCE ASC
+            LIMIT 0, #{condition.rows}
+    </select>
+
 </mapper>

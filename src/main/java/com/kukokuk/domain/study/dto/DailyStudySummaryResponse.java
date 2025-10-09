@@ -24,7 +24,7 @@ public class DailyStudySummaryResponse {
     private int studiedCardCount;       // 사용자가 학습한 카드 개수
     private int progressRate;           // 학습 진행률 (0~100)
     private String school;              // "초등" 또는 "중등"
-    private int grade;                  // 학년
+    private Integer grade;                  // 학년
     private int sequence;               // 학년 내 자료 순서
     private boolean essayQuizCompleted; // 사용자의 서술형 퀴즈 완료 여부
 }

@@ -9,14 +9,16 @@
     <insert id="insertStudyMaterial" parameterType="DailyStudyMaterial" useGeneratedKeys="true"
       keyProperty="dailyStudyMaterialNo" keyColumn="DAILY_STUDY_MATERIAL_NO">
         INSERT INTO KUKOKUK_DAILY_STUDY_MATERIALS
-        (SCHOOL, GRADE, MATERIAL_TITLE, KEYWORDS, CONTENT, SOURCE_FILENAME, SEQUENCE)
+        (SCHOOL, GRADE, MATERIAL_TITLE, KEYWORDS, CONTENT, SOURCE_FILENAME, SEQUENCE, FILE_PATH, GROUP_NO)
         VALUES (#{school},
                 #{grade},
                 #{materialTitle},
                 #{keywords},
                 #{content},
                 #{sourceFilename},
-                #{sequence})
+                #{sequence},
+                #{filePath},
+                #{groupNo})
     </insert>
 
     <!--
@@ -46,4 +48,15 @@
         FROM KUKOKUK_DAILY_STUDY_MATERIALS
         WHERE DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo}
     </select>
+
+    <!--
+    void updateStudyMaterial(DailyStudyMaterial material);
+    -->
+    <update id="updateStudyMaterial" parameterType="DailyStudyMaterial">
+        UPDATE KUKOKUK_DAILY_STUDY_MATERIALS
+        <set>
+            <if test="content != null">CONTENT = #{content},</if>
+        </set>
+        WHERE DAILY_STUDY_MATERIAL_NO = #{dailyStudyMaterialNo}
+    </update>
 </mapper>
