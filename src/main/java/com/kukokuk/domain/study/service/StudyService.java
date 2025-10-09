@@ -55,6 +55,7 @@ import com.kukokuk.domain.study.dto.UpdateStudyLogRequest;
 import com.kukokuk.domain.study.dto.DailyStudyLogResponse;
 import com.kukokuk.domain.study.dto.GeminiEssayResponse;
 import com.kukokuk.domain.study.dto.ParseMaterialResponse;
+import com.kukokuk.integration.redis.WorkerAdminCallbackRequest;
 import com.kukokuk.integration.redis.WorkerMaterialCallbackRequest;
 import com.kukokuk.security.SecurityUser;
 import java.util.Date;
@@ -512,7 +513,7 @@ public class StudyService {
 
                 // 레디스에 URL 하나씩 푸시
                 ListOperations<String, String> listOperations = stringRedisTemplate.opsForList();
-                listOperations.rightPush("parse:queue", jobPayload);
+                listOperations.rightPush("parse:queue:admin", jobPayload);
             } catch (Exception e) {
                 log.error("Redis push 실패: jobNo={}, url={}, error={}",
                     materialParseJob.getMaterialParseJobNo(), fileUrl, e.getMessage());
@@ -966,5 +967,66 @@ public class StudyService {
         log.info("getStudyLogCount 서비스 메소드 실행");
 
         return dailyStudyLogMapper.getStudyLogsTotalCount(userNo);
+    }
+
+    /**
+     * 관리자 파이썬 워커 성공 콜백 처리
+     *
+     * - 파이썬 워커가 전달한 파싱 결과를 DB에 저장하고
+     * - 해당 job의 상태를 SUCCESS로 업데이트
+     *
+     * @param request 파싱 완료 결과 (jobNo, content, school, grade, title 등)
+     */
+    public void handleAdminWorkerCallback(WorkerAdminCallbackRequest request) {
+        int jobNo = request.getJobNo();
+
+        try {
+            // 파싱된 결과를 DailyStudyMaterial 테이블에 저장
+            DailyStudyMaterial material = DailyStudyMaterial.builder()
+                .content(request.getContent())
+                .grade(request.getGrade())
+                .school(request.getSchool())
+                .materialTitle(request.getTitle())
+                .keywords(request.getKeywords())
+                .sourceFilename(request.getSourceFilename())
+                .build();
+
+            // 해당 school, grade에서의 마지막 sequence 값을 조회
+            int sequence = dailyStudyMaterialMapper.getMaxSequenceBySchoolAndGrade(
+                material.getSchool(), material.getGrade());
+            material.setSequence(sequence + 1);
+
+            // sequence 값은 해당 school과 grade로 mapper내에서 계산해서 저장됨
+            dailyStudyMaterialMapper.insertStudyMaterial(material);
+
+            // jobId로 해당 job의 status를 SUCCESS로 업데이트하기
+            // - MaterialParseJob를 업데이트
+            materialParseJobMapper.updateParseJobStatusToSuccess(jobNo,
+                material.getDailyStudyMaterialNo());
+
+            log.info("[관리자 파싱 콜백 완료] jobNo={}, materialNo={}",
+                jobNo, material.getDailyStudyMaterialNo());
+        } catch (Exception e) {
+            // 실패 시 job 상태 FAILED로 변경
+            materialParseJobMapper.updateParseJobStatusToFailed(jobNo, e.getMessage());
+            log.error("[관리자 파싱 콜백 실패] jobNo={} error={}", jobNo, e.getMessage(), e);
+        }
+    }
+
+
+    /**
+     * 관리자 파이썬 워커 실패 콜백 처리
+     *
+     * - 워커 측에서 예외 발생 시 호출되며
+     * - 해당 job의 상태를 FAILED로 업데이트
+     *
+     * @param request 실패 job의 식별자와 에러 메시지
+     */
+    public void handleAdminWorkerFailCallback(WorkerAdminCallbackRequest request) {
+        int jobNo = request.getJobNo();
+        String error = request.getError();
+
+        materialParseJobMapper.updateParseJobStatusToFailed(jobNo, error);
+        log.warn("[관리자 파싱 실패 콜백 수신] jobNo={}, error={}", jobNo, error);
     }
 }
