@@ -14,12 +14,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum DailyQuestEnum {
 
-    STUDY_LEARNING(1, "STUDY", "일일학습 한챕터 완료", ProgressType.COUNT, 1),
-    STUDY_ESSAY(2, "ESSAY", "일일학습 서술형 퀴즈 1회 완료", ProgressType.COUNT, 1),
-    QUIZ_SPEED(3, "SPEED", "스피드 퀴즈 3회 플레이", ProgressType.COUNT, 3),
-    QUIZ_LEVEL(4, "LEVEL", "단계별 퀴즈 1회 플레이", ProgressType.COUNT, 1),
-    DICTATION_PLAY(5, "DICTATION", "받아쓰기 1회 플레이", ProgressType.COUNT, 1),
-    DICTATION_EXP(6, "DICTATION", "받아쓰기로 경험치 200EXP 획득", ProgressType.EXP, 200);
+    STUDY_LEARNING(1, ContentTypeEnum.STUDY.name(), "일일학습 한챕터 완료", ProgressType.COUNT, 1),
+    STUDY_ESSAY(2, ContentTypeEnum.ESSAY.name(), "일일학습 서술형 퀴즈 1회 완료", ProgressType.COUNT, 1),
+    QUIZ_SPEED(3, ContentTypeEnum.SPEED.name(), "스피드 퀴즈 3회 플레이", ProgressType.COUNT, 3),
+    QUIZ_LEVEL(4, ContentTypeEnum.LEVEL.name(), "단계별 퀴즈 1회 플레이", ProgressType.COUNT, 1),
+    DICTATION_PLAY(5, ContentTypeEnum.DICTATION.name(), "받아쓰기 1회 플레이", ProgressType.COUNT, 1),
+    DICTATION_EXP(6, ContentTypeEnum.DICTATION.name(), "받아쓰기로 경험치 200EXP 획득", ProgressType.EXP, 200);
 
     private final int dailyQuestNo;             // 일일도전과제 식별값
     private final String type;                  // 일일도전과제 타이틀
