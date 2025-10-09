@@ -4,9 +4,12 @@
 @use 'profile';
 @use 'sign';
 @use 'study';
-@use 'quest';
-@use 'quiz-common';
-@use 'quiz-result';
-@use "quiz-play";
 @use "quiz-bookmark";
-@use 'question';
+@use 'dictation';
+@use 'quiz';
+@use 'group';
+@use 'pagination';
+@use 'ranking';
+@use 'ranking-animations';
+@use "ranking-group";
+@use "ranking-main";

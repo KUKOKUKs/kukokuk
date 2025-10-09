@@ -1,5 +1,4 @@
 name: "Random reviewer"
-
 on:
   pull_request:
     types:
@@ -10,48 +9,66 @@ on:
 permissions:
   pull-requests: write
   contents: read
+  issues: write
 
 jobs:
   random-reviewer:
     runs-on: ubuntu-latest
     steps:
-      - id: random_reviewer
-        uses: actions/github-script@v3
+      - name: Assign random reviewer
+        id: random_reviewer
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const me = '${{ github.event.pull_request.user.login }}';
-            const candidate = ['ksm001027', 'dayeong0120', 'lljungho', 'shimjeongho'];
-            const candidateWithoutMe = candidate.filter(id => id !== me);
-
+            const candidates = ['ksm001027', 'dayeong0120', 'lljungho', 'shimjeongho', 'jun-geun-choi'];
+            const candidateWithoutMe = candidates.filter(id => id !== me);
+            
             if (candidateWithoutMe.length === 0) {
               core.setFailed("리뷰어 후보가 없습니다. PR 작성자를 제외한 후보자가 1명 이상 있어야 합니다.");
               return;
             }
-
+            
             const randomReviewer = candidateWithoutMe[Math.floor(Math.random() * candidateWithoutMe.length)];
-            const comment = `@${randomReviewer} 님 랜덤 리뷰어로 당첨되셨습니다!리뷰를 부탁드립니다. 🙏`;
+            const comment = `@${randomReviewer} 님 랜덤 리뷰어로 당첨되셨습니다! 리뷰를 부탁드립니다. 🙏`;
+            
             core.setOutput('comment', comment);
             core.setOutput('reviewer', randomReviewer);
+            
+            console.log(`Selected reviewer: ${randomReviewer}`);
+            console.log(`Candidates without me: ${candidateWithoutMe.join(', ')}`);
 
-      - name: Comment PR
-        uses: mshick/add-pr-comment@v1
+      - name: Comment on PR
+        uses: actions/github-script@v7
         with:
-          message: |
-            ${{ steps.random_reviewer.outputs.comment }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const comment = '${{ steps.random_reviewer.outputs.comment }}';
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
 
-      - name: Add Pull Request Reviewer (via GitHub Script)
-        uses: actions/github-script@v3
+      - name: Request review
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const reviewer = '${{ steps.random_reviewer.outputs.reviewer }}';
             const prNumber = context.issue.number;
-
-            await github.pulls.requestReviewers({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber,
-              reviewers: [reviewer],
-            });
+            
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                reviewers: [reviewer],
+              });
+              console.log(`Successfully requested review from ${reviewer}`);
+            } catch (error) {
+              console.error('Failed to request review:', error);
+              core.setFailed(`Failed to request review from ${reviewer}: ${error.message}`);
+            }

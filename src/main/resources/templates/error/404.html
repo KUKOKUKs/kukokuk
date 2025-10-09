@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/center}" th:with="title=${error}">
 <div layout:fragment="content">
-    <div id="main-content" class="error_wrap">
+    <div id="main-content" class="content_container error_wrap">
         <div class="error_title">
             <span class="error_icon">
                 <iconify-icon icon="fluent-color:warning-28"></iconify-icon>
@@ -9,7 +9,7 @@
             <p class="error_type" th:text="|${status} ${error}|"></p>
         </div>
 
-        <p class="tac color_gray">
+        <p class="w_100 tac color_gray">
             페이지를 찾을 수 없습니다..<br>
             존재하지 않는 주소를 입하셨거나,<br>
             요청하신 페이지의 주소가 변경, 삭제되어 찾을 수 없습니다.

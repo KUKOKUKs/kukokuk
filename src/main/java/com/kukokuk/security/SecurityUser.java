@@ -2,6 +2,7 @@ package com.kukokuk.security;
 
 import com.kukokuk.domain.user.vo.User;
 import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collection;
 import lombok.Getter;
 import org.springframework.security.core.CredentialsContainer;
@@ -10,7 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
-public class SecurityUser implements UserDetails, CredentialsContainer {
+public class SecurityUser implements UserDetails, CredentialsContainer, Serializable {
 
     @Serial
     private static final long serialVersionUID = 8794484743983436451L;

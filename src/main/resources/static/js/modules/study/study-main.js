@@ -22,11 +22,10 @@ async function getDailyStudies(rows) {
     try {
         // 응답을 받기 전까지 로딩 컴포넌트를 표시
         $studyListContainer.html(`
-                        <div class="loading_spinner full_height">
-                            <div class="spinner"></div>
-                            <div class="info_text">사용자 맞춤 학습자료 불러오는 중...</div>
-                        </div>
-                    `);
+                    <div class="loading_spinner full_height">
+                        <div class="info_text">사용자 맞춤 학습자료 생성 중...</div>
+                    </div>
+                `);
 
         // 사용자 맞춤 학습자료 목록을 조회하는 rest API 요청 호출
         const jobStatusList = await apiGetDailyStudies(rows, $studyListContainer);

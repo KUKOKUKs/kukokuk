@@ -6,21 +6,22 @@
     <div id="modal_dimmed" class="dimmed modal_close"></div>
     <div class="modal_container">
         <div class="modal_top">
-            <p class="modal_title">학습종료</p>
+            <p class="modal_title">종료하기</p>
             <button type="button" class="modal_close_btn modal_close">
                 <iconify-icon icon="basil:cancel-outline"></iconify-icon>
             </button>
         </div>
 
         <!--/* modal content */-->
-        <div class="modal_info small form_wrap justify_content_center">
-            <div class="info_text">
-                학습을 종료하고 메인화면으로 돌아가시겠습니까? <br>
-                <span style="color: var(--grayColor)"> (학습 진행도는 저장됩니다)</span>
+        <div class="modal_info small form_wrap">
+            <div class="center_info">
+                <p>학습을 종료하시겠습니까?</p>
+                <p class="color_gray small_font">(학습 진행도는 저장됩니다)</p>
             </div>
             <div class="btn_list">
-                <button class="btn primary modal_close">학습으로 돌아가기</button>
-                <a href="/study" class="btn white">홈으로</a>
+                <button class="btn primary modal_close">돌아가기</button>
+                <a href="/study" class="btn white">오늘의 학습으로</a>
+                <a href="/" class="btn">마당으로</a>
             </div>
         </div>
     </div>

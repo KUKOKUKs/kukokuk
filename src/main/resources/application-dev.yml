@@ -9,8 +9,11 @@ spring:
   # Redis 기본 설정
   data:
     redis:
-      host: localhost
+      host: host.docker.internal
       port: 6379
+
+  session:
+    store-type: none
 
   # env 관련 설정 추가
   config:

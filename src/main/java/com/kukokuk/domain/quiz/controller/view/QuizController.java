@@ -1,5 +1,7 @@
 package com.kukokuk.domain.quiz.controller.view;
 
+import com.kukokuk.common.dto.ApiResponse;
+import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.quiz.dto.QuizLevelResultDto;
 import com.kukokuk.domain.quiz.dto.QuizMasterDto;
 import com.kukokuk.domain.quiz.dto.QuizResultDto;
@@ -13,11 +15,14 @@ import com.kukokuk.domain.quiz.service.QuizSessionSummaryService;
 import com.kukokuk.domain.quiz.vo.QuizMaster;
 import com.kukokuk.domain.quiz.vo.QuizResult;
 import com.kukokuk.domain.quiz.vo.QuizSessionSummary;
+import com.kukokuk.domain.user.service.UserService;
+import com.kukokuk.domain.user.vo.User;
 import com.kukokuk.security.SecurityUser;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +31,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Log4j2
 
@@ -38,7 +44,8 @@ public class QuizController {
     private final QuizProcessService quizProcessService;
     private final QuizSessionSummaryService quizSessionSummaryService;
     private final QuizResultService quizResultService;
-    private final QuizBookmarkService quizBookmarkService; // ★추가
+    private final QuizBookmarkService quizBookmarkService;
+    private final UserService userService;
 
     //[퀴즈 선택페이지]뷰이동
     @GetMapping
@@ -97,14 +104,22 @@ public class QuizController {
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
         int userNo = securityUser.getUser().getUserNo();
-        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
-        model.addAttribute("summary", summary);
 
-        // DTO로 조회 및 세팅
+        // 요약 정보 조회
+        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
+
+        // 상세 결과 데이터도 함께 조회하여 전달
+        List<QuizResultDto> results = quizResultService.getQuizResultsBySession(sessionNo, userNo);
+
+        // 모델에 데이터 추가
+        model.addAttribute("summary", summary);
+        model.addAttribute("results", results);
+
         QuizLevelResultDto levelResult = quizService.getDifficultyAndQuestionTypeBySessionNo(sessionNo);
         model.addAttribute("difficulty", levelResult.getDifficulty());
         model.addAttribute("questionType", levelResult.getQuestionType());
 
+        // 퀴즈 모드에 따라 다른 뷰 반환
         if ("level".equals(summary.getQuizMode())) {
             return "quiz/level-result";
         }
@@ -172,11 +187,49 @@ public class QuizController {
         List<QuizMaster> quizList = quizBookmarkService.getBookmarkedQuizList(userNo);
         model.addAttribute("quizList", quizList);
         model.addAttribute("listType", "bookmark");
+        /*DailyQuestEnum.QUIZ_SPEED.getDailyQuestNo()*/
         return "quiz/bookmark"; // templates/quiz/bookmark.html
 
     }
 
+// QuizController 클래스 (src/main/java/com/kukokuk/domain/quiz/controller/view/QuizController.java)
+// 클래스 상단에 UserService 의존성 주입 추가 필요:
+// private final UserService userService;
 
+    /**
+     * 퀴즈 힌트 사용 처리
+     * @param quizIndex 퀴즈 인덱스
+     * @param removedOption 제거된 보기 번호
+     * @param securityUser 로그인 사용자 정보
+     * @return 남은 힌트 개수
+     */
+    @PostMapping("/use-hint")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Integer>> useHint(
+        @RequestParam("quizIndex") int quizIndex,
+        @RequestParam("removedOption") int removedOption,
+        @AuthenticationPrincipal SecurityUser securityUser
+    ) {
+        log.info("퀴즈 힌트 사용 처리 - quizIndex: {}, removedOption: {}", quizIndex, removedOption);
 
+        try {
+            int userNo = securityUser.getUser().getUserNo();
 
+            // 사용자 힌트 개수 차감
+            userService.updateUserHintCountMinus(userNo);
+
+            // 차감 후 남은 힌트 개수 조회
+            User updatedUser = userService.getUserByUserNo(userNo);
+            int remainingHints = updatedUser.getHintCount();
+
+            log.info("퀴즈 힌트 사용 완료 - 남은 힌트: {}", remainingHints);
+
+            return ResponseEntityUtils.ok(remainingHints);
+
+        } catch (Exception e) {
+            log.error("퀴즈 힌트 사용 처리 실패", e);
+            ApiResponse<Integer> errorResponse = new ApiResponse<>(false, 500, "힌트 사용에 실패했습니다.", null);
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
 }

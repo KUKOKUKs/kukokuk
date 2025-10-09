@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.twenty.mapper.TwentyMapper">
+    <!--
+        public List<RoomUser> getTwentyPlayerList(int roomNo);
+    -->
+    <select id="getTwentyPlayerList" resultType="RoomUser">
+        SELECT
+            RU.USER_NO                        AS userNo
+             ,RU.STATUS                       AS status
+             ,U.NICKNAME                      AS nickName
+        FROM
+            KUKOKUK_TWENTY_ROOM_USERS RU
+                JOIN KUKOKUK_USERS U ON RU.USER_NO = U.USER_NO
+        WHERE
+            RU.USER_NO = U.USER_NO AND
+            RU.TWENTY_ROOM_NO = #{roomNo}
+    </select>
+    <!--
+       public void updateRoomUserStatus(Map<String, Object> map);
+    -->
+    <update id="updateRoomUserStatus">
+        UPDATE KUKOKUK_TWENTY_ROOM_USERS
+        SET
+            STATUS = #{status}
+        WHERE
+            TWENTY_ROOM_NO =#{roomNo}
+            <if test="userNo != null">
+            AND USER_NO = #{userNo}
+            </if>
+    </update>
+
+    <!--
+       public void updateRoomStaus(Map<String, Object> map);
+    -->
+    <update id="updateRoomStaus">
+        UPDATE
+            KUKOKUK_TWENTY_ROOMS
+        SET
+            STATUS = #{roomStatus}
+        WHERE
+            TWENTY_ROOM_NO = #{roomNo}
+    </update>
+
+    <!--
+        public TwentyRoom getTwentyRoomByRoomNo(int roomNo);
+    -->
+    <select id="getTwentyRoomByRoomNo" resultType="TwentyRoom">
+        SELECT
+            TWENTY_ROOM_NO               AS roomNo
+             ,CORRECT_ANSWER             AS correctAnswer
+             ,STATUS                     AS status
+             ,WINNER_NO                  AS winnerNo
+             ,GROUP_NO                   AS groupNo
+             ,IS_SUCCESS                 AS isSuccess
+             ,TRY_COUNT                  AS tryCnt
+
+        FROM
+            KUKOKUK_TWENTY_ROOMS
+        WHERE
+            TWENTY_ROOM_NO = #{roomNo}
+          AND STATUS NOT IN('COMPLETED', 'STOPPED')
+
+    </select>
+
+    <!--
+            public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(@Param("groupNo") int groupNo,
+                                                       @Param("limitCnt") int limitCnt );
+    -->
+    <select id="getRecentTodayTwentyRoomListByGroupNo" resultType="TwentyRoom">
+         SELECT
+             TWENTY_ROOM_NO                     AS roomNo
+             ,CORRECT_ANSWER                    AS correctAnswer
+             ,IS_SUCCESS                        AS isSuccess
+             ,TRY_COUNT                         AS tryCnt
+             ,STATUS                            AS status
+             ,CREATED_DATE                      AS createdDate
+             ,UPDATED_DATE                      AS updatedDate
+             ,GROUP_NO                          AS groupNo
+             ,WINNER_NO                         AS winnerNo
+         FROM
+             KUKOKUK_TWENTY_ROOMS
+         WHERE
+             GROUP_NO = #{groupNo}
+            AND DATE(CREATED_DATE) = CURDATE()
+        ORDER BY CREATED_DATE DESC
+        LIMIT  #{limitCnt}
+    </select>
+</mapper>

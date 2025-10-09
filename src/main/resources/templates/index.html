@@ -8,11 +8,19 @@
                       and user.currentSchool != null
                       and user.currentGrade != null}">
 <div layout:fragment="content">
-    <div id="main-content" class="main_container">
+    <div id="main-content" class="content_container">
         <div class="content_info">
             <div class="content_title">
                 <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
-                오늘의 학습하기
+                오늘의 학습
+
+                <!--/* 로그인이 되었고 그룹에 속해 있을 경우 일반/우리반 토글 스위치 노출 */-->
+                <div th:if="${isAuth and user?.groupNo != null}"
+                     class="switch_toggle_btn on"
+                     data-before="일반"
+                     data-after="우리반">
+                    <div class="toggle_switch"></div>
+                </div>
             </div>
 
             <!--/* 로그인 되어있지 않은 경우 */-->
@@ -39,45 +47,58 @@
             <!--/* 로그인 되었고 학습 진도/단계 설정까지 완료된 경우 컨텐츠 추가 */-->
             <div class="study_list_container"
                  th:if="${isAuth and isSetStudyLevel}"
-                 th:data-is-study-level-set="${isAuth and isSetStudyLevel}"></div>
+                 th:data-is-study-level-set="${isAuth and isSetStudyLevel}">
+                <!--/* 요청 기본 UI 세팅 */-->
+                <div class="component base_list_component">
+                    <div class="loading_spinner pd_base">
+                        <p class="info" style="--percent: 0%;">맞춤 학습 자료 요청 중...</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="content_info">
-            <div class="content_title">
+            <p class="content_title">
                 <iconify-icon icon="fluent-color:game-chat-20"></iconify-icon>
-                게임하기
-            </div>
+                국어 놀이터
+            </p>
             <div class="grid_list_component">
                 <a href="/quiz/speed" class="component grid_list elevate_on_hover">
                     <div class="component_title">
-                        <p class="title_info">스피드 퀴즈</p>
-                        <p class="sub_title">
-                            제한 시간 내 문제를 풀고, 순위를 확인해 보세요!
+                        <p class="title_info column">
+                            스피드 퀴즈
+                            <span class="component_sub_title">
+                                제한 시간 내 문제를 풀고, 순위를 확인해 보세요!
+                            </span>
                         </p>
                     </div>
-                    <span class="icon_btn large">
+                    <span class="icon base">
                         <iconify-icon icon="flat-color-icons:flash-on"></iconify-icon>
                     </span>
                 </a>
                 <a href="/quiz/level-select" class="component grid_list elevate_on_hover">
                     <div class="component_title">
-                        <p class="title_info">단계별 퀴즈</p>
-                        <p class="sub_title">
-                            단계별 문제를 풀며 실력을 키워보세요!
+                        <p class="title_info column">
+                            단계별 퀴즈
+                            <span class="component_sub_title">
+                                단계별 문제를 풀며 실력을 키워보세요!
+                            </span>
                         </p>
                     </div>
-                    <span class="icon_btn large">
+                    <span class="icon base">
                         <iconify-icon icon="token-branded:step"></iconify-icon>
                     </span>
                 </a>
                 <a href="/dictation/start" class="component grid_list elevate_on_hover">
                     <div class="component_title">
-                        <p class="title_info">받아쓰기</p>
-                        <p class="sub_title">
-                            AI가 생성한 문장을 듣고 받아쓰기에 도전해 보세요!
+                        <p class="title_info column">
+                            받아쓰기
+                            <span class="component_sub_title">
+                                AI가 생성한 문장을 듣고 받아쓰기에 도전해 보세요!
+                            </span>
                         </p>
                     </div>
-                    <span class="icon_btn large">
+                    <span class="icon base">
                         <iconify-icon icon="flat-color-icons:voice-presentation"></iconify-icon>
                     </span>
                 </a>
@@ -85,7 +106,7 @@
         </div>
     </div>
 
-    <div id="sub-content">
+    <div id="sub-content" class="content_container">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
         <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
     </div>

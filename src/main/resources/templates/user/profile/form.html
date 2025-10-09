@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/base}" th:with="title='프로필', menu='profile'">
+<html layout:decorate="~{/layout/base}" th:with="title='내 정보', menu='profile'">
 <div layout:fragment="content">
     <div class="form_component"
          sec:authorize="isAuthenticated()"
          th:with="user=${#authentication.principal.user}
                 , profileFilename=${user.profileFilename}">
-        <h1 class="content_title justify_content_center">프로필</h1>
+        <h1 class="content_title justify_content_center">
+            <iconify-icon icon="streamline-color:user-profile-focus-flat"></iconify-icon>
+            내 정보
+        </h1>
 
         <div class="profile_img_container">
             <form method="post"
@@ -134,7 +137,7 @@
                 <div class="input_info select_info">
                     <button type="button" id="modal-study-difficulty-info-btn" class="select_title">
                         단계
-                        <span class="icon_btn small">
+                        <span class="icon_btn icon small">
                             <iconify-icon icon="flat-color-icons:info"></iconify-icon>
                         </span>
                     </button>

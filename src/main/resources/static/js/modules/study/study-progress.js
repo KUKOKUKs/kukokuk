@@ -67,7 +67,7 @@ async function updateOrCreateLog() {
  * 렌더링 시점에 퀴즈 마커의 위치를 정하는 함수
  */
 function renderQuizMarkerPosition() {
-    const $quizMarker = $('.marker');
+    const $quizMarker = $('#study-quiz-marker');
 
     const progressStepCount = totalCount - 1; // 진행률 기준 칸 수 (startInfo 제외)
     const markerPercent = (quizInfoIndex / progressStepCount) * 100;
@@ -554,7 +554,7 @@ function renderBtn() {
  * quiz 안내 화면은 화면이긴 하지만 진행률 전체 구간 수에도 포함하지 않음
  */
 function renderProgressBar() {
-    const $experiencePoint = $('.gauge');
+    const $experiencePoint = $('#study-progress');
 
     const progressStepCount = totalCount - 1; // startInfo 화면만 제외
     let progressStepIndex = currentIndex // 진행률 계산용 인덱스

@@ -7,12 +7,20 @@ import com.kukokuk.ai.GeminiClient;
 import com.kukokuk.common.exception.AppException;
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
 import com.kukokuk.domain.dictation.dto.DictationResultLogDto;
+import com.kukokuk.domain.dictation.dto.DictationResultSummaryDto;
+import com.kukokuk.domain.dictation.dto.DictationResultsDto;
 import com.kukokuk.domain.dictation.mapper.DictationQuestionLogMapper;
 import com.kukokuk.domain.dictation.mapper.DictationQuestionMapper;
 import com.kukokuk.domain.dictation.mapper.DictationSessionMapper;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationQuestionLog;
 import com.kukokuk.domain.dictation.vo.DictationSession;
+import com.kukokuk.domain.exp.dto.ExpProcessingDto;
+import com.kukokuk.domain.exp.mapper.ExpMapper;
+import com.kukokuk.domain.exp.service.ExpProcessingService;
+import com.kukokuk.domain.exp.service.ExpService;
+import com.kukokuk.domain.exp.vo.ExpLog;
+import io.lettuce.core.Limit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +41,7 @@ public class DictationService {
     private final DictationQuestionLogMapper dictationQuestionLogMapper;
     private final DictationSessionMapper dictationSessionMapper;
     private final GeminiClient geminiClient;
+    private final ExpProcessingService  expProcessingService;
 
     /**
      * Gemini를 통해 문장을 받아와서 힌트들을 생성하고 DB에 저장하는 메소드
@@ -418,15 +427,6 @@ public class DictationService {
     }
 
     /**
-     * 힌트 사용
-     *
-     * @param dictationQuestionLogNo 식별자
-     */
-    public void updateUseHint(int dictationQuestionLogNo) {
-        dictationQuestionLogMapper.updateHintUsed(dictationQuestionLogNo, "Y");
-    }
-
-    /**
      * 사용자의 번호를 기반으로 받아쓰기 세트 객체를 생성하고, 시작일자와 종료일자를 현재 시각으로 설정한 후 DB에 저장
      *
      * @param userNo 사용자 번호
@@ -436,30 +436,22 @@ public class DictationService {
         log.info("createDictationSession 서비스 실행");
 
             try {
-                DictationSession session = new DictationSession();
-                session.setUserNo(userNo);
-                session.setStartDate(new Date());
-                session.setEndDate(new Date());
-                dictationSessionMapper.insertDictationSession(session);
+                DictationSession dictationSession = new DictationSession();
+                dictationSession.setUserNo(userNo);
+                dictationSession.setStartDate(new Date());
+                dictationSession.setEndDate(new Date());
+                dictationSessionMapper.insertDictationSession(dictationSession);
 
-                if (session.getDictationSessionNo() == 0) {
+                if (dictationSession.getDictationSessionNo() == 0) {
                     log.info("createDictationSession 자동으로 세션번호 추가 실패 또는 세션 번호 없음");
                     throw new AppException("세션번호 예외처리에 의해 문제 세트를 생성하지 못했습니다.");
                 }
-                return session.getDictationSessionNo(); // MyBatis에서 자동 채번되어 들어간다고 가정
+                return dictationSession.getDictationSessionNo(); // MyBatis에서 자동 채번되어 들어간다고 가정
             } catch (DataAccessException e) {
                 throw new AppException("문제 세트를 생성하지 못했습니다.");
         }
     }
 
-    /**
-     * 받아쓰기 세트 조회
-     * @param userNo 사용자 번호
-     * @return 받아쓰기 세트
-     */
-    public List<DictationSession> getResultsByUserNo(int userNo) {
-        return dictationSessionMapper.getDictationSessionResultsByUserNo(userNo);
-    }
 
     /**
      * 받아쓰기 세트의 이력 조회
@@ -471,6 +463,11 @@ public class DictationService {
         return dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo, userNo);
     }
 
+    /**
+     * 문제 번호로 받아쓰기 문제를 조회
+     * @param dictationQuestionNo 문제 번호
+     * @return 받아쓰기 문제
+     */
     public DictationQuestion getDictationQuestionByQuestionNo(Integer dictationQuestionNo) {
         log.info("getDictationQuestionByQuestionNo 서비스 실행");
         if (dictationQuestionNo == null) {
@@ -486,6 +483,11 @@ public class DictationService {
         }
     }
 
+    /**
+     * 문제 세트 번호로 받아쓰기 결과 페이지 보여질 받아쓰기 결과 내용 조회
+     * @param dictationSessionNo 세트 번호
+     * @return 받아쓰기 문제 세트 결과
+     */
     public DictationSession getDictationSessionByDictationSessionNo(int dictationSessionNo) {
         if (dictationSessionNo == 0) {
             log.info("getDictationSessionByDictationSessionNo 예외처리 실행");
@@ -500,6 +502,13 @@ public class DictationService {
         }
     }
 
+    /**
+     * 문제 풀이 로그를 DB에 저장
+     * @param userNo 사용자 번호
+     * @param sessionNo 문제 세트 번호
+     * @param dictationQuestions 세션에 저장된 받아쓰기 문제 목록
+     * @param dictationQuestionLogDtoList 세션에 저장된 이력 dto 목록
+     */
     @Transactional
     public void insertDictationQuestionLogDto(int userNo, int sessionNo,
         List<DictationQuestion> dictationQuestions,
@@ -509,12 +518,12 @@ public class DictationService {
 
         for (int i = 0; i < dictationQuestions.size(); i++) {
             DictationQuestion q = dictationQuestions.get(i);
-            DictationQuestionLogDto dto = dictationQuestionLogDtoList.get(i);
+            DictationQuestionLogDto dictationQuestionLogDto = dictationQuestionLogDtoList.get(i);
 
-            String userAnswer = dto.getUserAnswer();
-            String isSuccess  = dto.getIsSuccess();
-            int tryCount      = dto.getTryCount();
-            String usedHint   = "Y".equals(dto.getUsedHint()) ? "Y" : "N";
+            String userAnswer = dictationQuestionLogDto.getUserAnswer();
+            String isSuccess  = dictationQuestionLogDto.getIsSuccess();
+            int tryCount      = dictationQuestionLogDto.getTryCount();
+            String usedHint   = (dictationQuestionLogDto.getUsedHint() == null) ? "N" : dictationQuestionLogDto.getUsedHint();
 
             log.info("[saveDictationLogs] 문제{}: 문제 번호: {}, 제출문장: {}, 맞춤 여부: {}, 시도 횟수: {}, 힌트 사용: {}",
                 i + 1, q.getDictationQuestionNo(), userAnswer, isSuccess, tryCount, usedHint);
@@ -522,4 +531,112 @@ public class DictationService {
             insertSubmitAnswer(userNo, sessionNo, q.getDictationQuestionNo(), userAnswer, usedHint, tryCount);
         }
     }
+
+    /**
+     * 정답 보기 사용시 오답 처리, 시도횟수 : 2회, 제출문장: <정답 보기 사용>
+     * @param dictationQuestionLogDto 세션에 저장된 이력 dto
+     */
+    @Transactional
+    public void insertShowAnswerAndSkip(DictationQuestionLogDto dictationQuestionLogDto) {
+        log.info("insertShowAnswerAndSkip 실행");
+        dictationQuestionLogDto.setIsSuccess("N");
+        dictationQuestionLogDto.setTryCount(2);
+        dictationQuestionLogDto.setUserAnswer("<정답 보기 사용>");
+    }
+
+    /**
+     * 결과 페이지에 전달될 데이터 담기
+     * @param dictationSession 받아쓰기 세트
+     * @param currentUserNo 현재 로그인 된 사용자
+     * @param dictationSessionNo 받아쓰기 세트 번호
+     * @return 결과 페이지에 담길 데이터들
+     */
+    public DictationResultSummaryDto getDictationResultSummaryDto(DictationSession dictationSession,
+         int currentUserNo, int dictationSessionNo) {
+
+        // 다른 사용자이거나 세트 번호 없으면 예외처리
+        if (dictationSession == null || dictationSession.getUserNo() != currentUserNo) {
+            throw new AppException("다른 사용자의 세트이거나 세트가 없습니다");
+        }
+
+        log.info("getDictationResultSummaryDto 실행 {}:",dictationSessionNo);
+
+        // results 부분
+        List<DictationResultLogDto> dictationResultLogDtos =
+            dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo, currentUserNo);
+
+        List<DictationResultsDto> dictationResultLogDtoList = new ArrayList<>();
+
+        // 문제 푼 세트의 이력 가져오기(문제, 제출문장, 정답여부)
+        for (DictationResultLogDto r : dictationResultLogDtos) {
+            DictationResultsDto dictationResultsDto = new DictationResultsDto();
+            dictationResultsDto.setDictationQuestionNo(r.getDictationQuestionNo());
+            dictationResultsDto.setQuestion(r.getCorrectAnswer());
+            dictationResultsDto.setSuccess("Y".equals(r.getIsSuccess()));
+            dictationResultsDto.setUserAnswer(r.getUserAnswer());
+            dictationResultLogDtoList.add(dictationResultsDto);
+        }
+
+        // summary 부분
+        // 문제 총 개수
+        int totalQuestion = dictationResultLogDtoList.size();
+
+        // 문제 맞은 개수
+        int correctAnswers = dictationSession.getCorrectCount();
+
+        Date start = dictationSession.getStartDate();
+        Date end   = dictationSession.getEndDate();
+
+        // 문제 총 풀이 시간
+        long ts = Math.max(0L, end.getTime() - start.getTime()); // 음수 방지
+        double totalTimeSec = Math.round((ts / 1000.0) * 1000.0) / 1000.0;
+
+        // 평균 한 문제당 풀이 시간
+        double averageTimePerQuestion = Math.round((totalTimeSec / totalQuestion) * 1000.0) / 1000.0;
+
+        DictationResultSummaryDto dictationResultSummaryDto = new DictationResultSummaryDto();
+        dictationResultSummaryDto.setTotalQuestion(totalQuestion);
+        dictationResultSummaryDto.setCorrectAnswers(correctAnswers);
+        dictationResultSummaryDto.setTotalTimeSec(totalTimeSec);
+        dictationResultSummaryDto.setAverageTimePerQuestion(averageTimePerQuestion);
+
+        dictationResultSummaryDto.setResults(dictationResultLogDtoList);
+
+        return dictationResultSummaryDto;
+    }
+
+
+    /**
+     * expProcessing 부분에 넘길 값
+     * @param userNo 사용자 번호
+     * @param dailyQuestNo 일일 도전과제 식별자 번호
+     */
+    @Transactional
+    public void insertSaveExpLog(int userNo, Integer dailyQuestNo) {
+        ExpProcessingDto expProcessingDto = new ExpProcessingDto(
+            userNo,             // 사용자 번호
+            "DICTATION",        // 컨텐츠 타입
+            3,                  // contentNo(임시)
+            50,                 // EXP(임시)
+            dailyQuestNo        // 일일 도전과제 식별자 번호(없으면 null)
+        );
+        expProcessingService.expProcessing(expProcessingDto);
+    }
+
+    /**
+     * 결과 이력 컴포넌트에 쓰일 받아쓰기 세트 조회
+     * @param userNo 사용자 번호
+     * @param limit 개수
+     * @return 받아쓰기 세트 결과
+     */
+    public List<DictationSession> getResultsSessionsByUserNo(int userNo, int limit) {
+        try {
+            return dictationSessionMapper.getDictationSessionResultsByUserNo(userNo, limit);
+        } catch (DataAccessException e) {
+            log.info("getResultsByUserNo 예외처리 실행");
+            throw new AppException("이력 컴포넌트를 불러오지 못했습니다");
+        }
+    }
+
+
 }

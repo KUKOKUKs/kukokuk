@@ -1,32 +1,114 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{/layout/center}">
-<div layout:fragment="content" class="result_summary_container">
-    <h2 class="result_title">단계별 퀴즈 결과 요약</h2>
+<html layout:decorate="~{/layout/center}" th:with="title=|${difficulty} 단계 퀴즈 결과|">
+<div layout:fragment="content">
+    <div id="main-content" class="content_container">
+        <div class="content_info">
+            <div class="content_title justify_content_center">
+                <iconify-icon icon="token-branded:step"></iconify-icon>
+                [[${difficulty}]] 단계 퀴즈 결과
+            </div>
 
-    <div class="result_stats">
-        <div class="stat_card">
-            <span class="label">총 문항 수</span>
-            <span class="value" th:text="${summary.totalQuestion}">0</span>
+            <div class="grid_list_component" style="--cols: 2;">
+                <div class="component grid_list full_grid bg_primary color_white highlight">
+                    <div class="component_title">
+                        <th:block th:with="percent=${(summary.correctAnswers * 100) / summary.totalQuestion}">
+                            <th:block th:if="${difficulty == '하'}">
+                                <p class="title_info center" th:utext="|${difficulty} 단계<br>
+                                    ${percent == 100 ? '만점! 기본기 끝판왕! 🏆' :
+                                    percent >= 90 ? '교과서 그 자체! 완벽에 한 발짝! ✨' :
+                                    percent >= 70 ? '기본기 탄탄, 성장 가속 중! 🚀' :
+                                    percent >= 50 ? '기초는 잡혔다! 조금만 더! 📈' :
+                                    '연습이 곧 실력! 한번 더! 💪'}|"></p>
+                            </th:block>
+                            <th:block th:if="${difficulty == '중'}">
+                                <p class="title_info center" th:utext="|${difficulty} 단계<br>
+                                    ${percent == 100 ? '만점! 실력자 인증 완료! 🎉' :
+                                    percent >= 90 ? '감 잡았어! 집중력 최고! 🔥' :
+                                    percent >= 70 ? '흐름 탔다! 실력이 눈에 보인다! 🏃' :
+                                    percent >= 50 ? '지금부터 시작이다! ⚡' :
+                                    '포기 금지! 한번 더! 💪'}|"></p>
+                            </th:block>
+                            <th:block th:if="${difficulty == '상'}">
+                                <p class="title_info center" th:utext="|${difficulty} 단계<br>
+                                    ${percent == 100 ? '만점! 챌린지 정복자 등극! 👑' :
+                                    percent >= 90 ? '흔들림 없는 실력! 🦾' :
+                                    percent >= 70 ? '집중해서 다시! 할 수 있다! 🔥' :
+                                    percent >= 50 ? '이제부터 진짜! 기세 올리자! ⚡' :
+                                    '이 정도로 만족할 순 없지! 한번 더! 💪'}|"></p>
+                            </th:block>
+                            <th:block th:unless="${difficulty == '하' or difficulty == '중' or difficulty == '상'}">
+                                <p class="title_info center" th:utext="|${difficulty} 단계<br>결과 메시지를 불러올 수 없습니다.|"></p>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+                <div class="component grid_list">
+                    <div class="component_title">
+                        <p class="component_sub_title tac" th:text="|${summary.totalQuestion}문제 중|">n문제 중</p>
+                        <p class="title_info center">
+                            [[${summary.correctAnswers}]]개 정답!
+                            <span th:if="${summary.totalQuestion == summary.correctAnswers}">💯</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="component grid_list">
+                    <div class="component_title">
+                        <p class="component_sub_title tac">문제 유형</p>
+                        <p class="title_info center" th:text="|${questionType} 맞추기|">뜻/단어 맞추기</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="stat_card">
-            <span class="label">정답 수</span>
-            <span class="value" th:text="${summary.correctAnswers}">0</span>
-        </div>
-        <div class="stat_card">
-            <span class="label">선택한 난이도</span>
-            <span class="value" th:text="${difficulty}">-</span>
-        </div>
-        <div class="stat_card">
-            <span class="label">문제 유형</span>
-            <span class="value" th:text="${questionType}">-</span>
-        </div>
-    </div>
 
-    <div class="result_buttons">
-        <a href="/" class="btn white">홈으로</a>
-        <a th:href="@{/quiz/result/detail(sessionNo=${summary.sessionNo})}" class="btn">상세 결과</a>
+        <!--/* 문제 풀이 상세 결과 */-->
+        <div class="component tiny_list_component h_100 show_scroll">
+            <div class="component_info with_icon align_start sub_font"
+                 th:each="result, iterStat : ${results}">
+                <div class="list_info ov_v" style="--cols: 18; --indexCols: 2;">
+                    <div class="index_list">
+                        <span class="color_primary bold" th:text="|Q${iterStat.count}|">Q1</span>
+                        <p th:text="${result.question}">문제</p>
+                    </div>
+                    <div class="index_list">
+                        <div class="color_blue bold pos_r">
+                            A<span th:if="${result.selectedChoice != 0}"
+                                   th:text="${result.selectedChoice}">선택한 보기 번호</span>
+                            <span class="result_icon incorrect icon large"
+                                  th:classappend="${result.success ? 'correct' : 'incorrect'}">정답 여부</span>
+                        </div>
+                        <p th:text="${result.getOption(result.selectedChoice) ?: '선택하지 않음'}">선택한 보기 내용</p>
+                    </div>
+
+                    <!--/* 오답일 경우 정답 확인 버튼 추가 */-->
+                    <div th:if="${!result.success}" class="index_list">
+                        <span></span> <!--/* 같은 레이아웃을 가지기 위해 빈 요소 추가 */-->
+                        <div class="check_correct">
+                            <div class="list_option">
+                                <span class="marker" th:text="|${result.successAnswer}.|">정답 번호</span>
+                                <p class="text_ellipsis correct_answer"
+                                   th:text="${result.getOption(result.successAnswer)}">정답 보기 내용</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--/* 북마크 추가/제거 버튼 */-->
+                <button type="button"
+                        class="bookmark_btn tooltip"
+                        th:data-bookmarked="${result.bookmarked}"
+                        th:data-label="|북마크 ${result.bookmarked ? '제거' : '추가'}|">
+                    <iconify-icon class="icon title_font"
+                                  th:classappend="${result.bookmarked ? 'color_yellow' : 'color_border'}"
+                                  icon="material-symbols:bookmark-star"></iconify-icon>
+                </button>
+            </div>
+        </div>
+
+        <div class="btn_list">
+            <a href="/quiz" class="btn">국어 놀이터로</a>
+            <a href="/" class="btn white">마당으로</a>
+            <a href="/quiz/speed" class="btn primary">다시 도전!</a>
+        </div>
     </div>
 </div>
 </html>

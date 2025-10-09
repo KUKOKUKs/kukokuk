@@ -1,70 +1,88 @@
-.text_background {
-    padding: var(--smallPadding);
-    background-color: var(--subColor);
-    border-radius: var(--bdrs);
+/* 학습 이력 컴포넌트 */
+#study-history-container {
+    .study_history_info:hover .study_title {
+        color: var(--primaryColor);
+    }
 }
 
-/* 공통 믹스인처럼 중첩 구조화
-    공통스타일을 정의하고 상속할 수 있다
-*/
-%list_item_common {
+/* 학습 진행 네비바 */
+.study_nav_container {
+    .nav_list {
+        padding: 0;
+    }
+}
+
+.study_content_list {
     display: flex;
-    justify-content: space-between;
-    border-top: var(--baseBorder);
-    align-items: center;
-    padding: var(--basePadding) 0;
+    flex-direction: column;
+    gap: var(--smallGap);
 
-    &:first-child {
-        border-top: none;
-    }
-}
-
-.daily_quest_item {
-    @extend %list_item_common;
-}
-
-.study_history_item {
-    @extend %list_item_common;
-
-
-    .history_info {
+    .study_list_icon {
+        font-size: var(--subFontSize);
+        font-weight: bold;
+        padding: 0 var(--basePadding);
         display: flex;
-        gap: 4px;
         align-items: center;
-        justify-content: end;
-        font-size: var(--smallFontSize);
-        min-width: 170px;
-
-        /* 학습완료 */
-        &.completed {
-            span:first-child {
-                color: var(--darkGreenColor);
-                font-weight: 500;
-            }
-
-            &:nth-child(2) {
-                color: var(--grayColor);
-            }
-        }
-
-        /* 학습중 */
-        &.in_progress {
-            span:first-child {
-                color: var(--redColor); // 예: 주황색 계열
-                font-weight: 500;
-            }
-        }
-
-        &:nth-child(2) {
-            color: var(--grayColor);
-        }
+        gap: var(--smallGap);
     }
 
-    &:hover {
-        background-color: var(--lightGrayColor);
+    .study_content {
+        width: 100%;
+
+        .study_content_info {
+            width: 100%;
+            padding: var(--studyNavListPadding);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--smallGap);
+            cursor: pointer;
+            position: relative;
+            transition: background-color var(--trst);
+
+            .study_content_info_title {
+                width: 100%;
+                font-size: var(--subFontSize);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            &::after {
+                content: '';
+                display: inline-block;
+                width: 5px;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                transition: background-color var(--trst);
+            }
+
+            &:hover {
+                background-color: var(--lightGrayColor);
+
+                &::after {
+                    background-color: var(--borderColor);
+                }
+            }
+
+            &.selected {
+                background-color: var(--subColor);
+
+                .study_content_info_title {
+                    font-weight: 500;
+                }
+
+                &::after {
+                    background-color: var(--blueColor);
+                }
+            }
+        }
     }
 }
 
+/* 학습 진행 화면 */
 .daily_study_card {
     min-height: 200px;
     cursor: pointer;
@@ -91,14 +109,11 @@
 }
 
 .study_progress_card {
-    height: 700px;
-    width: 800px;
-    padding: var(--largePadding);
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: var(--smallGap);
     font-size: var(--largeFontSize);
-    overflow-y: auto;
 
 
     &.center {
@@ -326,155 +341,6 @@
     }
 }
 
-.study_quiz_submit_btn {
-
-}
-
-
-/* 학습진행 화면의 네비바에서 사용하는 스타일 */
-.study_nav_list_title {
-    padding: 0.5em;
-    color: var(--darkGreenColor);
-}
-
-@keyframes popIn {
-    0% {
-        transform: scale(0.6);
-        opacity: 0;
-    }
-    50% {
-        transform: scale(1.2);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.study_nav_list_item {
-    min-height: 40px;
-    padding: 1em 0.5em;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0;
-    border-bottom: var(--baseBorder);
-    transition: background-color var(--trst);
-    cursor: pointer;
-
-    .study_item_icon {
-        height: 100%;
-        aspect-ratio: 1 / 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--darkGreenColor);
-        font-size: 1.2em;
-
-        &.icon_pop {
-            animation: popIn 0.3s ease;
-        }
-    }
-
-    &.active {
-        background-color: var(--subColor);
-        color: var(--primaryColor);
-        font-weight: 600;
-        border-left: 6px solid var(--primaryColor);
-
-        .study_item_icon {
-            color: var(--primaryColor);
-        }
-    }
-
-    &:hover {
-        background-color: var(--subColor);
-    }
-
-    &:last-child {
-        border-bottom: none;
-    }
-}
-
-.nav_container_study {
-    .nav_wrap {
-        padding-top: 0;
-        padding-left: 0;
-        padding-right: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-        transition: width var(--trst);
-
-        .study {
-            gap: 0;
-        }
-
-        &.collapsed {
-            width: 70px;
-            min-width: 70px;
-            overflow-y: hidden;
-
-            // 부드럽게 사라지는 효과
-            .symbol_logo,
-            .study_nav_list_container,
-            #footer {
-                opacity: 0;
-            }
-        }
-
-        #footer {
-            padding: 0 var(--baseGap);
-        }
-    }
-
-    /* 내부 요소의 스르륵 나타나는 효과 */
-    .study_nav_list_container,
-    .symbol_logo {
-        transition: opacity var(--trst);
-    }
-}
-
-.study_nav_header_info {
-    padding-bottom: var(--largePadding);
-    background-color: #fff;
-    position: sticky; // ✅ 부모 기준 고정
-    top: 0;
-    left: 0;
-    z-index: 1;
-}
-
-.study_nav_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--basePadding);
-    width: 100%;
-    height: 70px;
-
-    .symbol_logo {
-        transition: opacity var(--trst);
-    }
-
-    .side_bar_icon {
-        padding: 2px;
-        cursor: pointer;
-        border-radius: var(--bdrs);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        iconify-icon {
-            font-size: var(--baseIcon);
-            color: var(--darkGreenColor);
-        }
-
-        &:hover {
-            background-color: var(--subColor);
-        }
-    }
-}
-
 .essay_feedback_container {
     width: 100%;
     height: 100%;
@@ -571,11 +437,6 @@
         justify-items: center;
         border-left: 2px solid var(--lightGrayColor);
     }
-}
-
-.info_text {
-    text-align: center;
-    font-weight: 500;
 }
 
 .study_tag_list {

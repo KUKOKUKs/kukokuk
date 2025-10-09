@@ -40,14 +40,9 @@ public class HomeService {
 //    @Async("aiTaskExecutor")
 //    public void getHomeUserDailyStudies(String jobId, User user, int rows) {
 //        log.info("HomeService getHomeUserDailyStudies() 서비스 실헹");
-//        // 준비 중
-//        studyJobStatusStore.update(jobId, status -> {
-//            status.setProgress(20);
-//            status.setMessage("학습 이력 확인 중...");
-//        });
 //
 //        try {
-//            // 학습 이력 확인
+//            // 학습 이력 확인하여 가져오기 가져올 학습 자료가 없을 경우 생성
 //            studyJobStatusStore.update(jobId, status -> {
 //                status.setProgress(40);
 //                status.setMessage("맞춤 학습 자료 생성 중...");

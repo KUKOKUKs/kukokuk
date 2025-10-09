@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<div th:fragment="study-history-fragment(studyHistory)"
+     id="study-history-container"
+     class="component small_list_component">
+    <div class="component_title">
+        <p class="title_info">학습 이력</p>
+    </div>
+    <div class="tiny_list_component show_scroll">
+        <a class="study_history_info component_info small with_icon"
+           th:each="log : ${studyHistory.getDailyStudyLogs()}"
+           th:href="@{/study}">
+            <div class="list_info">
+                <div class="history_info tiny_font">
+                    <span class="bold"
+                          th:text="${log.status == 'COMPLETED'} ? '학습완료' : '학습중'"
+                          th:classappend="${log.status == 'COMPLETED'} ? 'color_primary' : 'color_red'">학습 상태</span>
+                    <!-- COMPLETED 일 경우 시작일부터 종료일 -->
+                    <span th:if="${log.status == 'COMPLETED'}"
+                          th:text="${#dates.format(log.createdDate, 'yyyy.M.d')} + '~' + ${#dates.format(log.updatedDate, 'yyyy.M.d')}">
+                    </span>
+                    <!-- IN_PROGRESS 일 경우 시작일부터 -->
+                    <span th:if="${log.status == 'IN_PROGRESS'}"
+                          th:text="${#dates.format(log.createdDate, 'yyyy.M.d')} + '~'">
+                    </span>
+                </div>
+
+                <p class="study_title text_ellipsis" th:text="${log.dailyStudy.title}">일일학습 제목</p>
+            </div>
+
+            <span class="icon small">
+                <iconify-icon icon="ep:arrow-right-bold"></iconify-icon>
+            </span>
+        </a>
+    </div>
+</div>
+</html>
