@@ -142,7 +142,7 @@
         <set>
             TRY_COUNT = #{tryCnt}
             ,IS_SUCCESS = #{isSuccess}
-            <if test="isSuccess == 'Y'">
+            <if test="'Y'.equals(isSuccess) ">
                 ,WINNER_NO = #{winnerNo}
             </if>
         </set>
@@ -158,11 +158,10 @@
         KUKOKUK_TWENTY_LOGS
     <set>
         MESSAGE = #{content}
-        <if test="type == 'Q'"> <!-- 질문인 경우 -->
+        <if test="answer != null"> <!-- 질문인 경우 -->
             ,ANSWER =#{answer}
         </if>
-        <if test="type == 'A'"> <!-- 정답인 경우 -->
-
+        <if test="isSuccess != null"> <!-- 정답인 경우 -->
             ,IS_SUCCESS = #{isSuccess}
         </if>
     </set>

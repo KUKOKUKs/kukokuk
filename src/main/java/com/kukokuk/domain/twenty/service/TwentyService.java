@@ -145,7 +145,6 @@ public class TwentyService {
         SendStdMsg msg = twentyMapper.getRecentMsgByRoomNo(roomNo);
         msg.setCnt(twentyMapper.getmsgCntByRoomNo(roomNo));
         return msg;
-
     }
 
     /**
@@ -168,6 +167,15 @@ public class TwentyService {
 
         // 전체 메세지 조회
         return twentyMapper.getTwentyLogList(msg.getRoomNo());
+    }
+
+    /**
+     * roomNo로 사용자의 데이터를 가져온다.
+     * @param roomNo
+     * @return
+     */
+    public List<SendStdMsg> getMsgListByRoomNo(int roomNo){
+        return twentyMapper.getTwentyLogList(roomNo);
     }
 
 

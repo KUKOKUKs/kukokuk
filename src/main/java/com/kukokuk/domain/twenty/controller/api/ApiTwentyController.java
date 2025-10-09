@@ -153,7 +153,7 @@ public class ApiTwentyController {
      * @param room : roomNo,isSuccess, tryCnt,winnerno(승리여부에 따라)
      * @return
      */
-    @PostMapping("/api/twent/room/{roomNo}/resultUpdate")
+    @PostMapping("/room/{roomNo}/resultUpdate")
     public ResponseEntity<ApiResponse<Void>> updateTwentyRoomResult(@RequestBody TwentyRoom room) {
         twentyService.updateTwentyRoomResult(room);
         return ResponseEntityUtils.ok("정상적으로 변경되었습니다.");
@@ -164,9 +164,20 @@ public class ApiTwentyController {
      * @param msg logNo, type,userNo,content, cnt, isSuccess, answer(질문이면 - answer, 정답이면 - isSuccess)
      * @return 메세지 리스트 : logNo, userNo, nickName, type, content, cnt
      */
-    @PostMapping("/api/twenty/updateMsgLog")
+    @PostMapping("/updateMsgLog")
     public ResponseEntity<ApiResponse<List<SendStdMsg>>> updateTwentyMsgLogAndGetMsgList(@RequestBody SendStdMsg msg) {
         List<SendStdMsg> msgList = twentyService.updateTwentyMsgLogAndGetMsgList(msg);
+        return ResponseEntityUtils.ok(msgList);
+    }
+
+    /**
+     * ajax로 이 게임방의 메세지 리스트를 가져온다.
+     * @param roomNo
+     * @return
+     */
+    @GetMapping("/getMsgList/{roomNo}")
+    public ResponseEntity<ApiResponse<List<SendStdMsg>>> getMsgListByRoomNo(@PathVariable int roomNo) {
+        List<SendStdMsg> msgList = twentyService.getMsgListByRoomNo(roomNo);
         return ResponseEntityUtils.ok(msgList);
     }
 
