@@ -1,7 +1,30 @@
 <!DOCTYPE html>
 <html layout:decorate="~{layout/base}" th:with="title='순위', menu='rank'">
 
-<th:block layout:fragment="content">
+<div layout:fragment="content">
+    <div id="main-content" class="content_container">
+        <div class="content_info">
+            <div class="content_title">
+                <div class="d_flex align_center tiny_gap">
+                    <iconify-icon icon="streamline-ultimate-color:ranking-stars-ribbon"></iconify-icon>
+                    순위
+                </div>
+
+                <!--/* 월 전환 버튼(최근 3달만 조회할 수 있도록) */-->
+                <div id="rank-history-btn"
+                     class="content_switcher stepper_btn">
+                    <button type="button" class="step_info left">
+                        <iconify-icon icon="ep:arrow-left"></iconify-icon>
+                    </button>
+                    <p class="step_info center">내용</p>
+                    <button type="button" class="step_info right">
+                        <iconify-icon icon="ep:arrow-right"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="content_info">
         <!-- 페이지 헤더 -->
         <div class="content_title">
@@ -232,7 +255,7 @@
             </div>
         </div>
     </div>
-</th:block>
+</div>
 
 <th:block layout:fragment="script">
     <script th:src="@{/js/modules/ranking/ranking-main.js}"></script>

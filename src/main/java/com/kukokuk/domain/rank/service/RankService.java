@@ -31,7 +31,7 @@ public class RankService {
         log.info("rankProcessing() 서비스 실행 rankProcessingDto: {}", rankProcessingDto);
 
         // 오늘 날짜 가져오기
-        String today = DateUtil.getToday("yyyy-mm");
+        String today = DateUtil.getToday("yyyy-MM");
 
         // 필요한 값 추출
         int userNo = rankProcessingDto.getUserNo();

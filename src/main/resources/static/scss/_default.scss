@@ -184,7 +184,11 @@
     padding: var(--smallPadding) 0;
 }
 
-/* tooltip */
+/*
+    tooltip
+    해당 클래스 요소에
+    data-label="내용입력"
+*/
 .tooltip {
     position: relative;
 
@@ -1122,19 +1126,9 @@
     }
 }
 
-/*
-    스위치 토글 버튼 기본값 before
-    on 클래스 추가 시 after
-    * switch_toggle_btn에 id를 붙여 js로 각 콘텐츠별 컨트롤
-    <div class="switch_toggle_btn"
-        data-before="일반"
-        data-after="우리반">
-        <div class="toggle_switch"></div>
-    </div>
-*/
-.switch_toggle_btn {
-    display: inline-grid;
-    grid-template-columns: 1fr 1fr;
+/* 콘텐츠 타이틀 우측 이벤트 버튼 */
+.content_switcher {
+    display: inline-block;
     margin-left: auto; /* 보통 우측에 사용되어지므로 flex 요소 내부에 있을 경우 우측 위치 시킴 */
     padding: var(--tinyPadding);
     background-color: var(--lightGrayColor);
@@ -1144,6 +1138,59 @@
     border: var(--baseBorder);
     box-shadow: var(--switchToggleInsetBxsh);
     position: relative;
+}
+
+/*
+    내용의 양방향 이동 버튼
+    예시 레이아웃: [좌측 이동 버튼] | [내용]| [우측 이동 버튼]
+    * stepper_btn에 id를 붙여 js로 각 콘텐츠별 컨트롤
+    <div class="content_switcher stepper_btn">
+        <button type="button" class="step_info left">
+            <iconify-icon icon="ep:arrow-left"></iconify-icon>
+        </button>
+        <p class="step_info center">내용</p>
+        <button type="button" class="step_info right">
+            <iconify-icon icon="ep:arrow-right"></iconify-icon>
+        </button>
+    </div>
+*/
+.stepper_btn {
+    display: flex;
+    align-items: center;
+    gap: var(--tinyGap);
+
+    .step_info {
+        display: flex;
+        height: calc(var(--fixEtcTinyFontSize) * 1.4); // 기본 행간
+        justify-content: center;
+        align-items: center;
+        padding: calc(var(--smallPadding) / 2) var(--smallPadding);
+        font-weight: normal;
+        border-radius: calc(var(--bdrs) / 1.5);
+        background-color: #fff;
+        box-shadow: var(--insetBxsh);
+        box-sizing: content-box;
+
+        &.center {
+            background-color: transparent;
+            box-shadow: none;
+        }
+    }
+}
+
+/*
+    스위치 토글 버튼 기본값 before
+    on 클래스 추가 시 after
+    * switch_toggle_btn에 id를 붙여 js로 각 콘텐츠별 컨트롤
+    <div class="content_switcher switch_toggle_btn"
+        data-before="일반"
+        data-after="우리반">
+        <div class="toggle_switch"></div>
+    </div>
+*/
+.switch_toggle_btn {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
     cursor: pointer;
 
     &::before, &::after {
