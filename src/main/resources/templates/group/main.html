@@ -27,7 +27,7 @@
                 <!--/* 그룹에 속해 있거나 교사 권한 사용자인 경우 */-->
                 <div th:if="${isTeacher or myGroup != null}"
                      id="group-switch-toggle-btn"
-                     class="switch_toggle_btn"
+                     class="content_switcher switch_toggle_btn"
                      data-before="학습"
                      data-after="반 찾기">
                     <div class="toggle_switch"></div>
@@ -48,8 +48,9 @@
 
                     <button th:if="${#lists.isEmpty(param.keyword) or #strings.isEmpty(param.keyword[0])}"
                             type="button"
-                            class="icon title_font"
-                            id="reset-btn">
+                            class="icon title_font tooltip"
+                            id="reset-btn"
+                            data-label="새로고침">
                         <iconify-icon class="icon title_font" icon="marketeq:refresh-round"></iconify-icon>
                     </button>
                 </div>
