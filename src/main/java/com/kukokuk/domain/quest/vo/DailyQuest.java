@@ -1,6 +1,6 @@
 package com.kukokuk.domain.quest.vo;
 
-import com.kukokuk.common.util.DailyQuestUtils;
+import com.kukokuk.domain.quest.util.DailyQuestUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

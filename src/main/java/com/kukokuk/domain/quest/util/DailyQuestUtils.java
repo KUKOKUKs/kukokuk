@@ -1,4 +1,4 @@
-package com.kukokuk.common.util;
+package com.kukokuk.domain.quest.util;
 
 import lombok.extern.log4j.Log4j2;
 

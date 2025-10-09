@@ -1,14 +1,30 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{layout/base}">
-<head>
-    <title>랭킹 - KUKOKUK</title>
-</head>
+<html layout:decorate="~{layout/base}" th:with="title='순위', menu='rank'">
 
-<th:block layout:fragment="content">
+<div layout:fragment="content">
+    <div id="main-content" class="content_container">
+        <div class="content_info">
+            <div class="content_title">
+                <div class="d_flex align_center tiny_gap">
+                    <iconify-icon icon="streamline-ultimate-color:ranking-stars-ribbon"></iconify-icon>
+                    순위
+                </div>
+
+                <!--/* 월 전환 버튼(최근 3달만 조회할 수 있도록) */-->
+                <div id="rank-history-btn"
+                     class="content_switcher stepper_btn">
+                    <button type="button" class="step_info left">
+                        <iconify-icon icon="ep:arrow-left"></iconify-icon>
+                    </button>
+                    <p class="step_info center">내용</p>
+                    <button type="button" class="step_info right">
+                        <iconify-icon icon="ep:arrow-right"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="content_info">
         <!-- 페이지 헤더 -->
         <div class="content_title">
@@ -28,19 +44,19 @@
                     게임 종류
                 </div>
                 <div class="content_type_selector">
-                    <a th:href="@{/ranking(contentType='SPEED', rankMonth=${rankMonth})}"
+                    <a th:href="@{/templates/rank(contentType='SPEED', rankMonth=${rankMonth})}"
                        class="content_type_btn"
                        th:classappend="${contentType == 'SPEED'} ? 'active' : ''">
                         <iconify-icon icon="flat-color-icons:flash-on"></iconify-icon>
                         스피드퀴즈
                     </a>
-                    <a th:href="@{/ranking(contentType='LEVEL', rankMonth=${rankMonth})}"
+                    <a th:href="@{/templates/rank(contentType='LEVEL', rankMonth=${rankMonth})}"
                        class="content_type_btn"
                        th:classappend="${contentType == 'LEVEL'} ? 'active' : ''">
                         <iconify-icon icon="flat-color-icons:graduation-cap"></iconify-icon>
                         단계별 퀴즈
                     </a>
-                    <a th:href="@{/ranking(contentType='DICTATION', rankMonth=${rankMonth})}"
+                    <a th:href="@{/templates/rank(contentType='DICTATION', rankMonth=${rankMonth})}"
                        class="content_type_btn"
                        th:classappend="${contentType == 'DICTATION'} ? 'active' : ''">
                         <iconify-icon icon="flat-color-icons:edit"></iconify-icon>
@@ -57,7 +73,7 @@
                 </div>
                 <div class="month_selector">
                     <a th:if="${prevMonth != null}"
-                       th:href="@{/ranking(contentType=${contentType}, rankMonth=${prevMonth})}"
+                       th:href="@{/templates/rank(contentType=${contentType}, rankMonth=${prevMonth})}"
                        class="month_nav_btn">
                         <iconify-icon icon="fluent:arrow-left-24-filled"></iconify-icon>
                         <span th:text="${prevMonth}">2024-12</span>
@@ -69,7 +85,7 @@
                     </div>
 
                     <a th:if="${nextMonth != null}"
-                       th:href="@{/ranking(contentType=${contentType}, rankMonth=${nextMonth})}"
+                       th:href="@{/templates/rank(contentType=${contentType}, rankMonth=${nextMonth})}"
                        class="month_nav_btn">
                         <span th:text="${nextMonth}">2025-02</span>
                         <iconify-icon icon="fluent:arrow-right-24-filled"></iconify-icon>
@@ -239,7 +255,7 @@
             </div>
         </div>
     </div>
-</th:block>
+</div>
 
 <th:block layout:fragment="script">
     <script th:src="@{/js/modules/ranking/ranking-main.js}"></script>
