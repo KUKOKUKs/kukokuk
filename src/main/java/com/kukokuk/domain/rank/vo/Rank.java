@@ -38,6 +38,7 @@ public class Rank {
     private Integer level;
     private String profileFilename;
     private Integer experiencePoints;  // 레벨 랭킹용 경험치 필드 추가
+    private Integer maxExp;  // 다음 레벨까지의 경험치
 
     // 프로필 이미지 경로 생성
     public String getProfileFileUrl() {
