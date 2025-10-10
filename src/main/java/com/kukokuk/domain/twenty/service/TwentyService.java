@@ -4,17 +4,12 @@ package com.kukokuk.domain.twenty.service;
 import com.kukokuk.domain.twenty.dto.RoomUser;
 import com.kukokuk.domain.twenty.dto.SendStdMsg;
 import com.kukokuk.domain.twenty.mapper.TwentyMapper;
-import com.kukokuk.domain.twenty.vo.TwentyLog;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +32,7 @@ public class TwentyService {
         Map<String, Object> map = new HashMap<>();
         map.put("roomNo", roomNo);
         map.put("roomStatus", "COMPLETED");
-        twentyMapper.updateRoomStaus(map);
+        twentyMapper.updateRoomStatus(map);
 
         map.put("status", "LEFT");
         twentyMapper.updateRoomUserStatus(map);
@@ -83,8 +78,8 @@ public class TwentyService {
      * 방 상태 변경
      * @param map
      */
-    public void updateRoomStaus(Map<String,Object> map){
-        twentyMapper.updateRoomStaus(map);
+    public void updateRoomStatus(Map<String,Object> map){
+        twentyMapper.updateRoomStatus(map);
     }
 
     /**
@@ -111,7 +106,7 @@ public class TwentyService {
      * @param map
      */
     public void handleTeacherDisconnect(Map<String,Object> map) {
-        twentyMapper.updateRoomStaus(map);
+        twentyMapper.updateRoomStatus(map);
         twentyMapper.updateRoomUserStatus(map);
     }
 
@@ -121,8 +116,9 @@ public class TwentyService {
      * @param msg
      */
     public SendStdMsg insertTwentyLog(SendStdMsg msg) {
+        log.info("전달 받은 msg {}",msg);
         twentyMapper.insertTwentyLog(msg);
-        System.out.println("msg.getLogNo(): " + msg.getLogNo());
+        log.info("DB에 저장된 후 msg : {}", msg);
         return msg;
     }
 
@@ -131,8 +127,8 @@ public class TwentyService {
      * @param roomNo
      * @return
      */
-    public Integer getmsgCntByRoomNo(int roomNo) {
-        Integer msgCnt = twentyMapper.getmsgCntByRoomNo(roomNo);
+    public Integer getMsgCntByRoomNo(int roomNo) {
+        Integer msgCnt = twentyMapper.getMsgCntByRoomNo(roomNo);
         return msgCnt;
     }
 
@@ -143,7 +139,7 @@ public class TwentyService {
      */
     public SendStdMsg getRecentMsgByRoomNo(int roomNo){
         SendStdMsg msg = twentyMapper.getRecentMsgByRoomNo(roomNo);
-        msg.setCnt(twentyMapper.getmsgCntByRoomNo(roomNo));
+        msg.setCnt(twentyMapper.getMsgCntByRoomNo(roomNo));
         return msg;
     }
 

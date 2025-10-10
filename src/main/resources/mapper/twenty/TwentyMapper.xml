@@ -34,7 +34,7 @@
     <!--
        public void updateRoomStaus(Map<String, Object> map);
     -->
-    <update id="updateRoomStaus">
+    <update id="updateRoomStatus">
         UPDATE
             KUKOKUK_TWENTY_ROOMS
         SET
@@ -104,9 +104,9 @@
                 #{content})
     </insert>
     <!--
-       public Integer getmsgCntByRoomNo(int roomNo);
+       public Integer getMsgCntByRoomNo(int roomNo);
     -->
-    <select id="getmsgCntByRoomNo" resultType="Integer">
+    <select id="getMsgCntByRoomNo" resultType="Integer">
         SELECT
             COUNT(*)
         FROM

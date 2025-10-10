@@ -63,7 +63,7 @@ public class ApiTwentyController {
     @PostMapping("/room/{roomNo}/status")
     public ResponseEntity<ApiResponse<Void>> updateRoomStatus(@PathVariable int roomNo, @RequestParam String status){
         Map<String, Object> map = Map.of("roomNo", roomNo, "roomStatus", status);
-        twentyService.updateRoomStaus(map);
+        twentyService.updateRoomStatus(map);
         return ResponseEntityUtils.ok("방 상태가 성공적으로 변경.");
     }
 
@@ -131,8 +131,9 @@ public class ApiTwentyController {
      * @return 메세지 총 갯수
      */
     @GetMapping("/room/{roomNo}/msgCnt")
-    public ResponseEntity<ApiResponse<Integer>> getmsgCntByRoomNo(@PathVariable int roomNo) {
-         Integer msgCnt = twentyService.getmsgCntByRoomNo(roomNo);
+    public ResponseEntity<ApiResponse<Integer>> getMsgCntByRoomNo(@PathVariable int roomNo) {
+         Integer msgCnt = twentyService.getMsgCntByRoomNo(roomNo);
+         log.info("이 게임방의 총 전체 메세지 : {}", msgCnt );
         return ResponseEntityUtils.ok(msgCnt);
     }
 
@@ -144,6 +145,7 @@ public class ApiTwentyController {
     @GetMapping("/room/{roomNo}/msg/recent")
     public ResponseEntity<ApiResponse<SendStdMsg>> getRecentMsgByRoomNo(@PathVariable int roomNo) {
         SendStdMsg recentMsg = twentyService.getRecentMsgByRoomNo(roomNo);
+        log.info("가장 최신 메세지 발행 : {}", recentMsg);
         return ResponseEntityUtils.ok(recentMsg);
     }
 
@@ -156,6 +158,7 @@ public class ApiTwentyController {
     @PostMapping("/room/{roomNo}/resultUpdate")
     public ResponseEntity<ApiResponse<Void>> updateTwentyRoomResult(@RequestBody TwentyRoom room) {
         twentyService.updateTwentyRoomResult(room);
+        log.info("게임 종료 버튼 : 게임 결과 게임방 테이블에 정상 적으로 저장");
         return ResponseEntityUtils.ok("정상적으로 변경되었습니다.");
     }
 
@@ -167,6 +170,7 @@ public class ApiTwentyController {
     @PostMapping("/updateMsgLog")
     public ResponseEntity<ApiResponse<List<SendStdMsg>>> updateTwentyMsgLogAndGetMsgList(@RequestBody SendStdMsg msg) {
         List<SendStdMsg> msgList = twentyService.updateTwentyMsgLogAndGetMsgList(msg);
+        log.info("log 테이블에 메세지 업데이트 및 최신 메세지 리스트 갱신 : {}", msgList);
         return ResponseEntityUtils.ok(msgList);
     }
 
@@ -178,6 +182,7 @@ public class ApiTwentyController {
     @GetMapping("/getMsgList/{roomNo}")
     public ResponseEntity<ApiResponse<List<SendStdMsg>>> getMsgListByRoomNo(@PathVariable int roomNo) {
         List<SendStdMsg> msgList = twentyService.getMsgListByRoomNo(roomNo);
+        log.info("ajax로 메세지 리스트 호출 : {}",  msgList);
         return ResponseEntityUtils.ok(msgList);
     }
 

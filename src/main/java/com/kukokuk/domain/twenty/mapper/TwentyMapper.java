@@ -31,7 +31,7 @@ public interface TwentyMapper {
     /**
      * 게임방의 상태를 변경
      */
-    public void updateRoomStaus(Map<String, Object> map);
+    public void updateRoomStatus(Map<String, Object> map);
 
 
     /**
@@ -61,7 +61,7 @@ public interface TwentyMapper {
      * @param roomNo
      * @return
      */
-    public Integer getmsgCntByRoomNo(int roomNo);
+    public Integer getMsgCntByRoomNo(int roomNo);
 
     /**
      * 이 게임방의 가장 최신 메세지를 조회
