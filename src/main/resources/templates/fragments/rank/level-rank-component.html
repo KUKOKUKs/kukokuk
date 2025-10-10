@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html>
 <div th:fragment="level-rank-component-fragment(ranksDto)"
-     class="component tiny_list_component ranks_component"
-     th:with="isAuth=${#authorization.expression('isAuthenticated()')},
-      user=${isAuth ? #authentication.principal.user : null}">
+     class="component tiny_list_component ranks_component">
     <div class="component_title">
         <div class="title_info align_center">레벨 순위</div>
     </div>
 
     <div class="tiny_list_component">
         <div th:each="rank : ${ranksDto.ranks}"
-             class="component_info tiny"
-             th:classappend="${rank.userNo == user.userNo ? 'selected' : ''}">
+             class="component_info tiny column tiny_gap"
+             th:with="isMyRank=${rank.userNo == ranksDto.userNo},
+                    rawPercent=${(rank.experiencePoints * 100.0) / rank.maxExp},
+                    percent=${rawPercent % 1 == 0} ?
+                        ${#numbers.formatDecimal(rawPercent, 0, 0)} + '%' :
+                        ${#numbers.formatDecimal(rawPercent, 1, 1)} + '%'"
+             th:classappend="${isMyRank ? 'selected' : ''}">
             <div class="index_list w_100" style="--cols: 12; --indexCols: 1;">
                 <div class="rank"
                      th:classappend="${rank.userRank < 4 ? 'medal' : ''}">
@@ -31,7 +34,7 @@
                     </th:block>
 
                     <!--/* 사용자 순위가 순위권 밖인 경우 */-->
-                    <th:block th:if="${rank.userNo == user.userNo && rank.userRank > 5}">
+                    <th:block th:if="${isMyRank && rank.userRank > 5}">
                         <span class="small_font color_gray" th:text="|${rank.userRank}위|"></span>
                     </th:block>
                 </div>
@@ -39,10 +42,14 @@
                     <div class="rank_profile icon base">
                         <img th:src="${rank.profileFileUrl}" alt="프로필 이미지">
                     </div>
-                    <p class="rank_level small_font bold" th:text="|Lv.${rank.level}|">레벨</p>
                     <p class="rank_nickname small_font bold text_ellipsis" th:text="${rank.nickname}">닉네임</p>
-                    <p class="rank_score bold color_primary" th:text="${rank.formattedScore}">랭크점수</p>
+                    <p class="rank_score bold color_primary" th:text="|Lv.${rank.level}|">Lv.레벨</p>
                 </div>
+            </div>
+
+            <div class="bar_gauge">
+                <div class="gauge" th:style="|width: ${percent};|"></div>
+                <span class="gauge_info" th:text="|${rank.experiencePoints} / ${rank.maxExp}|">0 / 1</span>
             </div>
         </div>
     </div>
