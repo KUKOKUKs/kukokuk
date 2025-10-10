@@ -365,6 +365,7 @@
     justify-content: space-between;
     align-items: center;
     gap: var(--smallGap);
+    position: relative;
 
     &.small {
         font-size: var(--smallFontSize);
@@ -380,6 +381,10 @@
                 box-sizing: content-box;
             }
         }
+    }
+
+    &.tiny {
+        padding: var(--tinyPadding);
     }
 
     .list_info {
@@ -1145,11 +1150,11 @@
     예시 레이아웃: [좌측 이동 버튼] | [내용]| [우측 이동 버튼]
     * stepper_btn에 id를 붙여 js로 각 콘텐츠별 컨트롤
     <div class="content_switcher stepper_btn">
-        <button type="button" class="step_info left">
+        <button type="button" class="step_info prev">
             <iconify-icon icon="ep:arrow-left"></iconify-icon>
         </button>
-        <p class="step_info center">내용</p>
-        <button type="button" class="step_info right">
+        <p class="info">내용</p>
+        <button type="button" class="step_info next">
             <iconify-icon icon="ep:arrow-right"></iconify-icon>
         </button>
     </div>
@@ -1159,7 +1164,7 @@
     align-items: center;
     gap: var(--tinyGap);
 
-    .step_info {
+    .step_info, .info {
         display: flex;
         height: calc(var(--fixEtcTinyFontSize) * 1.4); // 기본 행간
         justify-content: center;
@@ -1170,11 +1175,12 @@
         background-color: #fff;
         box-shadow: var(--insetBxsh);
         box-sizing: content-box;
+    }
 
-        &.center {
-            background-color: transparent;
-            box-shadow: none;
-        }
+    .info {
+        width: max-content;
+        background-color: transparent;
+        box-shadow: none;
     }
 }
 
@@ -1382,6 +1388,10 @@
 .d_flex {
     width: 100%;
     display: flex;
+}
+
+.row {
+    flex-direction: row !important; /* 가로형 */
 }
 
 .column {
