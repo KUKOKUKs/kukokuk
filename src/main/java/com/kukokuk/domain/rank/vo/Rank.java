@@ -2,6 +2,7 @@ package com.kukokuk.domain.rank.vo;
 
 import com.kukokuk.common.util.FilePathUtil;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,6 +44,13 @@ public class Rank {
     // 프로필 이미지 경로 생성
     public String getProfileFileUrl() {
         return FilePathUtil.getProfileImagePath(userNo, profileFilename);
+    }
+
+    // BigDecimal 소수점 제거하여 정수로 표현(내림처리)
+    public int getFormattedScore() {
+        return totalScore == null
+            ? 0
+            : totalScore.setScale(0, RoundingMode.DOWN).intValue();
     }
 
 }

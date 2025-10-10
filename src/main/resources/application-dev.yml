@@ -9,7 +9,7 @@ spring:
   # Redis 기본 설정
   data:
     redis:
-      host: localhost
+      host: host.docker.internal
       port: 6379
 
   session:
@@ -57,3 +57,13 @@ gemini:
   api:
     key: ${GEMINI_API_KEY}
     baseUrl: https://generativelanguage.googleapis.com
+
+# 임시 설정 : 수정필요
+nhn:
+  s3:
+    tenant-id: AUTH_58a0a6438f054792b4338ed8b2440a82
+    endpoint: https://kr1-api-object-storage.nhncloudservice.com
+    access-key: ${OBJECT_STORAGE_ACCESS_KEY}
+    secret-key: ${OBJECT_STORAGE_SECRET_KEY}
+    bucket: kukokuk
+    region-name: KR1

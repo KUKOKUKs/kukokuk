@@ -19,8 +19,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RanksResponseDto {
 
-    private String contentType;
-    private List<Rank> ranks;
+    private int userNo;             // 요청한 사용자 번호
+    private String contentType;     // 컨텐츠 타입
+    private List<Rank> ranks;       // 사용자 랭크 포함 랭크 목록
+    private boolean hasUserRank;    // 랭크 목록에 사용자 랭크 포함 여부
 
     public String getContentTypeName() {
         return ContentTypeEnum.getDescriptionByType(contentType);

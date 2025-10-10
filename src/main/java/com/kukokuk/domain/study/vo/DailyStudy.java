@@ -18,6 +18,7 @@ public class DailyStudy {
     private int cardCount;
     private Date createdDate;
     private Date updatedDate;
+    private Integer groupNo;
 
     private DailyStudyMaterial dailyStudyMaterial;
 }

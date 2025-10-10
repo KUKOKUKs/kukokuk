@@ -3,261 +3,48 @@
 
 <div layout:fragment="content">
     <div id="main-content" class="content_container">
-        <div class="content_info">
+        <div id="rank-container" class="content_info">
             <div class="content_title">
                 <div class="d_flex align_center tiny_gap">
                     <iconify-icon icon="streamline-ultimate-color:ranking-stars-ribbon"></iconify-icon>
                     순위
                 </div>
 
-                <!--/* 월 전환 버튼(최근 3달만 조회할 수 있도록) */-->
-                <div id="rank-history-btn"
+                <!--/* 월 전환 버튼(최근 3달만 조회할 수 있도록 JS로 구현) */-->
+                <div id="rank-month-btn"
                      class="content_switcher stepper_btn">
-                    <button type="button" class="step_info left">
+                    <button type="button" class="step_info prev">
                         <iconify-icon icon="ep:arrow-left"></iconify-icon>
                     </button>
-                    <p class="step_info center">내용</p>
-                    <button type="button" class="step_info right">
+                    <p class="info" th:text="${#dates.format(#dates.createNow(), 'yyyy-MM')}">내용</p>
+                    <button type="button" class="step_info next disabled">
                         <iconify-icon icon="ep:arrow-right"></iconify-icon>
                     </button>
                 </div>
             </div>
+
+            <!--/* 스피드 퀴즈 랭크 */-->
+            <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${speedQuizRanks})}"></div>
+
+            <!--/* 단계별 퀴즈 랭크 */-->
+            <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${levelQuizRanks})}"></div>
+
+            <!--/* 받아쓰기 퀴즈 랭크 */-->
+            <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${dictationQuizRanks})}"></div>
         </div>
     </div>
 
-    <div class="content_info">
-        <!-- 페이지 헤더 -->
-        <div class="content_title">
-            <iconify-icon icon="fluent-color:trophy-28"></iconify-icon>
-            <span th:text="${contentTypeName + ' 랭킹'}">스피드퀴즈 랭킹</span>
-            <div class="content_sub_title">
-                <span th:text="${rankMonth}">2025-01</span> 월간 랭킹
-            </div>
-        </div>
+    <div id="sub-content" class="content_container">
+        <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
 
-        <!-- 컨트롤 영역 -->
-        <div class="ranking_controls">
-            <!-- 컨텐츠 타입 선택 -->
-            <div class="component">
-                <div class="component_title">
-                    <iconify-icon icon="fluent-color:games-24"></iconify-icon>
-                    게임 종류
-                </div>
-                <div class="content_type_selector">
-                    <a th:href="@{/templates/rank(contentType='SPEED', rankMonth=${rankMonth})}"
-                       class="content_type_btn"
-                       th:classappend="${contentType == 'SPEED'} ? 'active' : ''">
-                        <iconify-icon icon="flat-color-icons:flash-on"></iconify-icon>
-                        스피드퀴즈
-                    </a>
-                    <a th:href="@{/templates/rank(contentType='LEVEL', rankMonth=${rankMonth})}"
-                       class="content_type_btn"
-                       th:classappend="${contentType == 'LEVEL'} ? 'active' : ''">
-                        <iconify-icon icon="flat-color-icons:graduation-cap"></iconify-icon>
-                        단계별 퀴즈
-                    </a>
-                    <a th:href="@{/templates/rank(contentType='DICTATION', rankMonth=${rankMonth})}"
-                       class="content_type_btn"
-                       th:classappend="${contentType == 'DICTATION'} ? 'active' : ''">
-                        <iconify-icon icon="flat-color-icons:edit"></iconify-icon>
-                        받아쓰기
-                    </a>
-                </div>
-            </div>
+        <!--/* 레벨 랭크 */-->
+        <div th:replace="~{fragments/rank/level-rank-component :: level-rank-component-fragment(ranksDto=${levelRanks})}"></div>
 
-            <!-- 월 선택 -->
-            <div class="component">
-                <div class="component_title">
-                    <iconify-icon icon="fluent-color:calendar-24"></iconify-icon>
-                    조회 월
-                </div>
-                <div class="month_selector">
-                    <a th:if="${prevMonth != null}"
-                       th:href="@{/templates/rank(contentType=${contentType}, rankMonth=${prevMonth})}"
-                       class="month_nav_btn">
-                        <iconify-icon icon="fluent:arrow-left-24-filled"></iconify-icon>
-                        <span th:text="${prevMonth}">2024-12</span>
-                    </a>
-
-                    <div class="current_month">
-                        <span th:text="${rankMonth}">2025-01</span>
-                        <span th:if="${isCurrentMonth}" class="current_badge">현재</span>
-                    </div>
-
-                    <a th:if="${nextMonth != null}"
-                       th:href="@{/templates/rank(contentType=${contentType}, rankMonth=${nextMonth})}"
-                       class="month_nav_btn">
-                        <span th:text="${nextMonth}">2025-02</span>
-                        <iconify-icon icon="fluent:arrow-right-24-filled"></iconify-icon>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- 내 랭킹 정보 -->
-        <div th:if="${myRankingInfo != null}" class="my_ranking_section">
-            <div class="component my_ranking_card">
-                <div class="component_title">
-                    <iconify-icon icon="fluent-color:person-star-24"></iconify-icon>
-                    내 랭킹 정보
-                </div>
-                <div class="my_ranking_content">
-                    <div class="my_rank_item">
-                        <div class="rank_info">
-                            <span class="rank_label">순위</span>
-                            <span class="rank_value" th:text="${myRanking != null ? myRanking + '위' : '순위권 밖'}">5위</span>
-                        </div>
-                        <div class="score_info">
-                            <span class="score_label">평균 점수</span>
-                            <span class="score_value" th:text="${#numbers.formatDecimal(myRankingInfo.totalScore, 0, 1)} + '점'">85.5점</span>
-                        </div>
-                        <div class="play_info">
-                            <span class="play_label">플레이 횟수</span>
-                            <span class="play_value" th:text="${myRankingInfo.playCount} + '회'">12회</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 랭킹 리스트 -->
-        <div class="ranking_section">
-            <div class="component">
-                <div class="component_title">
-                    <iconify-icon icon="fluent-color:trophy-24"></iconify-icon>
-                    전체 랭킹
-                    <div class="ranking_count">
-                        총 <span th:text="${#lists.size(globalRankings)}">50</span>명
-                    </div>
-                </div>
-
-                <div class="ranking_table_container">
-                    <div th:if="${!#lists.isEmpty(globalRankings)}" class="ranking_table">
-                        <!-- 테이블 헤더 -->
-                        <div class="ranking_row header">
-                            <div class="rank_col">순위</div>
-                            <div class="user_col">사용자</div>
-                            <div class="score_col">평균점수</div>
-                            <div class="play_col">횟수</div>
-                            <div class="group_col">그룹</div>
-                        </div>
-
-                        <!-- 랭킹 데이터 -->
-                        <div th:each="ranking, stat : ${globalRankings}"
-                             class="ranking_row data"
-                             th:classappend="${stat.index < 3} ? 'top-' + (${stat.index + 1}) : ''"
-                             th:data-user-no="${ranking.userNo}">
-
-                            <div class="rank_col">
-                                <span th:if="${stat.index == 0}" class="medal gold">🥇</span>
-                                <span th:if="${stat.index == 1}" class="medal silver">🥈</span>
-                                <span th:if="${stat.index == 2}" class="medal bronze">🥉</span>
-                                <span th:if="${stat.index > 2}" class="rank_number" th:text="${stat.index + 1}">4</span>
-                            </div>
-
-                            <div class="user_col">
-                                <div class="user_profile">
-                                    <div class="profile_image">
-                                        <img th:if="${ranking.profileFilename != null}"
-                                             th:src="@{'/images/profile/' + ${ranking.profileFilename}}"
-                                             th:alt="${ranking.nickname}" />
-                                        <iconify-icon th:unless="${ranking.profileFilename != null}"
-                                                      icon="iconamoon:profile-circle-fill"></iconify-icon>
-                                    </div>
-                                    <span class="nickname" th:text="${ranking.nickname}">닉네임</span>
-                                </div>
-                            </div>
-
-                            <div class="score_col">
-                                <span class="score_value" th:text="${#numbers.formatDecimal(ranking.totalScore, 0, 1)}">85.5</span>
-                                <span class="score_unit">점</span>
-                            </div>
-
-                            <div class="play_col">
-                                <span class="play_count" th:text="${ranking.playCount}">15</span>
-                                <span class="play_unit">회</span>
-                            </div>
-
-                            <div class="group_col">
-                                <span th:if="${ranking.groupTitle != null}"
-                                      class="group_name"
-                                      th:text="${ranking.groupTitle}">그룹명</span>
-                                <span th:unless="${ranking.groupTitle != null}" class="no_group">-</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 랭킹 데이터가 없을 경우 -->
-                    <div th:if="${#lists.isEmpty(globalRankings)}" class="no_ranking_data">
-                        <iconify-icon icon="fluent-color:trophy-off-24"></iconify-icon>
-                        <p>아직 랭킹 데이터가 없습니다.</p>
-                        <p class="sub_text">게임을 플레이하고 첫 번째 랭킹에 도전해보세요!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 내 월별 히스토리 -->
-        <div th:if="${!#lists.isEmpty(myHistory)}" class="history_section">
-            <div class="component">
-                <div class="component_title">
-                    <iconify-icon icon="fluent-color:history-24"></iconify-icon>
-                    내 월별 기록
-                </div>
-                <div class="history_chart_container">
-                    <div class="history_chart">
-                        <div th:each="history : ${myHistory}" class="history_item">
-                            <div class="history_month" th:text="${history.rankMonth}">2024-12</div>
-                            <div class="history_bar_container">
-                                <div class="history_bar"
-                                     th:style="'height: ' + ${history.totalScore} + '%'"></div>
-                            </div>
-                            <div class="history_score" th:text="${#numbers.formatDecimal(history.totalScore, 0, 1)}">85.5</div>
-                            <div class="history_plays" th:text="${history.playCount} + '회'">12회</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 랭킹 안내 -->
-        <div class="ranking_info_section">
-            <div class="component">
-                <div class="component_title">
-                    <iconify-icon icon="fluent-color:info-24"></iconify-icon>
-                    랭킹 안내
-                </div>
-                <div class="ranking_info_content">
-                    <div class="info_grid">
-                        <div class="info_item">
-                            <iconify-icon icon="fluent-color:calendar-clock-24"></iconify-icon>
-                            <div class="info_text">
-                                <strong>월별 집계</strong>
-                                <span>매월 1일 자정에 랭킹이 초기화됩니다.</span>
-                            </div>
-                        </div>
-                        <div class="info_item">
-                            <iconify-icon icon="fluent-color:calculator-24"></iconify-icon>
-                            <div class="info_text">
-                                <strong>평균 점수</strong>
-                                <span>여러 번 플레이 시 모든 점수의 평균으로 계산됩니다.</span>
-                            </div>
-                        </div>
-                        <div class="info_item">
-                            <iconify-icon icon="fluent-color:trophy-24"></iconify-icon>
-                            <div class="info_text">
-                                <strong>순위 결정</strong>
-                                <span>평균 점수 → 플레이 횟수 → 최신 플레이 순으로 정렬됩니다.</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
     </div>
 </div>
 
 <th:block layout:fragment="script">
-    <script th:src="@{/js/modules/ranking/ranking-main.js}"></script>
+    <script type="module" th:src="@{/js/modules/rank/rank.js}"></script>
 </th:block>
 </html>

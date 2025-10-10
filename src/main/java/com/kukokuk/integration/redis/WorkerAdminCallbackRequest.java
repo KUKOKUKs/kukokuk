@@ -1,6 +1,7 @@
-package com.kukokuk.domain.study.dto;
+package com.kukokuk.integration.redis;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -8,9 +9,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-
-public class PyParseMaterialResponse {
-
+@RequiredArgsConstructor
+public class WorkerAdminCallbackRequest {
+    private int jobNo;
     private String content;
     private String school;
     private int grade;
@@ -18,4 +19,6 @@ public class PyParseMaterialResponse {
     private String keywords;
     private String sourceFilename;
 
+    // 실패 콜백용
+    private String error;
 }

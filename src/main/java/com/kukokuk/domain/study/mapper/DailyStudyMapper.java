@@ -1,5 +1,6 @@
 package com.kukokuk.domain.study.mapper;
 
+import com.kukokuk.domain.study.dto.TeacherDailyStudyResponse;
 import com.kukokuk.domain.study.dto.UserStudyRecommendationDto;
 import com.kukokuk.domain.study.vo.DailyStudy;
 import java.util.List;
@@ -26,6 +27,20 @@ public interface DailyStudyMapper {
         @Param("userInfo") Map<String, Object> userInfo,
         @Param("condition") Map<String, Object> condition);
 
+    /**
+     * 특정 그룹 학습 자료를 사용자의 이력 상태에 맞게 목록으로 조회
+     * @param groupNo 학습자료를 조회할 그룹의 번호
+     * @param userNo 사용자 번호
+     * @param condition 조회 조건
+     *                  - "rows" : int 조회 행 개수
+     * @return 조회된 사용자의 일일학습 자료 리스트
+     *         + 사용자가 학습중인 학습자료면 이력까지 함께 조회
+     */
+    List<UserStudyRecommendationDto> getDailyStudiessByGroupAndUser(
+        @Param("groupNo") int groupNo,
+        @Param("userNo") int userNo,
+        @Param("condition") Map<String, Object> condition);
+
     // 학습자료를 생성
     void insertDailyStudy(DailyStudy dailyStudy);
 
@@ -45,4 +60,11 @@ public interface DailyStudyMapper {
     UserStudyRecommendationDto getDailyStudyByMaterialNoAndDifficulty(
         @Param("dailyStudyMaterialNo") int dailyStudyMaterialNo,
         @Param("studyDifficultyNo") int studyDifficultyNo);
+
+    /**
+     * groupNo를 업데이트
+     * @param dailyStudyNo
+     * @param groupNo
+     */
+    void updateGroupNo(@Param("dailyStudyNo") int dailyStudyNo, @Param("groupNo") int groupNo);
 }
