@@ -7,6 +7,7 @@ public class FilePathUtil {
 
     // 경로 상수
     public static final String PROFILE_DIR = "/images/profile/";
+    public static final String BASE_PROFILE = "/images/basic_profile_img.jpg";
 
     /**
      * 프로필 이미지 전체 URL 생성
@@ -15,7 +16,7 @@ public class FilePathUtil {
      * @return 완전한 URL 경로 (/images/profile/{userNo}/{filename})
      */
     public static String getProfileImagePath(int userNo, String filename) {
-        if (filename == null || filename.isBlank()) return null;
+        if (filename == null || filename.isBlank()) return BASE_PROFILE;
         return PROFILE_DIR + userNo + "/" + filename;
     }
 
