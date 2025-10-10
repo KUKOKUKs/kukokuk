@@ -5,10 +5,10 @@ import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.DateUtil;
 import com.kukokuk.common.util.ResponseEntityUtils;
+import com.kukokuk.domain.rank.dto.LevelRankDto;
 import com.kukokuk.domain.rank.dto.RankRequestDto;
 import com.kukokuk.domain.rank.dto.RanksResponseDto;
 import com.kukokuk.domain.rank.service.RankService;
-import com.kukokuk.domain.rank.vo.Rank;
 import com.kukokuk.security.SecurityUser;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -94,14 +94,14 @@ public class ApiRankController {
      * @return 레벨 랭크 목록 정보
      */
     @GetMapping("/level")
-    public ResponseEntity<ApiResponse<List<Rank>>> levelRanks(
+    public ResponseEntity<ApiResponse<LevelRankDto>> levelRanks(
         @AuthenticationPrincipal SecurityUser securityUser) {
         log.info("ApiRankController levelRanks() 컨트롤러 실행");
 
         int userNo = securityUser.getUser().getUserNo(); // 사용자 번호
 
         // 레벨 기준 랭크 목록 조회
-        List<Rank> levelRanks = rankService.getLevelRanksIncludeUser(
+        LevelRankDto levelRanks = rankService.getLevelRanksIncludeUser(
             userNo
             , PaginationEnum.COMPONENT_ROWS
         );

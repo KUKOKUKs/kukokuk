@@ -19,6 +19,8 @@
         <result property="nickname" column="NICKNAME"/>
         <result property="level" column="LEVEL"/>
         <result property="profileFilename" column="PROFILE_FILENAME"/>
+        <result property="experiencePoints" column="EXPERIENCE_POINTS"/>
+        <result property="maxExp" column="MAX_EXP"/>
     </resultMap>
 
     <!--
