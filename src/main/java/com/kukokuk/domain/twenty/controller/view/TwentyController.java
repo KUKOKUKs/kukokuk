@@ -1,11 +1,15 @@
 package com.kukokuk.domain.twenty.controller.view;
 
 import com.kukokuk.domain.twenty.dto.RoomUser;
+import com.kukokuk.domain.twenty.dto.WsUser;
 import com.kukokuk.domain.twenty.service.TwentyService;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
+import com.kukokuk.domain.user.vo.User;
 import com.kukokuk.security.SecurityUser;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -54,13 +58,20 @@ public class TwentyController {
         Model model,
         @AuthenticationPrincipal SecurityUser securityUser) {
 
-        // 1. 토큰화 -> Redis -> Model
-        int userNo = securityUser.getUser().getUserNo();
+        // 1. 사용자 정보 -> 토큰화 -> Redis에 담기
+
+        //토큰 만들기
         String token = UUID.randomUUID().toString();
         String key = "ws:token:" +  token;
 
-        redisTemplate.opsForValue().setIfAbsent(key,userNo,15, TimeUnit.MINUTES);
-        System.out.println("Access Token 토큰 발급 완료!");
+        // 필요한 정보만 빼서 DTO 객체에 담기
+        User user = securityUser.getUser();
+        WsUser wsUser = new WsUser(user);
+
+        //Redis에 담기
+        redisTemplate.opsForValue().set(key, wsUser,15, TimeUnit.MINUTES);
+        System.out.println("Access Token 발급 완료");
+
         model.addAttribute("token", token);
 
         //2.게임방 조회 후 게임방 유무에 따라 그룹 페이지 또는 게임방 페이지로 이동
@@ -74,7 +85,7 @@ public class TwentyController {
         model.addAttribute("list", list);
 
 
-        model.addAttribute("userNo", userNo);
+        model.addAttribute("userNo", user.getUserNo());
         model.addAttribute("wsUrl",wsUrl);
         return "twenty/gameRoom";
 
