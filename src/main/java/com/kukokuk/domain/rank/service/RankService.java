@@ -13,7 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import com.kukokuk.domain.rank.dto.LevelRankDto;
+
 /**
  * 월별 랭킹 관련 서비스
  */
@@ -101,6 +101,7 @@ public class RankService {
 
         // DB에서 RANK() 적용하여 사용자 랭크를 포함한 랭크 목록 조회
         List<Rank> fetchRanks;
+        int userNo = rankRequestDto.getUserNo();
         Integer groupNo = rankRequestDto.getGroupNo();
 
         if (groupNo != null) {
@@ -113,17 +114,25 @@ public class RankService {
             fetchRanks = rankMapper.getContentRanksIncludeUserByMonth(rankRequestDto);
         }
 
+        boolean hasUserRank = false;
+        if (!fetchRanks.isEmpty()) {
+            // 조회된 랭크 목록이 있다면 사용자 랭크 포함 여부 확인
+            hasUserRank = fetchRanks.stream()
+                .anyMatch(rank -> rank.getUserNo() == userNo);
+        }
+
         // 가공 메소드 호출하여 limit 유지 + 내 순위 포함 처리한 리스트 적용한 RanksResponseDto 반환
         return RanksResponseDto.builder()
-            .userNo(rankRequestDto.getUserNo())
-            .contentType(rankRequestDto.getContentType())
+            .userNo(userNo)                                 // 요청한 사용자 번호(뷰/JS에서 안전하게 활용)
+            .contentType(rankRequestDto.getContentType())   // 컨텐츠 타입
             .ranks(
                 processRanksIncludeUserRank(
                     fetchRanks
-                    , rankRequestDto.getUserNo()
+                    , userNo
                     , rankRequestDto.getLimit()
-                )
-            )
+                )                                           // 조회한 랭크 정보 가공
+            )                                               // 조회한 랭크 정보
+            .hasUserRank(hasUserRank)                       // 조회된 랭크 정보에 요청 사용자 포함 여부
             .build();
     }
 
@@ -170,7 +179,7 @@ public class RankService {
      * @param limit 조회할 개수
      * @return 레벨 랭크 목록 정보(level DESC, experiencePoints DESC 정렬)
      */
-    public LevelRankDto getLevelRanksIncludeUser(int userNo, int limit) {  // 반환 타입 변경!
+    public LevelRankDto getLevelRanksIncludeUser(int userNo, int limit) {
         log.info("getLevelRanksIncludeUser() 서비스 실행 userNo: {}, limit: {}", userNo, limit);
 
         // RankRequestDto 생성
