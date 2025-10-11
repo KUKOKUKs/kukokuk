@@ -19,7 +19,7 @@ $(document).ready(() => {
         hint2: '',      // 초성 힌트
         hint3: ''       // 첫 글자 힌트
     };
-    
+
     // 받아쓰기 관련 요소
     const $dictationSpeakingComponent = $("#dictation-speaking-component"); // 문제, 힌트 제공 컴포넌트
     const dictationQuestionNo = $dictationSpeakingComponent.data("question-no"); // 해당 문제 식별 번호
