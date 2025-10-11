@@ -55,6 +55,7 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
+        const quizMode = "speed";
         let quizzes = /*[[${quizList}]]*/ [];
     </script>
     <script th:src="@{/js/modules/quiz/quiz.js}"></script>
