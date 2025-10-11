@@ -77,14 +77,7 @@
                             <div class="group_info group_botton_info">
                                 <div class="group_teacher_profile">
                                     <div class="icon title group_profile_img">
-                                        <!--/* 프로필 이미지가 있는 경우 */-->
-                                        <img th:if="${group.teacher.profileFilename != null}"
-                                             th:src="${group.teacher.profileFileUrl}"
-                                             alt="profile thumbnail">
-
-                                        <!--/* 프로필 이미지가 없는 경우 (기본 아이콘 출력) */-->
-                                        <img th:if="${group.teacher.profileFilename == null}"
-                                             th:src="@{/images/basic_profile_img.jpg}"
+                                        <img th:src="${group.teacher.profileFileUrl}"
                                              alt="profile thumbnail">
                                     </div>
                                     <span class="group_teacher_name text_ellipsis"
@@ -247,22 +240,22 @@
                         <p class="text_ellipsis">우리 반이 없습니다</p>
                         <button type="button" class="modal_gruop_edit_btn btn tiny primary">만들기</button>
                     </div>
+                </div>
+            </div>
 
-                    <div class="component_info small_font w_100">
-                        <div class="list_info small_font normal" style="--cols: 24; --indexCols: 2;">
-                            <div class="index_list">
-                                <span class="marker tac">📖</span>
-                                <p>우리 반의 AI 맞춤 학습</p>
-                            </div>
-                            <div class="index_list">
-                                <span class="marker tac">💡</span>
-                                <p>우리 반과 함께 스무고개</p>
-                            </div>
-                            <div class="index_list">
-                                <span class="marker tac">👑</span>
-                                <p>우리 반 월간 순위 경쟁</p>
-                            </div>
-                        </div>
+            <div class="component_info w_100">
+                <div class="list_info small_font normal" style="--cols: 24; --indexCols: 2;">
+                    <div class="index_list">
+                        <span class="marker tac">📖</span>
+                        <p>우리 반의 AI 맞춤 학습</p>
+                    </div>
+                    <div class="index_list">
+                        <span class="marker tac">💡</span>
+                        <p>우리 반과 함께 스무고개</p>
+                    </div>
+                    <div class="index_list">
+                        <span class="marker tac">👑</span>
+                        <p>우리 반 월간 순위 경쟁</p>
                     </div>
                 </div>
             </div>
@@ -292,29 +285,29 @@
 
                         <button type="button" class="modal_gruop_edit_btn btn tiny white">편집</button>
                     </div>
+                </div>
+            </div>
 
-                    <div class="component_info small_font w_100">
-                        <div class="list_info ov_v small_font normal" style="--cols: 24; --indexCols: 2;">
-                            <div class="index_list">
-                                <span class="marker tac tooltip" data-label="급훈">📜</span>
-                                <p th:text="${currentGroup.motto ?: '-'}">급훈</p>
-                            </div>
-                            <div class="index_list">
-                                <span class="marker tac tooltip" data-label="인원수">👩‍👧‍👧</span>
-                                <p th:text="|${currentGroup.getMemberCountFormatted()} 명|">인원 수</p>
-                            </div>
-                            <div class="index_list">
-                                <span class="marker tac tooltip" data-label="생성일">📅</span>
-                                <p th:text="${#dates.format(currentGroup.createdDate, 'yyyy-MM-dd')}">생성일</p>
-                            </div>
-                        </div>
+            <div class="component_info w_100">
+                <div class="list_info ov_v small_font normal" style="--cols: 24; --indexCols: 2;">
+                    <div class="index_list">
+                        <span class="marker tac tooltip" data-label="급훈">📜</span>
+                        <p th:text="${currentGroup.motto ?: '-'}">급훈</p>
                     </div>
-
-                    <div class="btn_list justify_content_between">
-                        <button class="btn tiny white">학습 자료 관리</button>
-                        <button class="btn tiny white">내가 입반한 반으로</button>
+                    <div class="index_list">
+                        <span class="marker tac tooltip" data-label="인원수">👩‍👧‍👧</span>
+                        <p th:text="|${currentGroup.getMemberCountFormatted()} 명|">인원 수</p>
+                    </div>
+                    <div class="index_list">
+                        <span class="marker tac tooltip" data-label="생성일">📅</span>
+                        <p th:text="${#dates.format(currentGroup.createdDate, 'yyyy-MM-dd')}">생성일</p>
                     </div>
                 </div>
+            </div>
+
+            <div class="btn_list justify_content_between">
+                <button class="btn tiny white">학습 자료 관리</button>
+                <button class="btn tiny white">내가 입반한 반으로</button>
             </div>
         </div>
 
@@ -325,29 +318,28 @@
                 <div class="title_info column">
                     우리 반이 없습니다
                     <span class="component_sub_title">입반하여 우리 반과 함께 즐겨보세요</span>
+                </div>
+            </div>
 
-                    <div class="component_info small_font w_100">
-                        <div class="list_info small_font normal" style="--cols: 24; --indexCols: 2;">
-                            <div class="index_list">
-                                <span class="marker tac">📖</span>
-                                <p>우리 반의 AI 맞춤 학습</p>
-                            </div>
-                            <div class="index_list">
-                                <span class="marker tac">💡</span>
-                                <p>우리 반과 함께 스무고개</p>
-                            </div>
-                            <div class="index_list">
-                                <span class="marker tac">👑</span>
-                                <p>우리 반 월간 순위 경쟁</p>
-                            </div>
-                        </div>
+            <div class="component_info w_100">
+                <div class="list_info small_font normal" style="--cols: 24; --indexCols: 2;">
+                    <div class="index_list">
+                        <span class="marker tac">📖</span>
+                        <p>우리 반의 AI 맞춤 학습</p>
+                    </div>
+                    <div class="index_list">
+                        <span class="marker tac">💡</span>
+                        <p>우리 반과 함께 스무고개</p>
+                    </div>
+                    <div class="index_list">
+                        <span class="marker tac">👑</span>
+                        <p>우리 반 월간 순위 경쟁</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!--/* 그룹에 속한 일반 사용자인 경우 */-->
-
 
         <div class="component small_list_component">
             <div class="component_title">우리반 순위</div>

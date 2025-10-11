@@ -19,6 +19,8 @@
         <result property="nickname" column="NICKNAME"/>
         <result property="level" column="LEVEL"/>
         <result property="profileFilename" column="PROFILE_FILENAME"/>
+        <result property="experiencePoints" column="EXPERIENCE_POINTS"/>
+        <result property="maxExp" column="MAX_EXP"/>
     </resultMap>
 
     <!--
@@ -145,344 +147,32 @@
         ]]>
     </select>
 
-    <!--&lt;!&ndash; 월별 랭킹 ResultMap (RANK_MONTH 컬럼 추가) &ndash;&gt;
-    <resultMap id="RankingResultMap" type="Ranking">
-        <id property="rankNo" column="RANK_NO"/>
-        <result property="contentType" column="CONTENT_TYPE"/>
-        <result property="playCount" column="PLAY_COUNT"/>
-        <result property="totalScore" column="TOTAL_SCORE"/>
-        <result property="rankMonth" column="RANK_MONTH"/>
-        <result property="userNo" column="USER_NO"/>
-        <result property="createdDate" column="CREATED_DATE"/>
-        <result property="updatedDate" column="UPDATED_DATE"/>
-        &lt;!&ndash; JOIN 결과용 추가 필드 &ndash;&gt;
-        <result property="nickname" column="NICKNAME"/>
-        <result property="profileFilename" column="PROFILE_FILENAME"/>
-        <result property="groupNo" column="GROUP_NO"/>
-        <result property="groupTitle" column="TITLE"/>
-        <result property="userRank" column="USER_RANK"/>
-    </resultMap>
-
-    &lt;!&ndash; 새로운 월별 랭킹 등록 &ndash;&gt;
-    <insert id="insertRanking" useGeneratedKeys="true" keyProperty="rankNo">
-        INSERT INTO KUKOKUK_RANKS( CONTENT_TYPE
-                                 , PLAY_COUNT
-                                 , TOTAL_SCORE
-                                 , RANK_MONTH
-                                 , USER_NO)
-        VALUES ( #{contentType}
-               , #{playCount}
-               , #{totalScore}
-               , #{rankMonth}
-               , #{userNo})
-    </insert>
-
-    &lt;!&ndash; 기존 월별 랭킹 업데이트 &ndash;&gt;
-    <update id="updateRanking">
-        UPDATE KUKOKUK_RANKS
-        SET PLAY_COUNT  = #{playCount}
-          , TOTAL_SCORE = #{totalScore}
-        WHERE RANK_NO = #{rankNo}
-    </update>
-
-    &lt;!&ndash; 랭킹 번호로 조회 &ndash;&gt;
-    <select id="getRankingByRankNo" resultMap="RankingResultMap">
-        SELECT RANK_NO
-             , CONTENT_TYPE
-             , PLAY_COUNT
-             , TOTAL_SCORE
-             , RANK_MONTH
-             , USER_NO
-             , CREATED_DATE
-             , UPDATED_DATE
-        FROM KUKOKUK_RANKS
-        WHERE RANK_NO = #{rankNo}
-    </select>
-
-    &lt;!&ndash; 사용자의 특정 컨텐츠 현재 월 랭킹 조회 &ndash;&gt;
-    <select id="getRankingByUserAndContent" resultMap="RankingResultMap">
-        SELECT RANK_NO
-             , CONTENT_TYPE
-             , PLAY_COUNT
-             , TOTAL_SCORE
-             , RANK_MONTH
-             , USER_NO
-             , CREATED_DATE
-             , UPDATED_DATE
-        FROM KUKOKUK_RANKS
-        WHERE USER_NO = #{userNo}
-          AND CONTENT_TYPE = #{contentType}
-          AND RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-    </select>
-
-    &lt;!&ndash; 사용자의 특정 컨텐츠 특정 월 랭킹 조회 &ndash;&gt;
-    <select id="getRankingByUserContentAndMonth" resultMap="RankingResultMap">
-        SELECT RANK_NO
-             , CONTENT_TYPE
-             , PLAY_COUNT
-             , TOTAL_SCORE
-             , RANK_MONTH
-             , USER_NO
-             , CREATED_DATE
-             , UPDATED_DATE
-        FROM KUKOKUK_RANKS
-        WHERE USER_NO = #{userNo}
-          AND CONTENT_TYPE = #{contentType}
-          AND RANK_MONTH = #{rankMonth}
-    </select>
-
-    &lt;!&ndash; 전체 월별 랭킹 목록 조회 (현재 월 기준) &ndash;&gt;
-    <select id="getGlobalRankings" resultMap="RankingResultMap">
-        SELECT r.RANK_NO
-             , r.CONTENT_TYPE
-             , r.PLAY_COUNT
-             , r.TOTAL_SCORE
-             , r.RANK_MONTH
-             , r.USER_NO
-             , r.CREATED_DATE
-             , r.UPDATED_DATE
-             , u.NICKNAME
-             , u.PROFILE_FILENAME
-             , gu.GROUP_NO
-             , g.TITLE
-             , ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC) AS USER_RANK
-        FROM KUKOKUK_RANKS r
-                 INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
-                 LEFT JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
-                 LEFT JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
-        WHERE r.CONTENT_TYPE = #{contentType}
-          AND r.RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-        ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC
-        LIMIT #{limit}
-    </select>
-
-    &lt;!&ndash; 전체 월별 랭킹 목록 조회 (특정 월 기준) &ndash;&gt;
-    <select id="getGlobalRankingsByMonth" resultMap="RankingResultMap">
-        SELECT r.RANK_NO
-             , r.CONTENT_TYPE
-             , r.PLAY_COUNT
-             , r.TOTAL_SCORE
-             , r.RANK_MONTH
-             , r.USER_NO
-             , r.CREATED_DATE
-             , r.UPDATED_DATE
-             , u.NICKNAME
-             , u.PROFILE_FILENAME
-             , gu.GROUP_NO
-             , g.TITLE
-             , ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC) AS USER_RANK
-        FROM KUKOKUK_RANKS r
-                 INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
-                 LEFT JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
-                 LEFT JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
-        WHERE r.CONTENT_TYPE = #{contentType}
-          AND r.RANK_MONTH = #{rankMonth}
-        ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC
-        LIMIT #{limit}
-    </select>
-
-    &lt;!&ndash; 특정 그룹 내 월별 랭킹 목록 조회 (현재 월 기준) &ndash;&gt;
-    <select id="getGroupRankings" resultMap="RankingResultMap">
-        SELECT r.RANK_NO
-             , r.CONTENT_TYPE
-             , r.PLAY_COUNT
-             , r.TOTAL_SCORE
-             , r.RANK_MONTH
-             , r.USER_NO
-             , r.CREATED_DATE
-             , r.UPDATED_DATE
-             , u.NICKNAME
-             , u.PROFILE_FILENAME
-             , gu.GROUP_NO
-             , g.TITLE
-             , ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC) AS USER_RANK
-        FROM KUKOKUK_RANKS r
-                 INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
-                 INNER JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
-                 INNER JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
-        WHERE r.CONTENT_TYPE = #{contentType}
-          AND gu.GROUP_NO = #{groupNo}
-          AND r.RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-        ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC
-        LIMIT #{limit}
-    </select>
-
-    &lt;!&ndash; 특정 그룹 내 월별 랭킹 목록 조회 (특정 월 기준) &ndash;&gt;
-    <select id="getGroupRankingsByMonth" resultMap="RankingResultMap">
-        SELECT r.RANK_NO
-             , r.CONTENT_TYPE
-             , r.PLAY_COUNT
-             , r.TOTAL_SCORE
-             , r.RANK_MONTH
-             , r.USER_NO
-             , r.CREATED_DATE
-             , r.UPDATED_DATE
-             , u.NICKNAME
-             , u.PROFILE_FILENAME
-             , gu.GROUP_NO
-             , g.TITLE
-             , ROW_NUMBER() OVER (ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC) AS USER_RANK
-        FROM KUKOKUK_RANKS r
-                 INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
-                 INNER JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
-                 INNER JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
-        WHERE r.CONTENT_TYPE = #{contentType}
-          AND gu.GROUP_NO = #{groupNo}
-          AND r.RANK_MONTH = #{rankMonth}
-        ORDER BY r.TOTAL_SCORE DESC, r.UPDATED_DATE ASC
-        LIMIT #{limit}
-    </select>
-
-    &lt;!&ndash; 전체 랭킹에서 사용자 순위 조회 (현재 월 기준) &ndash;&gt;
-    <select id="getGlobalUserRanking" resultType="int">
-        SELECT COUNT(*) + 1
-        FROM KUKOKUK_RANKS r1
-        WHERE r1.CONTENT_TYPE = #{contentType}
-          AND r1.RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-          AND (r1.TOTAL_SCORE > (
-            SELECT r2.TOTAL_SCORE
-            FROM KUKOKUK_RANKS r2
-            WHERE r2.USER_NO = #{userNo}
-              AND r2.CONTENT_TYPE = #{contentType}
-              AND r2.RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-        ) OR (
-                   r1.TOTAL_SCORE = (
-                       SELECT r2.TOTAL_SCORE
-                       FROM KUKOKUK_RANKS r2
-                       WHERE r2.USER_NO = #{userNo}
-                         AND r2.CONTENT_TYPE = #{contentType}
-                         AND r2.RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-                   ) AND r1.UPDATED_DATE &lt;(
-                       SELECT r2.UPDATED_DATE
-                       FROM KUKOKUK_RANKS r2
-                       WHERE r2.USER_NO = #{userNo}
-                         AND r2.CONTENT_TYPE = #{contentType}
-                         AND r2.RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-                   )
-                   ))
-    </select>
-
-    &lt;!&ndash; 전체 랭킹에서 사용자 순위 조회 (특정 월 기준) &ndash;&gt;
-    <select id="getGlobalUserRankingByMonth" resultType="int">
-        SELECT COUNT(*) + 1
-        FROM KUKOKUK_RANKS r1
-        WHERE r1.CONTENT_TYPE = #{contentType}
-          AND r1.RANK_MONTH = #{rankMonth}
-          AND (r1.TOTAL_SCORE > (
-            SELECT r2.TOTAL_SCORE
-            FROM KUKOKUK_RANKS r2
-            WHERE r2.USER_NO = #{userNo}
-              AND r2.CONTENT_TYPE = #{contentType}
-              AND r2.RANK_MONTH = #{rankMonth}
-        ) OR (
-                   r1.TOTAL_SCORE = (
-                       SELECT r2.TOTAL_SCORE
-                       FROM KUKOKUK_RANKS r2
-                       WHERE r2.USER_NO = #{userNo}
-                         AND r2.CONTENT_TYPE = #{contentType}
-                         AND r2.RANK_MONTH = #{rankMonth}
-                   ) AND r1.UPDATED_DATE &lt;(
-                       SELECT r2.UPDATED_DATE
-                       FROM KUKOKUK_RANKS r2
-                       WHERE r2.USER_NO = #{userNo}
-                         AND r2.CONTENT_TYPE = #{contentType}
-                         AND r2.RANK_MONTH = #{rankMonth}
-                   )
-                   ))
-    </select>
-
-    &lt;!&ndash; 그룹 내 랭킹에서 사용자 순위 조회 (현재 월 기준) &ndash;&gt;
-    <select id="getGroupUserRanking" resultType="int">
-        SELECT COUNT(*) + 1
-        FROM KUKOKUK_RANKS r1
-                 INNER JOIN KUKOKUK_USERS u1 ON r1.USER_NO = u1.USER_NO
-                 INNER JOIN KUKOKUK_GROUP_USERS gu1 ON u1.USER_NO = gu1.USER_NO
-        WHERE r1.CONTENT_TYPE = #{contentType}
-          AND gu1.GROUP_NO = #{groupNo}
-          AND r1.RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-          AND (r1.TOTAL_SCORE > (
-            SELECT r2.TOTAL_SCORE
-            FROM KUKOKUK_RANKS r2
-            WHERE r2.USER_NO = #{userNo}
-              AND r2.CONTENT_TYPE = #{contentType}
-              AND r2.RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-        ) OR (
-                   r1.TOTAL_SCORE = (
-                       SELECT r2.TOTAL_SCORE
-                       FROM KUKOKUK_RANKS r2
-                       WHERE r2.USER_NO = #{userNo}
-                         AND r2.CONTENT_TYPE = #{contentType}
-                         AND r2.RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-                   ) AND r1.UPDATED_DATE &lt;(
-                       SELECT r2.UPDATED_DATE
-                       FROM KUKOKUK_RANKS r2
-                       WHERE r2.USER_NO = #{userNo}
-                         AND r2.CONTENT_TYPE = #{contentType}
-                         AND r2.RANK_MONTH = DATE_FORMAT(NOW(), '%Y-%m')
-                   )
-                   ))
-    </select>
-
-    &lt;!&ndash; 그룹 내 랭킹에서 사용자 순위 조회 (특정 월 기준) &ndash;&gt;
-    <select id="getGroupUserRankingByMonth" resultType="int">
-        SELECT COUNT(*) + 1
-        FROM KUKOKUK_RANKS r1
-                 INNER JOIN KUKOKUK_USERS u1 ON r1.USER_NO = u1.USER_NO
-                 INNER JOIN KUKOKUK_GROUP_USERS gu1 ON u1.USER_NO = gu1.USER_NO
-        WHERE r1.CONTENT_TYPE = #{contentType}
-          AND gu1.GROUP_NO = #{groupNo}
-          AND r1.RANK_MONTH = #{rankMonth}
-          AND (r1.TOTAL_SCORE &gt; (
-            SELECT r2.TOTAL_SCORE
-            FROM KUKOKUK_RANKS r2
-            WHERE r2.USER_NO = #{userNo}
-              AND r2.CONTENT_TYPE = #{contentType}
-              AND r2.RANK_MONTH = #{rankMonth}
-        ) OR (
-                   r1.TOTAL_SCORE = (
-                       SELECT r2.TOTAL_SCORE
-                       FROM KUKOKUK_RANKS r2
-                       WHERE r2.USER_NO = #{userNo}
-                         AND r2.CONTENT_TYPE = #{contentType}
-                         AND r2.RANK_MONTH = #{rankMonth}
-                   ) AND r1.UPDATED_DATE &lt; (
-                       SELECT r2.UPDATED_DATE
-                       FROM KUKOKUK_RANKS r2
-                       WHERE r2.USER_NO = #{userNo}
-                         AND r2.CONTENT_TYPE = #{contentType}
-                         AND r2.RANK_MONTH = #{rankMonth}
-                   )
-                   ))
-    </select>
-
-    &lt;!&ndash; 사용자의 모든 랭킹 삭제 &ndash;&gt;
-    <delete id="deleteRankingsByUser">
-        DELETE FROM KUKOKUK_RANKS
-        WHERE USER_NO = #{userNo}
-    </delete>
-
-    &lt;!&ndash; 사용자의 월별 랭킹 히스토리 조회 &ndash;&gt;
-    <select id="getUserMonthlyHistory" resultMap="RankingResultMap">
-        SELECT r.RANK_NO
-             , r.CONTENT_TYPE
-             , r.PLAY_COUNT
-             , r.TOTAL_SCORE
-             , r.RANK_MONTH
-             , r.USER_NO
-             , r.CREATED_DATE
-             , r.UPDATED_DATE
-             , u.NICKNAME
-             , u.PROFILE_FILENAME
-             , gu.GROUP_NO
-             , g.TITLE
-        FROM KUKOKUK_RANKS r
-                 INNER JOIN KUKOKUK_USERS u ON r.USER_NO = u.USER_NO
-                 LEFT JOIN KUKOKUK_GROUP_USERS gu ON u.USER_NO = gu.USER_NO
-                 LEFT JOIN KUKOKUK_GROUPS g ON gu.GROUP_NO = g.GROUP_NO
-        WHERE r.USER_NO = #{userNo}
-          AND r.CONTENT_TYPE = #{contentType}
-        ORDER BY r.RANK_MONTH DESC, r.UPDATED_DATE DESC
-        LIMIT #{limit}
-    </select>-->
-
+    <!--
+     * 레벨 기준 사용자를 포함한 상위 랭크 목록 조회
+     * <p>
+     *     날짜 상관없이 레벨과 경험치로만 정렬
+     *     정확한 데이터를 가져오기 위해 RANK() 사용으로 limit 개수 보다 많을 수 있음
+     *     서비스단에서 가공 필요
+     * @param rankRequestDto userNo, limit
+     * @return 레벨 랭크 목록 정보(level DESC, experiencePoints DESC 정렬)
+    List<Rank> getLevelRanksIncludeUser(RankRequestDto rankRequestDto);
+-->
+    <select id="getLevelRanksIncludeUser" parameterType="RankRequestDto" resultMap="RankResultMap">
+<![CDATA[
+        SELECT *
+        FROM (SELECT U.USER_NO
+                   , U.NICKNAME
+                   , U.LEVEL
+                   , U.PROFILE_FILENAME
+                   , U.EXPERIENCE_POINTS
+                   , (L.MAX_EXP + 1) AS MAX_EXP
+                   , RANK() OVER (ORDER BY U.LEVEL DESC, U.EXPERIENCE_POINTS DESC, U.USER_NO) AS USER_RANK
+              FROM KUKOKUK_USERS U
+                       JOIN KUKOKUK_LEVEL L ON U.LEVEL = L.LEVEL
+             ) AS SUB
+        WHERE USER_RANK <= #{limit}
+           OR (USER_NO = #{userNo} AND USER_RANK > #{limit})
+        ORDER BY USER_RANK, USER_NO
+        ]]>
+</select>
 </mapper>
