@@ -16,7 +16,7 @@
 
                 <!--/* 로그인이 되었고 그룹에 속해 있을 경우 일반/우리반 토글 스위치 노출 */-->
                 <div th:if="${isAuth and user?.groupNo != null}"
-                     class="switch_toggle_btn on"
+                     class="content_switcher switch_toggle_btn on"
                      data-before="일반"
                      data-after="우리반">
                     <div class="toggle_switch"></div>
@@ -45,13 +45,23 @@
             </div>
 
             <!--/* 로그인 되었고 학습 진도/단계 설정까지 완료된 경우 컨텐츠 추가 */-->
-            <div class="study_list_container"
-                 th:if="${isAuth and isSetStudyLevel}"
-                 th:data-is-study-level-set="${isAuth and isSetStudyLevel}">
+            <div class="small_list_component study_list_container"
+                 th:if="${isAuth && isSetStudyLevel}"
+                 th:data-is-study-level-set="${isAuth && isSetStudyLevel}">
                 <!--/* 요청 기본 UI 세팅 */-->
-                <div class="component base_list_component">
-                    <div class="loading_spinner pd_base">
-                        <p class="info" style="--percent: 0%;">맞춤 학습 자료 요청 중...</p>
+                <div class="component base_list_component daily_study_card">
+                    <div class="study_info">
+                        <div class="component_title skeleton _w70"></div>
+                        <div class="study_content d_flex column tiny_gap">
+                            <p class="skeleton"></p>
+                            <p class="skeleton _w70"></p>
+                        </div>
+                        <div class="study_tag_list">
+                            <div class="study_tag skeleton _w30"></div>
+                            <div class="study_tag skeleton _w30"></div>
+                        </div>
+                        <div class="bar_gauge skeleton"></div>
+                        <div class="btn skeleton"></div>
                     </div>
                 </div>
             </div>

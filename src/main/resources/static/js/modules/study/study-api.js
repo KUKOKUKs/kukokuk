@@ -2,7 +2,8 @@
 
 import {apiErrorProcessByXhr} from '../../utils/api-error-util.js';
 import {
-    renderStudyListCard, renderStudyListCardFirstSkeleton
+    renderStudyListCard,
+    renderStudyListCardFirstSkeleton
 } from "./study-renderer.js";
 import {pollStudyJob} from "./study-poll.js";
 
@@ -23,41 +24,41 @@ export async function apiGetStudyDifficultyList() {
     }
 }
 
-/**
- * 조회 행 개수를 전달 받아 사용자 맞춤 학습자료 목록을 조회하는 비동기 요청
- * @param rows 조회할 학습자료 개수
- * @returns {Promise<*>} [
- *    {
- *      "dailyStudyNo": 1,
- *      "title": "문단 배우기: 중심 문장과 뒷받침 문장",
- *      "cardCount" : 3, // 일일학습의 총 카드 개수
- *      "status" : "NOT_STARTED", // "NOT_STARTED", "IN_PROGRESS", "COMPLETED"
- *      "studiedCardCount" : 2, // 해당 사용자가 이 일일학습에서 학습한 카드 개수
- *      "progressRate" : 66,
- *      "school" : "초등", // "초등", "중등",
- *      "grade" : 1,
- *      "sequence" : 3 // 학년 내 자료의 순서
- *    }
- *  ]
- */
-export async function apiGetDailyStudiesSync(rows) {
-    console.log("apiGetDailyStudies() api 요청 실행");
-    try {
-        const response = await $.ajax({
-            method: 'GET',
-            url: `/api/studies`,
-            contentType: 'application/json',
-            data: {'rows': rows},
-            dataType: 'json',
-        });
-
-        console.log("apiGetDailyStudies() api 요청 response: ", response);
-        return response.data;
-    } catch (xhr) {
-        apiErrorProcessByXhr(xhr.responseJSON);
-        throw xhr; // 반드시 다시 throw 해줘야 상위에서 catch 가능
-    }
-}
+// /**
+//  * 조회 행 개수를 전달 받아 사용자 맞춤 학습자료 목록을 조회하는 비동기 요청
+//  * @param rows 조회할 학습자료 개수
+//  * @returns {Promise<*>} [
+//  *    {
+//  *      "dailyStudyNo": 1,
+//  *      "title": "문단 배우기: 중심 문장과 뒷받침 문장",
+//  *      "cardCount" : 3, // 일일학습의 총 카드 개수
+//  *      "status" : "NOT_STARTED", // "NOT_STARTED", "IN_PROGRESS", "COMPLETED"
+//  *      "studiedCardCount" : 2, // 해당 사용자가 이 일일학습에서 학습한 카드 개수
+//  *      "progressRate" : 66,
+//  *      "school" : "초등", // "초등", "중등",
+//  *      "grade" : 1,
+//  *      "sequence" : 3 // 학년 내 자료의 순서
+//  *    }
+//  *  ]
+//  */
+// export async function apiGetDailyStudiesSync(rows) {
+//     console.log("apiGetDailyStudies() api 요청 실행");
+//     try {
+//         const response = await $.ajax({
+//             method: 'GET',
+//             url: `/api/studies`,
+//             contentType: 'application/json',
+//             data: {'rows': rows},
+//             dataType: 'json',
+//         });
+//
+//         console.log("apiGetDailyStudies() api 요청 response: ", response);
+//         return response.data;
+//     } catch (xhr) {
+//         apiErrorProcessByXhr(xhr.responseJSON);
+//         throw xhr; // 반드시 다시 throw 해줘야 상위에서 catch 가능
+//     }
+// }
 
 /**
  * 요청할 자료 수를 전달받아 맞춤 학습 자료 비동기 요청
@@ -83,10 +84,10 @@ export async function apiGetDailyStudies(rows, $studyListContainer) {
         console.log("apiGetHomeUserDailyStudies() api 요청 response: ", response);
 
         // DONE일 경우 바로 렌더링
-        console.log(typeof response.data);
+        console.log(response.data);
 
         // 동작을 기다리지 않고 응답
-        pollAndRenderJobStatusList(response.data, $studyListContainer);
+        await pollAndRenderJobStatusList(response.data, $studyListContainer);
 
         // 최초 응답
         return response.data; // JobStatusResponse의 리스트
@@ -104,9 +105,13 @@ export async function pollAndRenderJobStatusList(jobStatusList, $studyListContai
     $studyListContainer.empty();
 
     // 모든 스켈레톤 카드 먼저 렌더링
-    jobStatusList.forEach(job => {
-        renderStudyListCardFirstSkeleton(job.jobId, $studyListContainer);
-    });
+    // jobStatusList.forEach(job => {
+    //     renderStudyListCardFirstSkeleton(job.jobId, $studyListContainer);
+    // });
+    
+    // 유연하고 빠르고 안정적이게 적용
+    const skeletionHtml = renderStudyListCardFirstSkeleton(jobStatusList);
+    $studyListContainer.html(skeletionHtml);
 
     // forEach문은 비동기처리(await)를 기다려주지 않음
     // forEach는 콜백을 호출만 하고, 콜백 안의 비동기 처리 결과를 Promise로 모아서 기다리는 로직이 없다

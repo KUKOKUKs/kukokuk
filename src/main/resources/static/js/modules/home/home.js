@@ -1,4 +1,3 @@
-
 import {apiGetDailyStudies} from "../study/study-api.js";
 
 $(document).ready(async () => {
@@ -15,9 +14,16 @@ $(document).ready(async () => {
             // 홈 화면에 제공할 일일 맞춤 학습 자료 1개 요청
             // 최초 요청 후 폴링하며 진행 상태 표시
             await apiGetDailyStudies(1, $studyListContainer);
-
         } catch (error) {
-            console.error("맞춤 학습 자료 요청 실패: ", error.message);
+            // 요청에 대한 에러처리(폴링에 대한 FAILED 또는 에러처리 아님)
+            $studyListContainer.html(`
+                <div class="component base_list_component daily_study_card">
+                    <div class="study_info">
+                        <div class="component_title">자료 생성 중 오류가 발생하였습니다</div>
+                        <div class="study_content">잠시 후에 다시 시도해 주세요</div>
+                    </div>
+                </div>
+            `);
         }
     }
 
@@ -26,4 +32,19 @@ $(document).ready(async () => {
     if ($studyListContainer.length && isStudyLevelSet) {
         await renderHomeDailyStudies(); // 실행
     }
+
+    // 일반/그룹 학습 자료 스위치 토글 버튼 이벤트
+    // const $groupSearchToggleInfo = $(".group_search_toggle_info"); // 학습/검색 요소들의 부모 요소
+    // const $groupSwitchToggleBtn = $("#group-switch-toggle-btn"); // 스위치 토글 버튼
+    // $groupSwitchToggleBtn.click(function () {
+    //     const $this = $(this);
+    //
+    //     if ($this.hasClass("on")) {
+    //         $this.removeClass("on");
+    //         $groupSearchToggleInfo.removeClass("search_on");
+    //     } else {
+    //         $this.addClass("on");
+    //         $groupSearchToggleInfo.addClass("search_on");
+    //     }
+    // });
 })
