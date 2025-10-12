@@ -19,6 +19,8 @@
         <result property="nickname" column="NICKNAME"/>
         <result property="level" column="LEVEL"/>
         <result property="profileFilename" column="PROFILE_FILENAME"/>
+        <result property="experiencePoints" column="EXPERIENCE_POINTS"/>
+        <result property="maxExp" column="MAX_EXP"/>
     </resultMap>
 
     <!--
@@ -156,15 +158,18 @@
     List<Rank> getLevelRanksIncludeUser(RankRequestDto rankRequestDto);
 -->
     <select id="getLevelRanksIncludeUser" parameterType="RankRequestDto" resultMap="RankResultMap">
-    <![CDATA[
+<![CDATA[
         SELECT *
         FROM (SELECT U.USER_NO
                    , U.NICKNAME
                    , U.LEVEL
                    , U.PROFILE_FILENAME
                    , U.EXPERIENCE_POINTS
+                   , (L.MAX_EXP + 1) AS MAX_EXP
                    , RANK() OVER (ORDER BY U.LEVEL DESC, U.EXPERIENCE_POINTS DESC, U.USER_NO) AS USER_RANK
-              FROM KUKOKUK_USERS U) AS SUB
+              FROM KUKOKUK_USERS U
+                       JOIN KUKOKUK_LEVEL L ON U.LEVEL = L.LEVEL
+             ) AS SUB
         WHERE USER_RANK <= #{limit}
            OR (USER_NO = #{userNo} AND USER_RANK > #{limit})
         ORDER BY USER_RANK, USER_NO

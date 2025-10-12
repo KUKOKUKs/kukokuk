@@ -1,4 +1,4 @@
-package com.kukokuk.integration.redis;
+package com.kukokuk.domain.edunet;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

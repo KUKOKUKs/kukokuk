@@ -1,6 +1,7 @@
 package com.kukokuk.domain.rank.service;
 
 import com.kukokuk.common.util.DateUtil;
+import com.kukokuk.domain.rank.dto.LevelRankDto;
 import com.kukokuk.domain.rank.dto.RankProcessingDto;
 import com.kukokuk.domain.rank.dto.RankRequestDto;
 import com.kukokuk.domain.rank.dto.RanksResponseDto;
@@ -63,7 +64,7 @@ public class RankService {
             // 기존 값
             int currentPlayCount = savedRank.getPlayCount();
             BigDecimal currentTotalScore = savedRank.getTotalScore();
-            
+
             // 누적 값
             int newPlayCount = currentPlayCount + 1;
             BigDecimal cumulative = currentTotalScore
@@ -178,7 +179,7 @@ public class RankService {
      * @param limit 조회할 개수
      * @return 레벨 랭크 목록 정보(level DESC, experiencePoints DESC 정렬)
      */
-    public List<Rank> getLevelRanksIncludeUser(int userNo, int limit) {
+    public LevelRankDto getLevelRanksIncludeUser(int userNo, int limit) {
         log.info("getLevelRanksIncludeUser() 서비스 실행 userNo: {}, limit: {}", userNo, limit);
 
         // RankRequestDto 생성
@@ -190,7 +191,10 @@ public class RankService {
         // DB에서 RANK() 적용하여 사용자를 포함한 레벨 랭크 목록 조회
         List<Rank> fetchRanks = rankMapper.getLevelRanksIncludeUser(rankRequestDto);
 
-        // 가공 메소드 호출하여 limit 유지 + 내 순위 포함 처리
-        return processRanksIncludeUserRank(fetchRanks, userNo, limit);
+        // LevelRankDto로 변환하여 반환
+        return LevelRankDto.builder()
+            .userNo(userNo)
+            .ranks(processRanksIncludeUserRank(fetchRanks, userNo, limit))
+            .build();
     }
 }

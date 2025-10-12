@@ -60,10 +60,14 @@ public class QuizController {
         @RequestParam(required = false) String questionType,
         Model model) {
         if (difficulty == null || questionType == null) {
-            return "redirect:/quiz/level-select"; // 값 없으면 다시 선택 화면으로
+            return "redirect:/quiz/level-select";
         }
 
-        List<QuizMaster> quizList = quizService.getLevelQuizList(difficulty, questionType);
+        // DTO 변환 추가
+        List<QuizMasterDto> quizList = quizService.getLevelQuizList(difficulty, questionType)
+            .stream()
+            .map(QuizMasterDto::from)
+            .toList();
 
         model.addAttribute("quizList", quizList);
         model.addAttribute("difficulty", difficulty);

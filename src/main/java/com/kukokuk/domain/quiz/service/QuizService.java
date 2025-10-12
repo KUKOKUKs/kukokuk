@@ -160,7 +160,7 @@ public class QuizService {
     /**
      * 단계별 퀴즈용 문제 10개 조회
      *
-     * @param difficulty 난이도 ("상", "중", "하")
+     * @param difficulty 난이도 ("어려움", "보통", "쉬움")
      * @param questionType 문제 유형 ("뜻", "단어")
      * @return QuizMaster 리스트
      */

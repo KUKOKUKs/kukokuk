@@ -12,7 +12,7 @@ spring:
     # 개발 환경: dev, 배포 환경: prod
     # 배포 서버에서 실행할 때 prod로 변경
     # java -jar kukokuk.jar --spring.profiles.active=prod
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
   servlet:
     encoding:
