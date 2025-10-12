@@ -650,7 +650,7 @@ public class StudyService {
             ExpProcessingDto expProcessingDto = new ExpProcessingDto(
                 userNo,
                 ContentTypeEnum.STUDY.name(),
-                existedlog.getDailyStudyNo(),
+                existedlog.getDailyStudyLogNo(),
                 20,
                 DailyQuestEnum.COMPLETED_DAILY_STUDY.getDailyQuestNo()
             );
