@@ -72,4 +72,20 @@ $(document).ready(() => {
         $this.addClass("checked")
             .find(".correct_answer").removeClass("text_ellipsis");
     });
+
+    // 컨텐츠 인포 토글 버튼 핸들러
+    $(document).on("click", ".switch_toggle_btn", function () {
+        const $this = $(this);
+        const $parentContainer = $this.closest(".toggle_info_component");
+
+        if ($this.hasClass("on")) {
+            // 토글 스위치 위치 좌측으로 이동 및 토글 요소 첫 번째 컨텐츠 노출
+            $this.removeClass("on");
+            $parentContainer.removeClass("second").addClass("first");
+        } else {
+            // 토글 스위치 위치 우측으로 이동 및 토글 요소 두 번째 컨텐츠 노출
+            $this.addClass("on");
+            $parentContainer.removeClass("first").addClass("second");
+        }
+    });
 });

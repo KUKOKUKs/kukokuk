@@ -55,6 +55,7 @@
         <result property="isDeleted" column="IS_DELETED"/>
         <result property="createdDate" column="CREATED_DATE"/>
         <result property="updatedDate" column="UPDATED_DATE"/>
+        <result property="joinDate" column="JOIN_DATE"/>
 
         <!-- teacher(User) 매핑 -->
         <association property="teacher" javaType="User">
@@ -96,6 +97,33 @@
                  JOIN KUKOKUK_USERS U ON G.USER_NO = U.USER_NO
         WHERE G.GROUP_NO = #{groupNo}
           AND G.IS_DELETED = 'N'
+    </select>
+
+    <!--
+         * 사용자가 속한 그룹 정보 조회
+         * @param userNo 사용자 번호
+         * @return 사용자가 속한 그룹 정보
+        Group getGroupByUserNo(int userNo);
+    -->
+    <select id="getGroupByUserNo" resultMap="GroupResultMap">
+        SELECT G.GROUP_NO
+             , G.TITLE
+             , G.MOTTO
+             , G.PASSWORD
+             , IFNULL(MC.MEMBER_COUNT, 0) AS MEMBER_COUNT
+             , G.IS_DELETED
+             , G.CREATED_DATE
+             , G.UPDATED_DATE
+             , GU.CREATED_DATE            AS JOIN_DATE
+        FROM KUKOKUK_GROUPS G
+                 LEFT JOIN (SELECT MGU.GROUP_NO, COUNT(*) AS MEMBER_COUNT
+                            FROM KUKOKUK_GROUP_USERS MGU
+                                     JOIN KUKOKUK_USERS U
+                                          ON MGU.USER_NO = U.USER_NO
+                            WHERE U.IS_DELETED = 'N'
+                            GROUP BY MGU.GROUP_NO) MC ON G.GROUP_NO = MC.GROUP_NO
+                 JOIN KUKOKUK_GROUP_USERS GU ON G.GROUP_NO = GU.GROUP_NO AND GU.USER_NO = #{userNo}
+        WHERE G.IS_DELETED = 'N'
     </select>
 
     <!--
