@@ -45,3 +45,12 @@ mybatis:
 #WebSocket 주소
 ws:
   url: "http://localhost:8081/ws"
+
+nhn:
+  s3:
+    tenant-id: AUTH_58a0a6438f054792b4338ed8b2440a82
+    endpoint: https://kr1-api-object-storage.nhncloudservice.com
+    access-key: ${OBJECT_STORAGE_ACCESS_KEY}
+    secret-key: ${OBJECT_STORAGE_SECRET_KEY}
+    bucket: kukokuk
+    region-name: KR1
