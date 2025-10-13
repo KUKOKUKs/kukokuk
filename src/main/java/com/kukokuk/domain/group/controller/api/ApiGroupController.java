@@ -188,6 +188,7 @@ public class ApiGroupController {
      * @return 삭제 처리 결과와 실패 시 메세지
      */
     @DeleteMapping("/{groupNo}")
+    @PreAuthorize("hasRole('TEACHER')") // TEACHER 권한 없으면 403
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteGroup(
         @PathVariable("groupNo") int groupNo
         , @RequestParam(defaultValue = "false") boolean isDeleteCheck

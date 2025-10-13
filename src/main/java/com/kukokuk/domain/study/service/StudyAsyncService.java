@@ -100,7 +100,7 @@ public class StudyAsyncService {
         );
 
         // 생성되는 DTO 확인 로그
-        userStudyRecommendationDtos.forEach(dto -> log.info("사용자 맞춤 study 조회 : " + dto.toString()));
+        userStudyRecommendationDtos.forEach(dto -> log.info("사용자 맞춤 study 조회 : {}", dto.toString()));
 
         String nowCurrentSchool = user.getCurrentSchool();
         Integer nowCurrentGrade = user.getCurrentGrade();
@@ -128,7 +128,7 @@ public class StudyAsyncService {
             nowCurrentSchool = nextGrade.getLeft();
             nowCurrentGrade = nextGrade.getRight();
 
-            log.info("다음학년 추가 조회 : " + nowCurrentSchool + " ," + nowCurrentGrade);
+            log.info("다음학년 추가 조회 : {}, {}", nowCurrentSchool, nowCurrentGrade);
 
             // 더 조회해야할 학습자료 개수 조건 갱신
             int remainingRowCount = recommendStudyCount - userStudyRecommendationDtos.size();
@@ -195,7 +195,7 @@ public class StudyAsyncService {
                         .status("PROCESSING")
                         .progress(0)
                         .result(null)
-                        .message("맞춤 학습 자료 요청 대기 중...")
+                        .message("맞춤 학습 자료 요청 중...")
                         .build();
 
                     // 상태저장소(Redis)에 현재 Job 상태 저장
@@ -226,7 +226,7 @@ public class StudyAsyncService {
                         .status("DONE")
                         .progress(100)
                         .result(studyService.mapToDailyStudySummaryResponse(rec))
-                        .message("이미 생성된 학습자료입니다")
+                        .message("맞춤 학습 자료가 완성되었습니다.")
                         .build();
 
                 // 응답으로 반환할 job 리스트에 추가

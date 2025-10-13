@@ -30,14 +30,9 @@
             </div>
 
             <!--/* 그룹에 속해 있는 사용자만 그룹 학습 컴포넌트 제공 */-->
-            <div th:if="${myGroup != null}"
-                 id="group-study-component"
-                 class="component toggle_info_first">
-                교사가 등록한 학습 자료
-                <hr>
-                교사일 경우 등록한 학습 자료에 대한
-                내역 및 등록 삭제 기능
-            </div>
+            <th:block th:if="${myGroup != null}">
+                <div th:replace="~{fragments/study/group-study-list :: group-study-list-fragment}"></div>
+            </th:block>
 
             <!--/* 그룹이 없는 사용자에게는 검색 컴포넌트만 제공 */-->
             <div id="group-search-component"
@@ -138,10 +133,7 @@
                         </div>
                     </div>
 
-                    <!--/*
-                        myGroupTwentyRooms 리스트가 비어있지 않을 경우
-                        스무고개 방 당일 최근 이력 3건
-                    */-->
+                    <!--/* 스무고개 방 당일 최근 이력 3건 */-->
                     <div th:if="${!#lists.isEmpty(myGroupTwentyRooms)}" class="tiny_list_component">
                         <div th:each="room : ${myGroupTwentyRooms}" class="component_info small with_icon">
                             <div class="d_flex align_center tiny_gap text_ellipsis">
@@ -159,7 +151,7 @@
                     </div>
 
                     <button th:if="${myGroupActiveRoomNo != null}" type="submit" class="btn primary">참여하기</button>
-                    <span th:if="${myGroupActiveRoomNo == null}" class="btn disabled">진행 중인 스무고개 방이 없습니다</span>
+                    <span th:if="${myGroupActiveRoomNo == null}" class="btn disabled">진행 중인 방이 없습니다</span>
                 </form>
             </th:block>
         </div>
@@ -228,108 +220,18 @@
             </div>
 
             <!--/* 교사 권한 사용자 */-->
-            <a th:if="${isTeacher}" href="" class="btn tiny blue w_100 small_font">나의 반 관리하러 가기</a>
+            <a th:if="${isTeacher}" th:href="@{/group/teacher}" class="btn tiny blue w_100 small_font">나의 반 관리하러 가기</a>
         </div>
 
-        <div th:if="${!isTeacher && myGroup != null}"
+        <!--/* 랭킹 컴포넌트 추가 예정 */-->
+        <div th:if="${myGroup != null}"
              class="component small_list_component">
             <div class="component_title">우리반 순위</div>
             컨텐츠별 탭 버튼으로 변환(스피드, 받아쓰기, 스무고개)
             반에서 기준이 될 데이터로 1~5순위 정도로 정렬하여 노출(사용자가 1~5순위에 포함되지 않았다면 최하단에 사용자의 순위로 사용자 점수 표시)
             1~3순위는 특수 프레임 이미지/스타일 적용
         </div>
-
-        <!--/* 교사이면서 소유한 그룹이 없을 경우
-        교사 전용 그룹 페이지로 구현 예정 */-->
-        <div th:if="${isTeacher && currentGroup == null}"
-             class="component small_list_component">
-            <div class="component_title">
-                <div class="title_info column">
-                    <div class="d_flex justify_content_between align_center small_gap">
-                        <p class="text_ellipsis">우리 반이 없습니다</p>
-                        <button type="button" class="modal_gruop_edit_btn btn tiny primary">만들기</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="component_info w_100">
-                <div class="list_info small_font normal" style="--cols: 24; --indexCols: 2;">
-                    <div class="index_list">
-                        <span class="marker tac">📖</span>
-                        <p>우리 반의 AI 맞춤 학습</p>
-                    </div>
-                    <div class="index_list">
-                        <span class="marker tac">💡</span>
-                        <p>우리 반과 함께 스무고개</p>
-                    </div>
-                    <div class="index_list">
-                        <span class="marker tac">👑</span>
-                        <p>우리 반 월간 순위 경쟁</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!--/* 교사이면서 소유한 그룹이 있는 경우
-        교사 전용 그룹 페이지로 구현 예정 */-->
-        <div th:if="${isTeacher && currentGroup != null}"
-             class="component small_list_component">
-            <div class="component_title">
-                <div class="title_info column">
-                    <div class="d_flex justify_content_between align_center small_gap">
-                        <p th:if="${teacherGroups.size() == 0}"
-                           class="text_ellipsis"
-                           th:text="${currentGroup.title}">현재 우리반 이름</p>
-
-                        <select th:if="${teacherGroups.size() > 0}"
-                                name="teacherGroups"
-                                class="pl_0 text_ellipsis"
-                                th:onchange="|location.href='@{/group}?groupNo=' + this.value|">
-                            <option th:text="${currentGroup.title}"
-                                    selected
-                                    disabled>현재 우리반 이름</option>
-                            <th:block th:each="teacherGroup : ${teacherGroups}">
-                                <option th:value="${teacherGroup.groupNo}" th:text="${teacherGroup.title}">우리 반 리스트</option>
-                            </th:block>
-                        </select>
-
-                        <button type="button" class="modal_gruop_edit_btn btn tiny white">편집</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="component_info w_100">
-                <div class="list_info ov_v small_font normal" style="--cols: 24; --indexCols: 2;">
-                    <div class="index_list">
-                        <span class="marker tac tooltip" data-label="급훈">📜</span>
-                        <p th:text="${currentGroup.motto ?: '-'}">급훈</p>
-                    </div>
-                    <div class="index_list">
-                        <span class="marker tac tooltip" data-label="인원수">👩‍👧‍👧</span>
-                        <p th:text="|${currentGroup.getMemberCountFormatted()} 명|">인원 수</p>
-                    </div>
-                    <div class="index_list">
-                        <span class="marker tac tooltip" data-label="생성일">📅</span>
-                        <p th:text="${#dates.format(currentGroup.createdDate, 'yyyy-MM-dd')}">생성일</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="btn_list justify_content_between">
-                <button class="btn tiny white">학습 자료 관리</button>
-                <button class="btn tiny white">내가 입반한 반으로</button>
-            </div>
-        </div>
     </div>
-
-    <!--/* 교사일 경우 그룹 생성 모달창
-    교사 전용 그룹 페이지로 구현 예정 */-->
-    <th:block th:if="${isTeacher}">
-        <div th:replace="~{fragments/modal/modal-group-edit :: modal-group-edit-fragment(
-            currentGroup=${currentGroup}
-            , teacherGroups=${teacherGroups}
-        )}"></div>
-    </th:block>
 </div>
 
 <th:block layout:fragment="script">

@@ -63,7 +63,7 @@ $(document).ready(() => {
         $tabContents.eq(index).addClass("selected"); // 선택한 탭 컨텐츠 활성화
     });
     
-    // 정답 확인 버튼 핸들러
+    // 정답 확인 버튼 핸들러 (결과 상세 페이지)
     const $checkCorrect = $(".check_correct"); // 정답 확인 버튼
     $checkCorrect.click(function () {
         const $this = $(this);
@@ -87,5 +87,14 @@ $(document).ready(() => {
             $this.addClass("on");
             $parentContainer.removeClass("first").addClass("second");
         }
+    });
+
+    // 학습 카드 클릭 이벤트 핸들러
+    $(document).on('click', '.study_card', function () {
+        // 클릭한 요소가 close 상태일 경우 클래스 제거
+        // 클래스 제거 효과: 컨텐츠 줄임표시 원상 복구, 버튼 노출
+        const $this = $(this);
+        const isClosed = $this.hasClass('close');
+        if (isClosed) $this.removeClass('close');
     });
 });
