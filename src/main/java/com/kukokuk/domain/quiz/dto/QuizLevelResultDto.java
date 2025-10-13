@@ -10,6 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class QuizLevelResultDto {
-    private String difficulty;     // 난이도 ("상", "중", "하")
+    private String difficulty;     // 난이도 ("어려움", "보통", "어려움")
     private String questionType;   // 문제 유형 ("단어", "뜻")
 }

@@ -19,6 +19,7 @@ public class QuizMasterDto {
     private String option4;
     private List<String> options; // DTO의 구조는 단끼리 필요한 데이터만 또는 효율적으로 활용될 데이터를 가공한 객체(클라이언트에서 한번에 처리가능하도록 options 배열 처리)
     private String questionType;
+    private int successAnswer;
 
     public static QuizMasterDto from(QuizMaster quiz) {
         QuizMasterDto dto = new QuizMasterDto();
@@ -35,6 +36,7 @@ public class QuizMasterDto {
             quiz.getOption4()
         ));
         dto.questionType = quiz.getQuestionType();
+        dto.successAnswer = quiz.getSuccessAnswer();
         return dto;
     }
 }

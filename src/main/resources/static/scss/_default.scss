@@ -1575,6 +1575,10 @@
     font-size: var(--subFontSize) !important;
 }
 
+.lh1 {
+    line-height: 1 !important;
+}
+
 .tac {
     text-align: center !important;
 }
@@ -1627,6 +1631,14 @@
     overflow: hidden;          /* 넘치는 내용 숨김 */
     text-overflow: ellipsis;   /* 말줄임 (...) 처리 */
     white-space: nowrap;       /* 한줄로 처리 */
+}
+
+.text_ellipsis_multiline {
+    display: -webkit-box;                       /* flex처럼 박스를 세로로 자를 준비 */
+    -webkit-box-orient: vertical;               /* 세로 방향으로 텍스트를 자름 */
+    -webkit-line-clamp: var(--lineClamp, 2);    /* 표시할 줄 수 기본값: 2줄 */
+    overflow: hidden;                           /* 넘치는 내용 숨김 */
+    text-overflow: ellipsis;                    /* 잘린 부분에 말줄임 (...) 처리 */
 }
 
 /* 위치 */

@@ -39,29 +39,6 @@ $(document).ready(() => {
     });
 
     // 탭 버튼, 탭 컨텐츠 핸들러
-    // const $tabBtns = $(".tab_btn_list .tab_btn"); // 탭 버튼
-    // const $tabContents = $(".tab_content"); // 탭 컨텐츠
-    // $tabBtns.click(function () {
-    //     if ($modalAll.length) {
-    //         const $this = $(this);
-    //         const index = $this.index(); // 클릭한 요소의 index
-    //
-    //         $tabBtns.removeClass("selected_left selected"); // 선택된 요소의 앞 요소에 추가된 클라스 제거
-    //         $tabContents.removeClass("selected"); // 선택된 탭 컨텐츠 요소 클라스 제거
-    //
-    //         if (index > 0) {
-    //             // 첫번째 요소가 아닐 경우 선택된 요소의 앞 요소에 클라스 추가
-    //             $tabBtns.eq(index - 1).addClass("selected_left");
-    //         }
-    //
-    //         // 선택한 탭 버튼 활성화
-    //         $(this).addClass("selected");
-    //         // 선택한 탭 컨텐츠 활성화
-    //         $tabContents.eq(index).addClass("selected").siblings().removeClass("selected");
-    //     }
-    // });
-
-    // 탭 버튼, 탭 컨텐츠 핸들러
     // 프레그먼츠에서 주로 사용되므로 오작동 방지를 위해 문서에 위임하여 이벤트 등록
     // (th:if시 오작동 발생)
     $(document).on("click", ".tab_btn_list .tab_btn", function () {
