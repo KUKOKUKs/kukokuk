@@ -37,6 +37,13 @@ public interface GroupMapper {
     Group getGroupByGroupNo(int groupNo);
 
     /**
+     * 사용자가 속한 그룹 정보 조회
+     * @param userNo 사용자 번호
+     * @return 사용자가 속한 그룹 정보
+     */
+    Group getGroupByUserNo(int userNo);
+
+    /**
      * 사용자 번호로 그룹 목록 정보 조회
      * @param teacherNo 사용자 번호(교사권한)
      * @return 그룹 목록 정보(최신순)

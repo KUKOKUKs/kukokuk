@@ -17,8 +17,8 @@
                 <!--/* 그룹에 속해 있을 경우 일반/우리반 토글 스위치 노출 */-->
                 <div th:if="${user?.groupNo != null}"
                      class="content_switcher switch_toggle_btn on"
-                     data-before="일반"
-                     data-after="우리반">
+                     data-before="우리반"
+                     data-after="일반">
                     <div class="toggle_switch"></div>
                 </div>
             </div>
@@ -35,9 +35,9 @@
             </div>
 
             <!--/* 학습 진도/단계 설정이 완료된 경우 컨텐츠 추가 */-->
-            <div class="small_list_component study_list_container"
-                 th:if="${isSetStudyLevel}"
-                 th:data-is-study-level-set="${isSetStudyLevel}"></div>
+            <th:block th:if="${isSetStudyLevel}">
+                <div th:replace="~{fragments/study/study-list :: study-list-fragment(studyRows=10, isUseSpinner=true)}"></div>
+            </th:block>
         </div>
     </div>
 
@@ -47,8 +47,4 @@
         <th:block th:replace="~{fragments/study/study-history :: study-history-fragment(studyHistory=${data})}"></th:block>
     </div>
 </div>
-
-<th:block layout:fragment="script">
-    <script type="module" th:src="@{/js/modules/study/study.js}"></script>
-</th:block>
 </html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<!--/*
+    그룹 학습 목록을 제공하는 컴포넌트
+    현재는 항상 토글 컨텐츠로 사용 됨
+
+    ** 사용자가 그룹이 있을 경우
+    마당: [우리반/일반]
+    오늘의 학습: [우리반/일반]
+    우리반: [학습/반 찾기]
+
+    ** 그룹이 없을 경우 단일 컨텐츠 제공으로 해당 프레그먼츠 사용되지 않음
+*/-->
+<th:block th:fragment="group-study-list-fragment">
+    <div id="group-study-list-container" class="small_list_component toggle_info_first"></div>
+    <script type="module" th:src="@{/js/modules/study/gruop-study-list.js}"></script>
+</th:block>
+</html>

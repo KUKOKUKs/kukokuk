@@ -61,6 +61,16 @@ public class GroupService {
     }
 
     /**
+     * 사용자가 속한 그룹 정보 조회
+     * @param userNo 사용자 번호
+     * @return 사용자가 속한 그룹 정보
+     */
+    public Group getGroupByUserNo(int userNo) {
+        log.info("getGroupByUserNo() 서비스 실행");
+        return groupMapper.getGroupByUserNo(userNo);
+    }
+
+    /**
      * 사용자 번호로 그룹 목록 정보 조회
      * @param teacherNo 사용자 번호(교사권한)
      * @return 그룹 목록 정보

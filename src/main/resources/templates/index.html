@@ -4,21 +4,22 @@
       isAuth=${#authorization.expression('isAuthenticated()')},
       user=${isAuth ? #authentication.principal.user : null},
       isSetStudyLevel=${user != null
-                      and user.studyDifficulty != null
-                      and user.currentSchool != null
-                      and user.currentGrade != null}">
+                      && user.studyDifficulty != null
+                      && user.currentSchool != null
+                      && user.currentGrade != null}">
 <div layout:fragment="content">
     <div id="main-content" class="content_container">
-        <div class="content_info">
+        <div class="content_info"
+             th:classappend="${isAuth ? (user?.groupNo != null ? 'toggle_info_component first' : 'toggle_info_component second') : ''}">
             <div class="content_title">
                 <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
                 오늘의 학습
 
                 <!--/* 로그인이 되었고 그룹에 속해 있을 경우 일반/우리반 토글 스위치 노출 */-->
-                <div th:if="${isAuth and user?.groupNo != null}"
-                     class="content_switcher switch_toggle_btn on"
-                     data-before="일반"
-                     data-after="우리반">
+                <div th:if="${isAuth && user?.groupNo != null}"
+                     class="content_switcher switch_toggle_btn"
+                     data-before="우리반"
+                     data-after="일반">
                     <div class="toggle_switch"></div>
                 </div>
             </div>
@@ -33,38 +34,24 @@
                 </a>
             </div>
 
-            <!--/* 로그인 되어있지만 학습 진도/단계 설정이 필요한 경우 */-->
-            <div class="component elevate_on_hover"
-                 th:if="${isAuth and !isSetStudyLevel}">
-                <button type="button"
-                        class="modal_study_level_btn component_title justify_content_center pd_base tac">
-                    <div class="title_info">
-                        학습 수준을 설정하고 오늘의 학습을 시작해볼까요?
-                    </div>
-                </button>
-            </div>
-
-            <!--/* 로그인 되었고 학습 진도/단계 설정까지 완료된 경우 컨텐츠 추가 */-->
-            <div class="small_list_component study_list_container"
-                 th:if="${isAuth && isSetStudyLevel}"
-                 th:data-is-study-level-set="${isAuth && isSetStudyLevel}">
-                <!--/* 요청 기본 UI 세팅 */-->
-                <div class="component base_list_component daily_study_card">
-                    <div class="study_info">
-                        <div class="component_title skeleton _w70"></div>
-                        <div class="study_content d_flex column tiny_gap">
-                            <p class="skeleton"></p>
-                            <p class="skeleton _w70"></p>
+            <!--/* 로그인 되어있는 경우 */-->
+            <th:block th:if="${isAuth}">
+                <!--/* 학습 진도/단계 설정이 필요한 경우 */-->
+                <div class="component elevate_on_hover"
+                     th:if="${!isSetStudyLevel}">
+                    <button type="button"
+                            class="modal_study_level_btn component_title justify_content_center pd_base tac">
+                        <div class="title_info">
+                            학습 수준을 설정하고 오늘의 학습을 시작해볼까요?
                         </div>
-                        <div class="study_tag_list">
-                            <div class="study_tag skeleton _w30"></div>
-                            <div class="study_tag skeleton _w30"></div>
-                        </div>
-                        <div class="bar_gauge skeleton"></div>
-                        <div class="btn skeleton"></div>
-                    </div>
+                    </button>
                 </div>
-            </div>
+
+                <!--/* 학습 진도/단계 설정이 완료된 경우 컨텐츠 추가 */-->
+                <th:block th:if="${isSetStudyLevel}">
+                    <div th:replace="~{fragments/study/study-list :: study-list-fragment(studyRows=1, isUseSpinner=false)}"></div>
+                </th:block>
+            </th:block>
         </div>
 
         <div class="content_info">
