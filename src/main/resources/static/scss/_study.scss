@@ -1,3 +1,63 @@
+/* 학습 카드 요소 */
+.daily_study_card {
+    .study_info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--smallGap);
+
+        .study_content {
+            font-size: var(--subFontSize);
+            color: var(--grayColor);
+        }
+    }
+
+    &.close {
+        cursor: pointer;
+
+        .study_info {
+            .study_content {
+                display: -webkit-box;           /* flex처럼 박스를 세로로 자를 준비 */
+                -webkit-box-orient: vertical;   /* 세로 방향으로 텍스트를 자름 */
+                -webkit-line-clamp: 2;          /* 표시할 줄 수 기본값: 2줄 */
+                overflow: hidden;               /* 넘치는 내용 숨김 */
+                text-overflow: ellipsis;        /* 잘린 부분에 말줄임 (...) 처리 */
+            }
+
+            .study_card_btns {
+                display: none;
+            }
+        }
+    }
+}
+
+.study_tag_list {
+    display: flex;
+    align-items: center;
+    gap: var(--tinyGap);
+
+    .study_tag {
+        padding: var(--tinyPadding) var(--smallPadding);
+        border-radius: var(--tagBdrs);
+        font-size: var(--smallFontSize);
+
+        &.not_started {
+            background-color: var(--lightRedColor);
+        }
+
+        &.in_progress {
+            background-color: var(--lightYellowColor);
+        }
+
+        &.completed {
+            background-color: var(--subColor);
+        }
+
+        &.essay_undone {
+            background-color: var(--lightBlueColor);
+        }
+    }
+}
+
 /* 학습 이력 컴포넌트 */
 #study-history-container {
     .study_history_info:hover .study_title {
@@ -78,32 +138,6 @@
                     background-color: var(--blueColor);
                 }
             }
-        }
-    }
-}
-
-/* 학습 진행 화면 */
-.daily_study_card {
-    min-height: 200px;
-    cursor: pointer;
-
-    &.center {
-        justify-content: center;
-        align-items: center;
-    }
-
-    &.no_cursor {
-        cursor: default;
-    }
-
-    .study_info {
-        display: flex;
-        flex-direction: column;
-        gap: var(--smallGap);
-
-        .study_content {
-            font-size: var(--subFontSize);
-            color: var(--grayColor);
         }
     }
 }
@@ -436,33 +470,5 @@
         padding: var(--containerLargePadding);
         justify-items: center;
         border-left: 2px solid var(--lightGrayColor);
-    }
-}
-
-.study_tag_list {
-    display: flex;
-    align-items: center;
-    gap: var(--tinyGap);
-}
-
-.study_tag {
-    padding: var(--tinyPadding) var(--smallPadding);
-    border-radius: var(--tagBdrs);
-    font-size: var(--smallFontSize);
-
-    &.gray {
-        background-color: var(--lightGrayColor);
-    }
-
-    &.red {
-        background-color: #ffdcd7;
-    }
-
-    &.green {
-        background-color: var(--subColor);
-    }
-
-    &.purple {
-        background-color: #f0e1ff;
     }
 }
