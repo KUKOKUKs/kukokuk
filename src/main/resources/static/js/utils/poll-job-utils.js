@@ -69,7 +69,7 @@ export function pollJobStatus(
 // 폴링 요청 함수에서만 사용될 상태 업데이트 함수
 // 모든 폴링 요청 진행 상태(진행률/메시지) 추가/업데이트 (스피너 로딩)
 function updatePollProcessing(pollJob, $statusElement) {
-    console.log("updatePollProcessing() 폴링 진행 상태 추가/업데이트 status: ", pollJob.status);
+    console.log(`updatePollProcessing() 폴링 진행 상태 추가/업데이트 [${pollJob.jobId}]: `, pollJob.progress);
     const $loadingElement = $statusElement.find(".loading_spinner"); // 스피너 로딩 요소
 
     // 요소 확인
