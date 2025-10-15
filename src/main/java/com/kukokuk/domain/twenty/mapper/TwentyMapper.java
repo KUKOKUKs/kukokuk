@@ -48,7 +48,7 @@ public interface TwentyMapper {
      * @return
      */
     public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(@Param("groupNo") int groupNo,
-                                                                  @Param("limitCnt") int limitCnt );
+        @Param("limitCnt") int limitCnt );
 
     /**
      * 학생이 보낸 데이터를 DB에 할당한다.
@@ -91,4 +91,16 @@ public interface TwentyMapper {
      * @return logNo, userNo, nickName, type, content
      */
     public List<SendStdMsg>getTwentyLogList(int roomNo);
+
+    /**
+     * DB에 스무고개방을 insert
+     * @param room
+     */
+    public void insertTwentyRoom(TwentyRoom room);
+
+    /**
+     * DB에 사용자 테이블을
+     * @param map
+     */
+    public void insertTwentyRoomUser(Map<String, Object> map);
 }

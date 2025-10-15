@@ -124,7 +124,7 @@
             <th:block th:if="${myGroup != null}">
                 <form class="component small_list_component"
                       method="get"
-                      action="">
+                      th:action="@{/twenty/gameRoom/{roomNo}(roomNo=${myGroupActiveRoomNo})}">
                     <input type="hidden" name="roomNo" th:value="${myGroupActiveRoomNo}">
                     <div class="component_title">
                         <div class="title_info column">

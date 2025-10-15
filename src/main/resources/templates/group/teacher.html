@@ -59,13 +59,18 @@
                           th:action="@{/twenty/gameRoom}">
                         <div class="form_input_list">
                             <div class="input_info">
-                                <input type="text" name="title" id="title" placeholder=" ">
+                                <input type="text" name="title" id="title" placeholder=" "/>
                                 <label for="title" class="input_title">스무고개 방 이름</label>
                             </div>
+                                <!--에러 메세지 표시-->
+                                <p th:if="${titleError}" th:text="${titleError}" class="error_text"></p>
                             <div class="input_info">
-                                <input type="text" name="correct" id="correct" placeholder=" ">
+                                <input type="text" name="correct" id="correct" placeholder=" "/>
                                 <label for="correct" class="input_title">스무고개 정답</label>
                             </div>
+                                <!--에러 메세지 표시-->
+                                <p th:if="${correctError}" th:text="${correctError}" class="error_text"></p>
+                            <input type="hidden" name="groupNo" th:value="${currentGroup.groupNo}">
                         </div>
                         <button type="submit" class="btn primary">방 만들기</button>
                     </form>
