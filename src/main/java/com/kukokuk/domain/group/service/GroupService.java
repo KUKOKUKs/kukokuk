@@ -2,6 +2,7 @@ package com.kukokuk.domain.group.service;
 
 import com.kukokuk.common.dto.Page;
 import com.kukokuk.common.dto.Pagination;
+import com.kukokuk.domain.group.dto.GruopUsersDto;
 import com.kukokuk.domain.group.mapper.GroupMapper;
 import com.kukokuk.domain.group.vo.Group;
 import java.util.Collections;
@@ -48,6 +49,16 @@ public class GroupService {
         log.info("insertGroup() 서비스 실행");
         groupMapper.insertGroup(teacherNo, group);
         return group.getGroupNo(); // XML에서 useGeneratedKeys 설정
+    }
+
+    /**
+     * 그룹 번호로 그룹 정보와 그룹에 속한 사용자 정보 목록 조회
+     * @param gruopNo 그룹 번호
+     * @return 그룹 정보, 그룹에 속한 사용자 정보 목록
+     */
+    public GruopUsersDto getGruopUsersByGruopNo(int gruopNo) {
+        log.info("getGruopUsersByGruopNo() 서비스 실행");
+        return groupMapper.getGruopUsersByGruopNo(gruopNo);
     }
 
     /**

@@ -11,8 +11,11 @@
 
     ** 그룹이 없을 경우 단일 컨텐츠 제공으로 해당 프레그먼츠 사용되지 않음
 */-->
-<th:block th:fragment="group-study-list-fragment">
-    <div id="group-study-list-container" class="small_list_component toggle_info_first"></div>
-    <script type="module" th:src="@{/js/modules/study/gruop-study-list.js}"></script>
+<th:block th:fragment="group-study-list-fragment(groupStudyRows, isUseSpinner)">
+    <div id="group-study-list-container"
+         class="small_list_component toggle_info_first"
+         th:data-gruop-study-rows="${groupStudyRows}"
+         th:data-is-spinner="${isUseSpinner != null ? isUseSpinner : ''}"></div>
+    <script type="module" th:src="@{/js/modules/study/group-study-list.js}"></script>
 </th:block>
 </html>

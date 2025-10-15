@@ -31,7 +31,7 @@
 
             <!--/* 그룹에 속해 있는 사용자만 그룹 학습 컴포넌트 제공 */-->
             <th:block th:if="${myGroup != null}">
-                <div th:replace="~{fragments/study/group-study-list :: group-study-list-fragment}"></div>
+                <div th:replace="~{fragments/study/group-study-list :: group-study-list-fragment(groupStudyRows=5, isUseSpinner=false)}"></div>
             </th:block>
 
             <!--/* 그룹이 없는 사용자에게는 검색 컴포넌트만 제공 */-->

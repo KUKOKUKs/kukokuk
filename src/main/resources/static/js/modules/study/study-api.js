@@ -1,7 +1,4 @@
-// noinspection ES6UnusedImports
-
 import {apiErrorProcessByXhr} from '../../utils/api-error-util.js';
-import {renderStudyCard, renderStudyListSkeleton} from "./study-renderer.js";
 
 // 학습 단계 정보 비동기 요청
 export async function apiGetStudyDifficultyList() {
@@ -20,7 +17,6 @@ export async function apiGetStudyDifficultyList() {
     }
 }
 
-// 비동기 요청 대한 책임만 가지도록 수정
 /**
  * 요청할 자료 수를 전달받아 맞춤 학습 자료 비동기 요청
  * @param rows 조회(자료가 없거나 모자를 경우 생성) 요청 개수
@@ -43,51 +39,6 @@ export async function apiGetDailyStudies(rows) {
         apiErrorProcessByXhr(xhr.responseJSON);
     }
 }
-
-// api 요청 함수가 아님 그리고
-// 처리 속도가 느려 구동 방법 변경으로 사용되지 않음
-// 순차 폴링 요청을 대기하며 구동 됨
-// 원했던 기능은 모든 요청에 대한 백그라운드 동시 작업 진행 후
-// 순차적으로 랜더링이지만 
-// 현재는 요청이 순차적으로 await으로 하나씩 진행되어 속도 현저히 느려짐
-// 병렬적 처리 필요하여 순차적 랜더링이 아닌 병렬 요청 및 폴링으로 
-// 먼저 완료 처리된 데이터 해당 순번에 랜더링하여
-// 사용자 경험 향상 시키는게 성능, 속도, 구현 퀄리티 면에서 월등히 높아 보임
-// /**
-//  * Job 상태 목록을 순회하며 즉시 렌더링 + 폴링 처리
-//  * @param jobStatusList JobStatusResponse[]
-//  * @param $studyListContainer jQuery 컨테이너
-//  */
-// export async function pollAndRenderJobStatusList(jobStatusList, $studyListContainer) {
-//     console.log("pollAndRenderJobStatusList() 실행");
-//
-//     // 스켈레톤 로딩 세팅
-//     const skeletionHtml = renderStudyListSkeleton(jobStatusList);
-//     $studyListContainer.html(skeletionHtml);
-//
-//     // forEach문은 비동기처리(await)를 기다려주지 않음
-//     // forEach는 콜백을 호출만 하고, 콜백 안의 비동기 처리 결과를 Promise로 모아서 기다리는 로직이 없다
-//     for (const [index, job] of jobStatusList.entries()) { // entries() : 인덱스와 값을 동시에 꺼냄
-//         // 이미 데이터가 존재하는 경우, 바로 렌더링
-//         if (job.status === "DONE") {
-//             renderStudyCard(job, index, $studyListContainer);
-//         }
-//
-//         // 폴링 시작 -> 상태 DONE/FAILED 되면 다시 renderStudyCard 호출
-//         else if (job.status === "PROCESSING") {
-//             const $studyCardContainer = $studyListContainer.find(`[data-job-id="${job.jobId}"]`);
-//             try {
-//                 // index 순서대로 순차적으로 폴링을 처리하고, job이 DONE이되고 Promise가 resolve되면 다음 동작 실행
-//                 const updatedJob = await pollStudyJob(job.jobId, $studyCardContainer);
-//                 renderStudyCard(updatedJob, index, $studyListContainer);
-//             } catch (err) {
-//                 console.error(`jobId=${job.jobId} 실패`, err);
-//                 job.status = "FAILED";
-//                 renderStudyCard(job, index, $studyListContainer);
-//             }
-//         }
-//     }
-// }
 
 /**
  * 학습 이력을 생성하는 비동기 요청
