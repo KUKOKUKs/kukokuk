@@ -222,8 +222,10 @@ $(function () {
             dataType: 'json',
             contentType: 'application/json',
             data: JSON.stringify(sendData),
+            success: function (data) {
+                window.location.href = '/group';
+            }
         });
-        window.location.href = '/group';
     });
 
     // --- 학생 기능 ---
