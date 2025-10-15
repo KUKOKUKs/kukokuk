@@ -24,7 +24,7 @@ export async function renderFragmentDailyStudies(usableRows, requestRows, $study
         // 실제 활용할 데이터만 추출 (앞에서부터 studyRows개)
         const usableJobStatusList = jobStatusList.slice(0, usableRows);
         console.log("사용할 데이터만 추출 usableJobStatusList: ", usableJobStatusList);
-        $studyListContainer.html(renderStudyListSkeleton(usableJobStatusList)); // 스켈레톤 로딩 세팅 (data-job-id 속성 추가)
+        $studyListContainer.html(renderStudyListSkeleton(usableJobStatusList, isUseSpinner)); // 스켈레톤 로딩 세팅 (data-job-id 속성 추가)
 
         /**
          * usableJobStatusList 데이터로 임시로 생성한 스켈레톤에 랜더링 및 폴링
