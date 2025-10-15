@@ -9,7 +9,7 @@
     <div class="tiny_list_component show_scroll">
         <a class="study_history_info component_info small with_icon"
            th:each="log : ${studyHistory.getDailyStudyLogs()}"
-           th:href="@{/study}">
+           th:href="@{/study/}">
             <div class="list_info">
                 <div class="history_info tiny_font">
                     <span class="bold"
