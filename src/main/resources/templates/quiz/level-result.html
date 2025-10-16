@@ -60,7 +60,6 @@
             </div>
         </div>
 
-        <!--/* 문제 풀이 상세 결과 */-->
         <div class="component tiny_list_component h_100 show_scroll">
             <div class="component_info with_icon align_start sub_font"
                  th:each="result, iterStat : ${results}">
@@ -79,9 +78,8 @@
                         <p th:text="${result.getOption(result.selectedChoice) ?: '선택하지 않음'}">선택한 보기 내용</p>
                     </div>
 
-                    <!--/* 오답일 경우 정답 확인 버튼 추가 */-->
                     <div th:if="${!result.success}" class="index_list">
-                        <span></span> <!--/* 같은 레이아웃을 가지기 위해 빈 요소 추가 */-->
+                        <span></span>
                         <div class="check_correct">
                             <div class="list_option">
                                 <span class="marker" th:text="|${result.successAnswer}.|">정답 번호</span>
@@ -92,10 +90,9 @@
                     </div>
                 </div>
 
-
-                <!-- 북마크 추가/제거 버튼 -->
                 <button type="button"
                         class="bookmark_btn tooltip"
+                        th:data-quiz-no="${result.quizNo}"
                         th:data-bookmarked="${result.bookmarked}"
                         th:data-label="|북마크 ${result.bookmarked == 'Y' ? '제거' : '추가'}|">
                     <iconify-icon class="icon title_font"
@@ -112,4 +109,8 @@
         </div>
     </div>
 </div>
+
+<th:block layout:fragment="script">
+    <script th:src="@{/js/modules/quiz/bookmark.js}"></script>
+</th:block>
 </html>

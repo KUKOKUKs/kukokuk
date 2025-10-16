@@ -62,13 +62,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ------------------------
-    // 북마크 버튼 상태 토글 함수 (Iconify 아이콘 사용)
+    // 북마크 버튼 상태 토글 함수
     // ------------------------
     function toggle_bookmark_btn(btn, isBookmarked) {
-        btn.dataset.bookmarked = isBookmarked ? "true" : "false";
-        btn.innerHTML = isBookmarked
-            ? '<iconify-icon icon="emojione:red-heart" style="font-size: 1.5rem;"></iconify-icon>'
-            : '<iconify-icon icon="emojione-monotone:red-heart" style="font-size: 1.5rem;"></iconify-icon>';
-    }
+        // data-bookmarked 속성 업데이트
+        btn.dataset.bookmarked = isBookmarked ? "Y" : "N";
 
+        // 현재 아이콘 확인
+        const iconElement = btn.querySelector('iconify-icon');
+        if (!iconElement) return;
+
+        const currentIcon = iconElement.getAttribute('icon');
+
+        // 북마크 스타 아이콘인 경우 (level-result 등)
+        if (currentIcon && currentIcon.includes('bookmark')) {
+            // 색상만 변경
+            iconElement.classList.remove('color_yellow', 'color_border');
+            iconElement.classList.add(isBookmarked ? 'color_yellow' : 'color_border');
+        }
+        // 하트 아이콘인 경우 (bookmark 목록 페이지)
+        else if (currentIcon && currentIcon.includes('heart')) {
+            btn.innerHTML = isBookmarked
+                ? '<iconify-icon icon="emojione:red-heart" style="font-size: 1.5rem;"></iconify-icon>'
+                : '<iconify-icon icon="emojione-monotone:red-heart" style="font-size: 1.5rem;"></iconify-icon>';
+        }
+
+        // tooltip label 업데이트
+        if (btn.dataset.label !== undefined) {
+            btn.dataset.label = `북마크 ${isBookmarked ? '제거' : '추가'}`;
+        }
+    }
 });
