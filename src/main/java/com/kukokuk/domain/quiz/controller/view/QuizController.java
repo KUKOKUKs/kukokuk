@@ -2,6 +2,7 @@ package com.kukokuk.domain.quiz.controller.view;
 
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
+import com.kukokuk.domain.quiz.dto.QuizHistoryDto;
 import com.kukokuk.domain.quiz.dto.QuizLevelResultDto;
 import com.kukokuk.domain.quiz.dto.QuizMasterDto;
 import com.kukokuk.domain.quiz.dto.QuizResultDto;
@@ -235,5 +236,22 @@ public class QuizController {
             ApiResponse<Integer> errorResponse = new ApiResponse<>(false, 500, "힌트 사용에 실패했습니다.", null);
             return ResponseEntity.status(500).body(errorResponse);
         }
+
+
+    }
+
+    @GetMapping("/history")
+    public String viewHistory(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
+        int userNo = securityUser.getUser().getUserNo();
+
+        // 각 도메인에서 이력 조회
+        List<QuizHistoryDto> speedHistory = quizService.getSpeedHistoryByUserNoWithLimit(userNo, 5);
+        List<QuizHistoryDto> levelHistory = quizService.getLevelHistoryByUserNoWithLimit(userNo, 5);
+
+        // Model에 담아서 타임리프로 전달
+        model.addAttribute("speedHistory", speedHistory);
+        model.addAttribute("levelHistory", levelHistory);
+
+        return "quiz/history"; // templates/quiz/history.html
     }
 }
