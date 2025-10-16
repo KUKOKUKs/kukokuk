@@ -2,20 +2,15 @@ package com.kukokuk.domain.twenty.controller.api;
 
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
-import com.kukokuk.domain.twenty.dto.GameOverDto;
 import com.kukokuk.domain.twenty.dto.RoomUser;
 import com.kukokuk.domain.twenty.dto.SendStdMsg;
 import com.kukokuk.domain.twenty.service.TwentyService;
-import com.kukokuk.domain.twenty.vo.TwentyLog;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
-import com.kukokuk.security.SecurityUser;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,12 +28,20 @@ public class ApiTwentyController {
     private final TwentyService twentyService;
 
     /**
-     * 게임 종료 버튼을 누르면, 게임방 상태 + 유저 상태 변경 게임 결과도 입력 해야됨.
+     * 게임 종료 버튼 눌렀을 때, 게임 결과 저장 및 경험치 부여
+     *  ++ 경험치 관련 로직 ++
+     *  교사를 제외한 모든 학생에게 일정한 경험치 부여
+     *    - 단 승리 시, 정답 제출자 제외 모두 30xp, 정답 제출자만 60xp
+     *    - 패배 시, 모든 학생에게 10xp
+     * @param map
+     * @return
      */
     @PostMapping("/gameOver")
     public ResponseEntity<ApiResponse<Void>> gameOver(@RequestBody Map<String,Object> map) {
         int roomNo = (int)map.get("roomNo");
         twentyService.gameOverTwenty(roomNo);
+        //일단 보류
+        twentyService.addExp(roomNo); // 스무고개방 경험치 부여 로직 expProcessing(ExpProcessingDto expProcessingDto)  사용
         return ResponseEntityUtils.ok("게임 정상 종료");
     }
 
@@ -84,7 +87,7 @@ public class ApiTwentyController {
     }
 
 
-    /**
+    /** COMPLETED, STOPPED 조건이 있는 버전
      * 게임방 1개 정보 조회
      * @param roomNo 게임방 식별자
      * @return roomNo, correctAnswer, status, winnerNo, groupNo, isSuccess, tryCnt
@@ -92,6 +95,17 @@ public class ApiTwentyController {
     @GetMapping("/room/{roomNo}")
     public ResponseEntity<ApiResponse<TwentyRoom>> getTwentyRoom(@PathVariable int roomNo) {
         TwentyRoom room = twentyService.getTwentyRoomByRoomNo(roomNo);
+        return ResponseEntityUtils.ok(room);
+    }
+
+    /**
+     * 아무런 조건 없이, roomNo로 게임방 1개를 조회하는 쿼리.
+     * @param roomNo
+     * @return
+     */
+    @GetMapping("/room/all/{roomNo}")
+    public ResponseEntity<ApiResponse<TwentyRoom>> getAllTwentyRoom(@PathVariable int roomNo) {
+        TwentyRoom room = twentyService.getAllTwentyRoom(roomNo);
         return ResponseEntityUtils.ok(room);
     }
 

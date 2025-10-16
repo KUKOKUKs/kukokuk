@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>KUKOKUK — 결과</title>
+</head>
+<body>
+<div class="card" id="result-card">
+    <!-- ✅ 승리 화면: isSuccess == 'Y' -->
+    <div th:if="${isSuccess == 'Y'}">
+        <div class="header">
+            <span class="badge">VICTORY</span>
+            <div>
+                <div class="title">스무고개 — 정답을 맞췄습니다!</div>
+                <div class="subtitle">방 이름: <strong th:text="${title}">#1</strong> · 우승자 <strong
+                    th:text="${winnerName}">홍길동</strong></div>
+            </div>
+        </div>
+
+        <div class="hero">
+            <div class="trophy" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M8 21h8M9 17h6m5-12h-3V3H7v2H4a1 1 0 0 0-1 1v1.5A4.5 4.5 0 0 0 7.5 12H9a5 5 0 0 0 6 0h1.5A4.5 4.5 0 0 0 21 7.5V6a1 1 0 0 0-1-1Z"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="answer">정답: <span th:text="${correctAnswer}">바다거북</span>
+                <small>(축하드립니다!)</small></div>
+        </div>
+
+        <div class="grid">
+            <div class="stat">
+                <div class="label">시도 횟수</div>
+                <div class="value" th:text="${tryCount}">7</div>
+            </div>
+            <div class="stat">
+                <div class="label">참여자 수</div>
+                <div class="value" th:text="${participantCount}">9</div>
+            </div>
+            <div class="stat">
+                <div class="label">정답자</div>
+                <div class="value" th:text="${winnerName}">홍길동</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ❌ 패배 화면: isSuccess != 'Y' -->
+    <div th:if="${isSuccess != 'Y'}">
+        <div class="header">
+            <span class="badge">DEFEAT</span>
+            <div>
+                <div class="title">스무고개 — 아쉽게도 정답을 맞히지 못했습니다</div>
+                <div class="subtitle">방 <strong th:text="${title}">#1</strong></div>
+            </div>
+        </div>
+
+        <div class="hero">
+            <div class="trophy" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M7 3h10v2h3a1 1 0 0 1 1 1v1.5A4.5 4.5 0 0 1 17.5 12H16a5 5 0 0 1-8 0H6.5A4.5 4.5 0 0 1 2 7.5V6a1 1 0 0 1 1-1h3V3Zm3 14h4v2H10v-2Zm-2 4h8v1H8v-1Z"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="answer">정답은 <span th:text="${correctAnswer}">바다거북</span> 이었습니다.</div>
+        </div>
+
+        <div class="grid">
+            <div class="stat">
+                <div class="label">총 시도 횟수</div>
+                <div class="value" th:text="${tryCount}">7</div>
+            </div>
+            <div class="stat">
+                <div class="label">참여자 수</div>
+                <div class="value" th:text="${participantCount}">9</div>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <button class="btn ghost" id="leave-Room">방 나가기</button>
+    </div>
+</div>
+</body>
+</html>

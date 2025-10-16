@@ -5,8 +5,10 @@ import com.kukokuk.domain.group.dto.GruopUsersDto;
 import com.kukokuk.domain.group.service.GroupService;
 import com.kukokuk.domain.twenty.dto.RoomUser;
 import com.kukokuk.domain.twenty.dto.SendStdMsg;
+import com.kukokuk.domain.twenty.dto.TwentyResult;
 import com.kukokuk.domain.twenty.mapper.TwentyMapper;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
+import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.domain.user.vo.User;
 import java.util.HashMap;
 import java.util.List;
@@ -240,6 +242,39 @@ public class TwentyService {
         twentyMapper.insertTwentyRoomUser(map);
 
         return roomNo;
+    }
+
+    /**
+     * 1. 게임의 승패 여부에 따라, 경험치를 달리 부여.
+     * 2. 모든 유저에게 경험치를 부여하는가?
+     *
+     * @param roomNo
+     */
+    public void addExp(int roomNo){
+
+    }
+
+    /**
+     * 아무 조건 없이 roomNo로 이 게임방의 모든 정보를 조회
+     * @param roomNo
+     * @return
+     */
+    public TwentyRoom getAllTwentyRoom(int roomNo){
+        return twentyMapper.getAllTwentyRoom(roomNo);
+    }
+
+    /**
+     * roomNo로 게임방을 (결과)조회
+     * 이 게임방의 isSuccess가 Y인 경우 : 게임방의 winnerNo로 유저 정보를 조회. -> 게임방의 user 멤버에 할당
+     * @param roomNo
+     * @return
+     */
+    public TwentyResult getTwentyResultInfo(int roomNo){
+
+        TwentyResult result = twentyMapper.getTwentyRoomResult(roomNo);
+        Integer participantCount = twentyMapper.getTwentyRoomUserTatal(roomNo);
+        result.setParticipantCount(participantCount);
+        return result;
     }
 
 

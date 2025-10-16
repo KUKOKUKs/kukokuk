@@ -65,7 +65,6 @@
         WHERE
             TWENTY_ROOM_NO = #{roomNo}
           AND STATUS NOT IN('COMPLETED', 'STOPPED')
-
     </select>
 
     <!--
@@ -230,5 +229,62 @@
             ,#{roomNo})
         </foreach>
     </insert>
+
+    <!--
+        public TwentyRoom getAllTwentyRoom(int roomNo);
+        조건 없이 바로 roomNo로 게임방 1개 조회.
+    -->
+    <select id="getAllTwentyRoom" resultType="TwentyRoom">
+        SELECT
+            TWENTY_ROOM_NO               AS roomNo
+             ,CORRECT_ANSWER             AS correctAnswer
+             ,STATUS                     AS status
+             ,WINNER_NO                  AS winnerNo
+             ,GROUP_NO                   AS groupNo
+             ,IS_SUCCESS                 AS isSuccess
+             ,TRY_COUNT                  AS tryCnt
+             ,TITLE                      AS title
+        FROM
+            KUKOKUK_TWENTY_ROOMS
+        WHERE
+            TWENTY_ROOM_NO = #{roomNo}
+    </select>
+    <!--
+        /**
+         * roomNo로 이 게임방의 결과를 가져온다.
+         * @param roomNo
+         * @return
+         */
+        public TwentyResult getTwentyRoomResult(int roomNo);
+    -->
+    <select id="getTwentyRoomResult" resultType="TwentyResult">
+        SELECT
+            TR.TWENTY_ROOM_NO       AS roomNo
+            ,TR.TITLE               AS title
+            ,TR.CORRECT_ANSWER      AS answers
+            ,TR.IS_SUCCESS          AS isSuccess
+            ,TR.TRY_COUNT           AS tryCnt
+            ,TR.STATUS              AS status
+            ,TR.WINNER_NO           AS winnerNo
+            ,U.NICKNAME             AS nickName
+        FROM KUKOKUK_TWENTY_ROOMS TR
+            JOIN KUKOKUK_USERS U
+            ON TR.WINNER_NO = U.USER_NO
+        WHERE
+            TR.TWENTY_ROOM_NO = #{roomNo}
+    </select>
+    <!--
+         /**
+         * 이 게임방의 총 참여 인원을 가져온다.
+         * @param roomNo
+         * @return
+         */
+        public Integer getTwentyRoomUserTatal(int roomNo);
+    -->
+    <select id="">
+        SELECT COUNT(*)
+        FROM KUKOKUK_TWENTY_ROOMS_USERS
+        WHERE TWENTY_ROOM_NO = #{roomNo}
+    </select>
 
 </mapper>

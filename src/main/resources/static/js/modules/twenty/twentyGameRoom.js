@@ -132,10 +132,21 @@ function connectWebSocket() {
         });
 
         /**
-         * 교사 서버 끊겼을 대
+         * 교사 서버 끊겼을 때, 알림창이 나오고 그룹 페이지로 이동.
          */
         stompClient.subscribe(`/topic/TeacherDisconnect`, function () {
+            alert("스무고개가 중단되었습니다.");
             window.location.href = '/group';
+        });
+
+        /**
+         * 게임 종료 버튼을 눌렀을 때 or 게임방의 상태가 COMPLETE일 때
+         * 게임 결과 페이지로 이동
+         */
+        stompClient.subscribe(`/topic/gameComplete`, function (result) {
+            const data =  JSON.parse(result.body);
+            const roomNo = parseInt(data);
+            window.location.href = `/twenty/result/${roomNo}`;
         });
 
         /**
@@ -223,7 +234,7 @@ $(function () {
             contentType: 'application/json',
             data: JSON.stringify(sendData),
             success: function (data) {
-                window.location.href = '/group';
+                window.location.href = `/twenty/result/${currentRoomNo}`;
             }
         });
     });
