@@ -1,40 +1,97 @@
 import {pollJobStatus} from "../../utils/poll-job-utils.js";
+import {renderStudyCard, renderStudyListSkeleton} from "./study-renderer.js";
+import {apiGetDailyStudies} from "./study-api.js";
 
-export function pollStudyJob(jobId, $studyCardContainer) {
-    return pollJobStatus(
-        `/api/studies/status/${jobId}`,
-        jobStatus => {
-            // 진행률 및 메시지 UI 업데이트
-            updateHomeDailyStudyProgressUI(jobStatus.progress, jobStatus.message, $studyCardContainer);
+/**
+ * 학습 목록 프레그먼츠에 추가할 학습 자료 요청(학습 자료 개수: 컨트롤러 기본 값 5)
+ * 최초 요청 후 폴링하며 진행 상태 표시
+ * 요청시 기본 5개로 요청이 되며 usableRows 만큼만 활용 됨
+ * 예외사항으로는 usableRows가 컨트롤러 기본 값 5보다 클 경우엔 usableRows만큼 요청
+ * !! 사용할 데이터 개수 외로 미리 생성되도록 하여 사용자 경험 향상 !!
+ * @param usableRows 사용할 데이터 개수
+ * @param requestRows 요청할 데이터 개수
+ * @param $studyListContainer 목록이 추가될 부모 요소
+ * @param isUseSpinner 폴링 진행 상태(진행률/메시지)를 추가/업데이트 사용 여부
+ */
+export async function renderFragmentDailyStudies(usableRows, requestRows, $studyListContainer, isUseSpinner) {
+    console.log("renderFragmentDailyStudies() 실행");
+
+    try {
+        // 최초 요청에 대한 응답
+        // List<JobStatusResponse<DailyStudySummaryResponse>>> 객체
+        const jobStatusList = await apiGetDailyStudies(requestRows);
+
+        // 실제 활용할 데이터만 추출 (앞에서부터 studyRows개)
+        const usableJobStatusList = jobStatusList.slice(0, usableRows);
+        console.log("사용할 데이터만 추출 usableJobStatusList: ", usableJobStatusList);
+        $studyListContainer.html(renderStudyListSkeleton(usableJobStatusList)); // 스켈레톤 로딩 세팅 (data-job-id 속성 추가)
+
+        /**
+         * usableJobStatusList 데이터로 임시로 생성한 스켈레톤에 랜더링 및 폴링
+         * job.status가 DONE/FAILED (완료/실패) 상태인 job은 즉시 랜더링
+         * DONE/FAILED이 아닌 PROCESSING 상태인 job은 순차적으로 폴링 요청
+         * -> 순차적으로 폴링 요청하지만 병렬 비동기 호출로 먼저 DONE/FAILED 처리된 job은 즉시 랜더링하여
+         *    사용자 경험 향상 (로딩 속도 빠르게 느껴지도록)
+         */
+        for (const [index, job] of usableJobStatusList.entries()) {
+            // 해당하는 학습 카드 찾기
+            const $studyCard = $studyListContainer.find(`[data-job-id="${job.jobId}"]`);
+            if (!$studyCard.length) continue; // 해당 요소가 없다면 다음 루프
+
+            // 폴링 요청할 경로
+            const pollUrl = `/api/studies/status/${job.jobId}}`;
+
+            if (job.status !== "PROCESSING") {
+                // 현재 job의 상태가 PROCESSING이 아닐 경우 완료/실패로 판단하여 즉시 랜더링
+                renderStudyCard(job, index, $studyCard); // job 객체, 첫 번째 요소 확인 값, 랜더링 요소
+            } else {
+                // 현재 job의 상태가 PROCESSING일 경우 폴링 요청
+                // 폴링은 각자 독립적으로 진행(병렬 비동기 호출)하기 위해 await을 사용하지 않음
+                // (void로 Promise 무시 의도 명시/IDE 경고 제거)
+                void pollStudyJobStatus(job, index, pollUrl, $studyCard, isUseSpinner);
+            }
         }
-    )
+    } catch (error) {
+        // 요청에 대한 에러처리(폴링에 대한 에러처리 아님)
+        $studyListContainer.html(`
+                <div class="component base_list_component study_card">
+                    <div class="study_info">
+                        <div class="component_title">자료 생성 중 오류가 발생하였습니다</div>
+                        <div class="study_content">잠시 후에 다시 시도해 주세요</div>
+                    </div>
+                </div>
+            `);
+    }
 }
 
 /**
- * 백그라운드 작업 처리되는
- * JobStatusResponse<List<DailyStudySummaryResponse>>를 활용한
- * 비동기 요청에 대해 진행률과 메세지 표시(스피너 로딩 요소 사용) 설정
- * @param progress 진행률
- * @param message 메세지
- * @param $studyCardContainer 진행률이 표시될 부모 요소
+ * 폴링 요청 메서드 호출하여 DONE/FAILED 처리된 job을 응답받아
+ * 전달 받은 요소에 랜더링
+ * <p>
+ *     이 함수는 병렬적으로 호출 되어 각각의 폴링 요청에 대한 빠른 처리가 가능
+ * @param job 폴링 요청할 job 데이터
+ * @param index 학습 카드의 인덱스 (첫 번째 요소인지 확인하기 위해)
+ * @param pollUrl 폴링 요청할 경로
+ * @param $studyCard 카드 랜더링할 요소
+ * @param isUseSpinner 폴링 진행 상태(진행률/메시지)를 추가/업데이트 사용 여부
  */
-export function updateHomeDailyStudyProgressUI(progress, message, $studyCardContainer) {
-    const $loadingElement = $studyCardContainer.find(".loading_spinner"); // 스피너 로딩 요소
+async function pollStudyJobStatus(job, index, pollUrl, $studyCard, isUseSpinner) {
+    console.log(`pollStudyJobStatus() 실행 job(${job.jobId}) status: ${job.status}`);
 
-    // 부모 요소 확인
-    if ($studyCardContainer.length) {
-        if ($loadingElement.length) {
-            // 스피너 로딩 요소가 이미 생성되었다면 진행률, 메세지 수정
-            $loadingElement.find(".info")
-            .css("--percent", `${progress}%`)
-            .text(message);
-        } else {
-            // 스피너 로딩 요소가 없다면 생성하여 적용
-            $studyCardContainer.html(
-                `<div class="loading_spinner pd_base">
-                        <p class="info" style="--percent: ${progress}%;">${message}</p>
-                </div>`
-            );
-        }
+    // 폴링 요청 시작
+    try {
+        // 폴링의 상태가 PROCESSING이 아닐 경우 반환 됨 (진행상태 표시하지 않음)
+        const pollJob = await pollJobStatus(pollUrl, $studyCard, isUseSpinner);
+
+        // 반환된 job에 대한 랜더링 (랜더링 함수 내에서 DONE/FAILED 처리 됨)
+        renderStudyCard(pollJob, index, $studyCard); // job 객체, 첫 번째 요소 확인 값, 랜더링 요소
+    } catch (error) {
+        // 폴링에 대한 에러처리 (타임아웃 포함)
+        $studyCard.html(`
+                <div class="study_info">
+                    <div class="component_title">잠시 후에 다시 시도해 주세요</div>
+                    <div class="study_content">${error.message}</div>
+                </div>
+            `);
     }
 }

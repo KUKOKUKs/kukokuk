@@ -1,13 +1,17 @@
 package com.kukokuk.domain.twenty.service;
 
 /*import com.kukokuk.domain.twenty.util.RedisLockManager;*/
+import com.kukokuk.domain.group.dto.GruopUsersDto;
+import com.kukokuk.domain.group.service.GroupService;
 import com.kukokuk.domain.twenty.dto.RoomUser;
 import com.kukokuk.domain.twenty.dto.SendStdMsg;
 import com.kukokuk.domain.twenty.mapper.TwentyMapper;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
+import com.kukokuk.domain.user.vo.User;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -20,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TwentyService {
 
     private final TwentyMapper twentyMapper;
-
+    private final GroupService  groupService;
 
     /**
      * 교사가 "게임 종료" 버튼 누를 때,
@@ -66,6 +70,7 @@ public class TwentyService {
      */
     public Integer getRoomNoByRoomList(List<TwentyRoom> list) {
         if(list == null || list.isEmpty()) return null;
+
         for(TwentyRoom room : list) {
             if(!"COMPLETED".equals(room.getStatus()) && !"STOPPED".equals(room.getStatus())) {
                 return room.getRoomNo();
@@ -145,11 +150,39 @@ public class TwentyService {
 
     /**
      * 게임방의 결과를 update
+     * - isSuccess, tryCnt, winnerNo(게임에 승리한 경우만)를 할당한다.
+     * 1. TwentyRoom 객체 결과 할당.
+     *  - 객체의 status에 COMPLETED로 변경
+     *  - roomNo로 log 테이블의 총 메세지 개수를 조회
+     *  - roomNo로 log 테이블의 최근 메세지를 조회 : logNo, isScuccess,roomNo, userNo
+     *  -> 결론: TwentyRoom 객체에 isSuccess, tryCnt, roomNo, status를할당
+     * 2. 게임의 승리여부 할당
+     *  - 최근 메세지의 isSuccess가 null이 아니고, Y인 경우 winnerNo를 할당. winnerNo가 null이거나,N인 경우 그냥 패스
+     * 3. TwentyRoom 객체를 이제 update 쿼리문에 요청
+     * 4. 사용자 상태도 모두 변경
      * roomNo를 가진 게임방의 승리여부, 시도 횟수를 업데이트, 승리여부에 따라 winnerNo가 들어가게 된다.
-     * @param room :roomNo,isSuccess, tryCnt,winnerno(승리여부에 따라)
      */
-    public void updateTwentyRoomResult(TwentyRoom room) {
+    public void gameOverTwenty(int roomNo) {
+        //최신 메세지 1개와, 총 시도 횟수를 조회.
+        SendStdMsg msg = twentyMapper.getRecentMsgByRoomNo(roomNo);
+        Integer tryCnt =  twentyMapper.getMsgCntByRoomNo(roomNo);
+
+        //TwentyRoom에 값 할당하기
+        TwentyRoom room = new  TwentyRoom();
+        room.setTryCnt(tryCnt);
+        room.setRoomNo(roomNo);
+        room.setStatus("COMPLETED");
+        room.setIsSuccess(msg.getIsSuccess());
+        room.setWinnerNo(msg.getUserNo());
+
+        // 게임방 변경
         twentyMapper.updateTwentyRoomResult(room);
+
+        // 1. 사용자의 상태를 모두 '나감'으로 변경
+        Map<String, Object> map = new HashMap<>();
+        map.put("roomNo", roomNo);
+        map.put("status", "LEFT");
+        twentyMapper.updateRoomUserStatus(map);
     }
 
     /**
@@ -166,12 +199,47 @@ public class TwentyService {
     }
 
     /**
-     * roomNo로 사용자의 데이터를 가져온다.
+     * roomNo로 log테이블의 모든 메세지를 조회.
      * @param roomNo
      * @return
      */
     public List<SendStdMsg> getMsgListByRoomNo(int roomNo){
         return twentyMapper.getTwentyLogList(roomNo);
+    }
+
+    /**
+     * 게임방과 사용자들을 DB에 insert하고, 게임방No를 반환한다.
+     * @param groupNo
+     * @param title
+     * @param correct
+     * @return
+     */
+    public Integer insertTwenthRoom (int groupNo, String title, String correct) {
+        Map<String,Object> map = new HashMap<>();
+        Integer roomNo = null;
+
+        //게임방 생성
+        TwentyRoom room = new TwentyRoom();
+        room.setGroupNo(groupNo);
+        room.setTitle(title);
+        room.setCorrectAnswer(correct);
+        room.setStatus("WAITING");
+        twentyMapper.insertTwentyRoom(room);
+
+        roomNo = room.getRoomNo();
+
+        //groupNo에 있는 참여자들 조회 -> 참여자 테이블에 insert
+        GruopUsersDto dto = groupService.getGruopUsersByGruopNo(groupNo);
+
+        List<Integer> userNos = dto.getGroupUsers().stream()
+                                                    .map(User::getUserNo)
+                                                    .collect(Collectors.toList());
+        map.put("roomNo", roomNo);
+        map.put("status", "LEFT");
+        map.put("userNos", userNos);
+        twentyMapper.insertTwentyRoomUser(map);
+
+        return roomNo;
     }
 
 

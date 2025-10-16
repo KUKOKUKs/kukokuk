@@ -39,29 +39,6 @@ $(document).ready(() => {
     });
 
     // 탭 버튼, 탭 컨텐츠 핸들러
-    // const $tabBtns = $(".tab_btn_list .tab_btn"); // 탭 버튼
-    // const $tabContents = $(".tab_content"); // 탭 컨텐츠
-    // $tabBtns.click(function () {
-    //     if ($modalAll.length) {
-    //         const $this = $(this);
-    //         const index = $this.index(); // 클릭한 요소의 index
-    //
-    //         $tabBtns.removeClass("selected_left selected"); // 선택된 요소의 앞 요소에 추가된 클라스 제거
-    //         $tabContents.removeClass("selected"); // 선택된 탭 컨텐츠 요소 클라스 제거
-    //
-    //         if (index > 0) {
-    //             // 첫번째 요소가 아닐 경우 선택된 요소의 앞 요소에 클라스 추가
-    //             $tabBtns.eq(index - 1).addClass("selected_left");
-    //         }
-    //
-    //         // 선택한 탭 버튼 활성화
-    //         $(this).addClass("selected");
-    //         // 선택한 탭 컨텐츠 활성화
-    //         $tabContents.eq(index).addClass("selected").siblings().removeClass("selected");
-    //     }
-    // });
-
-    // 탭 버튼, 탭 컨텐츠 핸들러
     // 프레그먼츠에서 주로 사용되므로 오작동 방지를 위해 문서에 위임하여 이벤트 등록
     // (th:if시 오작동 발생)
     $(document).on("click", ".tab_btn_list .tab_btn", function () {
@@ -86,7 +63,7 @@ $(document).ready(() => {
         $tabContents.eq(index).addClass("selected"); // 선택한 탭 컨텐츠 활성화
     });
     
-    // 정답 확인 버튼 핸들러
+    // 정답 확인 버튼 핸들러 (결과 상세 페이지)
     const $checkCorrect = $(".check_correct"); // 정답 확인 버튼
     $checkCorrect.click(function () {
         const $this = $(this);
@@ -94,5 +71,30 @@ $(document).ready(() => {
         // 버튼에 클라스 추가 및 자식 요소 텍스트 전부 보이도록 클래스 제거
         $this.addClass("checked")
             .find(".correct_answer").removeClass("text_ellipsis");
+    });
+
+    // 컨텐츠 인포 토글 버튼 핸들러
+    $(document).on("click", ".switch_toggle_btn", function () {
+        const $this = $(this);
+        const $parentContainer = $this.closest(".toggle_info_component");
+
+        if ($this.hasClass("on")) {
+            // 토글 스위치 위치 좌측으로 이동 및 토글 요소 첫 번째 컨텐츠 노출
+            $this.removeClass("on");
+            $parentContainer.removeClass("second").addClass("first");
+        } else {
+            // 토글 스위치 위치 우측으로 이동 및 토글 요소 두 번째 컨텐츠 노출
+            $this.addClass("on");
+            $parentContainer.removeClass("first").addClass("second");
+        }
+    });
+
+    // 학습 카드 클릭 이벤트 핸들러
+    $(document).on('click', '.study_card', function () {
+        // 클릭한 요소가 close 상태일 경우 클래스 제거
+        // 클래스 제거 효과: 컨텐츠 줄임표시 원상 복구, 버튼 노출
+        const $this = $(this);
+        const isClosed = $this.hasClass('close');
+        if (isClosed) $this.removeClass('close');
     });
 });
