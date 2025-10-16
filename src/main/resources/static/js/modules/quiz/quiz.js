@@ -1,34 +1,37 @@
+import { useHintApi } from "./quiz-api.js";
+import {
+    quizState,
+    initializeQuizState,
+    selectAnswer,
+    recordHintUsage,
+    goToNext,
+    getRandomWrongOption,
+    createResultPayload
+} from "./quiz-handler.js";
+
 /**
- * 통합 퀴즈 JavaScript
- * Speed 퀴즈와 Level 퀴즈를 하나의 파일로 통합하여 관리
- * quizMode 변수로 모드를 구분하여 각각의 로직을 처리
+ * 통합 퀴즈 UI 및 이벤트 처리
+ * Speed 퀴즈와 Level 퀴즈의 UI 렌더링, DOM 조작, 이벤트 리스너를 담당합니다.
+ * quiz-api.js와 quiz-handler.js에 의존합니다.
  */
 $(document).ready(function () {
-    // quizMode 변수 검증
+    // --- 유효성 검사 ---
     if (typeof quizMode === 'undefined') {
         console.error("quizMode 변수가 정의되지 않았습니다. HTML에서 quizMode를 선언해주세요.");
         return;
     }
-
-    // quizzes 데이터 검증
     if (typeof quizzes === 'undefined' || !Array.isArray(quizzes) || quizzes.length === 0) {
         console.error("퀴즈 데이터를 불러오지 못했습니다.");
         return;
     }
 
-    // 전역 변수 선언
-    let currentQuizIndex = 0;                    // 현재 퀴즈 인덱스
-    let selectedAnswers = [];                    // 사용자가 선택한 답안 배열
-    let usedHints = [];                          // 힌트 사용 여부 배열 (Level 전용)
-    let timerInterval = null;                    // 타이머 인터벌 객체 (Speed 전용)
-    let timeLeft = 10;                           // 남은 시간 (Speed 전용)
-    let quizStartTime = Date.now();              // 퀴즈 시작 시간
-
-    // 모드 구분 플래그
+    // --- 전역 변수 및 상수 ---
+    let timerInterval = null;
+    let timeLeft = 10;
     const isSpeedMode = quizMode === "speed";
     const isLevelMode = quizMode === "level";
 
-    // DOM 요소 캐싱
+    // --- DOM 요소 캐싱 ---
     const $timerContainer = $(".progress_container");
     const $quizCurrent = $("#quiz-current");
     const $quizQuestion = $("#quiz-question");
@@ -39,55 +42,49 @@ $(document).ready(function () {
     const $hintBtn = $("#hint-btn");
     const $hintCount = $("#hint-count");
     const $progressBar = $("#step-progress-bar");
-    const $prevBtn = $("#prev-btn");
+    const $prevBtn = $("#prev-btn"); // Level 모드에서 숨김 처리
     const $nextBtn = $("#next-btn");
 
-    // Level 모드일 경우 힌트 사용 배열 초기화
+    // --- 초기화 ---
+    initializeQuizState(quizzes.length);
     if (isLevelMode) {
-        usedHints = new Array(quizzes.length).fill(false);
+        $prevBtn.hide();
     }
-
-    // 첫 번째 퀴즈 렌더링
     renderCurrentQuiz();
 
+    // --- 함수 선언 ---
+
     /**
-     * 현재 퀴즈를 화면에 렌더링
-     * Speed/Level 모드에 따라 다른 UI 요소를 표시
+     * 현재 퀴즈를 화면에 렌더링합니다.
      */
     function renderCurrentQuiz() {
-        const quiz = quizzes[currentQuizIndex];
-        $quizCurrent.text(currentQuizIndex + 1);
+        const idx = quizState.currentQuizIndex;
+        const quiz = quizzes[idx];
 
-        // 문제 유형 표시 (Speed 모드에서만)
+        $quizCurrent.text(idx + 1);
         if ($quizCallout.length) {
             $quizCallout.text(quiz.questionType);
         }
-
-        // 문제 텍스트 표시
         $quizQuestion.text(quiz.question);
         $quizOptions.empty();
 
-        // 보기 버튼 생성
-        let options = "";
-        for (let i = 1; i <= quiz.options.length; i++) {
-            const isDisabled = isLevelMode && usedHints[currentQuizIndex] && quiz.hintRemovedOption === i;
-            const isSelected = selectedAnswers[currentQuizIndex] === i;
-            const disabledClass = isDisabled ? "hint-removed" : "";
-            const selectedClass = isSelected ? "selected" : "";
+        let optionsHtml = "";
+        quiz.options.forEach((optionText, i) => {
+            const choiceNum = i + 1;
+            const isDisabled = isLevelMode && quiz.hintRemovedOption === choiceNum;
+            const isSelected = quizState.selectedAnswers[idx] === choiceNum;
 
-            options += `
-                <button type="button" class="component_info option_btns ${disabledClass} ${selectedClass}" 
-                        data-choice="${i}" ${isDisabled ? 'disabled' : ''}>
+            optionsHtml += `
+                <button type="button" class="component_info option_btns ${isDisabled ? 'hint-removed' : ''} ${isSelected ? 'selected' : ''}" 
+                        data-choice="${choiceNum}" ${isDisabled ? 'disabled' : ''}>
                     <div class="list_option">
-                        <span class="marker">${i}.</span>
-                        <p class="option">${quiz.options[i - 1]}</p>
+                        <span class="marker">${choiceNum}.</span>
+                        <p class="option">${optionText}</p>
                     </div>
-                </button>
-            `;
-        }
-        $quizOptions.append(options);
+                </button>`;
+        });
+        $quizOptions.append(optionsHtml);
 
-        // 모드별 추가 UI 업데이트
         if (isLevelMode) {
             updateHintButton();
             updateNavigationButtons();
@@ -98,102 +95,50 @@ $(document).ready(function () {
     }
 
     /**
-     * 보기 선택 이벤트 핸들러
-     * Speed 모드: 선택 즉시 다음 문제로 이동
-     * Level 모드: 선택만 하고 대기
-     */
-    $(document).on("click", ".option_btns:not(.hint-removed)", function () {
-        const choiceNumber = Number($(this).data("choice"));
-
-        // 보기 선택 UI 업데이트
-        $quizOptions.find(".option_btns").removeClass("selected");
-        $(this).addClass("selected");
-
-        selectedAnswers[currentQuizIndex] = choiceNumber;
-        console.log(`문제 ${currentQuizIndex + 1}: 보기 ${choiceNumber} 선택`);
-
-        // Speed 모드에서는 선택 즉시 제출
-        if (isSpeedMode) {
-            handleSubmit();
-        }
-    });
-
-    /**
-     * 타이머 시작 (Speed 모드 전용)
-     * 10초 카운트다운 및 진행 바 애니메이션
+     * Speed 모드의 타이머를 시작합니다.
      */
     function startTimer() {
-        if (!isSpeedMode) return;
-
         clearInterval(timerInterval);
         timeLeft = 10;
-        const totalTime = timeLeft;
-
-        // 타이머 초기화
         $timerContainer.removeClass("warning");
-        $quizTimer.text(totalTime + " 초");
+        $quizTimer.text(timeLeft + " 초");
+        $timerBar.stop(true, true).css({ width: "100%" }).animate({ width: 0 }, timeLeft * 1000, "linear");
 
-        // 진행 바 애니메이션
-        $timerBar.stop(true, true)
-        .css({width: "100%"})
-        .animate({width: 0}, totalTime * 1000, "linear");
-
-        // 1초마다 타이머 업데이트
-        timerInterval = setInterval(function () {
+        timerInterval = setInterval(() => {
             timeLeft--;
-
-            // 3초 이하일 때 경고 표시
-            if (timeLeft <= 3) {
-                $timerContainer.addClass("warning");
-            }
-
+            if (timeLeft <= 3) $timerContainer.addClass("warning");
             $quizTimer.text((timeLeft < 10 ? "0" + timeLeft : timeLeft) + " 초");
-
-            // 시간 종료 시 자동 제출
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
+                $quizOptions.find(".option_btns").addClass("disabled");
                 handleSubmit();
             }
         }, 1000);
     }
 
     /**
-     * 답안 제출 처리 (Speed 모드 전용)
+     * Speed 모드에서 답안을 자동으로 제출 처리합니다.
      */
     function handleSubmit() {
-        if (!isSpeedMode) return;
-
         clearInterval(timerInterval);
-        goToNextQuestion();
-    }
 
-    /**
-     * 다음 문제로 이동 (Speed 모드 전용)
-     * 마지막 문제일 경우 결과 제출
-     */
-    function goToNextQuestion() {
-        if (!isSpeedMode) return;
-
-        currentQuizIndex++;
-
-        if (currentQuizIndex < quizzes.length) {
+        if (quizState.currentQuizIndex < quizzes.length - 1) {
+            goToNext();
             renderCurrentQuiz();
         } else {
-            console.log("퀴즈 완료! 결과 폼 제출");
             submitResults();
         }
     }
 
     /**
-     * 힌트 버튼 상태 업데이트 (Level 모드 전용)
-     * 힌트 개수가 0개이거나 이미 사용한 문제면 비활성화
+     * Level 모드의 힌트 버튼 상태를 업데이트합니다.
      */
     function updateHintButton() {
-        if (!isLevelMode || !$hintBtn.length) return;
-
+        if (!$hintBtn.length) return;
         const userHintCount = parseInt($hintCount.text());
+        const isHintUsedForCurrent = quizState.usedHints[quizState.currentQuizIndex];
 
-        if (userHintCount <= 0 || usedHints[currentQuizIndex]) {
+        if (userHintCount <= 0 || isHintUsedForCurrent) {
             $hintBtn.addClass("disabled").prop("disabled", true);
         } else {
             $hintBtn.removeClass("disabled").prop("disabled", false);
@@ -201,276 +146,138 @@ $(document).ready(function () {
     }
 
     /**
-     * 힌트 버튼 클릭 이벤트 (Level 모드 전용)
-     * 정답이 아닌 보기 중 하나를 랜덤하게 비활성화
-     */
-    $hintBtn.off("click").on("click", function () {
-        if (!isLevelMode) return;
-
-        const userHintCount = parseInt($hintCount.text());
-
-        // 힌트 개수 체크
-        if (userHintCount <= 0) {
-            alert("사용 가능한 힌트가 없습니다.");
-            return;
-        }
-
-        // 이미 힌트를 사용한 문제인지 체크
-        if (usedHints[currentQuizIndex]) {
-            alert("이미 힌트를 사용한 문제입니다.");
-            return;
-        }
-
-        // 사용 확인
-        if (!confirm("힌트를 사용하시겠습니까? (1개 차감)")) {
-            return;
-        }
-
-        const currentQuiz = quizzes[currentQuizIndex];
-        const removedOption = getRandomWrongOption(currentQuiz);
-
-        // 보기 비활성화 및 상태 업데이트
-        disableOption(removedOption);
-        usedHints[currentQuizIndex] = true;
-        currentQuiz.hintRemovedOption = removedOption;
-
-        updateHintButton();
-        useHintApi(currentQuizIndex, removedOption);
-    });
-
-    /**
-     * 정답이 아닌 보기 중 하나를 랜덤하게 선택
-     * @param {Object} quiz - 퀴즈 객체
-     * @return {number} 제거할 보기 번호 (1~4)
-     */
-    function getRandomWrongOption(quiz) {
-        const correctAnswer = quiz.successAnswer;
-        const wrongOptions = [];
-
-        // 정답이 아닌 보기 수집
-        for (let i = 1; i <= quiz.options.length; i++) {
-            if (i !== correctAnswer) {
-                wrongOptions.push(i);
-            }
-        }
-
-        // 랜덤 선택
-        const randomIndex = Math.floor(Math.random() * wrongOptions.length);
-        return wrongOptions[randomIndex];
-    }
-
-    /**
-     * 지정된 보기를 비활성화 처리
-     * @param {number} optionNumber - 비활성화할 보기 번호 (1~4)
+     * 지정된 보기를 비활성화 처리합니다.
+     * @param {number} optionNumber - 비활성화할 보기 번호 (1-based)
      */
     function disableOption(optionNumber) {
         const $optionBtn = $quizOptions.find(`button[data-choice="${optionNumber}"]`);
-
-        // 버튼 비활성화 및 스타일 적용
-        $optionBtn
-        .addClass("hint-removed")
-        .prop("disabled", true)
-        .off("click");
-
-        // 시각적 효과 (취소선, 흐리게)
-        $optionBtn.find(".option").css({
-            "text-decoration": "line-through",
-            "opacity": "0.5",
-            "color": "#999"
-        });
-
-        // 선택되어 있었다면 선택 해제
+        $optionBtn.addClass("hint-removed").prop("disabled", true).off("click");
+        $optionBtn.find(".option").css({ "text-decoration": "line-through", "opacity": "0.5", "color": "#999" });
         if ($optionBtn.hasClass("selected")) {
             $optionBtn.removeClass("selected");
-            selectedAnswers[currentQuizIndex] = null;
+            selectAnswer(undefined); // 선택 해제
         }
     }
 
     /**
-     * 힌트 사용 API 호출
-     * 서버에 힌트 사용을 기록하고 남은 힌트 개수를 업데이트
-     * @param {number} quizIndex - 퀴즈 인덱스
-     * @param {number} removedOption - 제거된 보기 번호
-     */
-    async function useHintApi(quizIndex, removedOption) {
-        try {
-            const response = await $.ajax({
-                url: "/quiz/use-hint",
-                method: "POST",
-                data: {
-                    quizIndex: quizIndex,
-                    removedOption: removedOption
-                },
-                dataType: "json"
-            });
-
-            console.log("힌트 사용 반영 완료", response);
-
-            // 서버에서 반환된 남은 힌트 개수로 UI 업데이트
-            if (response.success && response.data !== undefined) {
-                const remainingHints = response.data;
-                $hintCount.text(remainingHints).addClass("action");
-            } else {
-                // 서버 응답이 없을 경우 클라이언트에서 차감
-                const newHintCount = parseInt($hintCount.text()) - 1;
-                $hintCount.text(newHintCount).addClass("action");
-            }
-
-            // 액션 효과 제거
-            setTimeout(() => $hintCount.removeClass("action"), 200);
-
-        } catch (e) {
-            console.error("힌트 사용 반영 실패", e);
-            alert("힌트 사용에 실패했습니다. 다시 시도해주세요.");
-        }
-    }
-
-    /**
-     * 진행률 바 업데이트 (Level 모드 전용)
-     * 현재 문제 번호에 따라 진행률 표시
+     * Level 모드의 진행률 바를 업데이트합니다.
      */
     function renderProgressBar() {
-        if (!isLevelMode || !$progressBar.length) return;
-
-        const progressPercent = ((currentQuizIndex + 1) / quizzes.length) * 100;
-        $progressBar.css("width", progressPercent + "%");
+        if (!$progressBar.length) return;
+        const progress = ((quizState.currentQuizIndex + 1) / quizzes.length) * 100;
+        $progressBar.css("width", progress + "%");
     }
 
     /**
-     * 이전/다음 버튼 상태 업데이트 (Level 모드 전용)
-     * 첫 문제에서는 이전 버튼 비활성화
-     * 마지막 문제에서는 다음 버튼이 제출 버튼으로 변경
+     * Level 모드의 네비게이션 버튼(다음/제출)을 업데이트합니다.
      */
     function updateNavigationButtons() {
-        if (!isLevelMode) return;
-
-        if ($prevBtn.length) {
-            $prevBtn.prop("disabled", currentQuizIndex === 0);
-        }
-
-        if ($nextBtn.length) {
-            $nextBtn.text(currentQuizIndex === quizzes.length - 1 ? "제출" : "다음");
-        }
+        if (!$nextBtn.length) return;
+        const isLastQuiz = quizState.currentQuizIndex === quizzes.length - 1;
+        $nextBtn.text(isLastQuiz ? "제출" : "다음");
     }
 
     /**
-     * 이전 버튼 클릭 이벤트 (Level 모드 전용)
-     */
-    $prevBtn.off("click").on("click", function () {
-        if (!isLevelMode) return;
-
-        if (currentQuizIndex > 0) {
-            currentQuizIndex--;
-            renderCurrentQuiz();
-        }
-    });
-
-    /**
-     * 다음 버튼 클릭 이벤트 (Level 모드 전용)
-     * 마지막 문제일 경우 제출 확인 후 결과 전송
-     */
-    $nextBtn.off("click").on("click", function () {
-        if (!isLevelMode) return;
-
-        if (currentQuizIndex < quizzes.length - 1) {
-            currentQuizIndex++;
-            renderCurrentQuiz();
-        } else {
-            if (confirm("퀴즈를 제출하시겠습니까?")) {
-                submitResults();
-            }
-        }
-    });
-
-    /**
-     * 퀴즈 결과 제출
-     * 숨겨진 폼에 결과 데이터를 추가하고 서버로 전송
+     * 퀴즈 결과를 서버에 제출합니다.
      */
     function submitResults() {
         console.log("퀴즈 완료! 결과 폼 제출");
-
-        // 총 소요 시간 계산 (Speed 모드에서만)
-        const totalTimeSec = isSpeedMode
-            ? Math.floor((Date.now() - quizStartTime) / 1000)
-            : 0;
-
-        const $form = $("#quiz-result-form");
-        $form.empty();
-
-        // 공통 데이터
-        $form.append($("<input>", {
-            type: "hidden",
-            name: "totalTimeSec",
-            value: totalTimeSec
-        }));
-
-        $form.append($("<input>", {
-            type: "hidden",
-            name: "quizMode",
-            value: quizMode
-        }));
+        const payload = createResultPayload(quizMode, quizzes);
+        const $form = $("#quiz-result-form").empty();
 
         // CSRF 토큰 추가
         const csrfToken = $("meta[name='_csrf']").attr("content");
         if (csrfToken) {
-            $form.append($("<input>", {
-                type: "hidden",
-                name: "_csrf",
-                value: csrfToken
-            }));
+            $form.append(`<input type="hidden" name="_csrf" value="${csrfToken}">`);
         }
 
-        // 각 문제의 결과 데이터
-        quizzes.forEach((quiz, idx) => {
-            $form.append($("<input>", {
-                type: "hidden",
-                name: `results[${idx}].quizNo`,
-                value: quiz.quizNo
-            }));
-            $form.append($("<input>", {
-                type: "hidden",
-                name: `results[${idx}].selectedChoice`,
-                value: selectedAnswers[idx] ?? 0
-            }));
-            $form.append($("<input>", {
-                type: "hidden",
-                name: `results[${idx}].isBookmarked`,
-                value: "N"
-            }));
+        $form.append(`<input type="hidden" name="totalTimeSec" value="${payload.totalTimeSec}">`);
+        $form.append(`<input type="hidden" name="quizMode" value="${payload.quizMode}">`);
 
-            // Level 모드 전용: 힌트 사용 정보
-            if (isLevelMode) {
-                $form.append($("<input>", {
-                    type: "hidden",
-                    name: `results[${idx}].usedHint`,
-                    value: usedHints[idx] ? "Y" : "N"
-                }));
-
-                if (usedHints[idx] && quiz.hintRemovedOption) {
-                    $form.append($("<input>", {
-                        type: "hidden",
-                        name: `results[${idx}].hintRemovedOption`,
-                        value: quiz.hintRemovedOption
-                    }));
-                }
+        payload.results.forEach((r, idx) => {
+            for (const key in r) {
+                $form.append(`<input type="hidden" name="results[${idx}].${key}" value="${r[key]}">`);
             }
         });
 
         $form.submit();
     }
 
-    /**
-     * 퀴즈 종료 모달창 열기
-     */
-    const $quizEndBtn = $(".quiz_end_btn");
-    const $modalQuizExit = $("#modal-quiz-exit");
-    $quizEndBtn.click(function () {
-        if ($modalQuizExit.length) {
-            $modalQuizExit.show();
+    // --- 이벤트 리스너 ---
 
-            setTimeout(() => {
-                $modalQuizExit.addClass("open");
-            }, 10);
+    // 보기 선택 이벤트
+    $(document).on("click", ".option_btns:not(.hint-removed):not(.disabled)", function () {
+        const choiceNumber = Number($(this).data("choice"));
+        selectAnswer(choiceNumber);
+
+        $quizOptions.find(".option_btns").removeClass("selected");
+        $(this).addClass("selected");
+
+        if (isSpeedMode) {
+            $quizOptions.find(".option_btns").addClass("disabled");
+            handleSubmit();
+        }
+    });
+
+    // 힌트 버튼 클릭 이벤트 (Level 모드)
+    $hintBtn.on("click", async function () {
+        if ($(this).hasClass("disabled") || !isLevelMode) return;
+        if (parseInt($hintCount.text()) <= 0 || quizState.usedHints[quizState.currentQuizIndex]) return;
+        if (!confirm("힌트를 사용하시겠습니까? (1개 차감)")) return;
+
+        $(this).addClass("disabled").prop("disabled", true);
+
+        const currentQuiz = quizzes[quizState.currentQuizIndex];
+        const removedOption = getRandomWrongOption(currentQuiz);
+
+        disableOption(removedOption);
+        recordHintUsage();
+        currentQuiz.hintRemovedOption = removedOption; // API 전송 및 렌더링을 위해 quiz 객체에 직접 기록
+
+        try {
+            const response = await useHintApi(quizState.currentQuizIndex, removedOption);
+            if (response.success && response.data !== undefined) {
+                $hintCount.text(response.data);
+            }
+        } catch (e) {
+            alert("힌트 사용에 실패했습니다. 다시 시도해주세요.");
+            // 실패 시 UI 원복 또는 재시도 로직이 필요할 수 있으나, 우선 경고만 표시
+            $(this).removeClass("disabled").prop("disabled", false);
+        } finally {
+            $hintCount.addClass("action");
+            setTimeout(() => $hintCount.removeClass("action"), 200);
+        }
+    });
+
+    // 다음 버튼 클릭 이벤트 (Level 모드)
+    $nextBtn.on("click", function () {
+        if ($(this).hasClass("disabled") || !isLevelMode) return;
+        if (quizState.selectedAnswers[quizState.currentQuizIndex] === undefined) {
+            alert("답을 선택해주세요.");
+            return;
+        }
+
+        const isLastQuiz = quizState.currentQuizIndex === quizzes.length - 1;
+        if (isLastQuiz) {
+            if (confirm("퀴즈를 제출하시겠습니까?")) {
+                $(this).addClass("disabled").text("제출 중...");
+                submitResults();
+            }
+        } else {
+            if(quizState.currentQuizIndex < quizzes.length - 1) {
+                goToNext();
+                renderCurrentQuiz();
+            }
+        }
+    });
+
+    // 퀴즈 종료 모달창
+    $(".quiz_end_btn").on("click", function () {
+        const $modal = $("#modal-quiz-exit");
+        if ($modal.length) {
+            $modal.show();
+            setTimeout(() => $modal.addClass("open"), 10);
         }
     });
 });
+
