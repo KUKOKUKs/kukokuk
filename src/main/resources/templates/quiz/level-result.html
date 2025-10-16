@@ -12,7 +12,7 @@
                 <div class="component grid_list full_grid bg_primary color_white highlight">
                     <div class="component_title">
                         <th:block th:with="percent=${(summary.correctAnswers * 100) / summary.totalQuestion}">
-                            <th:block th:if="${difficulty == '하'}">
+                            <th:block th:if="${difficulty == '쉬움'}">
                                 <p class="title_info center" th:utext="|${difficulty} 단계<br>
                                     ${percent == 100 ? '만점! 기본기 끝판왕! 🏆' :
                                     percent >= 90 ? '교과서 그 자체! 완벽에 한 발짝! ✨' :
@@ -20,7 +20,7 @@
                                     percent >= 50 ? '기초는 잡혔다! 조금만 더! 📈' :
                                     '연습이 곧 실력! 한번 더! 💪'}|"></p>
                             </th:block>
-                            <th:block th:if="${difficulty == '중'}">
+                            <th:block th:if="${difficulty == '보통'}">
                                 <p class="title_info center" th:utext="|${difficulty} 단계<br>
                                     ${percent == 100 ? '만점! 실력자 인증 완료! 🎉' :
                                     percent >= 90 ? '감 잡았어! 집중력 최고! 🔥' :
@@ -28,7 +28,7 @@
                                     percent >= 50 ? '지금부터 시작이다! ⚡' :
                                     '포기 금지! 한번 더! 💪'}|"></p>
                             </th:block>
-                            <th:block th:if="${difficulty == '상'}">
+                            <th:block th:if="${difficulty == '어려움'}">
                                 <p class="title_info center" th:utext="|${difficulty} 단계<br>
                                     ${percent == 100 ? '만점! 챌린지 정복자 등극! 👑' :
                                     percent >= 90 ? '흔들림 없는 실력! 🦾' :
@@ -36,7 +36,7 @@
                                     percent >= 50 ? '이제부터 진짜! 기세 올리자! ⚡' :
                                     '이 정도로 만족할 순 없지! 한번 더! 💪'}|"></p>
                             </th:block>
-                            <th:block th:unless="${difficulty == '하' or difficulty == '중' or difficulty == '상'}">
+                            <th:block th:unless="${difficulty == '쉬움' or difficulty == '보통' or difficulty == '어려움'}">
                                 <p class="title_info center" th:utext="|${difficulty} 단계<br>결과 메시지를 불러올 수 없습니다.|"></p>
                             </th:block>
                         </th:block>
