@@ -48,11 +48,43 @@ public class QuizController {
     private final QuizBookmarkService quizBookmarkService;
     private final UserService userService;
 
-    //[퀴즈 선택페이지]뷰이동
+    /**
+     * 퀴즈 메인 페이지 (학습이력 위젯 포함)
+     * 퀴즈 선택 + 최근 학습이력을 함께 표시
+     */
     @GetMapping
-    public String viewMain(){
-        log.info("[확인] viewMain() 페이지 컨트롤러 실행");
-        return "quiz/main";
+    public String viewMain(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
+        log.info("[퀴즈 메인] viewMain() 페이지 컨트롤러 실행");
+
+        // 로그인한 사용자만 학습이력 표시
+        if (securityUser != null) {
+            int userNo = securityUser.getUser().getUserNo();
+            log.info("[퀴즈 메인] 사용자 {}의 학습이력 조회", userNo);
+
+            try {
+                // 각 도메인에서 최근 이력 조회 (5개씩만 - 메인 페이지용)
+                List<QuizHistoryDto> speedHistory = quizService.getSpeedHistoryByUserNoWithLimit(userNo, 5);
+                List<QuizHistoryDto> levelHistory = quizService.getLevelHistoryByUserNoWithLimit(userNo, 5);
+
+                // 받아쓰기 도메인 구현 완료 후 주석 해제
+                // List<DictationHistoryDto> dictationHistory = dictationService.getRecentDictationHistory(userNo, 3);
+
+                // Model에 학습이력 데이터 추가
+                model.addAttribute("speedHistory", speedHistory);
+                model.addAttribute("levelHistory", levelHistory);
+                // model.addAttribute("dictationHistory", dictationHistory);
+
+                log.info("[퀴즈 메인] 학습이력 조회 완료 - 스피드: {}개, 단계별: {}개",
+                    speedHistory.size(), levelHistory.size());
+
+            } catch (Exception e) {
+                log.error("[퀴즈 메인] 학습이력 조회 중 오류 발생 - userNo: {}", userNo, e);
+                // 학습이력 조회 실패해도 메인 페이지는 정상 표시
+                model.addAttribute("historyError", true);
+            }
+        }
+
+        return "quiz/main"; // templates/quiz/main.html
     }
 
     // [단계별 퀴즈] 난이도 선택 후 문제 10개 조회
