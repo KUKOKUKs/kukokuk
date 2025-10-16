@@ -11,7 +11,8 @@
             <div class="grid_list_component" style="--cols: 2;">
                 <div class="component grid_list full_grid bg_primary color_white highlight">
                     <div class="component_title">
-                        <th:block th:with="percent=${(summary.correctAnswers * 100) / summary.totalQuestion}">
+                        <th:block
+                            th:with="percent=${(summary.correctAnswers * 100) / summary.totalQuestion}">
                             <th:block th:if="${difficulty == '쉬움'}">
                                 <p class="title_info center" th:utext="|${difficulty} 단계<br>
                                     ${percent == 100 ? '만점! 기본기 끝판왕! 🏆' :
@@ -36,18 +37,22 @@
                                     percent >= 50 ? '이제부터 진짜! 기세 올리자! ⚡' :
                                     '이 정도로 만족할 순 없지! 한번 더! 💪'}|"></p>
                             </th:block>
-                            <th:block th:unless="${difficulty == '쉬움' or difficulty == '보통' or difficulty == '어려움'}">
-                                <p class="title_info center" th:utext="|${difficulty} 단계<br>결과 메시지를 불러올 수 없습니다.|"></p>
+                            <th:block
+                                th:unless="${difficulty == '쉬움' or difficulty == '보통' or difficulty == '어려움'}">
+                                <p class="title_info center"
+                                   th:utext="|${difficulty} 단계<br>결과 메시지를 불러올 수 없습니다.|"></p>
                             </th:block>
                         </th:block>
                     </div>
                 </div>
                 <div class="component grid_list">
                     <div class="component_title">
-                        <p class="component_sub_title tac" th:text="|${summary.totalQuestion}문제 중|">n문제 중</p>
+                        <p class="component_sub_title tac" th:text="|${summary.totalQuestion}문제 중|">
+                            n문제 중</p>
                         <p class="title_info center">
                             [[${summary.correctAnswers}]]개 정답!
-                            <span th:if="${summary.totalQuestion == summary.correctAnswers}">💯</span>
+                            <span
+                                th:if="${summary.totalQuestion == summary.correctAnswers}">💯</span>
                         </p>
                     </div>
                 </div>
@@ -60,6 +65,7 @@
             </div>
         </div>
 
+        <!--/* 문제 풀이 상세 결과 */-->
         <div class="component tiny_list_component h_100 show_scroll">
             <div class="component_info with_icon align_start sub_font"
                  th:each="result, iterStat : ${results}">
@@ -72,14 +78,15 @@
                         <div class="color_blue bold pos_r">
                             A<span th:if="${result.selectedChoice != 0}"
                                    th:text="${result.selectedChoice}">선택한 보기 번호</span>
-                            <span class="result_icon incorrect icon large"
-                                  th:classappend="${result.success ? 'correct' : 'incorrect'}">정답 여부</span>
+                            <span class="result_icon icon large"
+                                  th:classappend="${result.success ? 'correct' : 'incorrect'}"></span>
                         </div>
-                        <p th:text="${result.getOption(result.selectedChoice) ?: '선택하지 않음'}">선택한 보기 내용</p>
+                        <p th:text="${result.getOption(result.selectedChoice) ?: '시간 초과'}">선택한 보기 내용</p>
                     </div>
 
+                    <!--/* 오답일 경우 정답 확인 버튼 추가 */-->
                     <div th:if="${!result.success}" class="index_list">
-                        <span></span>
+                        <span></span> <!--/* 같은 레이아웃을 가지기 위해 빈 요소 추가 */-->
                         <div class="check_correct">
                             <div class="list_option">
                                 <span class="marker" th:text="|${result.successAnswer}.|">정답 번호</span>
@@ -90,6 +97,7 @@
                     </div>
                 </div>
 
+                <!--/* 북마크 버튼을 각 문제 결과 안으로 이동 */-->
                 <button type="button"
                         class="bookmark_btn tooltip"
                         th:data-quiz-no="${result.quizNo}"

@@ -1,4 +1,4 @@
-import { useHintApi } from "./quiz-api.js";
+import { apiUseHint } from "./quiz-api.js";
 import {
     quizState,
     initializeQuizState,
@@ -235,7 +235,7 @@ $(document).ready(function () {
         currentQuiz.hintRemovedOption = removedOption; // API 전송 및 렌더링을 위해 quiz 객체에 직접 기록
 
         try {
-            const response = await useHintApi(quizState.currentQuizIndex, removedOption);
+            const response = await apiUseHint(quizState.currentQuizIndex, removedOption);
             if (response.success && response.data !== undefined) {
                 $hintCount.text(response.data);
             }
