@@ -72,13 +72,15 @@
                         <div class="color_blue bold pos_r">
                             A<span th:if="${result.selectedChoice != 0}"
                                    th:text="${result.selectedChoice}">선택한 보기 번호</span>
+                            <!-- 🔧 핵심 수정: result.success → result.isSuccess() -->
                             <span class="result_icon incorrect icon large"
-                                  th:classappend="${result.success ? 'correct' : 'incorrect'}">정답 여부</span>
+                                  th:classappend="${result.isSuccess() ? 'correct' : 'incorrect'}">정답 여부</span>
                         </div>
                         <p th:text="${result.getOption(result.selectedChoice) ?: '선택하지 않음'}">선택한 보기 내용</p>
                     </div>
 
-                    <div th:if="${!result.success}" class="index_list">
+                    <!-- 🔧 핵심 수정: !result.success → !result.isSuccess() -->
+                    <div th:if="${!result.isSuccess()}" class="index_list">
                         <span></span>
                         <div class="check_correct">
                             <div class="list_option">
@@ -90,6 +92,7 @@
                     </div>
                 </div>
 
+                <!-- 🔧 북마크 기능 수정: quizNo 속성 추가 -->
                 <button type="button"
                         class="bookmark_btn tooltip"
                         th:data-quiz-no="${result.quizNo}"
@@ -105,7 +108,7 @@
         <div class="btn_list">
             <a href="/quiz" class="btn">국어 놀이터로</a>
             <a href="/" class="btn white">마당으로</a>
-            <a href="/quiz/speed" class="btn primary">다시 도전!</a>
+            <a href="/quiz/level" class="btn primary">다시 도전!</a>
         </div>
     </div>
 </div>
