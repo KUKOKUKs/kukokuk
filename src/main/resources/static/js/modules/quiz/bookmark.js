@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error("북마크 처리 오류:", err);
                 toggle_bookmark_btn(this, isBookmarked); // 복구
 
-                // 🔧 수정: 더 구체적인 에러 메시지
+                // 수정: 더 구체적인 에러 메시지
                 let errorMsg = '북마크 처리에 실패했습니다.';
                 if (err.message.includes('404')) {
                     errorMsg = '퀴즈를 찾을 수 없습니다.';
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 북마크 버튼 상태 토글 함수 (Iconify 아이콘 사용)
     // ------------------------
     function toggle_bookmark_btn(btn, isBookmarked) {
-        // 🔧 수정: 데이터 속성 값 정규화
+        // 수정: 데이터 속성 값 정규화
         btn.dataset.bookmarked = isBookmarked ? "Y" : "N";
 
         const icon = btn.querySelector('iconify-icon');
