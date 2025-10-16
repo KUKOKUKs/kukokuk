@@ -81,8 +81,7 @@
                             <span class="result_icon icon large"
                                   th:classappend="${result.success ? 'correct' : 'incorrect'}"></span>
                         </div>
-                        <p th:text="${result.getOption(result.selectedChoice) ?: '시간 초과'}">선택한 보기
-                            내용</p>
+                        <p th:text="${result.getOption(result.selectedChoice) ?: '시간 초과'}">선택한 보기 내용</p>
                     </div>
 
                     <!--/* 오답일 경우 정답 확인 버튼 추가 */-->
@@ -90,35 +89,33 @@
                         <span></span> <!--/* 같은 레이아웃을 가지기 위해 빈 요소 추가 */-->
                         <div class="check_correct">
                             <div class="list_option">
-                                <span class="marker"
-                                      th:text="|${result.successAnswer}.|">정답 번호</span>
+                                <span class="marker" th:text="|${result.successAnswer}.|">정답 번호</span>
                                 <p class="text_ellipsis correct_answer"
                                    th:text="${result.getOption(result.successAnswer)}">정답 보기 내용</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!--/* 북마크 버튼을 각 문제 결과 안으로 이동 */-->
+                <button type="button"
+                        class="bookmark_btn tooltip"
+                        th:data-quiz-no="${result.quizNo}"
+                        th:data-bookmarked="${result.bookmarked}"
+                        th:data-label="|북마크 ${result.bookmarked == 'Y' ? '제거' : '추가'}|">
+                    <iconify-icon class="icon title_font"
+                                  th:classappend="${result.bookmarked == 'Y' ? 'color_yellow' : 'color_border'}"
+                                  icon="material-symbols:bookmark-star"></iconify-icon>
+                </button>
             </div>
         </div>
 
-        <button type="button"
-                class="bookmark_btn tooltip"
-                th:data-quiz-no="${result.quizNo}"
-                th:data-bookmarked="${result.bookmarked}"
-                th:data-label="|북마크 ${result.bookmarked == 'Y' ? '제거' : '추가'}|">
-            <iconify-icon class="icon title_font"
-                          th:classappend="${result.bookmarked == 'Y' ? 'color_yellow' : 'color_border'}"
-                          icon="material-symbols:bookmark-star"></iconify-icon>
-        </button>
+        <div class="btn_list">
+            <a href="/quiz" class="btn">국어 놀이터로</a>
+            <a href="/" class="btn white">마당으로</a>
+            <a href="/quiz/speed" class="btn primary">다시 도전!</a>
+        </div>
     </div>
-</div>
-
-<div class="btn_list">
-    <a href="/quiz" class="btn">국어 놀이터로</a>
-    <a href="/" class="btn white">마당으로</a>
-    <a href="/quiz/speed" class="btn primary">다시 도전!</a>
-</div>
-</div>
 </div>
 
 <th:block layout:fragment="script">
