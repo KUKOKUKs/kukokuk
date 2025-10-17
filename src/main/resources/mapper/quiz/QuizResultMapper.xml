@@ -48,33 +48,35 @@
 
     <!--
      * 세션 번호와 사용자 번호로 푼 퀴즈 결과를 조회한다.
+     * 🔧 수정: 북마크 정보 포함하여 조회
      * @param sessionNo 세션 번호
      * @param userNo    사용자 번호
      * @return 퀴즈 결과 응답 리스트
-    List<QuizResultDto> getQuizResultsBySession(@Param("sessionNo") int sessionNo,
-        @Param("userNo") int userNo);
     -->
     <select id="getQuizResultsBySession"
         parameterType="map"
         resultType="com.kukokuk.domain.quiz.dto.QuizResultDto">
         SELECT
-            qm.QUIZ_NO AS quizNo,
-            qm.QUESTION AS question,
-            qm.OPTION1 AS option1,
-            qm.OPTION2 AS option2,
-            qm.OPTION3 AS option3,
-            qm.OPTION4 AS option4,
-            qr.SELECTED_CHOICE AS selectedChoice,
-            qm.SUCCESS_ANSWER AS successAnswer,
-            qr.IS_SUCCESS AS isSuccess,
-            qm.QUESTION_TYPE AS questionType
+        qm.QUIZ_NO AS quizNo,
+        qm.QUESTION AS question,
+        qm.OPTION1 AS option1,
+        qm.OPTION2 AS option2,
+        qm.OPTION3 AS option3,
+        qm.OPTION4 AS option4,
+        qr.SELECTED_CHOICE AS selectedChoice,
+        qm.SUCCESS_ANSWER AS successAnswer,
+        qr.IS_SUCCESS AS isSuccess,
+        qm.QUESTION_TYPE AS questionType,
+        <!-- 🔧 추가: 북마크 여부 조회 -->
+        CASE WHEN qb.QUIZ_NO IS NOT NULL THEN 'Y' ELSE 'N' END AS bookmarked
         FROM KUKOKUK_QUIZ_RESULTS qr
-                 JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
+        JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
+        <!-- 🔧 추가: 북마크 테이블과 LEFT JOIN -->
+        LEFT JOIN KUKOKUK_QUIZ_BOOKMARKED qb ON qr.QUIZ_NO = qb.QUIZ_NO AND qb.USER_NO = #{userNo}
         WHERE qr.SESSION_NO = #{sessionNo}
-          AND qr.USER_NO = #{userNo}
+        AND qr.USER_NO = #{userNo}
         ORDER BY qr.RESULT_NO ASC
     </select>
-
 
     <!-- 정답률(ACCURACY_RATE) 갱신 -->
     <update id="updateAccuracyRate" parameterType="int">
@@ -87,6 +89,7 @@
         WHERE QUIZ_NO = #{quizNo}
     </update>
 
+    <!-- 난이도 자동 갱신 -->
     <update id="updateDifficulty" parameterType="int">
         UPDATE KUKOKUK_QUIZ_MASTERS
         SET DIFFICULTY =
