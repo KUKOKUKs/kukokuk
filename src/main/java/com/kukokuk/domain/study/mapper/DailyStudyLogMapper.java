@@ -1,5 +1,6 @@
 package com.kukokuk.domain.study.mapper;
 
+import com.kukokuk.domain.study.dto.DailyStudyLogDetailResponse;
 import com.kukokuk.domain.study.vo.DailyStudyLog;
 import java.util.List;
 import java.util.Map;
@@ -49,4 +50,24 @@ public interface DailyStudyLogMapper {
      * @param updateLog
      */
     void updateStudyLog(DailyStudyLog updateLog);
+
+    /**
+     * 특정 사용자의 일일학습 이력 세부 정보 목록을 조회
+     * @param userNo 사용자번호
+     * @param condition 조회 조건
+     *                  - "rows" : int 조회 행 개수
+     *                  - "offset" : int 오프셋
+     *                  - "order" : String ("updatedDate") 정렬기준
+     *                  - "status" : String ("inProgress","completed") 학습상태
+     * @return 조회된 사용자의 일일학습 이력 리스트
+     */
+    List<DailyStudyLogDetailResponse> getStudyLogsDetailByUserNo(@Param("userNo") int userNo,
+        @Param("condition") Map<String, Object> condition);
+
+    /**
+     * 특정 사용자의 학습 이력 개수를 조회
+     * @param userNo
+     * @return
+     */
+    int getStudyLogsTotalCount(int userNo);
 }

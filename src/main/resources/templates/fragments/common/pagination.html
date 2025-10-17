@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html>
-<nav th:fragment="pagination-fragment(paging)"
+<nav th:fragment="pagination-fragment(paging, conditionQuery)"
      th:if="${paging?.totalPages > 1}"
      class="pagination">
     <ul class="paging">
         <!--/* 1번 페이지로(첫 번째 블록이 아닐 경우) */-->
         <li class="page_btn" th:if="${paging.currentBlock > 1}">
             <a class="page_link first icon"
-               th:href="@{${pageUrl}(page=1, keyword=${param.keyword})}">
+               th:href="@{${pageUrl}(page=1)} + '&amp;' + ${conditionQuery}">
                 <iconify-icon icon="mage:double-arrow-left"></iconify-icon>
             </a>
         </li>
         <!--/* 이전 페이지로(첫 번째 페이지가 아닐 경우) */-->
         <li class="page_btn" th:if="${paging.totalBlocks > 1 && !paging.first}">
             <a class="page_link prev icon"
-               th:href="@{${pageUrl}(page=${paging.prevPage}, keyword=${param.keyword})}">
+               th:href="@{${pageUrl}(page=${paging.prevPage})} + '&amp;' + ${conditionQuery}">
                 <iconify-icon icon="mage:arrow-left"></iconify-icon>
             </a>
         </li>
@@ -24,7 +24,7 @@
             <!--/* 현재 페이지가 아닌 버튼 */-->
             <a class="page_link"
                 th:if="${paging.currentPage != num}"
-                th:href="@{${pageUrl}(page=${num}, keyword=${param.keyword})}"
+                th:href="@{${pageUrl}(page=${num})} + '&amp;' + ${conditionQuery}"
                 th:text="${num}">1</a>
 
             <!--/* 현재 페이지인 버튼 */-->
@@ -36,14 +36,14 @@
         <!--/* 다음 페이지로(마지막 페이지가 아닐 경우) */-->
         <li class="page_btn" th:if="${paging.totalBlocks > 1 && !paging.last}">
             <a class="page_link next icon"
-                th:href="@{${pageUrl}(page=${paging.nextPage}, keyword=${param.keyword})}">
+                th:href="@{${pageUrl}(page=${paging.nextPage})} + '&amp;' + ${conditionQuery}">
                 <iconify-icon icon="mage:arrow-right"></iconify-icon>
             </a>
         </li>
         <!--/* 마지막 페이지로(마지막 블록이 아닐 경우) */-->
         <li class="page_btn" th:if="${paging.currentBlock < paging.totalBlocks}">
             <a class="page_link last icon"
-                th:href="@{${pageUrl}(page=${paging.totalPages}, keyword=${param.keyword})}">
+                th:href="@{${pageUrl}(page=${paging.totalPages})} + '&amp;' + ${conditionQuery}">
                 <iconify-icon icon="mage:double-arrow-right"></iconify-icon>
             </a>
         </li>

@@ -26,13 +26,10 @@
                         </p>
                     </div>
                     <div class="progress_info">
-                        <div class="hints_info">
-                            <!-- 힌트 버튼으로 변경 -->
-                            <button id="hint-btn" type="button" class="hint_icon btn" title="힌트 사용">
-                                <iconify-icon icon="material-symbols:lightbulb-outline"></iconify-icon>
-                            </button>
+                        <button id="hint-btn" type="button" class="hints_info" style="background: none; border: none; cursor: pointer; padding: 0;">
+                            <div class="hint_icon"></div>
                             <span class="hint_count">x <span id="hint-count" th:text="${user.hintCount}">0</span></span>
-                        </div>
+                        </button>
                     </div>
                 </div>
 
@@ -66,8 +63,9 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
+        const quizMode = "level";
         let quizzes = /*[[${quizList}]]*/ [];
     </script>
-    <script th:src="@{/js/modules/quiz/level.js}"></script>
+    <script th:src="@{/js/modules/quiz/quiz.js}"></script>
 </th:block>
 </html>

@@ -12,11 +12,11 @@ import org.apache.ibatis.type.Alias;
 @Alias("ExpLog")
 public class ExpLog {
 
-    private int expLogNo;           // 경험치 로그 번호
-    private int userNo;             // 경험치 획득한 사용자
-    private String contentType;     // 경험치 획득한 컨텐츠
-    private int contentNo;          // 경험치 획득한 컨텐츠 테이블의 식별자값
-    private int expGained;          // 획득한 경험치량
-    private Date createdDate;       // 생성일자
+    private int expLogNo;                   // 경험치 로그 번호
+    private int userNo;                     // 경험치 획득한 사용자
+    private String contentType;             // 경험치 획득한 컨텐츠
+    private int contentNo;                  // 경험치 획득한 컨텐츠 테이블의 식별자값
+    private int expGained;                  // 획득한 경험치량
+    private Date createdDate;               // 생성일자
 
 }

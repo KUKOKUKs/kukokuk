@@ -4,7 +4,7 @@ import {setPagination} from "../../utils/handler-util.js";
 
 $(document).ready(function () {
     // 그룹 검색 관련
-    const $searchComponent = $("#search-component"); // 검색 컴포넌트
+    const $searchComponent = $("#group-search-component"); // 검색 컴포넌트
     const $searchFormWrap = $searchComponent.find(".search_form_wrap"); // 검색 폼 부모 요소
     const $groupSearchForm = $("#group-search-form"); // 그룹 검색 폼
     const $groupSearchInput = $groupSearchForm.find(".search_input"); // 검색 인풋
@@ -127,6 +127,39 @@ $(document).ready(function () {
             console.error("그룹 검색 요청 실패: ", error.message);
             alert("그룹 검색 목록을 가져오는데 실패하였습니다.\n다시 시도해 주세요.");
             location.reload(); // 새로 고침
+        }
+    });
+    
+    // 그룹 학습/검색 스위치 토글 버튼 이벤트
+    const $groupSearchToggleInfo = $(".group_search_toggle_info"); // 학습/검색 요소들의 부모 요소
+    const $groupSwitchToggleBtn = $("#group-switch-toggle-btn"); // 스위치 토글 버튼
+    $groupSwitchToggleBtn.click(function () {
+        const $this = $(this);
+
+        if ($this.hasClass("on")) {
+            $this.removeClass("on");
+            $groupSearchToggleInfo.removeClass("search_on");
+        } else {
+            $this.addClass("on");
+            $groupSearchToggleInfo.addClass("search_on");
+        }
+    });
+
+    // 그룹 생성/수정/삭제 모달창 열기
+    const $modalGruopEditBtn = $(".modal_gruop_edit_btn"); // 모달창 열기 버튼
+    const $modalGroupEdit = $("#modal-group-edit"); // 모달창
+    $modalGruopEditBtn.click(function () {
+        if ($modalGroupEdit.length) {
+            // 해당 모달창 요소가 있을 경우 열기
+            $modalGroupEdit.show();
+            
+            // 제출 버튼 모두 활성화 실시간 비활성화 기능 사용하지 않음
+            $modalGroupEdit.find("button[type='submit']").removeClass("disabled");
+
+            // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+            setTimeout(() => {
+                $modalGroupEdit.addClass("open");
+            }, 10);
         }
     });
 });

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kukokuk.ai.GeminiClient;
+import com.kukokuk.common.constant.ContentTypeEnum;
+import com.kukokuk.common.constant.DailyQuestEnum;
 import com.kukokuk.common.exception.AppException;
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
 import com.kukokuk.domain.dictation.dto.DictationResultLogDto;
@@ -336,6 +338,7 @@ public class DictationService {
                 session.setCorrectScore(correctScore);
 
                 dictationSessionMapper.updateDictationSessionResult(session);
+
             } catch (DataAccessException e) {
                 throw new AppException("결과를 저장하지 못했습니다.");
         }
@@ -606,21 +609,34 @@ public class DictationService {
     }
 
 
+//    /**
+//     * expProcessing 부분에 넘길 값
+//     * @param userNo 사용자 번호
+//     */
+//    @Transactional
+//    public void insertSaveExpLog(int userNo, int dictationSessionNo, int correctCount) {
+//        ExpProcessingDto expProcessingDto = new ExpProcessingDto(
+//            userNo,                                             // 사용자 번호
+//            ContentTypeEnum.DICTATION.name(),                   // 컨텐츠 타입
+//            dictationSessionNo,                                 // contentNo(임시)
+//            correctCount*3,                                     // EXP(임시)
+//            DailyQuestEnum.DICTATION_PLAY.getDailyQuestNo()     // 일일 도전과제 식별자 번호(없으면 null)
+//        );
+//        expProcessingService.expProcessing(expProcessingDto);
+//    }
+
     /**
-     * expProcessing 부분에 넘길 값
-     * @param userNo 사용자 번호
-     * @param dailyQuestNo 일일 도전과제 식별자 번호
+     * 경험치 exp에 반영될 받아쓰기 맞은 개수 가져오기
+     * @param dictationSessionNo 받아쓰기 세트
+     * @return 경험치에 반영될 받아쓰기 맞은 개수
      */
-    @Transactional
-    public void insertSaveExpLog(int userNo, Integer dailyQuestNo) {
-        ExpProcessingDto expProcessingDto = new ExpProcessingDto(
-            userNo,             // 사용자 번호
-            "DICTATION",        // 컨텐츠 타입
-            3,                  // contentNo(임시)
-            50,                 // EXP(임시)
-            dailyQuestNo        // 일일 도전과제 식별자 번호(없으면 null)
-        );
-        expProcessingService.expProcessing(expProcessingDto);
+    public int getCorrectCount(int dictationSessionNo) {
+        try{
+            return dictationQuestionLogMapper.getCountCorrectAnswers(dictationSessionNo);
+        } catch (DataAccessException e) {
+            log.info("getCorrectCount 예외처리 실행");
+            throw new AppException("경험치에 반영될 받아쓰기 맞은 개수를 불러오지 못했습니다");
+        }
     }
 
     /**

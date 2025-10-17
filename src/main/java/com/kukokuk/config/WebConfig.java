@@ -1,5 +1,6 @@
 package com.kukokuk.config;
 
+import com.kukokuk.common.util.FilePathUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -19,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // "/images/profile/**" 패턴의 모든 URL 요청에 대해 이 리소스 핸들러가 동작
         // (/images/profile/ 는 사용자 프로필 이미지 경로)
-        registry.addResourceHandler("/images/profile/**")
+        registry.addResourceHandler(FilePathUtil.PROFILE_DIR + "**")
             // 실제 파일을 읽어올 물리적 경로(디렉토리)를 지정
             // "file:///"는 로컬 파일 시스템임을 의미하는 스킴(scheme)
             // 이 설정으로 스프링 MVC는 "/images/profile/**" 경로로 들어오는 요청을

@@ -8,23 +8,28 @@ import com.kukokuk.ai.GeminiStudyResponse;
 import com.kukokuk.ai.GeminiStudyResponse.Card;
 import com.kukokuk.ai.GeminiStudyResponse.EssayQuiz;
 import com.kukokuk.ai.GeminiStudyResponse.Quiz;
+import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.common.dto.JobStatusResponse;
 import com.kukokuk.common.exception.AppException;
+import com.kukokuk.common.service.ObjectStorageService;
 import com.kukokuk.common.store.RedisJobStatusStore;
 import com.kukokuk.common.util.DailyQuestEnum;
-import com.kukokuk.common.util.SchoolGradeUtils;
+import com.kukokuk.domain.exp.dto.ExpProcessingDto;
+import com.kukokuk.domain.exp.service.ExpProcessingService;
 import com.kukokuk.domain.quest.mapper.DailyQuestMapper;
 import com.kukokuk.domain.quest.mapper.DailyQuestUserMapper;
 import com.kukokuk.domain.quest.vo.DailyQuest;
 import com.kukokuk.domain.quest.vo.DailyQuestUser;
 import com.kukokuk.domain.quiz.dto.QuizWithLogDto;
+import com.kukokuk.domain.study.dto.AdminParseMaterialResponse;
 import com.kukokuk.domain.study.dto.DailyQuestDto;
 import com.kukokuk.domain.study.dto.DailyStudyJobPayload;
+import com.kukokuk.domain.study.dto.DailyStudyLogDetailResponse;
 import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
 import com.kukokuk.domain.study.dto.MainStudyViewDto;
-import com.kukokuk.domain.study.dto.ParseMaterialRequest;
 import com.kukokuk.domain.study.dto.StudyCompleteViewDto;
 import com.kukokuk.domain.study.dto.StudyEssayViewDto;
+import com.kukokuk.domain.study.dto.StudyMaterialJobPayload;
 import com.kukokuk.domain.study.dto.StudyProgressViewDto;
 import com.kukokuk.domain.study.dto.UserStudyRecommendationDto;
 import com.kukokuk.domain.study.mapper.DailyStudyCardMapper;
@@ -46,16 +51,16 @@ import com.kukokuk.domain.study.vo.DailyStudyQuiz;
 import com.kukokuk.domain.study.vo.DailyStudyQuizLog;
 import com.kukokuk.domain.study.vo.MaterialParseJob;
 import com.kukokuk.domain.study.vo.StudyDifficulty;
-import com.kukokuk.domain.user.mapper.UserMapper;
 import com.kukokuk.domain.user.vo.User;
 import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
 import com.kukokuk.domain.study.dto.StudyQuizLogRequest;
 import com.kukokuk.domain.study.dto.UpdateStudyLogRequest;
 import com.kukokuk.domain.study.dto.DailyStudyLogResponse;
 import com.kukokuk.domain.study.dto.GeminiEssayResponse;
-import com.kukokuk.domain.study.dto.ParseMaterialResponse;
-import com.kukokuk.integration.redis.DailyStudyWorker;
+import com.kukokuk.integration.redis.WorkerMaterialCallbackRequest;
 import com.kukokuk.security.SecurityUser;
+import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,14 +71,11 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.Pair;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -99,7 +101,13 @@ public class StudyService {
     private final ObjectMapper objectMapper;
     private final ModelMapper modelMapper;
 
+    private final ExpProcessingService expProcessingService;
+    private final ObjectStorageService objectStorageService;
+
+
     private final RedisJobStatusStore<DailyStudySummaryResponse> studyJobStatusStore;
+    private final RedisJobStatusStore<AdminParseMaterialResponse> adminParseJobStatusStore;
+
 
     /**
       메인 화면에 필요한 데이터를 담은 MainStudyViewDto를 반환한다
@@ -206,7 +214,7 @@ public class StudyService {
             });
 
             // AI 호출 및 생성된 학습자료 DB 저장
-            DailyStudy dailyStudy = createDailyStudy(payload.getDailyStudyMaterialNo(),
+            DailyStudy dailyStudy = createDailyStudyByAi(payload.getDailyStudyMaterialNo(),
                 payload.getStudyDifficultyNo());
 
             // 생성된 학습자료를 기존의 dto에 업데이트
@@ -305,6 +313,14 @@ public class StudyService {
         // dailyStudyEssayQuizLogNo 가 null이 아니면 서술형퀴즈완료여부 true로 설정
         boolean essayQuizCompleted = dto.getDailyStudyEssayQuizLogNo() != null;
 
+        // material의 필드가 null일 경우 대비
+        String school = (material != null && material.getSchool() != null)
+            ? material.getSchool()
+            : null;
+        Integer grade = (material != null && material.getGrade() != null)
+            ? material.getGrade()
+            : null;
+
         return DailyStudySummaryResponse.builder()
             .dailyStudyNo(study.getDailyStudyNo())
             .title(study.getTitle())
@@ -313,8 +329,8 @@ public class StudyService {
             .status(status)
             .studiedCardCount(studiedCardCount)
             .progressRate(progressRate)
-            .school(material.getSchool())
-            .grade(material.getGrade())
+            .school(school)
+            .grade(grade)
             .sequence(material.getSequence())
             .essayQuizCompleted(essayQuizCompleted)
             .build();
@@ -329,7 +345,7 @@ public class StudyService {
      * @param studyDifficultyNo
      * @return
      */
-    public DailyStudy createDailyStudy(int dailyStudyMaterialNo, int studyDifficultyNo) {
+    public DailyStudy createDailyStudyByAi(int dailyStudyMaterialNo, int studyDifficultyNo) {
         log.info("createDailyStudy 학습자료 생성 메소드 호출 | dailyStudyMaterialNo : " + dailyStudyMaterialNo + ", studyDifficultyNo : " + studyDifficultyNo);
         // dailyStudyMaterialNo 로 학습자료 원본데이터 조회
          DailyStudyMaterial dailyStudyMaterial = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
@@ -358,6 +374,7 @@ public class StudyService {
             DailyStudy dailyStudy = insertDailyStudyWithOtherComponents(geminiStudyResponse, dailyStudyMaterialNo, studyDifficultyNo);
             log.info("저장된 학습자료 : " + dailyStudy.toString());
 
+            // 생성된 학습자료 반환 
             return dailyStudy;
 
         } catch (JsonProcessingException e){
@@ -462,60 +479,6 @@ public class StudyService {
 
         // 매퍼호출
         dailyStudyEssayQuizMapper.insertdailyStudyEssayQuiz(dailyStudyEssayQuiz);
-    }
-
-    /**
-    * 요청으로 받은 에듀넷 URL 리스트를 큐에 넣고 각각의 상태를 DB에 저장
-    * 파이썬 서버를 호출해 에듀넷 url에서 hwp 추출 후 텍스트 데이터를 반환받으면, 그 텍스트를 DB에 저장
-    * @param request
-    * @return
-    */
-    @Transactional
-    public ParseMaterialResponse createMaterial(ParseMaterialRequest request) {
-        ParseMaterialResponse parseMaterialResponse = new ParseMaterialResponse();
-
-        List<String> allUrls = request.getUrls();
-
-        // 요청으로 받은 url 목록 중 이미 DB에 존재하는 url만 조회
-        List<String> existingUrls = materialParseJobMapper.getExistUrls(allUrls);
-        // API 반환 데이터에 skippedUrls 설정 (이미 처리된 경로라 스킵)
-        parseMaterialResponse.setSkippedUrls(existingUrls);
-
-        // db에 이미 있지 않은 신규 url만 필터링
-        List<String> newUrls = allUrls.stream()
-            .filter(url -> !existingUrls.contains(url))
-            .toList();
-        // API 반환 데이터에 enqueuedUrls 설정 (큐에 담긴후 백그라운드 작업 실행 될 url들)
-        parseMaterialResponse.setEnqueuedUrls(newUrls);
-
-        for (String fileUrl : newUrls) {
-
-            MaterialParseJob materialParseJob = new MaterialParseJob();
-            materialParseJob.setUrl(fileUrl);
-
-            // 각 에듀넷 링크를 PARSE_JOB_STATUS 테이블에 저장
-            materialParseJobMapper.insertParseJob(materialParseJob);
-
-            try {
-                // Redis에 넣을 JSON 형태의 메시지 생성 (jobId + url 포함)
-                String jobPayload = String.format("{\"jobNo\":%d,\"url\":\"%s\"}",
-                    materialParseJob.getMaterialParseJobNo(),
-                    fileUrl);
-
-                // 레디스에 URL 하나씩 푸시
-                ListOperations<String, String> listOperations = stringRedisTemplate.opsForList();
-                listOperations.rightPush("parse:queue", jobPayload);
-            } catch (Exception e) {
-                log.error("Redis push 실패: jobNo={}, url={}, error={}",
-                    materialParseJob.getMaterialParseJobNo(), fileUrl, e.getMessage());
-
-                // 레디스 푸시실패시 해당 job을 Failed로 표시
-                materialParseJobMapper.updateParseJobStatusToFailed(materialParseJob.getMaterialParseJobNo(),
-                    e.getMessage());
-            }
-        }
-
-        return parseMaterialResponse;
     }
 
     /**
@@ -635,24 +598,21 @@ public class StudyService {
         boolean questCompleted = false;
 
         // 수정 전 학습이력이 '학습완료'상태가 아니고, 수정 후 학습이력이 '학습완료' 상태일 경우
-        // 오늘 달성한 도전과제가 있는지 확인하고, 없으면 도전과제 달성이력을 추가한다
+        // 경험치 추가 및 도전과제 달성여부 확인& 업데이트 메소드 호출
         if (!alreadyCompleted && "COMPLETED".equals(updateStudyLogRequest.getStatus())) {
 
-            // 오늘 날짜의 도전과제 수행 이력이 존재하는지 확인
-            DailyQuestUser existQuestUser = dailyQuestUserMapper.getTodayQuestUserByUserNoAndQuestNo(userNo, DailyQuestEnum.COMPLETED_DAILY_STUDY.getDailyQuestNo());
-
-            // 오늘의 도전과제 수행 이력이 존재하지 않을 때만
-            if (existQuestUser == null) {
-                DailyQuestUser dailyQuestUser = new DailyQuestUser();
-                dailyQuestUser.setDailyQuestNo(DailyQuestEnum.COMPLETED_DAILY_STUDY.getDailyQuestNo());
-                dailyQuestUser.setUserNo(userNo);
-
-                dailyQuestUserMapper.insertDailyQuestUser(dailyQuestUser);
-                log.info("오늘의 도전과제를 달성했습니다");
-            }
-
-            questCompleted = true;
+            ExpProcessingDto expProcessingDto = new ExpProcessingDto(
+                userNo,
+                ContentTypeEnum.STUDY.name(),
+                existedlog.getDailyStudyNo(),
+                20,
+                DailyQuestEnum.COMPLETED_DAILY_STUDY.getDailyQuestNo()
+            );
+            expProcessingService.expProcessing(expProcessingDto);
+            log.info("오늘의 도전과제를 달성했습니다");
         }
+
+        questCompleted = true;
 
         // 수정할 컬럼만 담은 VO객체로 수정 mapper 호출
         DailyStudyLog updateLog = modelMapper.map(updateStudyLogRequest, DailyStudyLog.class);
@@ -910,4 +870,161 @@ public class StudyService {
 
         return dto;
     }
+
+    /**
+     * 사용자의 일일 학습 이력 상세 목록을 조회한다.
+     *
+     * 페이징 처리(page, rows)에 따라 조회 범위를 계산하고,
+     * DB 조회 조건(Map)을 구성하여 Mapper를 호출한다.
+     *
+     * - SQL에서는 학습 로그(l) 기준으로 JOIN을 수행하며
+     *   퀴즈 통계(totalQuizCount, successedQuizCount)와
+     *   서술형 제출 여부(essaySubmitted)까지 한 번에 반환한다.
+     *
+     * @param userNo 조회할 사용자 번호
+     * @param page 현재 페이지 번호 (1부터 시작)
+     * @param rows 한 페이지당 조회할 행의 개수
+     * @return 사용자의 일일 학습 이력 상세 목록 리스트
+     */
+    public List<DailyStudyLogDetailResponse> getStudyLogsDetail(int userNo, int page, int rows){
+        log.info("getStudyLogsDetail 서비스 메소드 실행");
+
+        // (1) 페이지네이션 offset 계산
+        // ex) page=1 → offset=0, page=2 → offset=rows
+        int offset = (page - 1) * rows;
+
+        // (2) 조회 조건 맵 구성
+        // SQL에서 사용할 파라미터로 전달됨 (MyBatis의 @Param("condition") 매핑)
+        Map<String, Object> dailyStudyLogCondition = new HashMap<>();
+        dailyStudyLogCondition.put("rows", rows);
+        dailyStudyLogCondition.put("offset", offset);
+        dailyStudyLogCondition.put("order", "updatedDate");
+
+        // (3) Mapper 호출
+        // - SQL 내부에서 JOIN을 통해 아래 정보를 한 번에 조회
+        //   ① 학습 기본 정보 (제목, 상태, 카드 수)
+        //   ② 객관식 퀴즈 통계 (총 개수, 정답 개수)
+        //   ③ 서술형 퀴즈 제출 여부
+        List<DailyStudyLogDetailResponse> dailyStudyLogs = dailyStudyLogMapper.getStudyLogsDetailByUserNo(
+            userNo, dailyStudyLogCondition);
+
+        // (4) 결과 반환
+        return dailyStudyLogs;
+    }
+
+    /**
+     * 해당 사용자의 학습 이력 개수를 조회해서 반환하는 서비스
+     * @param userNo
+     * @return
+     */
+    public int getStudyLogCount(int userNo) {
+        log.info("getStudyLogCount 서비스 메소드 실행");
+
+        return dailyStudyLogMapper.getStudyLogsTotalCount(userNo);
+    }
+
+    /**
+     * 그룹의 학습자료 업로드 요청을 처리하는 서비스
+     * 파일을 스토리지에 저장 후, Redis 작업큐에 파일정보를 push하면
+     * 파이썬 워커가 해당 작업큐의 데이터로 파일에서 텍스트를 추출하여 반환(콜백 API 호출)
+     * - 파일을 Object Storage에 저장
+     * - DB의 dailyStudyMaterials 테이블에 데이터 추가 (원본파일명, 스토리지 경로)
+     * - JobStatusResponse 객체 생성 및 Redis 상태저장소에 저장
+     * - Redis 작업 큐에 push
+     * @param files
+     */
+    public List<String> uploadAdminMaterials(List<MultipartFile> files,  String school, int grade) {
+        List<String> jobIdList = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            try {
+                // 1. Object Storage에 자료 업로드
+                String fileUrl = objectStorageService.uploadAdminMaterial(file, school, grade);
+
+                // 2. DB에 파일 정보 저장 (dailyStudyMaterials테이블)
+                String filename =  file.getOriginalFilename();
+
+                DailyStudyMaterial material = new DailyStudyMaterial();
+                material.setSourceFilename(filename);
+                material.setFilePath(fileUrl);
+                material.setSchool(school);
+                material.setGrade(grade);
+                int lastSequence = dailyStudyMaterialMapper.getMaxSequenceBySchoolAndGrade(school, grade);
+                material.setSequence(lastSequence + 1);
+
+                dailyStudyMaterialMapper.insertStudyMaterial(material);
+
+                // 3. jobid 생성
+                String jobId = String.format("admin:material:%d", material.getDailyStudyMaterialNo());
+
+                // 4. JobStatusResponse 생성 및 Redis 저장
+                // Job 상태 객체 생성 (PROCESSING 상태)
+                JobStatusResponse<AdminParseMaterialResponse> jobStatus = JobStatusResponse.<AdminParseMaterialResponse>builder()
+                    .jobId(jobId)
+                    .status("PENDING")
+                    .progress(10)
+                    .message("관리자 학습자료 업로드 완료, 파싱 대기 중")
+                    .build();
+                // Redis 상태저장소에 저장
+                adminParseJobStatusStore.put(jobStatus);
+
+                // group:{groupNo}:jobs 세트에 jobId 추가 (보조 인덱스)
+                stringRedisTemplate.opsForSet().add("admin:jobs", jobId);
+
+                // 여기서 Set에도 TTL 적용
+                // 그룹 내 작업이 계속 들어오면 set이 유지되고, 일정 시간(15분) 동안 아무 작업도 없으면 자동 삭제
+                stringRedisTemplate.expire("admin:jobs", Duration.ofMinutes(30));
+
+                // 5. 작업큐에 push
+                StudyMaterialJobPayload payload = StudyMaterialJobPayload.builder()
+                    .jobId(jobId)
+                    .fileUrl(fileUrl)
+                    .school(school)
+                    .grade(grade)
+                    .dailyStudyMaterialNo(material.getDailyStudyMaterialNo())
+                    .build();
+                String payloadJson = objectMapper.writeValueAsString(payload);
+
+                stringRedisTemplate.opsForList().leftPush("queue:material:admin", payloadJson);
+
+                jobIdList.add(jobId);
+            } catch (IOException e) {
+                throw new AppException("첨부파일 저장 중 오류가 발생하였습니다");
+            }
+        }
+
+        return jobIdList;
+    }
+
+    public void handleAdminWorkerCallback2(WorkerMaterialCallbackRequest request) {
+        int dailyStudyMaterialNo = request.getDailyStudyMaterialNo();
+
+        // 1. 추출된 텍스트를 dailyStudyMaterial의 content에 저장
+        DailyStudyMaterial material = DailyStudyMaterial.builder()
+            .dailyStudyMaterialNo(dailyStudyMaterialNo)
+            .content(request.getContent())
+            .build();
+        dailyStudyMaterialMapper.updateStudyMaterial(material);
+
+        // dailyStudyMaterialNo로 material 조회
+        material = dailyStudyMaterialMapper.getStudyMaterialByNo(dailyStudyMaterialNo);
+
+        // JobStatus에 담을 프론트 반환 값 생성
+        AdminParseMaterialResponse response = AdminParseMaterialResponse.builder()
+            .dailyStudyMaterialNo(dailyStudyMaterialNo)
+            .materialTitle(material.getMaterialTitle())
+            .school(material.getSchool())
+            .grade(material.getGrade())
+            .sourceFilename(material.getSourceFilename())
+            .build();
+
+        // 2. 작업상태 업데이트
+        adminParseJobStatusStore.update(request.getJobId(), status -> {
+            status.setStatus("DONE");
+            status.setProgress(100);
+            status.setResult(null);
+            status.setMessage("텍스트 추출 완료");
+        });
+    }
+
 }

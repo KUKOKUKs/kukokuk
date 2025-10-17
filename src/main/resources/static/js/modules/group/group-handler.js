@@ -24,7 +24,7 @@ export function setGroupList(groups, $groupSearchListComponent) {
                             </div>
     
                             <div class="group_info motto_info">
-                                <span class="max_content">급훈 [</span>
+                                <span class="w_max_content">급훈 [</span>
                                 <p class="motto text_ellipsis">${group.motto ?? '-'}</p>
                                 <span>]</span>
                             </div>

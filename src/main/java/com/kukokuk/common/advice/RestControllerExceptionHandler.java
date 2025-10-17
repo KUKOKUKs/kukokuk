@@ -44,10 +44,10 @@ public class RestControllerExceptionHandler {
         return buildResponse(400, "입력 값이 올바르지 않습니다: " + ex.getMessage());
     }
 
-    // 인증 실패
+    // 인가 실패
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
-        return buildResponse(403, "권한이 없습니다: " + ex.getMessage());
+        return buildResponse(403, "접근 권한이 없습니다: " + ex.getMessage());
     }
 
     // 범용 요청값 오류 처리

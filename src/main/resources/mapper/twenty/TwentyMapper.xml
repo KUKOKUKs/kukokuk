@@ -34,7 +34,7 @@
     <!--
        public void updateRoomStaus(Map<String, Object> map);
     -->
-    <update id="updateRoomStaus">
+    <update id="updateRoomStatus">
         UPDATE
             KUKOKUK_TWENTY_ROOMS
         SET
@@ -86,5 +86,103 @@
             AND DATE(CREATED_DATE) = CURDATE()
         ORDER BY CREATED_DATE DESC
         LIMIT  #{limitCnt}
+    </select>
+    <!--
+        public void insertTwentyLog(SendStdMsg msg);
+        useGeneratedKeys="true" keyProperty="logNo"
+        이렇게 사용하면 Oracle에서 사용하던 select keyt와 동일한 효과를 가진다.
+    -->
+    <insert id="insertTwentyLog" parameterType="SendStdMsg" useGeneratedKeys="true" keyProperty="logNo" >
+        INSERT INTO KUKOKUK_TWENTY_LOGS
+            (USER_NO,
+             TWENTY_ROOM_NO,
+             TYPE,
+             MESSAGE)
+        VALUES (#{userNo},
+                #{roomNo},
+                #{type},
+                #{content})
+    </insert>
+    <!--
+       public Integer getMsgCntByRoomNo(int roomNo);
+    -->
+    <select id="getMsgCntByRoomNo" resultType="Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            KUKOKUK_TWENTY_LOGS
+        WHERE
+            TWENTY_ROOM_NO = #{roomNo}
+    </select>
+
+    <!--
+        public SendStdMsg getRecentMsgByRoomNo(int  roomNo);
+    -->
+    <select id="getRecentMsgByRoomNo" resultType="SendStdMsg">
+        SELECT
+            TWENTY_LOG_NO           AS logNo
+            ,TYPE                   AS type
+            ,MESSAGE                AS content
+            ,USER_NO                AS userNo
+            ,TWENTY_ROOM_NO         AS roomNo
+        FROM
+            KUKOKUK_TWENTY_LOGS
+        WHERE
+            TWENTY_ROOM_NO = #{roomNo}
+        ORDER BY CREATED_DATE DESC
+        LIMIT 1
+    </select>
+
+    <!--
+         public void updateTwentyRoomResult(TwentyRoom room);
+    -->
+    <update id="updateTwentyRoomResult" parameterType="TwentyRoom">
+        UPDATE
+            KUKOKUK_TWENTY_ROOMS
+        <set>
+            TRY_COUNT = #{tryCnt}
+            ,IS_SUCCESS = #{isSuccess}
+            <if test="'Y'.equals(isSuccess) ">
+                ,WINNER_NO = #{winnerNo}
+            </if>
+        </set>
+        WHERE
+            TWENTY_ROOM_NO = #{roomNo}
+    </update>
+
+    <!--
+        public void updateTwentyLog(SendStdMsg msg);
+    -->
+    <update id="updateTwentyLog" parameterType="SendStdMsg">
+    UPDATE
+        KUKOKUK_TWENTY_LOGS
+    <set>
+        MESSAGE = #{content}
+        <if test="answer != null"> <!-- 질문인 경우 -->
+            ,ANSWER =#{answer}
+        </if>
+        <if test="isSuccess != null"> <!-- 정답인 경우 -->
+            ,IS_SUCCESS = #{isSuccess}
+        </if>
+    </set>
+    WHERE
+        TWENTY_LOG_NO = #{logNo}
+    </update>
+
+    <!--
+        public List<SendStdMsg>getTwentyLogList(int roomNo);
+     -->
+    <select id="getTwentyLogList" resultType="SendStdMsg">
+        SELECT
+            L.TWENTY_LOG_NO         AS logNo
+            ,L.USER_NO              AS userNo
+            ,L.TYPE                 AS type
+            ,L.MESSAGE              AS content
+            ,U.NICKNAME             AS nickName
+        FROM
+            KUKOKUK_TWENTY_LOGS L
+        JOIN KUKOKUK_USERS U ON L.USER_NO = U.USER_NO
+        WHERE
+            TWENTY_ROOM_NO=#{roomNo}
     </select>
 </mapper>

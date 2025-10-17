@@ -92,13 +92,14 @@
                     </div>
                 </div>
 
-                <!--/* 북마크 추가/제거 버튼 */-->
+
+                <!-- 북마크 추가/제거 버튼 -->
                 <button type="button"
                         class="bookmark_btn tooltip"
-                        th:data-bookmarked="${result.bookmarked ?: false}"
-                        th:data-label="|북마크 ${(result.bookmarked ?: false) ? '제거' : '추가'}|">
+                        th:data-bookmarked="${result.bookmarked}"
+                        th:data-label="|북마크 ${result.bookmarked == 'Y' ? '제거' : '추가'}|">
                     <iconify-icon class="icon title_font"
-                                  th:classappend="${(result.bookmarked ?: false) ? 'color_yellow' : 'color_border'}"
+                                  th:classappend="${result.bookmarked == 'Y' ? 'color_yellow' : 'color_border'}"
                                   icon="material-symbols:bookmark-star"></iconify-icon>
                 </button>
             </div>

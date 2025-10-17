@@ -186,7 +186,7 @@ export async function apiUpdateStudyLog(studyLogNo, requestBody = {}) {
             url: `/api/studies/logs/${studyLogNo}`,
             type: 'PUT',
             contentType: 'application/json',
-            data: JSON.stringify({}), // 바디 비워서 updatedDate만 수정
+            data: JSON.stringify(requestBody), // 바디 비워서 updatedDate만 수정
             dataType: 'json',
         });
 

@@ -1,6 +1,8 @@
 package com.kukokuk.domain.dictation.controller.view;
 
 
+import com.kukokuk.common.constant.ContentTypeEnum;
+import com.kukokuk.common.constant.DailyQuestEnum;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
@@ -8,6 +10,8 @@ import com.kukokuk.domain.dictation.dto.DictationResultSummaryDto;
 import com.kukokuk.domain.dictation.service.DictationService;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationSession;
+import com.kukokuk.domain.exp.dto.ExpProcessingDto;
+import com.kukokuk.domain.exp.service.ExpProcessingService;
 import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.security.SecurityUser;
 import java.util.ArrayList;
@@ -38,7 +42,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class DictationController {
 
     private final DictationService dictationService;
-    private final UserService userService;
+    private final ExpProcessingService expProcessingService;
 
     final @ModelAttribute("dictationQuestions")
     public List<DictationQuestion> initQuestions() {
@@ -310,6 +314,17 @@ public class DictationController {
             // 4) 세션 정리
             sessionStatus.setComplete();
             log.info("[/finish] 쪽에서 세션 초기화 완료");
+
+            // 5) 경험치 작업
+            ExpProcessingDto expProcessingDto = new ExpProcessingDto(
+                userNo,                                             // 사용자 번호
+                ContentTypeEnum.DICTATION.name(),                   // 컨텐츠 타입
+                sessionNo,                                          // contentNo(임시)
+                dictationService.getCorrectCount(sessionNo)*3,      // EXP(임시)
+                DailyQuestEnum.DICTATION_PLAY.getDailyQuestNo()     // 일일 도전과제 식별자 번호(없으면 null)
+            );
+            expProcessingService.expProcessing(expProcessingDto);
+            log.info("[/finish] 쪽에서 경험치 반영 완료 userNo: {}, sessionNo: {}", userNo, sessionNo);
 
             return "redirect:/dictation/result?dictationSessionNo=" + sessionNo;
         }

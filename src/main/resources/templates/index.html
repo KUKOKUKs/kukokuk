@@ -16,7 +16,9 @@
 
                 <!--/* 로그인이 되었고 그룹에 속해 있을 경우 일반/우리반 토글 스위치 노출 */-->
                 <div th:if="${isAuth and user?.groupNo != null}"
-                     class="group_toggle_btn on">
+                     class="switch_toggle_btn on"
+                     data-before="일반"
+                     data-after="우리반">
                     <div class="toggle_switch"></div>
                 </div>
             </div>
@@ -49,7 +51,6 @@
                 <!--/* 요청 기본 UI 세팅 */-->
                 <div class="component base_list_component">
                     <div class="loading_spinner pd_base">
-                        <div class="spinner"></div>
                         <p class="info" style="--percent: 0%;">맞춤 학습 자료 요청 중...</p>
                     </div>
                 </div>

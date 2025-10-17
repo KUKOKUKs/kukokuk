@@ -5,9 +5,9 @@ import com.kukokuk.common.dto.JobStatusResponse;
 import com.kukokuk.common.exception.BadRequestException;
 import com.kukokuk.common.store.JobStatusStore;
 import com.kukokuk.common.util.ResponseEntityUtils;
+import com.kukokuk.domain.study.dto.DailyStudyLogDetailResponse;
 import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
 import com.kukokuk.domain.study.dto.ParseMaterialRequest;
-import com.kukokuk.domain.study.dto.UserStudyRecommendationDto;
 import com.kukokuk.domain.study.service.StudyAsyncService;
 import com.kukokuk.domain.study.service.StudyService;
 import com.kukokuk.domain.study.vo.DailyStudyEssayQuizLog;
@@ -50,33 +50,12 @@ public class ApiStudyController {
     private final JobStatusStore<DailyStudySummaryResponse> studyJobStatusStore;
 
     /**
-     * POST /api/studies/parse-materials
-     * 에듀넷 경로를 전달하면 비동기 큐로 파싱작업을 수행한 후 원본데이터를 DB에 저장하는 API
-     * 요청 바디 : { urls : [에듀넷 url 경로 리스트]}
-     * 응답 바디 : { skippedUrls : 스킵된 작업(중복 url) , enqueuedUrls : 큐에 저장되어 진행예정인 작업}
-     */
-    @PostMapping("/parse-materials")
-    public ResponseEntity<ApiResponse<ParseMaterialResponse>> parseMaterialByEdunetUrl(@RequestBody
-    ParseMaterialRequest request) {
-
-        // 파이썬 서버를 호출하는 서비스 메소드 호출
-        ParseMaterialResponse parseMaterialResponse = studyService.createMaterial(request);
-
-        // 전달받은 응답데이터를 응답통일 객체의 data부분에 설정
-        ApiResponse<ParseMaterialResponse> apiResponse = ApiResponse.success(parseMaterialResponse);
-
-        return ResponseEntity
-            .ok()
-            .body(apiResponse);
-    }
-
-    /**
      * POST /api/studies 아직 사용할 일 없어서 추후 수정 예정
      */
     @PostMapping()
     public ResponseEntity<ApiResponse> createStudy() {
 
-        studyService.createDailyStudy(3, 1);
+        studyService.createDailyStudyByAi(3, 1);
 
         return ResponseEntity
             .ok()
@@ -266,7 +245,7 @@ public class ApiStudyController {
     @GetMapping("/status/{jobId}")
     public ResponseEntity<ApiResponse<JobStatusResponse<?>>> getStudiesByUserStatus(
         @PathVariable("jobId") String jobId) {
-        log.info("ApiHomeController getStudiesByUserStatus() 컨트롤러 실헹");
+        log.info("ApiStudyController getStudiesByUserStatus() 컨트롤러 실헹");
 
         // 상태 조회
         JobStatusResponse<?> status = studyJobStatusStore.get(jobId);
@@ -276,5 +255,55 @@ public class ApiStudyController {
         }
 
         return ResponseEntityUtils.ok(status);
+    }
+
+    /**
+     * [GET] /api/studies/logs
+     *
+     * 학습 히스토리 화면에서 사용자별 학습 이력(상세 정보 포함)을 조회
+     *
+     * 요청 파라미터:
+     *  - page : 현재 페이지 번호 (기본값 1)
+     *  - rows : 한 페이지당 행 수 (기본값 10)
+     *
+     * 응답 구조:
+     * {
+     *   "success": true,
+     *   "status": 200,
+     *   "message": "학습 이력 목록 조회 성공",
+     *   "data": [
+     *     {
+     *       "dailyStudyLogNo": 1,
+     *       "dailyStudyNo": 23,
+     *       "dailyStudyTitle": "속담 익히기 1일차",
+     *       "status": "COMPLETED",
+     *       "startedDate": "2025-10-09T13:20:00",
+     *       "updatedDate": "2025-10-09T14:10:00",
+     *       "totalCardCount": 5,
+     *       "completedCardCount": 5,
+     *       "totalQuizCount": 3,
+     *       "successedQuizCount": 2,
+     *       "essaySubmitted": true,
+     *       "difficulty": 3
+     *     }
+     *   ]
+     * }
+     *
+     * @param securityUser 현재 로그인한 사용자
+     * @param page 페이지 번호 (기본값 1)
+     * @param rows 한 페이지당 행 수 (기본값 10)
+     * @return 학습 이력 목록을 포함한 표준 ApiResponse
+     */
+    @GetMapping("/logs")
+    public ResponseEntity<ApiResponse<List<DailyStudyLogDetailResponse>>> getStudyLogs(
+        @AuthenticationPrincipal SecurityUser securityUser,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int rows
+    ){
+        log.info("ApiStudyController getStudyLogs() 컨트롤러 실헹");
+
+        List<DailyStudyLogDetailResponse> logs = studyService.getStudyLogsDetail(securityUser.getUser().getUserNo(), page, rows);
+
+        return ResponseEntityUtils.ok("학습 이력 목록 조회 성공", logs);
     }
 }

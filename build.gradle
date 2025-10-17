@@ -76,8 +76,13 @@ dependencies {
 	// .env로 환경변수 관리
 	implementation("io.github.cdimascio:java-dotenv:5.2.2")
 
+	// AWS SDK v1 계열
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.772'
 	//WebSocket 및 STOMP 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// Redis 세션 저장소 (Spring Session)
+	/*implementation 'org.springframework.session:spring-session-data-redis'*/
 
 }
 

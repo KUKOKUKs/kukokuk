@@ -1,361 +1,403 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>스무고개 게임방</title>
+    <title>스무고개</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+      :root {
+        --brand: #b8000d;
+        --gray-100: #f7f8fa;
+        --gray-200: #f0f0f0;
+        --gray-300: #e5e7eb;
+        --gray-500: #999;
+        --text: #222;
+        --blue: #007bff;
+        --red: #f44336;
+        --green: #4caf50;
+        --yellow: #ffc107;
+      }
+
+      html, body {
+        height: 100%;
+        margin: 0;
+        overflow: visible; /* ✅ 스크롤 막힘 해제 */
+        font-family: 'Nanum Gothic', sans-serif;
+        background: linear-gradient(135deg, #fff8f0, #f0f7ff);
+        color: var(--text);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .page_container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 12px 24px;
+        gap: 12px;
+        transform: scale(0.9);
+        transform-origin: top center;
+      }
+
+      .page_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 20px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        font-weight: bold;
+      }
+
+      .user_info {
+        font-size: 0.9rem;
+        color: var(--gray-500);
+      }
+
+      .room_container {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 20px;
+        height: calc(100vh - 120px);
+        min-height: 0;
+      }
+
+      .left_panel {
+        display: flex;
+        flex-direction: column;
+        background: #ffffffcc;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        backdrop-filter: blur(6px);
+        min-height: 0;
+      }
+
+      #board-area {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        border-radius: 12px;
+        background: #fdfdfd;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        scrollbar-width: thin;
+      }
+
+      #board-area::-webkit-scrollbar { width: 8px; }
+      #board-area::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 8px;
+      }
+      #board-area::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+      /* ✅ 턴 정보 패널 */
+      #turn-info-panel {
+        display: none;
+        margin: 10px 0;
+        padding: 10px;
+        background: #fffbe6;
+        border-radius: 8px;
+        border: 1px solid #ffecb3;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1rem;
+        color: #333;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+
+      #turn-holder-name {
+        color: #1976d2;
+      }
+
+      #timer-display {
+        color: #d32f2f;
+        font-weight: 900;
+      }
+
+      .message-line {
+        display: flex;
+        flex-direction: column;
+        max-width: 75%;
+        padding: 6px;
+        word-break: break-word;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {opacity: 0; transform: translateY(5px);}
+        to {opacity: 1; transform: translateY(0);}
+      }
+
+      .my-message { align-self: flex-end; }
+      .other-message { align-self: flex-start; }
+
+      .message-bubble {
+        padding: 8px 12px;
+        border-radius: 10px;
+        line-height: 1.5;
+        font-size: 0.95rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+
+      .question-bubble { background-color: #cce3ff; border-left: 4px solid var(--blue); }
+      .answer-bubble { background-color: #ffd6d6; border-left: 4px solid var(--red); }
+      .normal-bubble { background-color: #f1f1f1; border-left: 4px solid #ccc; }
+
+      .sender {
+        font-weight: bold;
+        font-size: 0.85rem;
+        color: #555;
+        margin-bottom: 4px;
+      }
+
+      .button_row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .big_button {
+        flex: 1;
+        height: 60px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+
+      #teacher-o-btn { background: var(--green); }
+      #teacher-x-btn { background: var(--red); }
+      #teacher-end-btn { background: #9c27b0; }
+      #teacher-start-btn { background: var(--blue); }
+
+      .big_button:disabled {
+        background: var(--gray-300) !important;
+        color: var(--gray-500) !important;
+        border: 1px solid var(--gray-300) !important;
+        opacity: 0.7 !important;
+        cursor: not-allowed !important;
+        box-shadow: none !important;
+      }
+
+      #teacher-answer-display {
+        margin-left: 14px;
+        padding: 10px 14px;
+        background: #fff8dc;
+        border-radius: 10px;
+        border: 1px solid #f0d879;
+        font-weight: bold;
+        color: #444;
+        font-size: 1rem;
+        min-width: 150px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      }
+
+      .student_controls {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+      }
+
+      .input_group {
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border-radius: 8px;
+        padding: 6px 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+
+      .input_label { font-weight: 700; margin-right: 8px; color: #555; }
+      .text_input { flex: 1; border: none; font-size: 1rem; outline: none; padding: 6px; }
+
+      .arrow_button {
+        border: none;
+        background: #007bff;
+        color: #fff;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .raise_button {
+        border: none;
+        background: var(--yellow);
+        color: #333;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+      }
+
+      .participants_panel {
+        display: flex;
+        flex-direction: column;
+        background: #ffffffcc;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        backdrop-filter: blur(6px);
+        height: calc(100vh - 120px);
+      }
+
+      .participants_header {
+        font-weight: bold;
+        text-align: center;
+        font-size: 1.1rem;
+        color: #4b0082;
+        margin-bottom: 10px;
+      }
+
+      .participants_list {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        background: #fafafa;
+        border-radius: 8px;
+        padding: 10px;
+        scrollbar-width: thin;
+      }
+
+      .system_message {
+        position: fixed;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2000;
+        display: none;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-weight: 700;
+        background: #fff3cd;
+        color: #7a5d00;
+        border: 1px solid #ffeeba;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      }
+         /* ✅ 참여자 목록 스타일 */
+       .participants_user {
+         padding: 8px 12px;
+         border-radius: 6px;
+         background: #f4f4f4;
+         color: #333;
+         font-weight: 500;
+         transition: all 0.2s ease;
+       }
+
+      /* ✅ 참여자 입장 시 색상 강조 */
+      .participants_user-join {
+        padding: 8px 12px;
+        border-radius: 6px;
+        background: #e3f2fd;
+        color: #0d47a1;
+        font-weight: 700;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+      }
+
+
+    </style>
 </head>
-<style>
-  /* 레이아웃 기본 */
-  :root {
-    --brand: #b8000d;
-    --gray-100: #f7f8fa;
-    --gray-200: #f0f0f0;
-    --gray-300: #e5e7eb;
-    --gray-500: #999;
-    --text: #222;
-  }
 
-  /* 1. html과 body가 전체 화면 높이를 사용하도록 설정 */
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    font-family: Arial, sans-serif;
-    background: #fff;
-    color: var(--text);
-    display: flex; /* flex 컨테이너로 변경 */
-    flex-direction: column; /* 자식 요소를 세로로 배치 */
-  }
-
-  /* page-container 추가 (body의 자식, room_container의 부모) */
-  /* 이 클래스를 HTML의 body 바로 안쪽 div에 적용해야 합니다. */
-  .page-container {
-    flex: 1; /* body의 남은 세로 공간을 모두 차지 */
-    display: flex;
-    flex-direction: column;
-    height: 100%; /* body 높이를 상속받아 전체 높이 사용 */
-  }
-
-  .page_header {
-    padding: 0.8rem 1rem;
-    border-bottom: 1px solid var(--gray-300);
-    font-weight: 700;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .user_info {
-    font-size: 0.9rem;
-    color: var(--gray-500);
-  }
-
-  .room_container {
-    flex: 1; /* 2. page_header를 제외한 모든 세로 공간을 차지 */
-    display: grid;
-    grid-template-columns: 3fr 1fr; /* 3. 가로 비율을 3:1로 조정 */
-    gap: 12px;
-    padding: 12px;
-    min-height: 0; /* flex/grid 아이템의 내용 넘침 방지 */
-  }
-
-  .left_panel {
-    border: 2px solid #000;
-    border-radius: 6px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    background: #fff;
-    min-height: 0;
-  }
-
-  .board_area {
-    flex: 1; /* 4. left_panel 내부의 남은 공간을 모두 차지 */
-    border: 4px solid #000;
-    border-radius: 6px;
-    background: #fff;
-    padding: 24px;
-    overflow: auto; /* 내용이 넘치면 스크롤 생성 */
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .bullet_list {
-    margin: 0.6rem 0 0 0;
-    padding-left: 1.1rem;
-  }
-
-  .bullet_list li {
-    margin: 0.35rem 0;
-  }
-
-  /* 채팅 메시지 스타일 */
-  .message-line {
-    max-width: 70%;
-    padding: 8px 12px;
-    border-radius: 12px;
-    line-height: 1.5;
-  }
-
-  .my-message {
-    background-color: #FFEB33;
-    align-self: flex-end;
-  }
-
-  .other-message {
-    background-color: #f1f1f1;
-    align-self: flex-start;
-  }
-
-  .system_message {
-    color: #888;
-    font-style: italic;
-    text-align: center;
-    align-self: center;
-    background: none;
-    padding: 4px;
-    font-size: 0.9em;
-  }
-
-  .sender {
-    font-weight: bold;
-    font-size: 0.9em;
-    margin-bottom: 4px;
-    color: #555;
-  }
-
-  /* 오른쪽 참가자 영역 */
-  .participants_panel {
-    border: 2px solid #000;
-    border-radius: 6px;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    gap: 10px;
-    min-height: 0;
-  }
-
-  .participants_header {
-    border: 2px solid #000;
-    border-radius: 4px;
-    padding: 8px 10px;
-    text-align: center;
-    font-weight: 700;
-    background: #fff;
-  }
-
-  .participants_list {
-    flex: 1; /* 5. participants_panel 내부의 남은 공간을 모두 차지 */
-    border: 2px solid #000;
-    border-radius: 4px;
-    padding: 10px;
-    overflow: auto; /* 내용이 넘치면 스크롤 생성 */
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .participant_item {
-    color: #6aa84f;
-    font-weight: 700;
-  }
-
-  .participants_user-join {
-    color: #6aa84f;
-  }
-
-  .participants_user {
-    color: gray;
-  }
-
-  /* 하단 컨트롤 (교사) */
-  .teacher_controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 12px;
-  }
-
-  .answer_box {
-    border: 2px solid #000;
-    border-radius: 4px;
-    padding: 10px;
-    min-width: 160px;
-    font-weight: 700;
-    background: #fff;
-  }
-
-  .button_row {
-    display: flex;
-    gap: 16px;
-  }
-
-  .big_button {
-    width: 160px;
-    height: 70px;
-    border: 2px solid #000;
-    border-radius: 6px;
-    background: #fff;
-    font-size: 1.25rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .big_button:hover {
-    background: var(--gray-100);
-  }
-
-  /* 하단 컨트롤 (학생) */
-  .student_controls {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    gap: 10px;
-    margin-top: 12px;
-    align-items: center;
-  }
-
-  .input_group {
-    display: grid;
-    grid-template-columns: 80px 1fr 48px;
-    gap: 10px;
-    align-items: center;
-    grid-column: 1 / 2;
-  }
-
-  .input_label {
-    font-weight: 700;
-    text-align: center;
-  }
-
-  .text_input {
-    height: 36px;
-    border: 2px solid #000;
-    border-radius: 6px;
-    padding: 0 10px;
-    font-size: 1rem;
-  }
-
-  .arrow_button {
-    width: 36px;
-    height: 36px;
-    border: 2px solid #000;
-    border-radius: 50%;
-    background: #fff;
-    font-size: 18px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .raise_button {
-    height: 82px;
-    border: 2px solid #000;
-    border-radius: 6px;
-    background: #fff;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    grid-column: 2 / 3;
-    grid-row: 1 / 3;
-  }
-
-  @media (max-width: 980px) {
-    .room_container {
-      grid-template-columns: 1fr;
-    }
-
-    .participants_panel {
-      order: -1;
-    }
-  }
-</style>
 <body>
 <div class="page_container"
      th:data-user-no="${userNo}"
-     th:data-room-no="${roomNo}">
+     th:data-room-no="${roomNo}"
+     th:data-ws-url="${wsUrl}"
+     th:data-access-token="${token}">
 
     <div class="page_header">
-        <span>스무고개 게임방</span>
+        <span>🎮 스무고개</span>
         <div class="user_info">
             <span sec:authentication="principal.username"></span>
-            (<span sec:authorize="hasRole('TEACHER')">교사</span><span
-            sec:authorize="hasRole('STUDENT')">학생</span>)님으로 로그인됨
+            (<span sec:authorize="hasRole('TEACHER')">교사</span>
+            <span sec:authorize="hasRole('STUDENT')">학생</span>)
         </div>
     </div>
 
     <div class="room_container">
         <div class="left_panel">
-            <!-- 채팅 영역 표시-->
-            <div class="board_area" id="board-area">
-                <div class="system_message">
+            <div class="system_message"></div>
 
-                </div>
+            <!-- ✅ 채팅 영역 -->
+            <div class="board_area" id="board-area"></div>
+
+            <!-- ✅ 타이머/턴 표시 -->
+            <div id="turn-info-panel">
+                <strong id="turn-holder-name">---</strong> 님의 턴입니다 ⏱
+                (<span id="timer-display">40</span>초 남음)
             </div>
 
-            <!-- 교사 버튼 -->
+            <!-- ✅ 교사용 컨트롤 -->
             <div class="teacher_controls" id="teacher-controls" sec:authorize="hasRole('TEACHER')">
                 <div class="button_row">
-                    <button class="big_button" id="teacher-o-btn">O</button>
-                    <button class="big_button" id="teacher-x-btn">X</button>
-                    <button class="big_button" id="teacher-end-btn">게임종료</button>
-                    <button class="big_button" id="teacher-start-btn">게임시작</button>
-                </div>
-                <div class="answer_box" id="answer-box">정답 : <span
-                    th:text="${correctAnswer}"></span></div>
-            </div>
-
-            <!-- 타이머 -->
-            <div id="turn-info-panel" style="display: none; text-align: center; margin-top: 12px;">
-                <h3><span id="turn-holder-name"></span>님의 차례</h3>
-                <div style="font-size: 3rem; font-weight: bold; color: #b8000d;" id="timer-display">
-                    40
+                    <button class="big_button" id="teacher-o-btn" disabled>O</button>
+                    <button class="big_button" id="teacher-x-btn" disabled>X</button>
+                    <button class="big_button" id="teacher-end-btn" disabled>종료</button>
+                    <button class="big_button" id="teacher-start-btn" disabled>시작</button>
+                    <span id="teacher-answer-display" th:text="'정답: ' + ${answer}">정답: ???</span>
                 </div>
             </div>
 
-            <!-- 학생 버튼-->
+            <!-- ✅ 학생용 컨트롤 -->
             <div class="student_controls" id="student-controls" sec:authorize="hasRole('STUDENT')">
                 <div class="input_group">
-                    <div class="input_label">질문입력</div>
-                    <input class="text_input" id="question-input" placeholder="질문을 입력하세요"/>
-                    <button class="arrow_button" id="send-question">↗</button>
+                    <div class="input_label">질문</div>
+                    <input class="text_input" id="question-input" placeholder="질문을 입력하세요" disabled/>
+                    <button class="arrow_button" id="send-question" disabled>↗</button>
                 </div>
                 <div class="input_group">
-                    <div class="input_label">정답 입력</div>
-                    <input class="text_input" id="answer-input" placeholder="정답을 입력하세요"/>
-                    <button class="arrow_button" id="send-answer">↗</button>
+                    <div class="input_label">정답</div>
+                    <input class="text_input" id="answer-input" placeholder="정답을 입력하세요" disabled/>
+                    <button class="arrow_button" id="send-answer" disabled>↗</button>
                 </div>
-                <button class="raise_button" id="raise-hand">손들기</button>
+                <button class="raise_button" id="raise-hand" disabled>✋ 손들기</button>
             </div>
         </div>
 
         <aside class="participants_panel">
-            <div class="participants_header">참여자 명단</div>
+            <div class="participants_header">👥 참여자 명단</div>
             <div class="participants_list" id="participants-list">
                 <div class="participants_user"
-                     th:each="user :${list}"
+                     th:each="user : ${list}"
                      th:text="${user.nickName}"
                      th:data-user-no="${user.userNo}"
                      th:data-user-status="${user.status}">
-                    1
                 </div>
-
             </div>
         </aside>
     </div>
 </div>
-</body>
 
 <th:block layout:fragment="script">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-    <script type="module" th:src="@{/js/modules/twenty/twentyGameRoom.js}"></script>
+    <script src="/js/modules/twenty/twentyGameRoom.js"></script>
 </th:block>
+</body>
 </html>

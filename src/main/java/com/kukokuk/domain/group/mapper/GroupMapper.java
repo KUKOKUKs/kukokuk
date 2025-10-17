@@ -4,9 +4,44 @@ import com.kukokuk.domain.group.vo.Group;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface GroupMapper {
+
+    /**
+     * 그룹 정보를 전달받아 그룹 삭제
+     * @param group 삭제할 그룹 정보
+     */
+    void deleteGroup(Group group);
+
+    /**
+     * 그룹 정보를 전달받아 그룹 수정
+     * @param group 수정할 그룹 정보
+     */
+    void updateGroup(Group group);
+
+    /**
+     * 그룹 정보를 전달받아 그룹 등록
+     * @param teacherNo 교사 권한 사용자 번호
+     * @param group 그룹 정보
+     */
+    void insertGroup(@Param("teacherNo") int teacherNo
+        , @Param("group") Group group);
+
+    /**
+     * 그룹 번호로 그룹 정보 조회
+     * @param groupNo 그룹 번호
+     * @return 그룹 정보
+     */
+    Group getGroupByGroupNo(int groupNo);
+
+    /**
+     * 사용자 번호로 그룹 목록 정보 조회
+     * @param teacherNo 사용자 번호(교사권한)
+     * @return 그룹 목록 정보(최신순)
+     */
+    List<Group> getTeacherGroups(int teacherNo);
 
     /**
      * 조건에 맞는 그룹 목록 조회

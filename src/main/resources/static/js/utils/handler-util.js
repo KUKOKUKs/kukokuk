@@ -10,11 +10,36 @@ export const middleSchool = setGradeOptions(3);
  * @returns 생성된 옵션 리스트(string)
  */
 export function setGradeOptions(count) {
+    console.log("setGradeOptions() 실행");
+
     let options = '';
     for (let i = 1; i <= count; i++) {
         options += `<option value="${i}">${i}학년</option>`;
     }
+
     return options;
+}
+
+/**
+ * FormData 모든 정보 로그
+ * @param formData FormData
+ */
+export function consoleLogForm(formData) {
+    // entries()는 [key, value] 배열을 순회할 수 있게 해줌
+    for (const [key, value] of formData.entries()) {
+        console.log(`폼 데이터: ${key} = ${value}`);
+    }
+}
+
+/**
+ * 숫자만 입력 가능하도록 인풋 요소(제이쿼리 선택자)를 전달받아
+ * 값을 숫자만 남겨 적용
+ * @param $inputElement 숫자 입력만 되도록 적용시킬 인풋 요소(제이쿼리 선택자)
+ */
+export function setOnlyDigit($inputElement) {
+    console.log("setOnlyDigit() 실행");
+    const value = $inputElement.val().replace(/[^0-9]/g, "").trim(); // 숫자만 남김
+    $inputElement.val(value); // 해당 인풋 요소값 변경
 }
 
 /**
@@ -105,7 +130,7 @@ export function setPagination(paging, $parentElement) {
 
         // 항상 새로운 params 객체 생성(중복/누적 처리된 키가 적용되지 않도록)
         const makeParams = (pageNum) => {
-            const params = new URLSearchParams(location.search);
+            const params = new URLSearchParams(location.search); // 기존 쿼리스트링 유지
             params.set("page", pageNum); // 페이지는 새로 덮어쓰기
             return params.toString();
         };
@@ -145,7 +170,7 @@ export function setPagination(paging, $parentElement) {
                 // 현재 페이지인 버튼
                 $paging.append(`
                     <li class="page_btn">
-                        <span class="page_link current">${num}</span>
+                        <span class="current">${num}</span>
                     </li>
                 `);
             }
