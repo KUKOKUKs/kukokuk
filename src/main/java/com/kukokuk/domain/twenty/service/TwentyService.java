@@ -1,6 +1,8 @@
 package com.kukokuk.domain.twenty.service;
 
 /*import com.kukokuk.domain.twenty.util.RedisLockManager;*/
+import com.kukokuk.domain.exp.dto.ExpProcessingDto;
+import com.kukokuk.domain.exp.service.ExpProcessingService;
 import com.kukokuk.domain.group.dto.GruopUsersDto;
 import com.kukokuk.domain.group.service.GroupService;
 import com.kukokuk.domain.twenty.dto.RoomUser;
@@ -27,6 +29,7 @@ public class TwentyService {
 
     private final TwentyMapper twentyMapper;
     private final GroupService  groupService;
+    private final ExpProcessingService expProcessingService;
 
     /**
      * 교사가 "게임 종료" 버튼 누를 때,
@@ -99,7 +102,6 @@ public class TwentyService {
 
     /**
      * 게임방의 참여자 리스트를 조회. "참여자 명단"에 뿌릴 때 사용.
-     *
      * @param roomNo
      * @return 참여자 리스트 - 이름, userNo, status
      */
@@ -245,12 +247,54 @@ public class TwentyService {
     }
 
     /**
-     * 1. 게임의 승패 여부에 따라, 경험치를 달리 부여.
-     * 2. 모든 유저에게 경험치를 부여하는가?
+     * 경험치 부여하는 메소드 - expProcessing(ExpProcessingDto expProcessingDto) 사용
+     * ++ExpProcessingDto++
+     * - int userNo
+     * - String contenttype("twenty")
+     * - Integer contentNo(logNo)
+     * - Integer expGained(10,30,60) // 획득 경험치
      *
+     * ++로직++
+     * 1. roomNo로 이 게임방의 모든 참여자 리스트를 조회.
+     * 2. roomNo로 게임 결과 데이터 반환
+     * 3. 게임 결과 데이터에서 teacherNo와 모든 참여자 리스트에서 동일한 userNo를 뺀 리스트로 변환.
+     * 4. 다음 게임 승리 여부에 따라, 경험치 부여 로직을 수행.
+     *    단, 승리 시, 승리자에게 60의 경험치를 부여하도록 한다.
      * @param roomNo
      */
     public void addExp(int roomNo){
+        ExpProcessingDto dto = new  ExpProcessingDto();
+        List<RoomUser> roomUsers = twentyMapper.getTwentyPlayerList(roomNo);
+        TwentyResult result = twentyMapper.getTwentyRoomResult(roomNo);
+
+        // 학생들만 있는 리스트 만들기
+        int teacherNo = result.getTeacherNo();
+        List<RoomUser> students = roomUsers.stream()
+            .filter(user -> user.getUserNo() != teacherNo)
+            .collect(Collectors.toList());
+
+        //게임의 승패 여부에 따라 경험 부여
+        if("Y".equals(result.getIsSuccess())) {
+            for(RoomUser student: students) {
+                // 우선 정답자에게는 60 경험치를 부여.
+                if(student.getUserNo() == result.getWinnerNo()) {
+                    dto.builder()
+                        .userNo(student.getUserNo())
+                        .expGained(60)
+                        .contentNo(result.getRoomNo())
+                        .contentType("TWENTY");
+                    expProcessingService.expProcessing(dto);
+                }
+                // 남은 인원에게는, 30 경험치를 부여
+                // 로직 추가
+            }
+        }else{
+            for(RoomUser student: students) {
+                // 10 경험치 부여
+                // 로직 추가
+            }
+
+        }
 
     }
 

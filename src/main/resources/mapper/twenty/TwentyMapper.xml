@@ -15,8 +15,8 @@
             KUKOKUK_TWENTY_ROOM_USERS RU
                 JOIN KUKOKUK_USERS U ON RU.USER_NO = U.USER_NO
         WHERE
-            RU.USER_NO = U.USER_NO AND
-            RU.TWENTY_ROOM_NO = #{roomNo}
+            RU.TWENTY_ROOM_NO = #{roomNo} AND
+            U.IS_DELETED = 'N'
         ORDER BY U.USER_NO
     </select>
     <!--
@@ -250,6 +250,7 @@
         WHERE
             TWENTY_ROOM_NO = #{roomNo}
     </select>
+
     <!--
         /**
          * roomNo로 이 게임방의 결과를 가져온다.
@@ -260,17 +261,21 @@
     -->
     <select id="getTwentyRoomResult" resultType="TwentyResult">
         SELECT
-            TR.TWENTY_ROOM_NO       AS roomNo
-            ,TR.TITLE               AS title
-            ,TR.CORRECT_ANSWER      AS answers
-            ,TR.IS_SUCCESS          AS isSuccess
-            ,TR.TRY_COUNT           AS tryCnt
-            ,TR.STATUS              AS status
-            ,TR.WINNER_NO           AS winnerNo
-            ,U.NICKNAME             AS nickName
-        FROM KUKOKUK_TWENTY_ROOMS TR
-            JOIN KUKOKUK_USERS U
-            ON TR.WINNER_NO = U.USER_NO
+            TR.TWENTY_ROOM_NO   AS roomNo,
+            TR.TITLE            AS title,
+            TR.CORRECT_ANSWER   AS answers,
+            TR.IS_SUCCESS       AS isSuccess,
+            TR.TRY_COUNT        AS tryCnt,
+            TR.STATUS           AS status,
+            TR.WINNER_NO        AS winnerNo,
+            U.NICKNAME          AS nickName,
+            G.USER_NO           AS teacherNo
+        FROM
+            KUKOKUK_TWENTY_ROOMS TR
+                JOIN KUKOKUK_USERS U
+                     ON TR.WINNER_NO = U.USER_NO
+                JOIN KUKOKUK_GROUPS G
+                     ON TR.GROUP_NO = G.GROUP_NO
         WHERE
             TR.TWENTY_ROOM_NO = #{roomNo}
     </select>

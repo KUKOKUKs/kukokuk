@@ -29,10 +29,6 @@ public class ApiTwentyController {
 
     /**
      * 게임 종료 버튼 눌렀을 때, 게임 결과 저장 및 경험치 부여
-     *  ++ 경험치 관련 로직 ++
-     *  교사를 제외한 모든 학생에게 일정한 경험치 부여
-     *    - 단 승리 시, 정답 제출자 제외 모두 30xp, 정답 제출자만 60xp
-     *    - 패배 시, 모든 학생에게 10xp
      * @param map
      * @return
      */
@@ -46,7 +42,7 @@ public class ApiTwentyController {
     }
 
     /*
-        여기 아래 부턴, kukokuk-WebSocket에서 REST API를 호출하는 문장들
+        여기 아래 부턴, kukokuk-WebSocket에서 REST API를 호출하는 메소드들
      */
 
     /**

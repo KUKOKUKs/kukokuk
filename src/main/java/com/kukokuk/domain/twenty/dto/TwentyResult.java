@@ -15,9 +15,10 @@ import org.apache.ibatis.type.Alias;
 @NoArgsConstructor
 public class TwentyResult {
     private int roomNo;
+    private int teacherNo;
+    private Integer winnerNo;  // 얘는 null이 나올 수도 있다.
     private String answers;
     private String status;
-    private Integer winnerNo;  // 얘는 null이 나올 수도 있다.
     private int tryCnt;
     private String title;
     private String isSuccess;
