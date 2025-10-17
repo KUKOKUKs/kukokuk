@@ -49,41 +49,32 @@ public class QuizController {
     private final UserService userService;
 
     /**
-     * 퀴즈 메인 페이지 (학습이력 위젯 포함)
-     * 퀴즈 선택 + 최근 학습이력을 함께 표시
+     * 퀴즈 메인 페이지 (학습이력 위젯 포함) 퀴즈 선택 + 최근 학습이력을 함께 표시
      */
     @GetMapping
     public String viewMain(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
         log.info("[퀴즈 메인] viewMain() 페이지 컨트롤러 실행");
 
-        // 로그인한 사용자만 학습이력 표시
-        if (securityUser != null) {
-            int userNo = securityUser.getUser().getUserNo();
-            log.info("[퀴즈 메인] 사용자 {}의 학습이력 조회", userNo);
+        int userNo = securityUser.getUser().getUserNo();
+        log.info("[퀴즈 메인] 사용자 {}의 학습이력 조회", userNo);
 
-            try {
-                // 각 도메인에서 최근 이력 조회 (5개씩만 - 메인 페이지용)
-                List<QuizHistoryDto> speedHistory = quizService.getSpeedHistoryByUserNoWithLimit(userNo, 5);
-                List<QuizHistoryDto> levelHistory = quizService.getLevelHistoryByUserNoWithLimit(userNo, 5);
+        // 각 도메인에서 최근 이력 조회 (5개씩만 - 메인 페이지용)
+        List<QuizHistoryDto> speedHistory = quizService.getSpeedHistoryByUserNoWithLimit(userNo,
+            5);
+        List<QuizHistoryDto> levelHistory = quizService.getLevelHistoryByUserNoWithLimit(userNo,
+            5);
 
-                // 받아쓰기 도메인 구현 완료 후 주석 해제
-                // List<DictationHistoryDto> dictationHistory = dictationService.getRecentDictationHistory(userNo, 3);
+        // 받아쓰기 도메인 구현 완료 후 주석 해제
+        // List<DictationHistoryDto> dictationHistory = dictationService.getRecentDictationHistory(userNo, 3);
 
-                // Model에 학습이력 데이터 추가
-                model.addAttribute("speedHistory", speedHistory);
-                model.addAttribute("levelHistory", levelHistory);
-                // model.addAttribute("dictationHistory", dictationHistory);
+        // Model에 학습이력 데이터 추가
+        model.addAttribute("speedHistory", speedHistory);
+        model.addAttribute("levelHistory", levelHistory);
+        // model.addAttribute("dictationHistory", dictationHistory);
 
-                log.info("[퀴즈 메인] 학습이력 조회 완료 - 스피드: {}개, 단계별: {}개",
-                    speedHistory.size(), levelHistory.size());
-
-            } catch (Exception e) {
-                log.error("[퀴즈 메인] 학습이력 조회 중 오류 발생 - userNo: {}", userNo, e);
-                // 학습이력 조회 실패해도 메인 페이지는 정상 표시
-                model.addAttribute("historyError", true);
-            }
-        }
-
+        log.info("[퀴즈 메인] 학습이력 조회 완료 - 스피드: {}개, 단계별: {}개",
+            speedHistory.size(), levelHistory.size());
+            
         return "quiz/main"; // templates/quiz/main.html
     }
 
@@ -143,7 +134,8 @@ public class QuizController {
         int userNo = securityUser.getUser().getUserNo();
 
         // 요약 정보 조회
-        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
+        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(
+            sessionNo, userNo);
 
         // 상세 결과 데이터도 함께 조회하여 전달
         List<QuizResultDto> results = quizResultService.getQuizResultsBySession(sessionNo, userNo);
@@ -152,7 +144,8 @@ public class QuizController {
         model.addAttribute("summary", summary);
         model.addAttribute("results", results);
 
-        QuizLevelResultDto levelResult = quizService.getDifficultyAndQuestionTypeBySessionNo(sessionNo);
+        QuizLevelResultDto levelResult = quizService.getDifficultyAndQuestionTypeBySessionNo(
+            sessionNo);
         model.addAttribute("difficulty", levelResult.getDifficulty());
         model.addAttribute("questionType", levelResult.getQuestionType());
 
@@ -169,12 +162,14 @@ public class QuizController {
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model) {
         int userNo = securityUser.getUser().getUserNo();
-        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(sessionNo, userNo);
+        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(
+            sessionNo, userNo);
         List<QuizResultDto> results = quizResultService.getQuizResultsBySession(sessionNo, userNo);
 
         model.addAttribute("summary", summary);
         model.addAttribute("results", results);
-        QuizLevelResultDto levelResult = quizService.getDifficultyAndQuestionTypeBySessionNo(sessionNo);
+        QuizLevelResultDto levelResult = quizService.getDifficultyAndQuestionTypeBySessionNo(
+            sessionNo);
         model.addAttribute("difficulty", levelResult.getDifficulty());
         model.addAttribute("questionType", levelResult.getQuestionType());
 
@@ -212,8 +207,9 @@ public class QuizController {
 
     /**
      * [북마크] 내가 북마크한 퀴즈 목록
+     *
      * @param securityUser 로그인한 사용자
-     * @param model 뷰 모델
+     * @param model        뷰 모델
      * @return 북마크 목록 뷰 이름
      */
     @GetMapping("/bookmark")
@@ -235,9 +231,10 @@ public class QuizController {
 
     /**
      * 퀴즈 힌트 사용 처리
-     * @param quizIndex 퀴즈 인덱스
+     *
+     * @param quizIndex     퀴즈 인덱스
      * @param removedOption 제거된 보기 번호
-     * @param securityUser 로그인 사용자 정보
+     * @param securityUser  로그인 사용자 정보
      * @return 남은 힌트 개수
      */
     @PostMapping("/use-hint")
@@ -265,25 +262,12 @@ public class QuizController {
 
         } catch (Exception e) {
             log.error("퀴즈 힌트 사용 처리 실패", e);
-            ApiResponse<Integer> errorResponse = new ApiResponse<>(false, 500, "힌트 사용에 실패했습니다.", null);
+            ApiResponse<Integer> errorResponse = new ApiResponse<>(false, 500, "힌트 사용에 실패했습니다.",
+                null);
             return ResponseEntity.status(500).body(errorResponse);
         }
 
 
     }
 
-    @GetMapping("/history")
-    public String viewHistory(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
-        int userNo = securityUser.getUser().getUserNo();
-
-        // 각 도메인에서 이력 조회
-        List<QuizHistoryDto> speedHistory = quizService.getSpeedHistoryByUserNoWithLimit(userNo, 5);
-        List<QuizHistoryDto> levelHistory = quizService.getLevelHistoryByUserNoWithLimit(userNo, 5);
-
-        // Model에 담아서 타임리프로 전달
-        model.addAttribute("speedHistory", speedHistory);
-        model.addAttribute("levelHistory", levelHistory);
-
-        return "quiz/history"; // templates/quiz/history.html
-    }
 }
