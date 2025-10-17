@@ -122,7 +122,9 @@ public class TwentyController {
             }
             return "redirect:/group/teacher";
         }
-        Integer roomNo = twentyService.insertTwenthRoom(room.getGroupNo(), room.getTitle(),room.getCorrect());
+
+        //게임방 생성 및, 게임 참여자 DB에 할당
+        Integer roomNo = twentyService.insertTwentyRoom(room.getGroupNo(), room.getTitle(),room.getCorrect());
         return "redirect:/twenty/gameRoom/" + roomNo;
     }
 

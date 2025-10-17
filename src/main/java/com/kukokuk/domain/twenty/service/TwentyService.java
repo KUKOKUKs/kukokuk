@@ -216,7 +216,7 @@ public class TwentyService {
      * @param correct
      * @return
      */
-    public Integer insertTwenthRoom (int groupNo, String title, String correct) {
+    public Integer insertTwentyRoom (int groupNo, String title, String correct) {
         Map<String,Object> map = new HashMap<>();
         Integer roomNo = null;
 
@@ -274,6 +274,7 @@ public class TwentyService {
         TwentyResult result = twentyMapper.getTwentyRoomResult(roomNo);
         Integer participantCount = twentyMapper.getTwentyRoomUserTatal(roomNo);
         result.setParticipantCount(participantCount);
+        log.info("getTwentyResultInfo - 게임방 결과 조회 실행완");
         return result;
     }
 

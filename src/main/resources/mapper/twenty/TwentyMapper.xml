@@ -17,6 +17,7 @@
         WHERE
             RU.USER_NO = U.USER_NO AND
             RU.TWENTY_ROOM_NO = #{roomNo}
+        ORDER BY U.USER_NO
     </select>
     <!--
         게임방 참여자의 상태를 업데이트
@@ -281,9 +282,9 @@
          */
         public Integer getTwentyRoomUserTatal(int roomNo);
     -->
-    <select id="">
+    <select id="getTwentyRoomUserTatal" resultType="Integer">
         SELECT COUNT(*)
-        FROM KUKOKUK_TWENTY_ROOMS_USERS
+        FROM KUKOKUK_TWENTY_ROOM_USERS
         WHERE TWENTY_ROOM_NO = #{roomNo}
     </select>
 
