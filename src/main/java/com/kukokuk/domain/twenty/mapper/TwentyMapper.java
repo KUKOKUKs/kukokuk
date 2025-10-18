@@ -2,6 +2,7 @@ package com.kukokuk.domain.twenty.mapper;
 
 import com.kukokuk.domain.twenty.dto.RoomUser;
 import com.kukokuk.domain.twenty.dto.SendStdMsg;
+import com.kukokuk.domain.twenty.dto.TwentyResult;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
 import com.kukokuk.domain.twenty.vo.TwentyRoomUser;
 import java.util.List;
@@ -99,8 +100,29 @@ public interface TwentyMapper {
     public void insertTwentyRoom(TwentyRoom room);
 
     /**
-     * DB에 사용자 테이블을
+     * DB에 사용자 테이블을 insert
      * @param map
      */
     public void insertTwentyRoomUser(Map<String, Object> map);
+
+    /**
+     * 아무조건 없이 roomNo로 게임방 1개를 조회.
+     * @param roomNo
+     * @return
+     */
+    public TwentyRoom getAllTwentyRoom(int roomNo);
+
+    /**
+     * roomNo로 이 게임방의 결과를 가져온다.
+     * @param roomNo
+     * @return
+     */
+    public TwentyResult getTwentyRoomResult(int roomNo);
+
+    /**
+     * 이 게임방의 총 참여 인원을 가져온다.
+     * @param roomNo
+     * @return
+     */
+    public Integer getTwentyRoomUserTatal(int roomNo);
 }
