@@ -37,7 +37,7 @@ public class ApiTwentyController {
         int roomNo = (int)map.get("roomNo");
         twentyService.gameOverTwenty(roomNo);
         //일단 보류
-        twentyService.addExp(roomNo); // 스무고개방 경험치 부여 로직 expProcessing(ExpProcessingDto expProcessingDto)  사용
+        /*twentyService.addExp(roomNo);*/ // 스무고개방 경험치 부여 로직 expProcessing(ExpProcessingDto expProcessingDto)  사용
         return ResponseEntityUtils.ok("게임 정상 종료");
     }
 

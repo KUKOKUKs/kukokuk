@@ -262,7 +262,7 @@ public class TwentyService {
      *    단, 승리 시, 승리자에게 60의 경험치를 부여하도록 한다.
      * @param roomNo
      */
-    public void addExp(int roomNo){
+/*    public void addExp(int roomNo){
         ExpProcessingDto dto = new  ExpProcessingDto();
         List<RoomUser> roomUsers = twentyMapper.getTwentyPlayerList(roomNo);
         TwentyResult result = twentyMapper.getTwentyRoomResult(roomNo);
@@ -296,7 +296,7 @@ public class TwentyService {
 
         }
 
-    }
+    }*/
 
     /**
      * 아무 조건 없이 roomNo로 이 게임방의 모든 정보를 조회

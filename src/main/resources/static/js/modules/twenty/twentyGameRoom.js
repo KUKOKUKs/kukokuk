@@ -74,17 +74,50 @@ function connectWebSocket() {
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
 
-        /**
-         * 참여자 입장
+        /** 참여자 입장 시, UI 변화
+         * 1. stompClient.send(`/app/join/${currentRoomNo}`, {}, JSON.stringify({})); 처음 이 메소드가 동작하여 실시간 서버로 요청을 보냄..
+         *
+         * 2. 실시간 서버에서는 @MessageMapping으로 받음. -> 참여자 입장 시 필요한 데이터를 조회 및 가공.
+         *     -> map 객체에 list,roomStatus를 이름으로 데이터를 할당. -> `/topic/participants/${currentRoomNo}` 이 주소로 map 객체를 브로드캐스팅.
+         *                                                           (쉽게 말해, 서버로 부터 데이터를 전달 받는 것이라고 보면 된다.)
+         *
+         * 3. list : 참여자 리스트를 의미. / 리스트의 각 객체마다. userNo, nickName, status가 담겨 있음.
+         *           ++ status는 사용자의 상태를 의미./ LEFT 인지 JOIN 인지./ 방 상태가 아님
+         *
+         * 4. roomStatus : 방의 상태를 의미. / 이 상태값을 가지고 버튼의 활성화 여부를 설정함.
+         *          ++ roomStatus = (COMPLETED, STOPPED..)
+         *
+         * 5.updateParticipantList(userList) : - 참여자 리스트를 전달 받아, 이 리스트를 화면에 띄워주는 메소드
+         *                                     - 참여자의 상태에 따라, 들어왔을 땐 초록색, 나갔을 땐 회색으로 표시
+         *
+         * 6.updateBtnByRoomStatus(data) : - data를 전달 받아, 메소드 내에서 data.roomStatus를 꺼내,
+         *                                 - 방의 상태에 따라 버튼의 활성화 여부(disabled 처리)를 설정함.
          */
         stompClient.subscribe(`/topic/participants/${currentRoomNo}`, function (result) {
-            const data = JSON.parse(result.body);
-            updateParticipantList(data.list);
+            const data = JSON.parse(result.body);       // 서버에서 전달 받은 값을 꺼내고
+            updateParticipantList(data.list);           // list의
             updateBtnByRoomStatus(data);
         });
 
-        /**
-         * 게임 시작 버튼
+        /** 게임 시작 버튼 눌렀을 때, UI 변화
+         * 1.     $teacherStartBtn.on('click', function () {
+         *         stompClient.send(`/app/gameStart/${currentRoomNo}`, {}, JSON.stringify({}));
+         *     }); 교사가 게임 시작 버튼을 누르면 다음과 같이 실시간 서버에 요청을 보냄.
+         *
+         * 2. 똑같이 실시간 서버에서 @MessageMapping -> 로직 수행 및 `/topic/gameStart/${currentRoomNo}` 이 주소로 보낼 데이터 가공. ->
+         *    `/topic/gameStart/${currentRoomNo}` 브로드 캐스팅
+         *
+         * 3. 실시간 서버로 부터 받는 데이터 : roomStatus(방 생태), system(시스템 메세지)
+         *    - system : 게임 시작 버튼을 누르면 시스템 메시지 처럼 상단에 "스무고개가 시작됩니다." 처럼 띄우기 위한 메세지.
+         *
+         * 4. appendBoardLine(data) : - 실시간 서버로 부터 내려 받은 데이터(data)를 전달 받아,
+         *                              $("#board-area") 이 영역에 실시간 메세지를 띄워주는 메소드임.
+         *                            - system 메세지를 전달 받을 경우, 시스템 메세지만 띄우고 종료.
+         *                            - 그게 아닌 경우, 나의 메세지는 오른쪽에 보이게 하고 , 다른 사람 메세지는 왼쪽에 보이게
+         *                              메세지 리스트를 화면에 띄워줌(카톡 처럼 화면에 메세지들이 화면에 보이는 것이라고 보면됨.)
+         *
+         * 5. updateBtnByRoomStatus(data) : - data를 전달 받아, 메소드 내에서 data.roomStatus를 꺼내,
+         *                                  - 방의 상태에 따라 버튼의 활성화 여부(disabled 처리)를 설정함.
          */
         stompClient.subscribe(`/topic/gameStart/${currentRoomNo}`, function (result) {
             const data = JSON.parse(result.body);
@@ -92,8 +125,29 @@ function connectWebSocket() {
             updateBtnByRoomStatus(data);
         });
 
-        /**
-         * 손들기 버튼
+        /** 손들기 버튼을 눌렀을 때, UI 변화.
+         *  1. $raiseHandBtn.on('click', function (e) {
+         *         e.preventDefault();
+         *         stompClient.send(`/app/raisehand/${currentRoomNo}`, {}, JSON.stringify({}));
+         *     });
+         *     - 이 코드를 통해 실시간 서버에 요청 -> 로직 수행 -> 데이터 가공 -> 아래 주소로 브로드캐스팅
+         *
+         *  2. 실시간 서버로부터 전달 받는 데이터 : userNo,nickName,time,roomStatus, / msgCnt, system
+         *        - userNo : 사용자 식별자
+         *        - nickName : 사용자 닉네임.
+         *        - time : 40초 제한 시간
+         *          ++ 타이머 기능은 먼저 서버에서 40초 제한 시간을 부여 하도록 했음. - 그래야 모든 사용자에게 40초 제한 시간이 걸림.
+         *            따라서 프론트에서는 40,39,38.. 숫자가 세지는 UI 변화만 일으키면 되기 때문에 40 이라는 time 값을 전달한 것임.
+         *        - roomStatus : 방 상태
+         *
+         *        - msgCnt : 이 방의 총 메세지 개수. / 이는 손들기 버튼을 눌렀을 때,
+         *                                         이 방의 메세지 개수가 19개 이상일 경우 "정답을 입력하세요" 라는 시스템 메세지를 띄우기 위한 것.
+         *                                         또한 질문 입력창은 입력할 수 없고, 정답 입력창만 입력하도록 한 것임.
+         *        - system : msgCnt와 같이 서버 단에서 이 방의 총 메세지 개수가 19개 이상일 경우 system 메세지를 저장 시킴
+         *                   메세지 내용은 "정답을 입력해주세요." 라고 되어 있음.
+         *
+         *        ++ 정리하면 msgCnt와 system은 서버 단에서 이 게임방의 메세지가 19개 이상일 경우에만
+         *           msgCnt의 값과 system 메세지 값을 map 객체에 담아 여기로 전달 되게 했음.
          */
         stompClient.subscribe(`/topic/raisehand/${currentRoomNo}`, function (result) {
             const data = JSON.parse(result.body);
@@ -113,35 +167,54 @@ function connectWebSocket() {
                 updateBtnByRoomStatus(data);
         });
 
-        /**
-         * 40초 제한 시간 내 입력하지 못한 경우
+        /** 40초 제한 시간 내 입력하지 못한 경우
+         *  1. 위 손들기 버튼에서 40초 제한 시간이 지나게 되면 DB 작업은 실시간 서버 단에서 로직 수행함.
+         *  2. 여기서는 roomStatus만 전달함.
          */
         stompClient.subscribe(`/topic/turnTimeout/${currentRoomNo}`, function (result) {
             const data = JSON.parse(result.body);
             updateBtnByRoomStatus(data);
         });
 
-        /**
-         * 학생 메세지 전송
+        /** 학생이 메세지 전송 시, UI 변화
+         * $sendQuestionBtn.on('click', function (e) {...}
+         * $sendAnswerBtn.on('click', function (e) {...}
+         * 이 부분에서 사용자가 입력한 메세지를 실시간 서버로 요청 -> 로직 수행 -> 브로드캐스팅
+         * 1. 서버에서 내려 받는 값 :
+         *    - logNo : kukokuk_twenty_logs 테이블의 식별값
+         *    - userNo : 사용자 식별자
+         *    - msgType : 이 메세지가 정답(A) 인지, 질문(Q) 인지
+         *    - content : 메세지 내용.
+         *    - nickName : 사용자 닉네임
+         *    - roomStatus : 방의 상태
+         * 2.appendBoardLine(data)
+         *  - system 메세지가 있을 경우, system 메세지만 띄우고 종료.
+         *  - system 메세지가 없을 경우, 로직
+         *      - 먼저 서버에서 내려받은 userNo와 전역변수로 설정된 currentUserNo와 비교하여
+         *        같을 경우 = 내가 보낸 메세지 이므로, 오른쪽에 표시되게 함.
+         *        아닌 경우 = 왼쪽에 표시되게 함.
+         *      - 질문의 타입에 따라(Q or A) 인지에 따라, 적용하는 스타일을 다르게 함.
+         *      - content 값으로 메세지 내용을 화면에 표시
+         *      - logNo와 userNo는 각 메세지의 data 속성으로 일단 넣어둔 것임.
          */
         stompClient.subscribe(`/topic/sendStdMsg/${currentRoomNo}`, function (result) {
             let data1 = JSON.parse(result.body);
-            updateBtnByRoomStatus(data1);
-            appendBoardLine(data1);
-            stopVisualTimer();
+            updateBtnByRoomStatus(data1);    // 버튼 변화
+            appendBoardLine(data1);          // 메세지 UI 표현
+            stopVisualTimer(); // 타이머 제거 메소드
         });
 
-        /**
-         * 교사 서버 끊겼을 때, 알림창이 나오고 그룹 페이지로 이동.
+        /** 교사 서버 끊겼을 때, 알림창이 나오고 그룹 페이지로 이동.
+         * 1. 교사가 서버가 끊기거나, 웹브라우저 탭을 닫을 경우 (게임 종료 버튼 누를 때 x)
+         * 2. 경고창을 띄우고, 그룹 페이지로 이동함.
          */
         stompClient.subscribe(`/topic/TeacherDisconnect`, function () {
             alert("스무고개가 중단되었습니다.");
             window.location.href = '/group';
         });
 
-        /**
-         * 게임 종료 버튼을 눌렀을 때 or 게임방의 상태가 COMPLETE일 때
-         * 게임 결과 페이지로 이동
+        /** 게임 종료 버튼을 눌렀을 때 or 게임방의 상태가 COMPLETE일 때
+         * 1. 교사가 게임 종료 버튼을 누르면 결과 페이지로 이동.
          */
         stompClient.subscribe(`/topic/gameComplete`, function (result) {
             const data =  JSON.parse(result.body);
@@ -149,23 +222,33 @@ function connectWebSocket() {
             window.location.href = `/twenty/result/${roomNo}`;
         });
 
-        /**
-         * 교사가 O,X 버튼 눌렀을 때 응답
+        /** 교사가 O,X 버튼 눌렀을 때 응답
+         * $teacherObtn.on('click', function (e) {..}
+         * $teacherXbtn.on('click', function (e) {..}
+         * - 위 코드로 실시간 서버에 학생의 메세지에 O,X에 대한 요청을 실시간 서버에 보냄. -> 로직 수행 -> 브로드 캐스팅
+         * - 서버에서 내려받는 데이터
+         *  - system : 게임이 끝났을 경우, 내려오는 시스템 메세지 "스무고개가 끝났습니다... 종료 버튼을 눌러주세여"
+         *  - roomStatus : 방의 상태
+         *  - msgList : 전체 메세지 리스트 -> 교사가 O,X 버튼을 누를 때마다 전체 메세지 리스트를 실시간으로 갱신하기 위함.
+         *    => 왜냐하면, 학생A: "사람인가요?" -> 학생A : "사람인가요? :⭕" 이런 식으로 DB에 다시 저장해서 최신 리스트를 갱신해서
+         *       화면에 뿌려줘야하기 때문.
+         *
+         * ++ function toggleGlow($el, enabled) {} : 얘는 그냥 스타일 효과만 샤라랄 하고 내주는 역할임.
          */
         stompClient.subscribe(`/topic/TeacherResponce`, function (result) {
             const data = JSON.parse(result.body);
 
             if (data.system != null) { // 게임이 끝난 경우
-                appendBoardLine(data);
-                $teacherEndBtn.prop('disabled', false);
+                appendBoardLine(data); // 시스템 메세지 띄워주고
+                $teacherEndBtn.prop('disabled', false); //교사 종료 버튼 활성화 해주고
                 toggleGlow($teacherEndBtn, true);
 
-                $teacherObtn.prop('disabled', true);
+                $teacherObtn.prop('disabled', true);   //O,X 버튼 비활성화 해주고
                 toggleGlow($teacherObtn, false);
 
                 $teacherXbtn.prop('disabled', true);
                 toggleGlow($teacherXbtn, false);
-                if (Array.isArray(data.msgList)) renderMessageList(data.msgList);
+                if (Array.isArray(data.msgList)) renderMessageList(data.msgList);  // 이 게임방의 전체 메세지 리스트를 다시 갱신 해준다.
                 return;
             }
             // 게임이 끝나지 않고 계속 재개해야하는 경우
@@ -293,6 +376,7 @@ $(function () {
 
 /**
  * 참여자 리스트 렌더링
+ * userList에서 각각 userNo, nickName, status(유저의 상태가 들어있음. LEFT 인지 JOIN 인지)
  */
 function updateParticipantList(userList) {
     let $list = $("#participants-list");
