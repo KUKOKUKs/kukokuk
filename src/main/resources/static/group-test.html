@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>KUKOKUK 그룹 학습자료 업로드 테스트</title>
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f9fafc;
+            color: #333;
+        }
+        h2 { color: #2c3e50; }
+        section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        input, button, select {
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        button {
+            background: #4a6cf7;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { background: #3e5bdd; }
+        pre {
+            background: #f4f6f8;
+            border-radius: 6px;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        .job-row {
+            border-bottom: 1px solid #eee;
+            padding: 6px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h2>📚 그룹 학습자료 업로드 & 테스트 콘솔</h2>
+
+<!-- ================= 업로드 영역 ================= -->
+<section>
+    <h3>1️⃣ 학습자료 업로드</h3>
+    <label>그룹 번호: <input type="number" id="groupNo" value="1"></label><br><br>
+    <label>난이도:
+        <select id="difficulty">
+            <option value="1">1 (기초)</option>
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6 (심화)</option>
+        </select>
+    </label><br><br>
+    <input type="file" id="files" multiple>
+    <button onclick="uploadMaterials()">업로드</button>
+
+    <h4>결과</h4>
+    <pre id="uploadResult">-</pre>
+</section>
+
+<!-- ================= Job 상태 조회 ================= -->
+<section>
+    <h3>2️⃣ 업로드 Job 상태 조회</h3>
+    <button onclick="fetchJobs()">그룹 전체 Job 상태 조회</button>
+    <div id="jobList"></div>
+</section>
+
+<!-- ================= 일일학습자료 목록 ================= -->
+<section>
+    <h3>3️⃣ 그룹 일일학습자료 목록</h3>
+    <button onclick="fetchDailyStudies()">일일학습자료 목록 조회</button>
+    <div id="studyList"></div>
+</section>
+
+<script>
+    async function uploadMaterials() {
+        const groupNo = document.getElementById('groupNo').value;
+        const difficulty = document.getElementById('difficulty').value;
+        const files = document.getElementById('files').files;
+        const resultArea = document.getElementById('uploadResult');
+
+        if (files.length === 0) {
+            alert("파일을 선택해주세요!");
+            return;
+        }
+
+        const formData = new FormData();
+        for (const f of files) formData.append("files", f);
+        formData.append("difficulty", difficulty);
+
+        resultArea.textContent = "⏳ 업로드 중...";
+        try {
+            const res = await fetch(`/api/teachers/groups/${groupNo}/materials/upload`, {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+            resultArea.textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+            resultArea.textContent = "❌ 업로드 실패: " + err;
+        }
+    }
+    // 그룹 전체 진행 중 Job 목록 조회
+    async function fetchJobs() {
+        const groupNo = document.getElementById('groupNo').value;
+        const jobList = document.getElementById('jobList');
+        jobList.innerHTML = "⏳ 조회 중...";
+
+        try {
+            const res = await fetch(`/api/teachers/groups/${groupNo}/materials/jobs`);
+            const json = await res.json();
+
+            // 그냥 결과 전체를 보기 좋게 출력
+            jobList.innerHTML = `<pre>${JSON.stringify(json, null, 2)}</pre>`;
+
+        } catch (err) {
+            jobList.textContent = "❌ 조회 실패: " + err;
+        }
+    }
+
+
+    // 그룹의 일일학습자료 목록 조회
+    async function fetchDailyStudies() {
+        const groupNo = document.getElementById('groupNo').value;
+        const studyList = document.getElementById('studyList');
+        studyList.innerHTML = "⏳ 조회 중...";
+
+        try {
+            const res = await fetch(`/api/teachers/groups/${groupNo}/studies`);
+            const json = await res.json();
+            // 그냥 전체 JSON을 보기 좋게 출력
+            studyList.innerHTML = `<pre>${JSON.stringify(json, null, 2)}</pre>`;
+
+        } catch (err) {
+            studyList.textContent = "❌ 조회 실패: " + err;
+        }
+    }
+</script>
+</body>
+</html>

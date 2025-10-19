@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: kukokuk
+  # JSON 응답 날짜 데이터 포맷 설정
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss
+    time-zone: Asia/Seoul
+    serialization:
+      write-dates-as-timestamps: false
+
+  profiles:
+    # 개발 환경: dev, 배포 환경: prod
+    # 배포 서버에서 실행할 때 prod로 변경
+    # java -jar kukokuk.jar --spring.profiles.active=prod
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  servlet:
+    encoding:
+      # 기본 문자셋
+      charset: UTF-8
+      # 인코딩 적용 여부
+      enabled: true
+      # 강제로 인코딩 설정 적용
+      force: true
+
+  validation:
+    # 유효성 순차 검증
+    fail-fast: true
+
+mybatis:
+  # Mapper XML 파일 위치
+  mapper-locations: classpath:mapper/**/*.xml
+
+  # Type Alias 패키지 설정
+  type-aliases-package:
+    com.kukokuk.domain.*.vo,
+    com.kukokuk.domain.*.dto
+
+  configuration:
+    # NULL 값 처리 방식
+    jdbc-type-for-null: 'NULL'
+
+    # MyBatis 로그 출력 방식 (log4j2 사용)
+    log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl
+#WebSocket 주소
+ws:
+  url: "http://localhost:8081/ws"
+
+nhn:
+  s3:
+    tenant-id: AUTH_58a0a6438f054792b4338ed8b2440a82
+    endpoint: https://kr1-api-object-storage.nhncloudservice.com
+    access-key: ${OBJECT_STORAGE_ACCESS_KEY}
+    secret-key: ${OBJECT_STORAGE_SECRET_KEY}
+    bucket: kukokuk
+    region-name: KR1

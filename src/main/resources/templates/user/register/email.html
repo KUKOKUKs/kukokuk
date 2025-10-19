@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html layout:decorate="~{/layout/center}" th:with="title='회원가입'">
+<div layout:fragment="content">
+    <div class="form_component">
+        <div th:replace="~{fragments/sign/register-top :: register-top-fragment('회원가입')}"></div>
+
+        <span class="logo"></span>
+
+        <div th:replace="~{fragments/sign/step-bar :: step-fragment(5, 1)}"></div>
+
+        <form method="post"
+              th:action="@{/register/email}"
+              th:object="${userRegisterForm}"
+              class="form_wrap container bg_light_gray"
+              id="register-form">
+
+            <div class="input_description">
+                <p class="description">사용중인 이메일을 입력해 주세요.</p>
+            </div>
+
+            <div class="form_input_list">
+                <div class="input_info one_input">
+                    <input type="text"
+                           th:field="*{username}"
+                           id="username"
+                           autocomplete="username"
+                           placeholder=" ">
+
+                    <label for="username" class="input_title"
+                        th:classappend="${#fields.hasErrors('username')} ? 'disabled'">이메일</label>
+
+                    <span class="input_error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+
+                    <div class="input_icon">
+                        <span class="icon input_delete_btn">
+                            <iconify-icon icon="jam:close-circle-f"></iconify-icon>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn_list bg_none">
+                <a href="/" class="btn white">취소</a>
+                <button type="submit" id="submit-btn" class="btn primary">다음</button>
+            </div>
+        </form>
+
+        <div class="d_flex justify_content_center align_center base_gap">
+            <p class="small_font">계정이 있으신가요?</p>
+            <a href="/login" class="bold color_primary">로그인</a>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <!--/* 최초 랜더링 시 제출 버튼 활성화 설정 */-->
+    <script th:inline="javascript">
+        let hasError = [[${hasError}]];
+        const $focusElement = $("#username");
+        const username = $focusElement.val().trim();
+
+        $focusElement.focus();
+
+        if (username === "" || hasError) {
+            $("#submit-btn").addClass("disabled");
+        }
+    </script>
+    <script type="module" th:src="@{/js/modules/sign/sign.js}"></script>
+</th:block>
+</html>

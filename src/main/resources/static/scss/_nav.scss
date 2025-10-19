@@ -1,0 +1,113 @@
+.nav_container {
+    width: calc(var(--navWidth) + var(--basePadding));
+    min-width: calc(var(--navWidth) + var(--basePadding));
+    max-width: calc(var(--navWidth) + var(--basePadding));
+    min-height: 100%;
+    padding-right: var(--basePadding);
+    transition: margin-left var(--trst);
+    position: relative;
+
+    &.closed {
+        margin-left: calc(0px - var(--navWidth));
+    }
+
+    .nav_toggle_btn {
+        width: var(--basePadding);
+        height: 100%;
+        border-left: 1px solid var(--borderColor);
+        transition: background-color var(--trst), box-shadow var(--trst);
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        &::before, &::after {
+            content: '';
+            display: inline-block;
+            width: 1px;
+            height: var(--baseFontSize);
+            border-radius: var(--bdrs);
+            background-color: var(--borderColor);
+            position: absolute;
+            top: 50%;
+            left: calc(50% - 2px);
+            transform: translate(-50%, -50%);
+            transition: background-color var(--trst);
+        }
+
+        &::before { left: calc(50% - 2px); }
+        &::after { left: calc(50% + 2px); }
+    }
+
+    &:hover,
+    &.closed {
+        .nav_toggle_btn {
+            background-color: var(--subColor);
+            box-shadow: var(--bxsh);
+
+            &::before, &::after {
+                background-color: var(--primaryColor);
+            }
+        }
+    }
+}
+
+.nav_wrap {
+    width: var(--navWidth);
+    height: 100%;
+    padding-top: calc(var(--logoHeight) + (var(--containerPadding) * 2) + var(--baseFontSize));
+    padding-bottom: var(--containerPadding);
+    background-color: var(--baseBackground);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--smallGap);
+}
+
+.nav_list {
+    padding: 0 var(--basePadding);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    .menu {
+        font-weight: bold;
+        padding: 0.5em;
+        display: flex;
+        align-items: center;
+        gap: var(--smallGap);
+        border: 2px solid transparent;
+        border-radius: var(--bdrs);
+        transition: background-color var(--trst);
+
+        .menu_icon {
+            width: var(--baseIcon);
+            height: var(--baseIcon);
+            font-size: var(--baseIcon);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &.profile:has(img) {
+                border: 1px solid var(--borderColor);
+                overflow: hidden;
+                border-radius: 50%;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+            }
+        }
+
+        &:hover {
+            background-color: var(--subColor);
+        }
+
+        &.active {
+            background-color: var(--subColor);
+            border-color: var(--primaryColor);
+            color: var(--primaryColor);
+        }
+    }
+}

@@ -1,0 +1,131 @@
+#profile-container {
+    .learning_level_info {
+        background-color: var(--subColor);
+        border-radius: var(--bdrs);
+    }
+}
+
+.welcome_info {
+    font-weight: bold;
+    padding: var(--smallPadding);
+    border-radius: var(--bdrs);
+    background-color: var(--subColor);
+}
+
+.profile_info {
+    display: flex;
+    gap: var(--smallGap);
+    align-items: center;
+
+    .thumbnail {
+        width: var(--largeIcon);
+        min-width: var(--largeIcon);
+        height: var(--largeIcon);
+
+        &:has(img) {
+            border: 1px solid var(--borderColor);
+            overflow: hidden;
+            border-radius: 50%;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+    }
+
+    .name {
+        width: 100%;
+        font-size: var(--largeFontSize);
+        font-weight: bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.level_info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--smallGap);
+
+    .level_top_info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .level_icon_info {
+            display: flex;
+            gap: var(--smallGap);
+            align-items: center;
+
+            .level_icon {
+                width: max-content;
+                padding: 0.3em 0.5em;
+                background-color: var(--yellowColor);
+                font-weight: bold;
+                border-radius: var(--bdrs);
+            }
+        }
+    }
+
+    .percent_info {
+        display: flex;
+        align-items: flex-end;
+        gap: var(--smallGap);
+
+        .experience_points_info {
+            font-size: var(--fixEtcTinyFontSize);
+            color: var(--grayColor);
+        }
+    }
+
+    &.study_progress {
+        margin: 32px 0;
+        width: 100%;
+
+        .after_quiz {
+            background-color: var(--redColor);
+        }
+    }
+}
+
+
+/* 프로필 페이지 */
+.profile_img_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+
+    .thumbnail_img {
+        width: var(--profileThumbnail);
+        height: var(--profileThumbnail);
+        border-radius: 50%;
+        border: 1px solid var(--borderColor);
+        box-shadow: var(--bxsh);
+        position: relative;
+
+        .thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .icon_btn {
+            width: var(--baseIcon);
+            min-width: var(--baseIcon);
+            height: var(--baseIcon);
+            font-size: calc(var(--baseIcon) - 8px);
+            color: var(--grayColor);
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: var(--bxsh);
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+        }
+    }
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html layout:decorate="~{/layout/center}"
+      th:with="title='받아쓰기',
+      menu='quiz',
+      user=${#authentication.principal.user}">
+<div layout:fragment="content">
+    <form th:action="@{/dictation/submit-answer}"
+          method="post"
+          id="main-content"
+          class="content_container">
+        <div class="content_info">
+            <div class="content_title justify_content_center">
+                <iconify-icon icon="flat-color-icons:voice-presentation"></iconify-icon>
+                받아쓰기
+
+                <div class="progress_end_btn quiz_end_btn">
+                    <button type="button" class="btn tiny">종료하기</button>
+                </div>
+            </div>
+
+            <div class="progress_container">
+                <div class="progress_component">
+                    <div class="progress_info">
+                        <span class="icon">
+                            <iconify-icon icon="fluent-color:chat-bubbles-question-16"></iconify-icon>
+                        </span>
+                        <p class="info">
+                            <span id="quiz-current" th:text="${questionIndex + 1}">0</span> / <span th:text="${dictationQuestions.size()}">0</span>
+                        </p>
+                    </div>
+                    <div class="progress_info">
+                        <div class="hints_info">
+                            <div class="hint_icon"></div>
+                            <span class="hint_count">x <span id="hint-count" th:text="${user.hintCount}">0</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bar_gauge">
+                    <div class="gauge" th:style="|width: ${#numbers.formatDecimal((questionIndex * 100.0 / (dictationQuestions.size() - 1)), 0, 1)}%;|"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dictation-speaking-component"
+             class="component"
+             th:data-question-no="${currentQuestion.dictationQuestionNo}">
+            <div class="callout center cursor_pointer speaker_btn">
+                <iconify-icon class="icon base speaker_icon" icon="fluent:speaker-2-16-regular"></iconify-icon>
+            </div>
+
+            <div id="correctAnswer"
+                 class="callout left cursor_pointer"
+                 style="--callout-color: var(--redColor);">
+                정답 확인
+            </div>
+
+            <div th:if="${currentQuestion.usedHintNum == null}"
+                 class="callout right pd_0 box_shadow_none"
+                 style="--callout-color: transparent;">
+                <div class="hints_info">
+                    <button type="button"
+                            id="hintBtn1"
+                            class="icon base dictation_hint_btn tooltip"
+                            data-label="띄어쓰기">
+                        <iconify-icon class="icon title_font" icon="ri:space"></iconify-icon>
+                    </button>
+                    <button type="button"
+                            id="hintBtn2"
+                            class="icon base dictation_hint_btn tooltip"
+                            data-label="초성">
+                        <span class="icon small initial_hint">ㅊㅅ</span>
+                    </button>
+                    <button type="button"
+                            id="hintBtn3"
+                            class="icon base dictation_hint_btn tooltip"
+                            data-label="첫 글자">
+                        <iconify-icon class="icon title_font" icon="tabler:alphabet-korean"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+
+            <p class="callout_info bold large_font tac">
+                <span class="cursor_pointer speaker_btn"
+                      th:text="|${questionIndex  + 1}번 받아쓰기 문장 듣기|"></span>
+            </p>
+
+            <!--/* 힌트 내용 표시 UI(받아쓰기 전용) */-->
+            <div th:if="${currentQuestion.usedHintNum != null}" class="dictation_hint_info">
+                <div class="square_list">
+                    <span class="square" th:each="info : ${currentQuestion.hintChars}" th:text="${info}"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form_input_list">
+            <div class="input_info one_input">
+                <input type="text" name="userAnswer" id="user-answer" placeholder=" ">
+                <label for="user-answer" class="input_title">정답 입력</label>
+            </div>
+        </div>
+
+        <input type="hidden" id="skipInput" name="skip" value="0" />
+        <input type="hidden" id="flash-correct" th:if="${correct}" value="1">
+        <input type="hidden" id="flash-second-fail" th:if="${secondFail}" value="1">
+        <button type="submit" id="submitAnswer" class="btn primary">
+            정답 제출 (<span th:text="|남은 기회: ${triesLeft}회|">남은 기회: n회</span>)
+        </button>
+    </form>
+
+    <!--/* 게임 종료 안내 모달창 */-->
+    <div th:replace="~{fragments/modal/modal-quiz-exit :: modal-quiz-exit-fragment}"></div>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="module" th:src="@{/js/modules/dictation/dictation.js}"></script>
+</th:block>
+</html>

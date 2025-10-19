@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.dictation.mapper.DictationSessionMapper">
+
+  <resultMap id="DictationSessionResultMap" type="DictationSession">
+    <id property="dictationSessionNo" column="DICTATION_SESSION_NO"/>
+    <result property="userNo" column="USER_NO"/>
+    <result property="startDate" column="START_DATE"/>
+    <result property="endDate" column="END_DATE"/>
+    <result property="correctScore" column="CORRECT_SCORE"/>
+    <result property="correctCount" column="CORRECT_COUNT"/>
+    <result property="hintUsedCount" column="HINT_USED_COUNT"/>
+    <result property="createdDate" column="CREATED_DATE"/>
+  </resultMap>
+
+  <!-- /**
+   * 받아쓰기 세트 생성
+   * @param session 받아쓰기 세트
+   */
+  insertDictationSession(DictationSession dictationSession)
+   -->
+  <insert id="insertDictationSession" useGeneratedKeys="true" keyProperty="dictationSessionNo">
+    INSERT INTO KUKOKUK_DICTATION_SESSIONS(
+      USER_NO
+     ,START_DATE
+     ,END_DATE
+    )VALUES(
+      #{userNo}
+     ,#{startDate}
+     ,#{endDate}
+    )
+  </insert>
+
+  <!--
+   /**
+   * 받아쓰기 끝나고 해당 받아쓰기 세트 결과 업데이트
+   * @param session 받아쓰기 세트
+   */
+   updateDictationSessionResult(DictationSession session)
+   -->
+  <update id="updateDictationSessionResult">
+    UPDATE KUKOKUK_DICTATION_SESSIONS
+    SET
+       USER_NO = #{userNo}
+      ,START_DATE = #{startDate}
+      ,END_DATE = #{endDate}
+      ,CORRECT_COUNT = #{correctCount}
+      ,HINT_USED_COUNT = #{hintUsedCount}
+      ,CORRECT_SCORE = #{correctScore}
+    WHERE
+       DICTATION_SESSION_NO = #{dictationSessionNo}
+  </update>
+
+  <!--
+  /**
+   * 사용자 번호로 그 사용자가 풀었던 받아쓰기 세트 결과 내용을 조회
+   * @param userNo 사용자 번호
+   * @return 받아쓰기 세트 결과 내용
+   */
+  List<DictationSession> getDictationSessionResultsByUserNo(@Param("userNo") int userNo, @Param("limit") int limit);
+  -->
+  <select id="getDictationSessionResultsByUserNo" resultMap="DictationSessionResultMap">
+    SELECT
+       DICTATION_SESSION_NO
+      ,START_DATE
+      ,END_DATE
+      ,CORRECT_SCORE
+      ,CORRECT_COUNT
+      ,HINT_USED_COUNT
+      ,CREATED_DATE
+    FROM
+      KUKOKUK_DICTATION_SESSIONS
+    WHERE
+      USER_NO = #{userNo}
+    ORDER BY
+      CREATED_DATE DESC
+      LIMIT #{limit}
+  </select>
+
+  <!--
+  **
+   * 결과페이지에 조회할 세트 결과 내용 조회
+   * @param dictationSessionNo 받아쓰기 문제 세트 번호
+   * @return 받아쓰기 문제 세트 결과
+   */
+  DictationSession getDictationSessionByDictationSessionNo(int dictationSessionNo);
+  -->
+  <select id="getDictationSessionByDictationSessionNo"  resultMap="DictationSessionResultMap">
+    SELECT
+      DICTATION_SESSION_NO
+      ,USER_NO
+      ,START_DATE
+      ,END_DATE
+      ,CORRECT_SCORE
+      ,CORRECT_COUNT
+      ,HINT_USED_COUNT
+      ,CREATED_DATE
+    FROM
+      KUKOKUK_DICTATION_SESSIONS
+    WHERE
+        DICTATION_SESSION_NO = #{dictataionSessionNo}
+  </select>
+</mapper>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/base}" th:with="title='순위', menu='rank'">
+
+<div layout:fragment="content">
+    <div id="main-content" class="content_container">
+        <div id="rank-container" class="content_info">
+            <div class="content_title">
+                <div class="d_flex align_center tiny_gap">
+                    <iconify-icon icon="streamline-ultimate-color:ranking-stars-ribbon"></iconify-icon>
+                    순위
+                </div>
+
+                <!--/* 월 전환 버튼(최근 3달만 조회할 수 있도록 JS로 구현) */-->
+                <div id="rank-month-btn"
+                     class="content_switcher stepper_btn">
+                    <button type="button" class="step_info prev">
+                        <iconify-icon icon="ep:arrow-left"></iconify-icon>
+                    </button>
+                    <p class="info" th:text="${#dates.format(#dates.createNow(), 'yyyy-MM')}">내용</p>
+                    <button type="button" class="step_info next disabled">
+                        <iconify-icon icon="ep:arrow-right"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!--/* 스피드 퀴즈 랭크 */-->
+            <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${speedQuizRanks})}"></div>
+
+            <!--/* 단계별 퀴즈 랭크 */-->
+            <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${levelQuizRanks})}"></div>
+
+            <!--/* 받아쓰기 퀴즈 랭크 */-->
+            <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${dictationQuizRanks})}"></div>
+        </div>
+    </div>
+
+    <div id="sub-content" class="content_container">
+        <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
+
+        <!--/* 레벨 랭크 */-->
+        <div th:replace="~{fragments/rank/level-rank-component :: level-rank-component-fragment(ranksDto=${levelRanks})}"></div>
+
+        <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="module" th:src="@{/js/modules/rank/rank.js}"></script>
+</th:block>
+</html>

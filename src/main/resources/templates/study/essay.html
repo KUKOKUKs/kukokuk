@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/center}">
+
+<div layout:fragment="content">
+
+    <!--/* 왼쪽 퀴즈 영역 */-->
+    <div class="quiz_area">
+        <div class="study_quiz_wrapper">
+            <!-- 퀴즈 번호 및 제목 -->
+            <div class="study_quiz_info">
+                <div class="icon_btn primary">
+                    <iconify-icon icon="line-md:question-circle-twotone"></iconify-icon>
+                </div>
+                <span class="study_quiz_text">문제</span>
+            </div>
+
+            <!-- 문제 박스 -->
+            <div class="study_quiz_box"
+                th:text="${data.essay.question}"></div>
+
+            <!-- 보기 리스트 -->
+            <div class="study_quiz_option_wrapper">
+                <div class="study_quiz_info">
+                    <div class="icon_btn">
+                        <iconify-icon icon="line-md:pencil-twotone"></iconify-icon>
+                    </div>
+                    <span class="study_quiz_text">답변하기</span>
+                </div>
+            </div>
+
+            <!--/* 답변 박스 */-->
+            <textarea class="study_quiz_box answer" id="essay-answer-input" th:text="${data.essayLog != null ? data.essayLog.userAnswer : ''}">
+
+            </textarea>
+
+            <!--/* 버튼  */-->
+            <div class="btn_list">
+                <button type="button" class="btn primary d_flex tiny_gap" id="essay-feedback-btn">
+                    <div class="icon_btn">
+                        <iconify-icon icon="mingcute:ai-fill"></iconify-icon>
+                    </div>
+                    AI 피드백
+                </button>
+                <button type="button" class="btn white" id="essay-save-btn">임시저장하기</button>
+            </div>
+
+            <div class="d_flex justify_content_end">
+                <a href="/study" type="button" class="btn small gray">돌아가기</a>
+            </div>
+        </div>
+    </div>
+
+    <!--/* 오른쪽 피드백 영역 */-->
+    <div class="feedback_area">
+        <div class="essay_feedback_container">
+            <div class="feedback_title">
+                AI 피드백
+            </div>
+            <div id="essay-feedback-box-container" class="essay_feedback_box_container">
+                <!-- AI 피드백이 동적으로 생성되어 추가하는 부분 -->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        //SSR로 조회한 data.essayLog에서 dailyStudyEssayQuizLogNo를 변수로 저장해놓기
+        let essayQuizLogNo  = /*[[${data.essayLog?.dailyStudyEssayQuizLogNo}]]*/ null;
+        const essayQuizNo = /*[[${data.essay?.dailyStudyEssayQuizNo}]]*/ null;
+        const essayQuizLogAiFeedback = /*[[${data.essayLog?.aiFeedback}]]*/ null;
+        /*]]>*/
+    </script>
+    <script type="module" th:src="@{/js/modules/study/study-essay.js}"></script>
+</th:block>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html layout:decorate="~{/layout/center}" th:with="title='스피드 퀴즈 결과'">
+<div layout:fragment="content">
+    <div id="main-content" class="content_container">
+        <div class="content_info">
+            <div class="content_title justify_content_center">
+                <iconify-icon icon="flat-color-icons:flash-on"></iconify-icon>
+                스피드 퀴즈 결과
+            </div>
+
+            <div class="grid_list_component" style="--cols: 2;">
+                <div class="component grid_list full_grid bg_primary color_white highlight">
+                    <div class="component_title">
+                        <th:block th:with="
+                                    resultMsg=${summary.percentile <= 1 ?
+                                        '상위 1%<br>전설의 퀴즈왕! 👑' :
+                                        summary.percentile <= 10 ? '상위 ' + summary.percentile + '%!<br>두뇌 풀가동! ⚡' :
+                                        summary.percentile <= 30 ? '상위 ' + summary.percentile + '%!<br>감각이 살아있네 🎯' :
+                                        summary.percentile <= 50 ? '상위 ' + summary.percentile + '%!<br>반은 잡았다! 📈' :
+                                        summary.percentile <= 70 ? '상위 ' + summary.percentile + '%!<br>꾸준함이 답이다 🏃' :
+                                        '상위 ' + summary.percentile + '%!<br>워밍업 끝! 한번 더! 💪'
+                                    }">
+                            <p class="title_info center" th:utext="${resultMsg}"></p>
+                        </th:block>
+                    </div>
+                </div>
+                <div class="component grid_list">
+                    <div class="component_title">
+                        <p class="component_sub_title tac" th:text="|${summary.totalQuestion}문제 중|">n문제 중</p>
+                        <p class="title_info center">
+                            [[${summary.correctAnswers}]]개 정답!
+                            <span th:if="${summary.totalQuestion == summary.correctAnswers}">💯</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="component grid_list">
+                    <div class="component_title">
+                        <p class="component_sub_title tac" th:text="|총 풀이 시간 ${summary.totalTimeSec}초|">총 풀이 시간 N.nnn초</p>
+                        <p class="title_info center" th:text="|문제당 평균 ${summary.averageTimePerQuestion}초|">문제당 평균 N.nnn초</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--/* 문제 풀이 상세 결과 */-->
+        <div class="component tiny_list_component h_100 show_scroll">
+            <div class="component_info with_icon align_start sub_font"
+                 th:each="result, iterStat : ${results}">
+                <div class="list_info ov_v" style="--cols: 18; --indexCols: 2;">
+                    <div class="index_list">
+                        <span class="color_primary bold" th:text="|Q${iterStat.count}|">Q1</span>
+                        <p th:text="${result.question}">문제</p>
+                    </div>
+                    <div class="index_list">
+                        <div class="color_blue bold pos_r">
+                            A<span th:if="${result.selectedChoice != 0}"
+                                   th:text="${result.selectedChoice}">선택한 보기 번호</span>
+                            <span class="result_icon icon large"
+                                  th:classappend="${result.success ? 'correct' : 'incorrect'}"></span>
+                        </div>
+                        <p th:text="${result.getOption(result.selectedChoice) ?: '시간 초과'}">선택한 보기 내용</p>
+                    </div>
+
+                    <!--/* 오답일 경우 정답 확인 버튼 추가 */-->
+                    <div th:if="${!result.success}" class="index_list">
+                        <span></span> <!--/* 같은 레이아웃을 가지기 위해 빈 요소 추가 */-->
+                        <div class="check_correct">
+                            <div class="list_option">
+                                <span class="marker" th:text="|${result.successAnswer}.|">정답 번호</span>
+                                <p class="text_ellipsis correct_answer"
+                                   th:text="${result.getOption(result.successAnswer)}">정답 보기 내용</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn_list">
+            <a href="/quiz" class="btn">국어 놀이터로</a>
+            <a href="/" class="btn white">마당으로</a>
+            <a href="/quiz/speed" class="btn primary">다시 도전!</a>
+        </div>
+    </div>
+</div>
+</html>

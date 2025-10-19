@@ -1,0 +1,142 @@
+/* 보기 리스트 관련 */
+#quiz-options {
+    .option_btns {
+        border-radius: var(--bdrs);
+        background-color: var(--baseBackground);
+        border: var(--baseBorder);
+        box-shadow: var(--bxsh);
+        position: relative; /* 추가 */
+        transition: all 0.3s ease; /* 추가 */
+
+        &:hover:not(.hint-removed), &.selected {
+            font-weight: bold;
+            background-color: var(--subColor);
+        }
+
+        /*  힌트로 제거된 보기 스타일 */
+        &.hint-removed {
+            background-color: #f8f8f8 !important;
+            border-color: #e0e0e0 !important;
+            cursor: not-allowed !important;
+            opacity: 0.7;
+
+            &:hover {
+                background-color: #f8f8f8 !important;
+                transform: none !important;
+            }
+
+            .option {
+                text-decoration: line-through;
+                opacity: 0.5;
+                color: #999 !important;
+            }
+        }
+    }
+}
+
+/* 힌트 버튼 스타일 */
+#hint-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primaryColor);
+    transition: all 0.3s ease;
+
+    &:hover:not(.disabled) {
+        color: var(--primaryColorHover);
+        transform: scale(1.1);
+    }
+
+    &.disabled {
+        color: #ccc;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    iconify-icon {
+        font-size: 24px;
+    }
+}
+
+/* 힌트 개수 액션 효과 */
+#hint-count.action {
+    animation: hintCountPulse 0.6s ease;
+    color: var(--primaryColor);
+    font-weight: bold;
+}
+
+@keyframes hintCountPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+    /* 힌트로 제거된 보기 스타일 */
+    .btn.hint-removed {
+        background-color: #f8f8f8 !important;
+        border-color: #e0e0e0 !important;
+        cursor: not-allowed !important;
+        opacity: 0.7;
+        position: relative;
+    }
+
+    .btn.hint-removed:hover {
+        background-color: #f8f8f8 !important;
+        transform: none !important;
+    }
+
+    .btn.hint-removed .choice-text {
+        text-decoration: line-through;
+        color: #999 !important;
+    }
+
+    /* 힌트 마커 스타일 */
+    .hint-marker {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: #ff4757;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        z-index: 1;
+    }
+
+    /* 퀴즈 보기 버튼 기본 스타일 개선 */
+    #quiz-options .btn {
+        position: relative;
+        margin-bottom: 10px;
+        min-height: 50px;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+    }
+
+    #quiz-options .btn:not(.hint-removed):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #quiz-options .btn.selected:not(.hint-removed) {
+        background-color: var(--primaryColor) !important;
+        color: white !important;
+        border-color: var(--primaryColor) !important;
+    }
+
+    .choice-no {
+        font-weight: bold;
+        min-width: 20px;
+    }
+
+    .choice-text {
+        flex: 1;
+        line-height: 1.4;
+    }

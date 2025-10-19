@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<div th:fragment="register-top-fragment(title)" class="sign_top">
+    <a href="/" class="back_btn">
+        <span class="back_icon">
+            <iconify-icon icon="ep:arrow-left-bold"></iconify-icon>
+        </span>
+        Home
+    </a>
+    <p th:if="${title != ''}" class="title">[[${title}]]</p>
+</div>
+</html>

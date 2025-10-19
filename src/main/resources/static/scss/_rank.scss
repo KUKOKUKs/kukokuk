@@ -1,0 +1,35 @@
+.ranks_component {
+    .component_info {
+        &.selected::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border: 2px solid var(--primaryColor);
+            border-radius: var(--bdrs);
+            pointer-events: none;
+        }
+
+        .rank {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &.medal {
+                font-size: var(--titleFontSize);
+            }
+        }
+
+        .rank_profile {
+            border-radius: 50%;
+            border: var(--baseBorder);
+            overflow: hidden;
+        }
+
+        .rank_score {
+            margin-left: auto;
+        }
+    }
+}

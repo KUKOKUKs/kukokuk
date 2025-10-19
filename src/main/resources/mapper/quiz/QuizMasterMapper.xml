@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.quiz.mapper.QuizMasterMapper">
+    <resultMap id="QuizMasterMap" type="QuizMaster">
+        <id property="quizNo" column="QUIZ_NO"/>
+        <result property="entryNo" column="ENTRY_NO"/>
+        <result property="question" column="QUESTION"/>
+        <result property="option1" column="OPTION1"/>
+        <result property="option2" column="OPTION2"/>
+        <result property="option3" column="OPTION3"/>
+        <result property="option4" column="OPTION4"/>
+        <result property="successAnswer" column="SUCCESS_ANSWER"/>
+        <result property="questionType" column="QUESTION_TYPE"/>
+        <result property="difficulty" column="DIFFICULTY"/>
+        <result property="usageCount" column="USAGE_COUNT"/>
+        <result property="successCount" column="SUCCESS_COUNT"/>
+    </resultMap>
+    <!--
+        * 퀴즈의 갯수를 조회한다.
+        * @return int
+        int getQuizCount();
+    -->
+    <select id="getQuizCount" resultType="int">
+        SELECT count(*)
+        FROM KUKOKUK_QUIZ_MASTERS
+    </select>
+
+    <!--
+        public int insertQuiz(QuizMaster quiz);
+
+        퀴즈 마스터 테이블에 새로운 퀴즈 1건을 저장한다.
+        - entryNo: 정답 사전 엔트리 번호
+        - question: 문제 텍스트 (뜻 or 단어)
+        - option1~4: 보기 항목
+        - successAnswer: 정답 위치 (1~4)
+        - questionType: 문제 유형 ('뜻' or '단어')
+    -->
+    <insert id="insertQuiz" parameterType="QuizMaster">
+        INSERT INTO KUKOKUK_QUIZ_MASTERS (ENTRY_NO, QUESTION, OPTION1, OPTION2, OPTION3, OPTION4,
+                                          SUCCESS_ANSWER, QUESTION_TYPE)
+        VALUES (#{entryNo}, #{question}, #{option1}, #{option2}, #{option3}, #{option4},
+                #{successAnswer}, #{questionType})
+    </insert>
+
+    <!--
+        * 풀이 횟수가 20회 미만인 퀴즈의 갯수를 조회한다.
+        * @return int
+        int getQuizCounterByUsageCount(int usageCount);
+    -->
+    <select id="getQuizCountByUsageCount" resultType="int">
+        SELECT count(*)
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE USAGE_COUNT &lt; #{usageCount}
+    </select>
+    <!--
+        int getQuizCountByUsageCount(int usageCount);
+
+        * 특정 유형에서 USAGE_COUNT(풀이횟수)가 주어진 값 미만인 퀴즈 개수 반환
+        * @param questionType 문제 유형 ("뜻", "단어")
+        * @param usageCount 기준값
+        * @return 해당 조건에 맞는 퀴즈 개수
+
+        int get(@Param("questionType") String questionType,
+        @Param("usageCount") int usageCount);
+        -->
+    <select id="getQuizCountByTypeAndUsageCount" resultType="int">
+        SELECT COUNT(*)
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE QUESTION_TYPE = #{questionType}
+          AND USAGE_COUNT &lt; #{usageCount}
+    </select>
+
+    <!-- QuizMasterMapper.xml -->
+    <select id="getQuizMastersForSpeed" resultMap="QuizMasterMap">
+        SELECT QUIZ_NO,
+               QUESTION,
+               OPTION1,
+               OPTION2,
+               OPTION3,
+               OPTION4,
+               SUCCESS_ANSWER,
+               QUESTION_TYPE,
+               ENTRY_NO,
+               USAGE_COUNT
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE USAGE_COUNT &lt; #{usageCount}
+        ORDER BY RAND()
+        LIMIT #{limit}
+    </select>
+
+
+    <!--
+       * 특정 퀴즈 번호의 정답 번호를 조회한다.
+       * @param quizNo 퀴즈 번호
+       * @return 정답 선택 번호
+       int getCorrectChoiceByQuizNo(int quizNo);
+    -->
+    <select id="getCorrectChoiceByQuizNo" resultType="java.lang.Integer">
+        SELECT success_answer
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE quiz_no = #{quizNo}
+    </select>
+
+
+    <!--
+     * 난이도 및 유형에 따라 퀴즈 목록을 조회한다.
+     * @param difficulty   난이도 ('어려움', '보통', '쉬움')
+     * @param questionType 문제 유형 ('뜻', '단어')
+     * @return 퀴즈 목록
+    List<QuizMaster> getQuizListByDifficultyAndType(
+        @Param("difficulty") String difficulty,
+        @Param("questionType") String questionType
+    );
+    -->
+    <select id="getQuizListByDifficultyAndType" resultMap="QuizMasterMap">
+        SELECT *
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE USAGE_COUNT &gt;= 20
+        AND QUESTION_TYPE = #{questionType}
+        <choose>
+            <when test='"쉬움" == difficulty'>
+                AND ACCURACY_RATE &lt;= 30
+            </when>
+            <when test='"보통" == difficulty'>
+                AND ACCURACY_RATE &gt; 30 AND ACCURACY_RATE &lt;= 60
+            </when>
+            <when test='"어려움" == difficulty'>
+                AND ACCURACY_RATE &gt; 60
+            </when>
+        </choose>
+        ORDER BY RAND()
+        LIMIT 10
+    </select>
+
+    <!--
+     * 해당 퀴즈의 usage_count를 반환한다.
+     * @param quizNo 퀴즈 번호
+     * @return usage_count 값
+    int getUsageCount(int quizNo);
+    -->
+    <select id="getUsageCount" parameterType="int" resultType="int">
+        SELECT USAGE_COUNT
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE QUIZ_NO = #{quizNo}
+    </select>
+
+    <!--
+     * 세션 번호로 DIFFICULTY와 QUESTION_TYPE을 조회한다.
+     * @param sessionNo 세션 번호
+     * @return QuizLevelResultDto
+    -->
+    <select id="getDifficultyAndQuestionTypeBySessionNo"
+        resultType="com.kukokuk.domain.quiz.dto.QuizLevelResultDto">
+        SELECT
+            qm.DIFFICULTY AS difficulty,
+            qm.QUESTION_TYPE AS questionType
+        FROM KUKOKUK_QUIZ_RESULTS qr
+                 JOIN KUKOKUK_QUIZ_MASTERS qm ON qr.QUIZ_NO = qm.QUIZ_NO
+        WHERE qr.SESSION_NO = #{sessionNo}
+        LIMIT 1
+    </select>
+    <!--
+     * 여러 퀴즈 번호에 해당하는 퀴즈 정보 조회
+     * @param quizNos 퀴즈 번호 리스트
+     * @return 퀴즈 정보 리스트
+    List<QuizMaster> getQuizMastersByQuizNos(List<Integer> quizNos);
+
+    -->
+    <select id="getQuizMastersByQuizNos" resultMap="QuizMasterMap">
+        SELECT QUIZ_NO,
+        ENTRY_NO,
+        QUESTION,
+        OPTION1,
+        OPTION2,
+        OPTION3,
+        OPTION4,
+        SUCCESS_ANSWER,
+        QUESTION_TYPE,
+        DIFFICULTY,
+        USAGE_COUNT,
+        SUCCESS_COUNT
+        FROM KUKOKUK_QUIZ_MASTERS
+        WHERE QUIZ_NO IN
+        <foreach collection="quizNos" item="quizNo" open="(" separator="," close=")">
+            #{quizNo}
+        </foreach>
+    </select>
+
+
+</mapper>

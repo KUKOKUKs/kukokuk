@@ -1,0 +1,60 @@
+spring:
+  datasource:
+    # 데이터베이스 연결 URL (MySQL)
+    url: jdbc:mysql://192.168.2.131:3306/kukokuk?serverTimezone=Asia/Seoul
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    username: kukokuk
+    password: zxcv1234
+
+  # Redis 기본 설정
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+
+  session:
+    store-type: none
+
+  # env 관련 설정 추가
+  config:
+    import: optional:file:.env[.properties]
+
+server:
+  port: 8080
+
+logging:
+  level:
+    jdbc:
+      audit: OFF
+      resultset: OFF
+      resultsettable: INFO
+      sqlonly: OFF
+      sqltiming: INFO
+      connection: OFF
+
+    org:
+      hibernate:
+        # 하이버네이트 SQL 로그
+        SQL: DEBUG
+
+        type:
+          descriptor:
+            sql:
+              # 바인딩 파라미터 추적 로그
+              BasicBinder: TRACE
+
+    # HikariCP 커넥션 풀 로그
+    com.zaxxer.hikari: INFO
+
+    # DataSource 관련 로그
+    javax.sql.DataSource: OFF
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
+    baseUrl: https://generativelanguage.googleapis.com
+
+#WebSocket 주소
+ws:
+  url: "http://kukokuk-websocket-service:8081/ws"

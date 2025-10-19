@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<th:block th:fragment="nav-fragment">
+    <!--/* logo */-->
+    <th:block th:replace="~{fragments/common/logo :: logo-fragment}"></th:block>
+
+    <div id="nav-container" class="nav_container">
+        <div class="nav_wrap">
+            <ul class="nav_list small_gap">
+                <li class="nav_menu">
+                    <a href="/" class="menu"
+                        th:classappend="${menu == 'home'} ? 'active'">
+                        <span class="menu_icon">
+                            <iconify-icon icon="fluent-color:home-16"></iconify-icon>
+                        </span>
+                        <span>국어국 마당</span>
+                    </a>
+                </li>
+                <li class="nav_menu">
+                    <a href="/study" class="menu"
+                        th:classappend="${menu == 'study'} ? 'active'">
+                        <span class="menu_icon">
+                            <iconify-icon icon="fluent-color:book-24"></iconify-icon>
+                        </span>
+                        <span>오늘의 학습</span>
+                    </a>
+                </li>
+                <li class="nav_menu">
+                    <a href="/daily-quests" class="menu"
+                       th:classappend="${menu == 'quest'} ? 'active'">
+                        <span class="menu_icon">
+                            <iconify-icon icon="streamline-color:task-list-flat"></iconify-icon>
+                        </span>
+                        <span>오늘의 도전</span>
+                    </a>
+                </li>
+                <li class="nav_menu">
+                    <a href="/quiz" class="menu"
+                        th:classappend="${menu == 'quiz'} ? 'active'">
+                        <span class="menu_icon">
+                            <iconify-icon icon="fluent-color:game-chat-20"></iconify-icon>
+                        </span>
+                        <span>국어 놀이터</span>
+                    </a>
+                </li>
+                <li class="nav_menu">
+                    <a href="/group" class="menu"
+                       th:classappend="${menu == 'group'} ? 'active'">
+                        <span class="menu_icon">
+                            <iconify-icon icon="streamline-plump-color:class-lesson-flat"></iconify-icon>
+                        </span>
+                        <span>우리반</span>
+                    </a>
+                </li>
+                <li class="nav_menu">
+                    <a href="/rank" class="menu"
+                        th:classappend="${menu == 'rank'} ? 'active'">
+                        <span class="menu_icon">
+                            <iconify-icon icon="streamline-ultimate-color:ranking-stars-ribbon"></iconify-icon>
+                        </span>
+                        <span>순위</span>
+                    </a>
+                </li>
+                <li class="nav_menu">
+                    <a href="/user/profile?reset=true" class="menu"
+                        th:classappend="${menu == 'profile'} ? 'active'">
+                        <!--/* 로그인 전 프로필 이미지 */-->
+                        <span class="menu_icon"
+                            sec:authorize="!isAuthenticated()">
+                            <iconify-icon icon="streamline-color:user-profile-focus-flat"></iconify-icon>
+                        </span>
+
+                        <!--/* 로그인 후 사용자 프로필 가져와 img 표시 */-->
+                        <span class="menu_icon profile"
+                              sec:authorize="isAuthenticated()"
+                              th:with="user=${#authentication.principal.user}">
+                            <img th:src="${user.profileFileUrl}"
+                                 alt="profile thumbnail">
+                        </span>
+                        <span>내 정보</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!--/* footer */-->
+            <div th:replace="~{fragments/common/footer :: footer-fragment}"></div>
+        </div>
+
+        <!--/* nav toggle btn */-->
+        <button type="button" id="nav-toggle-btn" class="nav_toggle_btn"></button>
+    </div>
+</th:block>
+</html>

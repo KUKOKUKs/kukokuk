@@ -1,0 +1,24 @@
+package com.kukokuk.domain.study.vo;
+
+import java.util.Date;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.ibatis.type.Alias;
+
+@Getter
+@Setter
+@Alias("DailyStudy")
+public class DailyStudy {
+
+    private int dailyStudyNo;
+    private int dailyStudyMaterialNo;
+    private String title;
+    private String explanation;
+    private int studyDifficulty;
+    private int cardCount;
+    private Date createdDate;
+    private Date updatedDate;
+    private Integer groupNo;
+
+    private DailyStudyMaterial dailyStudyMaterial;
+}

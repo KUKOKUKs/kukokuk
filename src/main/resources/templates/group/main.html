@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html layout:decorate="~{/layout/base}"
+      th:with="title='우리반'
+      , menu='group'
+      , isTeacher=${#authorization.expression('hasRole(''TEACHER'')')}">
+<div layout:fragment="content">
+    <div id="main-content" class="content_container">
+        <!--/* 그룹 학습/검색 컴포넌트 */-->
+        <div class="content_info toggle_info_component group_search_toggle_info"
+             th:classappend="${myGroup != null ? 'first' : 'second'}">
+            <div class="content_title">
+                <div th:if="${myGroup != null}" class="group_title toggle_info_first">
+                    <iconify-icon icon="streamline-plump-color:class-lesson-flat"></iconify-icon>
+                    우리반 학습
+                </div>
+
+                <div class="group_title toggle_info_second">
+                    <iconify-icon icon="streamline-flex-color:search-category-flat"></iconify-icon>
+                    반 찾기
+                </div>
+
+                <!--/* 그룹에 속해 있는 사용자 */-->
+                <div th:if="${myGroup != null}"
+                     id="group-switch-toggle-btn"
+                     class="content_switcher switch_toggle_btn"
+                     data-before="학습"
+                     data-after="반 찾기">
+                    <div class="toggle_switch"></div>
+                </div>
+            </div>
+
+            <!--/* 그룹에 속해 있는 사용자만 그룹 학습 컴포넌트 제공 */-->
+            <th:block th:if="${myGroup != null}">
+                <div th:replace="~{fragments/study/group-study-list :: group-study-list-fragment(groupStudyRows=5, isUseSpinner=false)}"></div>
+            </th:block>
+
+            <!--/* 그룹이 없는 사용자에게는 검색 컴포넌트만 제공 */-->
+            <div id="group-search-component"
+                 class="component small_list_component toggle_info_second">
+                <div class="search_form_wrap">
+                    <form class="search_form" id="group-search-form">
+                        <input type="text"
+                               class="search_input"
+                               name="keyword"
+                               placeholder="반 이름 또는 닉네임을 입력해 주세요" th:value="${param.keyword}">
+                        <button type="submit" class="serch_btn">
+                            <iconify-icon class="icon title_font" icon="marketeq:search-alt-3"></iconify-icon>
+                        </button>
+                    </form>
+
+                    <button th:if="${#lists.isEmpty(param.keyword) or #strings.isEmpty(param.keyword[0])}"
+                            type="button"
+                            class="icon title_font tooltip"
+                            id="reset-btn"
+                            data-label="새로고침">
+                        <iconify-icon class="icon title_font" icon="marketeq:refresh-round"></iconify-icon>
+                    </button>
+                </div>
+
+                <div class="full show_scroll">
+                    <div id="group-search-list-component" class="grid_list_component column">
+                        <div class="group_serach_list" th:each="group : ${groups.items}">
+                            <div class="list_info">
+                                <div class="group_info group_title_info">
+                                    <iconify-icon th:if="${group.password != null}"
+                                                  class="icon base_font"
+                                                  icon="streamline-color:padlock-square-1-flat"></iconify-icon>
+                                    <p class="group_name text_ellipsis" th:text="${group.title}">그룹명</p>
+                                    <span class="group_users" th:text="|(${group.memberCountFormatted}명)|">(1,234명)</span>
+                                </div>
+
+                                <div class="group_info motto_info">
+                                    <span class="w_max_content">📜</span>
+                                    <p class="motto text_ellipsis" th:text="${group.motto ?: '-'}">급훈</p>
+                                </div>
+                            </div>
+
+                            <div class="group_info group_botton_info">
+                                <div class="group_teacher_profile">
+                                    <div class="icon title group_profile_img">
+                                        <img th:src="${group.teacher.profileFileUrl}"
+                                             alt="profile thumbnail">
+                                    </div>
+                                    <span class="group_teacher_name text_ellipsis"
+                                          th:text="${group.teacher.nickname}">교사 닉네임</span>
+                                </div>
+
+                                <!--/* 그룹이 없는 사용자만 입반 버튼 노출 */-->
+                                <button th:if="${myGroup == null}"
+                                        type="button"
+                                        class="btn tiny small_font white group_join_btn"
+                                        th:data-group-no="${group.groupNo}">입반 신청</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--/* pagination(총 페이지 수가 1보다 클 경우) */-->
+                <th:block th:replace="~{fragments/common/pagination :: pagination-fragment(
+                    paging=${groups.pagination}
+                    , conditionQuery=${groups.getConditionQuery()}
+                )}"></th:block>
+            </div>
+        </div>
+
+        <!--/* 스무고개 컨텐츠 */-->
+        <div class="content_info">
+            <div class="content_title">
+                <iconify-icon icon="streamline-flex-color:help-chat-1-flat"></iconify-icon>
+                스무고개
+            </div>
+
+            <!--/* 그룹이 없는 사용자 */-->
+            <div th:if="${myGroup == null}" class="component">
+                <div class="component_title">
+                    <div class="title_info column">
+                        우리반이 없습니다
+                        <span class="component_sub_title">입반하여 우리 반과 함께 정답을 찾아가는 스무고개에 참여해보세요</span>
+                    </div>
+                </div>
+            </div>
+
+            <!--/* 그룹에 속해 있는 사용자 */-->
+            <th:block th:if="${myGroup != null}">
+                <form class="component small_list_component"
+                      method="get"
+                      th:action="@{/twenty/gameRoom/{roomNo}(roomNo=${myGroupActiveRoomNo})}">
+                    <input type="hidden" name="roomNo" th:value="${myGroupActiveRoomNo}">
+                    <div class="component_title">
+                        <div class="title_info column">
+                            우리 반 스무고개
+                            <span class="component_sub_title">우리 반과 함께 정답을 찾아가는 스무고개에 참여해보세요</span>
+                        </div>
+                    </div>
+
+                    <!--/* 스무고개 방 당일 최근 이력 3건 */-->
+                    <div th:if="${!#lists.isEmpty(myGroupTwentyRooms)}" class="tiny_list_component">
+                        <div th:each="room : ${myGroupTwentyRooms}" class="component_info small with_icon">
+                            <div class="d_flex align_center tiny_gap text_ellipsis">
+                                <th:block th:switch="${room.status}">
+                                    <span th:case="'WAITING'" class="color_blue">대기중</span>
+                                    <span th:case="'STOPPED'">종료</span>
+                                    <span th:case="'COMPLETED'">종료</span>
+                                    <span th:case="*" class="color_red">진행중</span>
+                                </th:block>
+                                <p class="text_ellipsis" th:text="${room.title}">스무고개방 이름</p>
+                            </div>
+                            <span class="w_max_content color_gray"
+                                  th:text="${#dates.format(room.createdDate, 'yyyy.M.d hh:mm:ss')}">2025.9.26 08:40:30</span>
+                        </div>
+                    </div>
+
+                    <button th:if="${myGroupActiveRoomNo != null}" type="submit" class="btn primary">참여하기</button>
+                    <span th:if="${myGroupActiveRoomNo == null}" class="btn disabled">진행 중인 방이 없습니다</span>
+                </form>
+            </th:block>
+        </div>
+    </div>
+
+    <div id="sub-content" class="content_container">
+        <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
+
+        <!--/* 그룹 정보 컴포넌트 */-->
+        <div class="component small_list_component">
+            <div class="component_title">
+                <div class="title_info column">
+                    <!--/* 그룹이 없는 사용자 */-->
+                    <th:block th:if="${myGroup == null}">
+                        우리 반이 없습니다
+                        <span class="component_sub_title">입반하여 우리 반과 함께 즐겨보세요</span>
+                    </th:block>
+
+                    <!--/* 그룹에 속한 사용자 */-->
+                    <form th:if="${myGroup != null}"
+                          class="d_flex justify_content_between align_center small_gap"
+                          id="group-out-form"
+                          method="post"
+                          action="">
+                        <input type="hidden" name="groupNo" th:value="${myGroup.groupNo}">
+                        <p class="text_ellipsis" th:text="${myGroup.title}">우리반 이름</p>
+                        <button type="button" class="btn tiny white">나가기</button>
+                    </form>
+                </div>
+            </div>
+
+            <!--/* 그룹이 없는 사용자 */-->
+            <div th:if="${myGroup == null}" class="component_info w_100">
+                <div class="list_info small_font normal" style="--cols: 24; --indexCols: 2;">
+                    <div class="index_list">
+                        <span class="marker tac">📖</span>
+                        <p>우리 반의 AI 맞춤 학습</p>
+                    </div>
+                    <div class="index_list">
+                        <span class="marker tac">💡</span>
+                        <p>우리 반과 함께 스무고개</p>
+                    </div>
+                    <div class="index_list">
+                        <span class="marker tac">👑</span>
+                        <p>우리 반 월간 순위 경쟁</p>
+                    </div>
+                </div>
+            </div>
+
+            <!--/* 그룹에 속한 사용자 */-->
+            <div th:if="${myGroup != null}" class="component_info w_100">
+                <div class="list_info ov_v small_font normal" style="--cols: 24; --indexCols: 2;">
+                    <div class="index_list">
+                        <span class="marker tac tooltip" data-label="급훈">📜</span>
+                        <p th:text="${myGroup.motto ?: '-'}">급훈</p>
+                    </div>
+                    <div class="index_list">
+                        <span class="marker tac tooltip" data-label="인원수">👩‍👧‍👧</span>
+                        <p th:text="|${myGroup.getMemberCountFormatted()} 명|">인원 수</p>
+                    </div>
+                    <div class="index_list">
+                        <span class="marker tac tooltip" data-label="가입일">📅</span>
+                        <p th:text="${#dates.format(myGroup.joinDate, 'yyyy-MM-dd')}">가입일</p>
+                    </div>
+                </div>
+            </div>
+
+            <!--/* 교사 권한 사용자 */-->
+            <a th:if="${isTeacher}" th:href="@{/group/teacher}" class="btn tiny blue w_100 small_font">나의 반 관리하러 가기</a>
+        </div>
+
+        <!--/* 랭킹 컴포넌트 추가 예정 */-->
+        <div th:if="${myGroup != null}"
+             class="component small_list_component">
+            <div class="component_title">우리반 순위</div>
+            컨텐츠별 탭 버튼으로 변환(스피드, 받아쓰기, 스무고개)
+            반에서 기준이 될 데이터로 1~5순위 정도로 정렬하여 노출(사용자가 1~5순위에 포함되지 않았다면 최하단에 사용자의 순위로 사용자 점수 표시)
+            1~3순위는 특수 프레임 이미지/스타일 적용
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="module" th:src="@{/js/modules/group/group.js}"></script>
+</th:block>
+</html>

@@ -1,0 +1,1817 @@
+/* accessibility */
+.a11y-hidden {
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+}
+
+.logo {
+    display: block;
+    width: var(--logoWidth);
+    height: var(--logoHeight);
+    background: url("/images/kukokuk_logo.png") 0 0 no-repeat;
+    background-size: contain;
+
+    &.fixed {
+        position: fixed;
+        top: var(--containerPadding);
+        left: calc(var(--basePadding) + var(--baseFontSize));
+        z-index: 1;
+    }
+
+    &.small {
+        width: var(--smallLogoWidth);
+        height: var(--smallLogoHeight);
+    }
+}
+
+.symbol_logo {
+    display: block;
+    width: var(--symbolLogoSize);
+    aspect-ratio: 1 / 1;
+    background: url("/images/kukokuk_symbol_logo.png") 0 0 no-repeat;
+    background-size: contain;
+    cursor: pointer;
+}
+
+.main {
+    display: flex;
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+/* content */
+.content {
+    width: 100%;
+    padding: 0 var(--containerPadding);
+    display: flex;
+    justify-content: center;
+}
+
+.content_container {
+    width: 100%;
+    padding: var(--containerPadding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
+    overflow-y: auto;
+
+    &#main-content {
+        max-width: var(--mainContentWidth); /* 메인 컨텐츠 사이즈 */
+    }
+
+    &#sub-content {
+        max-width: var(--subContentWidth); /* 서브 컨텐츠 사이즈 */
+    }
+
+    &#center-content {
+        max-width: var(--centerContentWidth); /* 센터 컨텐츠 사이즈 */
+    }
+}
+
+.content_info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--smallGap);
+}
+
+.content_title {
+    width: 100%;
+    font-size: var(--titleFontSize);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: var(--tinyGap);
+    position: relative;
+}
+
+.container {
+    width: 100%;
+    padding: var(--containerPadding);
+}
+
+#footer {
+    padding: 0 var(--basePadding);
+
+    .copyright {
+        font-size: var(--smallFontSize);
+    }
+}
+
+.component {
+    width: 100%;
+    padding: var(--basePadding);
+    background-color: var(--baseBackground);
+    border-radius: var(--bdrs);
+    border: var(--baseBorder);
+    box-shadow: var(--bxsh);
+    position: relative;
+
+    &:has(.callout) {
+        margin-top: var(--basePadding);
+    }
+}
+
+/*
+    토글 컨텐츠 인포
+    toggle_info_component 요소 내부에
+    switch_toggle_btn 토클 버튼이 있어야 하며
+    토글되는 컨텐츠 요소의 클래스명은 아래와 같아야 함
+*/
+.toggle_info_component {
+    &.first {
+        .toggle_info_second {
+            display: none !important;
+        }
+    }
+
+    &.second {
+        .toggle_info_first {
+            display: none  !important;
+        }
+    }
+}
+
+/* callout */
+.callout {
+    font-size: var(--subFontSize);
+    width: max-content;
+    padding: 0.3em 0.6em;
+    background-color: var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+    color: #fff;
+    border-radius: var(--bdrs);
+    box-shadow: var(--bxsh);
+    position: absolute;
+    top: 0;
+    transform: translateY(-50%);
+    transition: background-color var(--trst);
+
+    &::after {
+        content: "";
+        display: inline-block;
+        width: 0;
+        height: 0;
+        top: 98%;
+    }
+
+    &.center {
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        &::after {
+            border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    }
+
+    &.left {
+        left: var(--basePadding);
+
+        &::after {
+            border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+            border-left: 10px solid transparent;
+            border-right: 0 solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+            position: absolute;
+            right: 0.3em;
+        }
+    }
+
+    &.right {
+        right: var(--basePadding);
+
+        &::after {
+            border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
+            border-left: 0 solid var(--callout-color, var(--primaryColor));
+            border-right: 10px solid transparent;
+            position: absolute;
+            left: 0.3em;
+        }
+    }
+}
+
+.callout_info {
+    padding: var(--smallPadding) 0;
+}
+
+/*
+    tooltip
+    해당 클래스 요소에
+    data-label="내용입력"
+*/
+.tooltip {
+    position: relative;
+
+    &::after {
+        content: attr(data-label);
+        opacity: 0;
+        display: inline-block;
+        width: max-content;
+        padding: var(--tinyPadding);
+        background-color: #fff;
+        font-size: var(--fixEtcTinyFontSize);
+        border-radius: var(--bdrs);
+        box-shadow: var(--bxsh);
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        transition: opacity var(--trst), top var(--trst);
+        pointer-events: none;
+    }
+
+    &:hover {
+        &::after {
+            opacity: 1;
+            top: calc(var(--fixEtcTinyFontSize) - (var(--fixEtcTinyFontSize) * 2.5));
+        }
+    }
+}
+
+/* base gap list */
+.base_list_component {
+    display: flex;
+    flex-direction: column;
+    gap: var(--baseGap);
+}
+
+/* small gap list */
+.small_list_component {
+    display: flex;
+    flex-direction: column;
+    gap: var(--smallGap);
+
+    &.limit {
+        max-height: 150px;       /* 처음에 1.5개 정도 보이게 */
+        transition: max-height var(--trst);
+
+        &.open {
+            max-height: 1000px;      /* 충분히 큰 값으로 설정 */
+        }
+
+        /* 세로 토글 버튼 */
+        .vertical_toggle_btn {
+            .arrow {
+                transition: transform var(--trst);
+            }
+
+            &.open {
+                .arrow {
+                    transform: rotateX(180deg);
+                }
+            }
+        }
+    }
+}
+
+/* tiny gap list */
+.tiny_list_component {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tinyGap);
+}
+
+/* grid list */
+.grid_list_component {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 3), 1fr); /* --cols 없으면 3분할로 기본값 적용 */
+    gap: var(--tinyGap);
+
+    /* 리스트가 1개일 때 → 전체 차지 */
+    &:has(.grid_list:first-child:last-child) {
+        grid-template-columns: 1fr;
+    }
+
+    /* 리스트가 2개일 때 → 2등분 */
+    &:has(.grid_list:nth-child(2):last-child) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    &.column {
+        grid-template-columns: 1fr !important; /* 한 라인씩 세로형 리스트 */
+    }
+
+    .full_grid {
+        grid-column: 1 / -1; /* 특정 그리드 요소를 전체 컬럼을 차지 */
+    }
+
+    .grid_list {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: var(--smallGap);
+        position: relative;
+
+        .component_title {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .icon {
+            align-self: flex-end;
+        }
+
+        &:has(input[type=radio]) {  /* 리스트가 라디오 버튼으로 사용될 경우 */
+            cursor: pointer;
+
+            input[type=radio] {
+                position: absolute;
+                width: 0;
+                height: 0;
+                opacity: 0;
+            }
+
+            &:has(input[type=radio]:checked) {
+                background-color: var(--primaryColor);
+                color: #fff;
+
+                .component_sub_title {
+                    color: #fff;
+                }
+            }
+        }
+    }
+}
+
+.component_title {
+    font-size: var(--largeFontSize);
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title_info {
+        width: 100%;
+        display: flex;
+        align-items: baseline;
+        gap: var(--tinyGap);
+
+        &.center {
+            justify-content: center;
+            text-align: center;
+        }
+    }
+
+    .sub_title {
+        font-size: var(--tinyFontSize);
+        font-weight: normal;
+        color: var(--grayColor);
+    }
+}
+
+.component_sub_title {
+    width: 100%;
+    font-size: var(--baseFontSize);
+    font-weight: normal;
+    color: var(--grayColor);
+}
+
+/* 리스트 요소 */
+.component_info {
+    padding: var(--smallPadding);
+    background-color: var(--subColor);
+    border-radius: var(--bdrs);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--smallGap);
+    position: relative;
+
+    &.small {
+        font-size: var(--smallFontSize);
+
+        &.with_icon {
+            padding: var(--smallComponentWithIconPadding);
+
+            .btn {
+                width: var(--baseIcon);
+                min-width: var(--baseIcon);
+                max-height: var(--smallIcon);
+                min-height: var(--smallIcon);
+                box-sizing: content-box;
+            }
+        }
+    }
+
+    &.tiny {
+        padding: var(--tinyPadding);
+    }
+
+    .list_info {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--tinyGap);
+        overflow: hidden;
+    }
+}
+
+/* 문단 앞 인덱스/마커가 있는 리스트 */
+.index_list {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 12), 1fr); /* --cols 없으면 12분할로 기본값 적용 */
+    gap: var(--tinyGap);
+
+    & > :first-child {
+        grid-column: 1 / span var(--indexCols, 1); /* 인덱스/마커 요소가 차지하는 컬럼 개수 처음부터 N칸을 차지 */
+    }
+
+    & > :not(:first-child) {
+        grid-column: calc(var(--indexCols, 1) + 1) / -1; /* 인덱스 이후 남은 칸 전부 차지 */
+    }
+}
+
+/*
+    넘버링/인덱스/정렬 리스트
+    marker와 text가 있는 li, ol tag 형식
+    * 마커와 텍스트는 top line 정렬로 서로 가온데 정렬하지 않음
+*/
+.list_option {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--tinyGap);
+    text-align: left;
+
+    .marker {
+        flex: 0 0 auto;
+    }
+}
+
+/* 로그인/회원가입/프로필 페이지에서 확인 가능함  */
+.form_component {
+    width: 100%;
+    max-width: var(--subContentWidth);
+    padding: var(--containerPadding) 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--baseGap);
+    position: relative;
+    overflow-y: auto;
+}
+
+/* bar gauge */
+.bar_gauge {
+    width: 100%;
+    height: 9px;
+    font-size: var(--smallFontSize);
+    background-color: var(--lightGrayColor);
+    border-radius: var(--bdrs);
+    border: 1px solid var(--borderColor);
+    position: relative;
+
+    .gauge {
+        max-width: 100%;
+        height: 100%;
+        background-color: var(--yellowColor);
+        border-radius: var(--bdrs);
+    }
+
+    .gauge_info {
+        display: inline-block;
+        font-size: var(--fixEtcTinyFontSize);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .marker {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+/* progress information */
+.progress_container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tinyGap);
+
+    .progress_component {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--baseGap);
+
+        .progress_info {
+            display: flex;
+            align-items: center;
+            gap: var(--tinyGap);
+        }
+
+        .icon {
+            font-size: var(--titleFontSize);
+        }
+
+        .info {
+            color: var(--grayColor);
+            font-size: var(--smallFontSize);
+            font-weight: bold;
+        }
+    }
+
+    &.warning {
+        .gauge {
+            background-color: var(--redColor);
+        }
+
+        .progress_component {
+            .timer {
+                font-size: var(--baseFontSize);
+                color: var(--redColor);
+            }
+        }
+    }
+}
+
+/* error page */
+.error_wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--largeGap);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    .error_title {
+        display: flex;
+        align-items: center;
+        gap: var(--baseGap);
+        font-size: var(--titleFontSize);
+
+        .error_icon {
+            width: var(--largeIcon);
+            min-width: var(--largeIcon);
+            height: var(--largeIcon);
+            font-size: var(--largeIcon);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+}
+
+/* step bar*/
+.step_bar {
+    width: 100%;
+    margin: 5px 0;
+    background-color: var(--lightGrayColor);
+    position: relative;
+
+    .current_step {
+        height: 3px;
+        background-color: var(--primaryColor);
+    }
+
+    .step_circle_container { /* 생략 가능 요소 */
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+
+        .step_circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--lightGrayColor);
+
+            &.active {
+                background-color: var(--primaryColor);
+            }
+        }
+    }
+}
+
+/* form */
+.form_wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--baseGap);
+    border-radius: var(--bdrs);
+    position: relative;
+}
+
+.form_input_list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .input_info {
+        height: var(--inputHeight);
+        font-size: var(--subFontSize);
+        background-color: #fff;
+        padding: var(--inputPadding);
+        border-width: 0 1px 1px 1px;
+        border-style: solid;
+        border-color: var(--borderColor);
+        position: relative;
+        overflow: hidden;
+
+        &:has(.input_icon) {
+            padding-right: var(--inputHeight);
+        }
+
+        &:first-child {
+            border-radius: var(--bdrs) var(--bdrs) 0 0;
+            border-width: 1px;
+
+            &:has(input:focus)::after {
+                border-radius: var(--bdrs) var(--bdrs) 0 0;
+            }
+        }
+
+        &:last-child {
+            border-radius: 0 0 var(--bdrs) var(--bdrs);
+
+            &:has(input:focus)::after {
+                border-radius: 0 0 var(--bdrs) var(--bdrs);
+            }
+        }
+
+        &.one_input {
+            border-radius: var(--bdrs);
+
+            &:has(input:focus)::after {
+                border-radius: var(--bdrs);
+            }
+        }
+
+        input {
+            height: 30px;
+            line-height: 30px;
+            font-size: var(--baseFontSize);
+            position: relative;
+            z-index: 1;
+        }
+
+        .input_title,
+        .input_error {
+            width: 100%;
+            padding: 0 15px;
+            font-size: var(--baseFontSize);
+            color: var(--grayColor);
+            position: absolute;
+            top: 15px;
+            left: 0;
+            z-index: 1;
+            transition: top var(--trst), font-size var(--trst);
+            user-select: none;
+            -webkit-user-select: none; /* Safari/Chrome */
+            -moz-user-select: none; /* Firefox */
+
+            &.disabled {
+                opacity: 0;
+            }
+        }
+
+        .input_error {
+            color: var(--redColor);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .input_icon {
+            display: none;
+            align-items: center;
+            gap: var(--smallGap);
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            z-index: 1;
+            transform: translateY(-50%);
+
+            .icon {
+                width: var(--smallIcon);
+                height: var(--smallIcon);
+                padding: 0.35em;
+                color: var(--darkGreenColor);
+                cursor: pointer;
+
+                &.password {
+                    font-size: var(--baseFontSize);
+                }
+            }
+        }
+
+        &:has(input:not(:placeholder-shown)) {
+            .input_icon {
+                display: flex;
+            }
+        }
+
+        &:has(input:focus),
+        &:has(input:not(:placeholder-shown):not([type="date"])) {
+            .input_title,
+            .input_error {
+                font-size: var(--smallFontSize);
+                top: 5px;
+                transform: none;
+                pointer-events: none;
+            }
+        }
+
+        &:not(.radio_info):has(input:focus)::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border: 2px solid var(--primaryColor);
+            transition: border var(--trst);
+        }
+
+        &.radio_info {
+            padding: 0;
+            display: flex;
+            align-items: center;
+
+            .radio_input {
+                width: 100%;
+                height: 100%;
+                border-right: var(--baseBorder);
+                transition: background-color var(--trst);
+
+                &:last-child {
+                    border-right: none;
+                }
+
+                .text {
+                    width: 100%;
+                    height: 100%;
+                    color: var(--grayColor);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                input[type=radio] {
+                    position: absolute;
+                    width: 0;
+                    height: 0;
+                    opacity: 0;
+                }
+
+                &:has(input:checked) {
+                    background-color: var(--subColor);
+
+                    .text {
+                        font-weight: bold;
+                        color: var(--primaryColor);
+                    }
+                }
+            }
+        }
+
+        &.select_info {
+            padding: 0;
+            display: flex;
+            align-items: center;
+
+            .select_title {
+                min-width: 80px;
+                height: 100%;
+                padding: 0 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background-color: var(--lightGrayColor);
+            }
+        }
+    }
+}
+
+.input_checkbox,
+.input_radio {
+    display: flex;
+    align-items: center;
+    gap: var(--tinyGap);
+    color: var(--grayColor);
+    font-size: var(--smallFontSize);
+    padding: 0 var(--tinyGap);
+}
+
+.input_description {
+    width: 100%;
+    font-size: var(--subFontSize);
+}
+
+.search_form_wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--smallGap);
+}
+
+.search_form {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--tinyGap);
+    font-size: var(--baseFontSize);
+    padding: var(--tinyPadding);
+    padding-left: var(--smallPadding);
+    background-color: var(--baseBackground);
+    border-radius: var(--bdrs);
+    border: var(--baseBorder);
+    box-shadow: var(--bxsh);
+    transition: border-color var(--trst);
+
+    .search_input {
+        font-size: var(--subFontSize);
+        line-height: 2;
+    }
+
+    &:has(.search_input:focus) {
+        border-color: var(--primaryColor);
+    }
+}
+
+/* tab content */
+.tab_btn_list {
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    border-radius: var(--bdrs) var(--bdrs) 0 0;
+    border: var(--baseBorder);
+    border-bottom: none;
+    overflow: hidden;
+    position: relative;
+
+    .tab_btn {
+        width: 100%;
+        height: var(--tabHeight);
+        border-bottom: var(--baseBorder);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--smallFontSize);
+        color: var(--grayColor);
+        border-right: var(--baseBorder);
+        cursor: pointer;
+        position: relative;
+
+        .active {
+            display: none;
+            width: calc(100% + (var(--bdrs) * 4));
+            height: calc(var(--bdrs) * 2);
+            background-color: var(--subColor);
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+
+            &::before {
+                content: "";
+                display: block;
+                width: calc(var(--bdrs) * 2);
+                height: calc(var(--bdrs) * 2);
+                background-color: #fff;
+                border-width: 0 1px 1px 0;
+                border-style: solid;
+                border-color: var(--borderColor);
+                border-radius: 0 0 var(--bdrs) 0;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                box-sizing: border-box;
+            }
+
+            &::after {
+                content: "";
+                display: block;
+                width: calc(var(--bdrs) * 2);
+                height: calc(var(--bdrs) * 2);
+                background-color: #fff;
+                border-width: 0 0 1px 1px;
+                border-style: solid;
+                border-color: var(--borderColor);
+                border-radius: 0 0 0 var(--bdrs);
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                box-sizing: border-box;
+            }
+        }
+
+        &.selected {
+            font-weight: bold;
+            color: var(--primaryColor);
+            background-color: var(--subColor);
+            border-bottom-color: transparent;
+            border-left: var(--baseBorder);
+            border-radius: var(--bdrs) var(--bdrs) 0 0;
+
+            .active {
+                display: block;
+            }
+        }
+
+        &.selected_left {
+            border-right: none;
+        }
+
+        &:first-child.selected {
+            border-left: none;
+
+            .active::before{
+                display: none;
+            }
+        }
+
+        &:last-child {
+            border-right: none;
+
+            .active::after{
+                display: none;
+            }
+        }
+    }
+}
+
+.tab_content {
+    display: none;
+
+    &.selected {
+        display: block;
+    }
+
+    .input_info:first-child {
+        border-radius: 0;
+        border-top: none;
+
+        &:has(input:focus)::after {
+            border-radius: 0;
+        }
+    }
+
+    .input_info.one_input {
+        border-radius: 0 0 var(--bdrs) var(--bdrs);
+    }
+}
+
+.error_message {
+    font-size: var(--smallFontSize);
+    color: var(--redColor);
+}
+
+/* modal */
+.modal_wrap {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+
+    .modal_container {
+        width: var(--modalWidth);
+        background-color: #fff;
+        border-radius: var(--bdrs);
+        box-shadow: var(--bxsh);
+        opacity: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition: margin-top var(--trst), opacity var(--trst);
+        overflow: hidden;
+
+        .modal_top {
+            width: 100%;
+            border-bottom: var(--baseBorder);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--smallGap);
+            padding: var(--modalTitlePadding);
+
+            .modal_title {
+                font-size: var(--baseFontSize);
+                font-weight: bold;
+            }
+
+            .modal_close_btn {
+                width: 30px;
+                min-width: 30px;
+                height: 30px;
+                padding: 5px;
+                font-size: 25px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            }
+        }
+
+        .modal_info {
+            width: 100%;
+            max-height: var(--modalHeight);
+            padding: var(--modalPadding);
+            justify-content: space-between;
+            overflow-y: auto;
+
+            .center_info {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                flex: 1;
+                text-align: center;
+            }
+
+            &:has(.btn_list) {
+                padding-bottom: 0;
+
+                .btn_list {
+                    background-color: #fff;
+                    padding: var(--modalPadding) 0;
+                    position: sticky;
+                    left: 0;
+                    bottom: 0;
+                }
+            }
+        }
+    }
+
+    .modal_explanation_info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--smallGap);
+
+        .modal_explanation {
+            display: flex;
+            align-items: flex-start;
+            font-size: var(--smallFontSize);
+
+            .explanation_title {
+                min-width: var(--modalInfoTitleWidth);
+                font-weight: bold;
+            }
+
+            .explanation {
+                color: var(--grayColor);
+            }
+        }
+    }
+
+    &.open .modal_container {
+        opacity: 1;
+        margin-top: calc(var(--baseGap) * -1);
+    }
+}
+
+.dimmed {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: var(--dimmedColor);
+}
+
+/* button */
+.btn_list {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--smallGap);
+}
+
+.btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-width: max-content;
+    padding: var(--smallPadding);
+    border-radius: var(--bdrs);
+    border: 1px solid var(--subColor);
+    background-color: var(--subColor);
+    font-weight: normal;
+    color: var(--primaryColor);
+    box-shadow: var(--insetBxsh);
+    cursor: pointer;
+    transition: border-color var(--trst), color var(--trst), background-color var(--trst);
+
+    &.tiny {
+        width: max-content;
+        font-size: var(--tinyFontSize);
+        padding: var(--tinyPadding);
+    }
+
+    &.small {
+        width: max-content;
+        font-size: var(--smallFontSize);
+    }
+
+    &.primary {
+        border-color: var(--primaryColor);
+        background-color: var(--primaryColor);
+        color: #fff;
+    }
+
+    &.white {
+        border-color: var(--borderColor);
+        background-color: #fff;
+    }
+
+    &.blue {
+        border-color: var(--blueColor);
+        background-color: #fff;
+        color: var(--blueColor);
+    }
+
+    &.full_blue {
+        border-color: var(--blueColor);
+        background-color:var(--blueColor);
+        color: #fff;
+    }
+
+    &:hover {
+        border-color: var(--primaryColor);
+        color: var(--primaryColor);
+        background-color: #fff;
+    }
+
+    img {
+        width: var(--smallIconImage);
+    }
+}
+
+/* 콘텐츠 타이틀 우측 이벤트 버튼 */
+.content_switcher {
+    display: inline-block;
+    margin-left: auto; /* 보통 우측에 사용되어지므로 flex 요소 내부에 있을 경우 우측 위치 시킴 */
+    padding: var(--tinyPadding);
+    background-color: var(--lightGrayColor);
+    font-size: var(--fixEtcTinyFontSize);
+    text-align: center;
+    border-radius: var(--bdrs);
+    border: var(--baseBorder);
+    box-shadow: var(--switchToggleInsetBxsh);
+    position: relative;
+}
+
+/*
+    내용의 양방향 이동 버튼
+    예시 레이아웃: [좌측 이동 버튼] | [내용]| [우측 이동 버튼]
+    * stepper_btn에 id를 붙여 js로 각 콘텐츠별 컨트롤
+    <div class="content_switcher stepper_btn">
+        <button type="button" class="step_info prev">
+            <iconify-icon icon="ep:arrow-left"></iconify-icon>
+        </button>
+        <p class="info">내용</p>
+        <button type="button" class="step_info next">
+            <iconify-icon icon="ep:arrow-right"></iconify-icon>
+        </button>
+    </div>
+*/
+.stepper_btn {
+    display: flex;
+    align-items: center;
+    gap: var(--tinyGap);
+
+    .step_info, .info {
+        display: flex;
+        height: calc(var(--fixEtcTinyFontSize) * 1.4); // 기본 행간
+        justify-content: center;
+        align-items: center;
+        padding: calc(var(--smallPadding) / 2) var(--smallPadding);
+        font-weight: normal;
+        border-radius: calc(var(--bdrs) / 1.5);
+        background-color: #fff;
+        box-shadow: var(--insetBxsh);
+        box-sizing: content-box;
+    }
+
+    .info {
+        width: max-content;
+        background-color: transparent;
+        box-shadow: none;
+    }
+}
+
+/*
+    스위치 토글 버튼 기본값 before
+    on 클래스 추가 시 after
+    * switch_toggle_btn에 id를 붙여 js로 각 콘텐츠별 컨트롤
+    <div class="content_switcher switch_toggle_btn"
+        data-before="일반"
+        data-after="우리반">
+        <div class="toggle_switch"></div>
+    </div>
+*/
+.switch_toggle_btn {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    cursor: pointer;
+
+    &::before, &::after {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: calc(var(--smallPadding) / 2) var(--smallPadding);
+        font-weight: normal;
+        position: relative;
+        transition: color var(--trst);
+        z-index: 2;
+    }
+
+    &::before {
+        content: attr(data-before);
+        font-weight: bold;
+        color: var(--primaryColor);
+        grid-column: 1; // 왼쪽 칸 명시
+    }
+
+    &::after {
+        content: attr(data-after);
+        font-weight: normal;
+        color: var(--grayColor);
+        grid-column: 2; // 오른쪽 칸 명시
+    }
+
+    .toggle_switch {
+        display: block;
+        width: calc((100% - (var(--tinyPadding) * 2)) / 2);
+        height: calc(100% - (var(--tinyPadding) * 2));
+        border-radius: calc(var(--bdrs) / 1.5);
+        background-color: #fff;
+        box-shadow: var(--insetBxsh);
+        position: absolute;
+        top: 50%;
+        left: var(--tinyPadding);
+        z-index: 1;
+        transform: translate(2%, -49%);
+        transition: transform var(--trst);
+    }
+
+    &.on {
+        .toggle_switch {
+            transform: translate(100%, -49%);
+        }
+
+        &::before {
+            font-weight: normal;
+            color: var(--grayColor);
+        }
+
+        &::after {
+            font-weight: bold;
+            color: var(--primaryColor);
+        }
+    }
+}
+
+/* 아이콘 버튼 */
+.icon_btn {
+    width: var(--baseIcon);
+    min-width: var(--baseIcon);
+    height: var(--baseIcon);
+    font-size: var(--baseIcon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* 아이콘 */
+.icon  {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    &.base {
+        width: var(--baseIcon);
+        min-width: var(--baseIcon);
+        height: var(--baseIcon);
+        font-size: var(--baseIcon);
+    }
+
+    &.small {
+        width: var(--smallIcon);
+        min-width: var(--smallIcon);
+        height: var(--smallIcon);
+        font-size: var(--smallIcon);
+    }
+
+    &.large {
+        width: var(--largeIcon);
+        min-width: var(--largeIcon);
+        height: var(--largeIcon);
+        font-size: var(--largeIcon);
+    }
+
+    &.title {
+        width: var(--titleFontSize);
+        min-width: var(--titleFontSize);
+        height: var(--titleFontSize);
+        font-size: var(--titleFontSize);
+    }
+}
+
+/*
+    채점 아이콘 (크기는 위 icon 클래스로 정함)
+    sub, base font일 경우 icon large 적합
+    tiny, small font일 경우 icon base 적합
+*/
+.result_icon {
+    opacity: .7;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-25%, -20%);
+
+    &.correct {
+        background: url("/icons/correct.png") 0 0 / contain no-repeat;
+    }
+
+    &.incorrect {
+        background: url("/icons/incorrect.png") 0 0 / contain no-repeat;
+        background-size: contain;
+    }
+}
+
+/* 힌트 */
+.hints_info {
+    display: flex;
+    align-items: center;
+    gap: var(--tinyGap);
+
+    .hint_icon {
+        width: var(--titleFontSize);
+        min-width: var(--titleFontSize);
+        height: var(--titleFontSize);
+        background: url("/images/kukokuk_symbol_logo.png") center no-repeat;
+        background-size: contain;
+    }
+
+    .hint_count {
+        font-size: var(--smallFontSize);
+        color: var(--grayColor);
+    }
+}
+
+#hint-count {
+    display: inline-block;
+    transition: transform var(--trst);
+
+    &.action {
+        transform: scale(1.5);
+    }
+}
+
+/* 진행 종료 버튼 */
+.progress_end_btn {
+    font-size: var(--smallFontSize);
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+}
+
+/* 자주 사용되는 요소 속성 */
+.d_none {
+    display: none;
+}
+
+.cursor_pointer {
+    cursor: pointer;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: .5;
+}
+
+.ov_a {
+    overflow: auto !important;
+}
+
+.ov_v {
+    overflow: visible !important;
+}
+
+.d_flex {
+    width: 100%;
+    display: flex;
+}
+
+.row {
+    flex-direction: row !important; /* 가로형 */
+}
+
+.column {
+    flex-direction: column !important; /* 세로형 */
+}
+
+.justify_content_center {
+    justify-content: center !important; /* 중앙 정렬 */
+}
+
+.justify_content_between {
+    justify-content: space-between !important; /* 양끝 정렬 */
+}
+
+.justify_content_end {
+    justify-content: flex-end !important;
+}
+
+.align_center {
+    align-items: center !important; /* 수직/수평 정렬 */
+}
+
+.align_start {
+    align-items: flex-start !important; /* 앞 정렬 */
+}
+
+.align_end {
+    align-items: flex-end !important; /* 끝 정렬 */
+}
+
+.base_gap {
+    gap: var(--baseGap) !important; /* 기본 gap */
+}
+
+.small_gap {
+    gap: var(--smallGap) !important; /* 작은 gap */
+}
+
+.tiny_gap {
+    gap: var(--tinyGap) !important; /* 작은 gap */
+}
+
+.large_gap {
+    gap: var(--largeGap) !important; /* 큰 gap */
+}
+
+.w_100 {
+    width: 100% !important;
+}
+
+.h_100 {
+    height: 100% !important;
+    overflow: auto !important;
+}
+
+.full {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.w_max_content {
+    min-width: max-content !important;
+    max-width: max-content !important;
+}
+
+.h_max_content {
+    min-height: max-content !important;
+    max-height: max-content !important;
+}
+
+.pd_0 {
+    padding: 0 !important;
+}
+
+.pl_0 {
+    padding-left: 0 !important;
+}
+
+.pt_tiny {
+    padding-top: var(--tinyGap) !important;
+}
+
+.pb_tiny {
+    padding-bottom: var(--tinyGap) !important;
+}
+
+.pb_0 {
+    padding-bottom: 0 !important;
+}
+
+.pd_top_bottom_0 {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.pd_base {
+    padding: var(--basePadding) !important;
+}
+
+.pt_base {
+    padding-top: var(--basePadding) !important;
+}
+
+.pb_base {
+    padding-bottom: var(--basePadding) !important;
+}
+
+/* 테두리 */
+.border_radius {
+    border-radius: var(--bdrs);
+}
+
+.border_circle {
+    border-radius: 50%;
+}
+
+.border_none {
+    border: none;
+}
+
+/* 그림자 */
+.box_shadow {
+    box-shadow: var(--bxsh) !important;
+}
+
+.box_shadow_none {
+    box-shadow: none !important;
+}
+
+/* 배경 */
+.bg_none {
+    background: none !important;
+}
+
+.bg_primary {
+    background-color: var(--primaryColor) !important;
+}
+
+.bg_sub {
+    background-color: var(--subColor) !important;
+}
+
+.bg_light_gray {
+    background-color: var(--lightGrayColor) !important;
+}
+
+.bg_blue {
+    background-color: var(--blueColor) !important;
+}
+
+.bg_red {
+    background-color: var(--redColor) !important;
+}
+
+.bg_yellow {
+    background-color: var(--yellowColor) !important;
+}
+
+/* 글자 */
+.tiny_font {
+    font-size: var(--fixEtcTinyFontSize) !important;
+}
+
+.small_font {
+    font-size: var(--smallFontSize) !important;
+}
+
+.large_font {
+    font-size: var(--largeFontSize) !important;
+}
+
+.base_font {
+    font-size: var(--baseFontSize) !important;
+}
+
+.title_font {
+    font-size: var(--titleFontSize) !important;
+}
+
+.sub_font {
+    font-size: var(--subFontSize) !important;
+}
+
+.lh1 {
+    line-height: 1 !important;
+}
+
+.tac {
+    text-align: center !important;
+}
+
+.bold {
+    font-weight: bold !important;
+}
+
+.normal {
+    font-weight: normal !important;
+}
+
+.color_primary {
+    color: var(--primaryColor) !important;
+}
+
+.color_sub {
+    color: var(--subColor) !important;
+}
+
+.color_border {
+    color: var(--borderColor) !important;
+}
+
+.color_gray {
+    color: var(--grayColor) !important;
+}
+
+.color_red {
+    color: var(--redColor) !important;
+}
+
+.color_blue {
+    color: var(--blueColor) !important;
+}
+
+.color_yellow {
+    color: var(--yellowColor) !important;
+}
+
+.color_white {
+    color: #fff !important;
+}
+
+.color_black {
+    color: var(--blackColor) !important;
+}
+
+.text_ellipsis {
+    overflow: hidden;          /* 넘치는 내용 숨김 */
+    text-overflow: ellipsis;   /* 말줄임 (...) 처리 */
+    white-space: nowrap;       /* 한줄로 처리 */
+}
+
+.text_ellipsis_multiline {
+    display: -webkit-box;                       /* flex처럼 박스를 세로로 자를 준비 */
+    -webkit-box-orient: vertical;               /* 세로 방향으로 텍스트를 자름 */
+    -webkit-line-clamp: var(--lineClamp, 2);    /* 표시할 줄 수 기본값: 2줄 */
+    overflow: hidden;                           /* 넘치는 내용 숨김 */
+    text-overflow: ellipsis;                    /* 잘린 부분에 말줄임 (...) 처리 */
+}
+
+/* 위치 */
+.pos_r {
+    position: relative;
+}
+
+/* 호버 효과 */
+.elevate_on_hover {
+    cursor: pointer;
+    transition: all var(--trst) !important;
+
+    &:hover {
+        transform: translateY(-3px) !important; /* 살짝 올라감 */
+    }
+}
+
+/* 로딩 */
+/*
+    스피너
+    사용 예시(진행률 표시가 필요없다면 style --percent 미설정)
+    <div class="loading_spinner">
+        <p class="info" style="--percent: 70%;">AI 피드백 생성 중...</p>
+    </div>
+*/
+.loading_spinner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--smallGap);
+    position: relative;
+
+    &::before {
+        content: '';
+        display: block;
+        width: var(--titleFontSize);
+        height: var(--titleFontSize);
+        border: 2px solid var(--lightGrayColor);
+        border-top-color: var(--blueColor);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .info {
+        font-size: var(--subFontSize);
+        color: var(--grayColor);
+        background: linear-gradient(
+                to right,
+                var(--blueColor) 0%,
+                var(--blueColor) var(--percent),
+                var(--blackColor) var(--percent),
+                var(--blackColor) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    &.center::before {
+        position: absolute;
+        top: calc((100% / 2) - (var(--titleFontSize) / 2));
+        left: calc((100% / 2) - (var(--titleFontSize) / 2));
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/*
+    스켈레톤
+    스켈레톤 로딩이 필요한 요소에 클래스 추가
+*/
+.skeleton {
+    background: linear-gradient(120deg, var(--borderColor) 25%, var(--lightGrayColor) 50%, var(--borderColor) 75%);
+    background-size: 400%, 100%;
+    animation: shimmer 3.2s infinite;
+    border-radius: var(--bdrs);
+    box-shadow: none;
+    pointer-events: none;
+
+    &::after {
+        content: '\00a0'; // 공백 인식되도록 (" " 사용X)
+        display: block;
+    }
+
+    &._w70 {
+        min-width: 70% !important;
+        max-width: 70% !important;
+    }
+
+    &._w50 {
+        min-width: 50% !important;
+        max-width: 50% !important;
+    }
+
+    &._w30 {
+        min-width: 30% !important;
+        max-width: 30% !important;
+    }
+}
+
+/* 효과 */
+.highlight {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+                120deg
+            , transparent 0%
+            , transparent 40%
+            , rgba(255, 255, 255, 0.5) 50%
+            , transparent 60%
+            , transparent 100%
+        );
+        background-size: 400%, 100%;
+        animation: shimmer 4.5s infinite;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 100% 0; /* 시작 위치 */
+    }
+    30% {
+        background-position: -30% 0; /* 반짝임 끝 */
+    }
+    100% {
+        background-position: -30% 0; /* 나머지 구간은 멈춰서 쉬는 시간 */
+    }
+}

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.dictation.mapper.DictationQuestionLogMapper">
+
+  <!--
+  /**
+   * 받아쓰기 이력 생성
+   * @param dictationQuestionLog 받아쓰기 이력
+   */
+   insertDictationQuestionLogLog(DictationQuestionLog dictationQuestionLog)
+   -->
+  <insert id="insertDictationQuestionLog" parameterType="DictationQuestionLog">
+    INSERT INTO KUKOKUK_DICTATION_QUESTION_LOGS (
+          USER_NO
+         ,DICTATION_QUESTION_NO
+         ,DICTATION_SESSION_NO
+         ,USER_ANSWER
+         ,TRY_COUNT
+         ,IS_SUCCESS
+         ,USED_HINT
+    ) VALUES (
+         #{userNo}
+        ,#{dictationQuestionNo}
+        ,#{dictationSessionNo}
+        ,#{userAnswer}
+        ,#{tryCount}
+        ,#{isSuccess}
+        ,#{usedHint}
+    )
+  </insert>
+
+  <!--
+   /**
+   * 정답 제출 버튼을 눌렀을 때 제출문장, 시도 누적 횟수, 정답 여부 반영
+   * @param dictationQuestionLoglog 받아쓰기 문제 풀이 이력
+   */
+  updateDictationQuestionLog(DictationQuestionLog dictationQuestionLog)
+   -->
+  <update id="updateDictationQuestionLog">
+    UPDATE
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    SET
+       IS_SUCCESS = #{isSuccess}
+      ,TRY_COUNT = #{tryCount}
+      ,USER_ANSWER = #{userAnswer}
+      ,USED_HINT = #{usedHint}
+    WHERE
+       DICTATION_QUESTION_LOG_NO = #{dictationQuestionLogNo}
+  </update>
+
+  <!--
+  /**
+   * 받아쓰기 문제 세트 맞은 문제 개수 조회
+   * @param dictationSessionNo 받아쓰기 문제 세트 번호
+   * @return 맞은 문제 개수
+   */
+   getCountCorrectAnswers(@Param("dictationSessionNo") int dictationSessionNo)
+  -->
+  <select id="getCountCorrectAnswers" resultType="int">
+    SELECT
+        COUNT(*)
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
+    AND
+        IS_SUCCESS = 'Y'
+  </select>
+
+  <!--
+  /**
+   * 받아쓰기 문제 세트 사용한 힌트 수 조회
+   * @param dictationSessionNo 받아쓰기 문제 세트 번호
+   * @return 사용한 힌트 개수
+   */
+   getCountHintsUsed(@Param("dictationSessionNo") int dictationSessionNo)
+   -->
+  <select id="getCountHintsUsed" resultType="int">
+    SELECT
+        COUNT(*)
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
+    AND
+        USED_HINT = 'Y'
+  </select>
+
+  <!--
+  /**
+   * 특정 세트 번호와 문제 번호에 해당하는 받아쓰기 문제 풀이 이력을 조회
+   * @param dictationSessionNo 문제 세트 번호
+   * @param dictationQuestionNo 문제 번호
+   * @return 해당 받아쓰기 세트에 대한 문제 풀이 이력 (없으면 null)
+   */
+  DictationQuestionLog getLogBySessionAndQuestion(@Param("dictationSessionNo") int dictationSessionNo, @Param("dictationQuestionNo") int dictationQuestionNo);
+  -->
+  <select id="getLogBySessionAndQuestion" resultType="DictationQuestionLog">
+    SELECT *
+    FROM
+        KUKOKUK_DICTATION_QUESTION_LOGS
+    WHERE
+        DICTATION_SESSION_NO = #{dictationSessionNo}
+      AND
+        DICTATION_QUESTION_NO = #{dictationQuestionNo}
+  </select>
+
+  <!--
+   /**
+   * 받아쓰기 세트 번호에 해당하는 받아쓰기 문제 풀이 이력 조회
+   * @param dictationSessionNo 문제 세트 번호
+   * @param userNo 사용자
+   * @return 받아쓰기 문제 풀이 이력 내용
+   */
+  List<DictationResultLogDto> getDictationQuestionLogBySessionNo(
+      @Param("dictationSessionNo") int dictationSessionNo,
+      @Param("userNo") int userNo
+  );
+  -->
+
+  <select id="getDictationQuestionLogBySessionNo" parameterType="map" resultType="com.kukokuk.domain.dictation.dto.DictationResultLogDto">
+      SELECT
+            L.DICTATION_QUESTION_NO AS dictationQuestionNo
+           ,Q.CORRECT_ANSWER        AS correctAnswer
+           ,L.USER_ANSWER           AS userAnswer
+           ,L.TRY_COUNT             AS tryCount
+           ,L.USED_HINT             AS usedHint
+           ,L.IS_SUCCESS            AS isSuccess
+           ,L.CREATED_DATE          AS createdDate
+      FROM
+          KUKOKUK_DICTATION_QUESTION_LOGS L
+      JOIN
+          KUKOKUK_DICTATION_QUESTIONS Q
+      ON
+          L.DICTATION_QUESTION_NO = Q.DICTATION_QUESTION_NO
+      WHERE
+          L.DICTATION_SESSION_NO = #{dictationSessionNo}
+      AND
+          L.USER_NO = #{userNo}
+      ORDER BY
+          L.CREATED_DATE ASC
+</select>
+</mapper>

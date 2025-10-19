@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kukokuk.domain.study.mapper.DailyStudyCardMapper">
+
+    <!--
+      void insertDailyStudyCard(DailyStudyCard dailyStudyCard);
+    -->
+    <insert id="insertDailyStudyCard" parameterType="DailyStudyCard">
+        INSERT INTO KUKOKUK_DAILY_STUDY_CARDS
+            (DAILY_STUDY_NO, CARD_INDEX, TITLE, CONTENT)
+        VALUES (#{dailyStudyNo}, #{cardIndex}, #{title}, #{content})
+    </insert>
+
+    <!--
+    List<DailyStudyCard> getCardsByDailyStudyNo(int dailyStudyNo);
+    -->
+    <select id="getCardsByDailyStudyNo" resultType="DailyStudyCard">
+        SELECT DAILY_STUDY_CARD_NO AS dailyStudyCardNo,
+               TITLE,
+               CONTENT,
+               CARD_INDEX          AS cardIndex,
+               DAILY_STUDY_NO      AS dailyStudyNo
+        FROM KUKOKUK_DAILY_STUDY_CARDS
+        WHERE DAILY_STUDY_NO = #{dailyStudyNo}
+        ORDER BY CARD_INDEX ASC
+    </select>
+
+
+</mapper>

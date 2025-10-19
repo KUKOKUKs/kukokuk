@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<div th:fragment="profile-fragment" id="profile-container" class="component base_list_component">
+    <th:block sec:authorize="!isAuthenticated()">
+        <p class="welcome_info">
+            AI가 추천하는 맞춤 국어 학습 자료와<br>
+            퀴즈로 더 재미있게 공부하세요!
+        </p>
+        <div class="btn_list">
+            <a href="/register?reset=true" class="btn white">회원가입</a>
+            <a href="/login" class="btn primary">로그인</a>
+        </div>
+    </th:block>
+
+    <th:block sec:authorize="isAuthenticated()"
+              th:with="user=${#authentication.principal.user}">
+        <div class="profile_info">
+            <div class="thumbnail">
+                <img th:src="${user.profileFileUrl}"
+                     alt="profile thumbnail">
+            </div>
+            <p class="name"
+               sec:authentication="principal.user.nickname">홍길동</p>
+
+            <form th:action="@{/logout}"
+                  method="post"
+                  id="logout-form">
+                <button type="submit" class="icon_btn color_gray">
+                    <iconify-icon icon="material-symbols:logout-rounded"></iconify-icon>
+                </button>
+            </form>
+        </div>
+
+        <div class="level_info"
+             th:with="rawPercent=${(user.experiencePoints * 100.0) / user.maxExp},
+                        percent=${rawPercent % 1 == 0} ?
+                            ${#numbers.formatDecimal(rawPercent, 0, 0)} + '%' :
+                            ${#numbers.formatDecimal(rawPercent, 1, 1)} + '%'">
+            <div class="level_top_info">
+                <div class="level_icon_info">
+                    <div class="level_icon highlight">
+                        <span class="level" th:text="|Lv.${user.level}|">Lv.1</span>
+                    </div>
+                    <div class="hints_info">
+                        <div class="hint_icon"></div>
+                        <span class="hint_count">x <span id="hint-count" th:text="${user.hintCount}">0</span></span>
+                    </div>
+                </div>
+                <div class="percent_info">
+                    <span class="experience_points_info" th:text="|(${user.experiencePoints}/${user.maxExp})|">(0/101)</span>
+                    <span class="percent" th:text="${percent}">0%</span>
+                </div>
+            </div>
+
+            <div class="bar_gauge">
+                <div class="gauge" th:style="|width: ${percent};|"></div>
+            </div>
+        </div>
+
+        <div th:if="${menu == 'study'} or ${menu == 'home'}"
+            class="learning_level_info">
+            <div class="component_info small with_icon">
+                <p class="learning_level" th:if="${user.currentSchool != null}"
+                   th:text="|${user.currentSchool} ${user.currentGrade}학년 / ${user.studyDifficulty}단계|">초등 1학년 / 1단계</p>
+                <p class="learning_level" th:if="${user.currentSchool == null}">시작할 진도와 단계를 선택해 주세요</p>
+                <button type="button" class="btn small white modal_study_level_btn">설정</button>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/modal/modal-study-level :: modal-study-level-fragment(user=${user})}"></div>
+    </th:block>
+</div>
+</html>

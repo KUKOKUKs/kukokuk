@@ -1,0 +1,100 @@
+$(document).ready(() => {
+    // 로그아웃 폼
+    const $logoutForm = $('#logout-form');
+    
+    // 폼 제출 이벤트 발생 시 유효성 검사 후 제출
+    $logoutForm.submit(function (e) {
+        e.preventDefault();
+
+        const isConfirm = confirm('로그아웃하시겟습니까?');
+
+        // 취소 시 리턴
+        if (!isConfirm) return false;
+
+        this.submit();
+    });
+    
+    // 네이바 토글
+    const $navContainer = $('#nav-container'); // 네비 컨테이너 요소
+    const $navToggleBtn = $("#nav-toggle-btn"); // 네비 토글 버튼
+    $navToggleBtn.click(function () {
+        if ($navContainer.length) {
+            $navContainer.toggleClass("closed");
+        }
+    });
+
+    // 모달창 닫기
+    const $modalCloseBtns = $(".modal_close"); // 모달창 닫기 버튼
+    const $modalAll = $(".modal_wrap"); // 전체 모달창
+    $modalCloseBtns.click(function () {
+        if ($modalAll.length) {
+            // 모달 내부 폼 요소 초기화
+            $modalAll.find("form").each(function () {
+                $(this).find("button[type='submit']").addClass("disabled");
+                this.reset();
+            });
+            // 모달창 닫기
+            $modalAll.hide().removeClass("open");
+        }
+    });
+
+    // 탭 버튼, 탭 컨텐츠 핸들러
+    // 프레그먼츠에서 주로 사용되므로 오작동 방지를 위해 문서에 위임하여 이벤트 등록
+    // (th:if시 오작동 발생)
+    $(document).on("click", ".tab_btn_list .tab_btn", function () {
+        const $this = $(this); // 클릭한 탭 버튼
+        const index = $this.index(); // 클릭한 탭 버튼의 인덱스
+
+        // 형제 요소의 탭 버튼들
+        const $tabBtns = $this.closest(".tab_btn_list").find(".tab_btn");
+        // 같은 모달창에 있는 탭 컨텐츠 요소
+        const $tabContents = $this.closest(".form_input_list").find(".tab_content");
+
+        // 클래스 초기화
+        $tabBtns.removeClass("selected_left selected");
+        $tabContents.removeClass("selected");
+
+        if (index > 0) {
+            // 첫번째 요소가 아닐 경우 선택된 요소의 앞 요소에 클라스 추가
+            $tabBtns.eq(index - 1).addClass("selected_left");
+        }
+
+        $this.addClass("selected"); // 선택한 탭 버튼 활성화
+        $tabContents.eq(index).addClass("selected"); // 선택한 탭 컨텐츠 활성화
+    });
+    
+    // 정답 확인 버튼 핸들러 (결과 상세 페이지)
+    const $checkCorrect = $(".check_correct"); // 정답 확인 버튼
+    $checkCorrect.click(function () {
+        const $this = $(this);
+        
+        // 버튼에 클라스 추가 및 자식 요소 텍스트 전부 보이도록 클래스 제거
+        $this.addClass("checked")
+            .find(".correct_answer").removeClass("text_ellipsis");
+    });
+
+    // 컨텐츠 인포 토글 버튼 핸들러
+    $(document).on("click", ".switch_toggle_btn", function () {
+        const $this = $(this);
+        const $parentContainer = $this.closest(".toggle_info_component");
+
+        if ($this.hasClass("on")) {
+            // 토글 스위치 위치 좌측으로 이동 및 토글 요소 첫 번째 컨텐츠 노출
+            $this.removeClass("on");
+            $parentContainer.removeClass("second").addClass("first");
+        } else {
+            // 토글 스위치 위치 우측으로 이동 및 토글 요소 두 번째 컨텐츠 노출
+            $this.addClass("on");
+            $parentContainer.removeClass("first").addClass("second");
+        }
+    });
+
+    // 학습 카드 클릭 이벤트 핸들러
+    $(document).on('click', '.study_card', function () {
+        // 클릭한 요소가 close 상태일 경우 클래스 제거
+        // 클래스 제거 효과: 컨텐츠 줄임표시 원상 복구, 버튼 노출
+        const $this = $(this);
+        const isClosed = $this.hasClass('close');
+        if (isClosed) $this.removeClass('close');
+    });
+});
