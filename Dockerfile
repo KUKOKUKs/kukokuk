@@ -20,6 +20,9 @@ RUN ./gradlew dependencies --no-daemon
 # 5️⃣ 실제 프로젝트 소스 코드 복사
 COPY . .
 
+#  gradlew 실행 권한 재부여 (권한 문제 해결)
+RUN chmod +x gradlew
+
 # 6️⃣ Gradle로 프로젝트 빌드 (테스트는 생략) - jar 파일 생성
 RUN ./gradlew clean bootJar --no-daemon -x test
 
