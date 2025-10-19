@@ -6,6 +6,9 @@ FROM openjdk:17-jdk-alpine AS build
 # 2️⃣ 컨테이너 내부 작업 디렉토리 설정
 WORKDIR /app
 
+#  gradlew 실행 권한 부여 (권한 문제 해결)
+RUN chmod +x gradlew
+
 # 3️⃣ Gradle wrapper 및 빌드 관련 파일 복사
 #    - 의존성 캐시를 위해 build.gradle, settings.gradle, gradlew 등을 먼저 복사
 COPY build.gradle settings.gradle gradlew ./
@@ -17,8 +20,6 @@ RUN ./gradlew dependencies --no-daemon
 # 5️⃣ 실제 프로젝트 소스 코드 복사
 COPY . .
 
-#  gradlew 실행 권한 부여 (권한 문제 해결)
-RUN chmod +x gradlew
 # 6️⃣ Gradle로 프로젝트 빌드 (테스트는 생략) - jar 파일 생성
 RUN ./gradlew clean bootJar --no-daemon -x test
 
