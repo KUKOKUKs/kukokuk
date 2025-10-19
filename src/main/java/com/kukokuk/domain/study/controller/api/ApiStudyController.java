@@ -1,27 +1,27 @@
 package com.kukokuk.domain.study.controller.api;
 
+import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.dto.JobStatusResponse;
+import com.kukokuk.common.dto.Page;
 import com.kukokuk.common.exception.BadRequestException;
 import com.kukokuk.common.store.JobStatusStore;
 import com.kukokuk.common.util.ResponseEntityUtils;
+import com.kukokuk.domain.study.dto.CreateStudyLogRequest;
 import com.kukokuk.domain.study.dto.DailyStudyLogDetailResponse;
+import com.kukokuk.domain.study.dto.DailyStudyLogResponse;
+import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
 import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
-import com.kukokuk.domain.study.dto.ParseMaterialRequest;
+import com.kukokuk.domain.study.dto.EssayQuizLogResponse;
+import com.kukokuk.domain.study.dto.GeminiEssayResponse;
+import com.kukokuk.domain.study.dto.StudyQuizLogRequest;
+import com.kukokuk.domain.study.dto.UpdateStudyLogRequest;
 import com.kukokuk.domain.study.service.StudyAsyncService;
 import com.kukokuk.domain.study.service.StudyService;
 import com.kukokuk.domain.study.vo.DailyStudyEssayQuizLog;
 import com.kukokuk.domain.study.vo.DailyStudyLog;
 import com.kukokuk.domain.study.vo.DailyStudyQuizLog;
 import com.kukokuk.domain.study.vo.StudyDifficulty;
-import com.kukokuk.domain.study.dto.CreateStudyLogRequest;
-import com.kukokuk.domain.study.dto.StudyQuizLogRequest;
-import com.kukokuk.domain.study.dto.UpdateStudyLogRequest;
-import com.kukokuk.domain.study.dto.DailyStudyLogResponse;
-import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
-import com.kukokuk.domain.study.dto.EssayQuizLogResponse;
-import com.kukokuk.domain.study.dto.GeminiEssayResponse;
-import com.kukokuk.domain.study.dto.ParseMaterialResponse;
 import com.kukokuk.security.SecurityUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -242,13 +242,15 @@ public class ApiStudyController {
     }
 
     // 맞춤 학습 자료 폴링(최초 요청시 응답 받은 jobId)
+    // 왜 여기서 jobId로 JobStatusResponse을 가져오지 못할까..?
     @GetMapping("/status/{jobId}")
     public ResponseEntity<ApiResponse<JobStatusResponse<?>>> getStudiesByUserStatus(
         @PathVariable("jobId") String jobId) {
-        log.info("ApiStudyController getStudiesByUserStatus() 컨트롤러 실헹");
+        log.info("ApiStudyController getStudiesByUserStatus() 컨트롤러 실헹 jobId: {}", jobId);
 
         // 상태 조회
         JobStatusResponse<?> status = studyJobStatusStore.get(jobId);
+        log.info("status: {}", status);
 
         if (status == null) {
             throw new BadRequestException(jobId + "의 상태를 찾을 수 없습니다.");
@@ -295,15 +297,20 @@ public class ApiStudyController {
      * @return 학습 이력 목록을 포함한 표준 ApiResponse
      */
     @GetMapping("/logs")
-    public ResponseEntity<ApiResponse<List<DailyStudyLogDetailResponse>>> getStudyLogs(
-        @AuthenticationPrincipal SecurityUser securityUser,
-        @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int rows
-    ){
+    public ResponseEntity<ApiResponse<Page<DailyStudyLogDetailResponse>>> getStudyLogs(
+        @AuthenticationPrincipal SecurityUser securityUser
+        , @RequestParam(defaultValue = "1") int page
+        , @RequestParam(required = false) Integer rows) {
         log.info("ApiStudyController getStudyLogs() 컨트롤러 실헹");
 
-        List<DailyStudyLogDetailResponse> logs = studyService.getStudyLogsDetail(securityUser.getUser().getUserNo(), page, rows);
+        // 조회할 행의 수를 입력하지 않았을 경우 기본 값 10
+        if (rows == null) {
+            rows = PaginationEnum.DEFAULT_ROWS;
+        }
 
-        return ResponseEntityUtils.ok("학습 이력 목록 조회 성공", logs);
+        return ResponseEntityUtils.ok(
+            "학습 이력 목록 조회 성공"
+            , studyService.getStudyLogsDetail(securityUser.getUser().getUserNo(), page, rows)
+        );
     }
 }

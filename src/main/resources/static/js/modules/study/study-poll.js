@@ -69,6 +69,10 @@ export async function renderFragmentDailyStudies(usableRows, requestRows, $study
  * 전달 받은 요소에 랜더링
  * <p>
  *     이 함수는 병렬적으로 호출 되어 각각의 폴링 요청에 대한 빠른 처리가 가능
+ * <p>
+ *     jobId 생성 지연 또는 네트워크 오류 시 최대 3회까지 재시도
+ * <p>
+ *     이후 폴링으로 지속적 확인 요청
  * @param job 폴링 요청할 job 데이터
  * @param index 학습 카드의 인덱스 (첫 번째 요소인지 확인하기 위해)
  * @param pollUrl 폴링 요청할 경로
@@ -78,20 +82,47 @@ export async function renderFragmentDailyStudies(usableRows, requestRows, $study
 async function pollStudyJobStatus(job, index, pollUrl, $studyCard, isUseSpinner) {
     console.log(`pollStudyJobStatus() 실행 job(${job.jobId}) status: ${job.status}`);
 
-    // 폴링 요청 시작
-    try {
-        // 폴링의 상태가 PROCESSING이 아닐 경우 반환 됨 (진행상태 표시하지 않음)
-        const pollJob = await pollJobStatus(pollUrl, $studyCard, isUseSpinner);
+    // 최초 딜레이
+    // jobId 생성 되기 전이라면 에러 발생하여 약간의 지연 후 폴링 시작
+    const delayMs = 2000 + index * 300; // 인덱스별 약간의 간격 주기
+    await new Promise(resolve => setTimeout(resolve, delayMs)); // 지연 대기
 
-        // 반환된 job에 대한 랜더링 (랜더링 함수 내에서 DONE/FAILED 처리 됨)
-        renderStudyCard(pollJob, index, $studyCard); // job 객체, 첫 번째 요소 확인 값, 랜더링 요소
-    } catch (error) {
-        // 폴링에 대한 에러처리 (타임아웃 포함)
-        $studyCard.html(`
-                <div class="study_info">
-                    <div class="component_title">잠시 후에 다시 시도해 주세요</div>
-                    <div class="study_content">${error.message}</div>
-                </div>
-            `);
+    /**
+     * 내부 재시도용 헬퍼 함수
+     * @param {number} attempt 현재 시도 횟수
+     */
+    async function tryPoll(attempt = 1) {
+        try {
+            console.log(`pollStudyJobStatus() job(${job.jobId}) 시도 ${attempt}회차`);
+
+            // 실제 폴링 요청
+            // 폴링의 상태가 PROCESSING이 아닐 경우 반환 됨 (진행상태 표시하지 않음)
+            const pollJob = await pollJobStatus(pollUrl, $studyCard, isUseSpinner);
+
+            // 반환된 job에 대한 랜더링 (랜더링 함수 내에서 DONE/FAILED 처리 됨)
+            renderStudyCard(pollJob, index, $studyCard); // job 객체, 첫 번째 요소 확인 값, 랜더링 요소
+        } catch (error) {
+            console.warn(`pollStudyJobStatus() 오류 job(${job.jobId}) (${attempt}회차): ${error.message}`);
+
+            if (attempt < 10) {
+                // 재시도 가능 (최대 3회)
+                const retryDelay = 500 * attempt; // 시도 횟수별로 점진적 지연
+                console.log(`${retryDelay}ms 후 재시도 예정...`);
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+                return tryPoll(attempt + 1); // 재귀 재호출
+            } else {
+                // 3회 시도 실패 후 에러 표시
+                console.error(`${attempt}회 job(${job.jobId}) 재시도 실패. 폴링 요청 시도 중단`);
+                $studyCard.html(`
+                    <div class="study_info">
+                        <div class="component_title">잠시 후에 다시 시도해 주세요</div>
+                        <div class="study_content">${error.message}</div>
+                    </div>
+                `);
+            }
+        }
     }
+
+    // 재시도 로직 실행 시작
+    await tryPoll();
 }

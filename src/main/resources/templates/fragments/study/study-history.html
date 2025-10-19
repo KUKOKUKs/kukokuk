@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<div th:fragment="study-history-fragment(studyHistory)"
+<div th:fragment="study-history-fragment(dailyStudyLogs)"
      id="study-history-container"
      class="component small_list_component">
     <div class="component_title">
@@ -8,8 +8,8 @@
     </div>
     <div class="tiny_list_component show_scroll">
         <a class="study_history_info component_info small with_icon"
-           th:each="log : ${studyHistory.getDailyStudyLogs()}"
-           th:href="@{/study/}">
+           th:each="log : ${dailyStudyLogs}"
+           th:href="@{/study/{dailyStudyNo}(dailyStudyNo=${log.dailyStudyNo})}">
             <div class="list_info">
                 <div class="history_info tiny_font">
                     <span class="bold"
