@@ -74,7 +74,7 @@ public class QuizController {
 
         log.info("[퀴즈 메인] 학습이력 조회 완료 - 스피드: {}개, 단계별: {}개",
             speedHistory.size(), levelHistory.size());
-
+            
         return "quiz/main"; // templates/quiz/main.html
     }
 
