@@ -2,6 +2,7 @@ package com.kukokuk.domain.twenty.controller.view;
 
 import com.kukokuk.domain.twenty.dto.CreateRoom;
 import com.kukokuk.domain.twenty.dto.RoomUser;
+import com.kukokuk.domain.twenty.dto.TwentyResult;
 import com.kukokuk.domain.twenty.dto.WsUser;
 import com.kukokuk.domain.twenty.service.TwentyService;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
@@ -121,7 +122,30 @@ public class TwentyController {
             }
             return "redirect:/group/teacher";
         }
-        Integer roomNo = twentyService.insertTwenthRoom(room.getGroupNo(), room.getTitle(),room.getCorrect());
+
+        //게임방 생성 및, 게임 참여자 DB에 할당
+        Integer roomNo = twentyService.insertTwentyRoom(room.getGroupNo(), room.getTitle(),room.getCorrect());
         return "redirect:/twenty/gameRoom/" + roomNo;
+    }
+
+    /**
+     * 결과 이력 페이지로 이동.
+     * @param currentRoomNo
+     * @param model
+     * @return
+     */
+    @GetMapping("/result/{currentRoomNo}")
+    public String twentyResult(@PathVariable int currentRoomNo, Model model) {
+        //currentRoomNo 이 값으로 게임방 테이블의 모든 값을 조회.
+        // model에 담기
+        TwentyResult result = twentyService.getTwentyResultInfo(currentRoomNo);
+        model.addAttribute("isSuccess",  result.getIsSuccess());
+        model.addAttribute("title", result.getTitle());
+        model.addAttribute("winnerName",result.getNickName());
+        model.addAttribute("correctAnswer",result.getAnswers());
+        model.addAttribute("tryCount",result.getTryCnt());
+        model.addAttribute("participantCount",result.getParticipantCount());
+
+        return "twenty/gameResult";
     }
 }
