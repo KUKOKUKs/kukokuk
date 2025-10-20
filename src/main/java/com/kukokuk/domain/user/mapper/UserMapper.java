@@ -9,6 +9,14 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
 
     /**
+     * 사용자 번호들과 경험치를 전달받아 사용자 누적경험치, 레벨 업데이트
+     * @param userNos 사용자 번호들
+     * @param expGained 일괄 처리할 경험치 값
+     */
+    void updateUserExpByUserNos(@Param("userNos") List<Integer> userNos
+        , @Param("expGained") Integer expGained);
+
+    /**
      * 전달받은 힌트 개수를 사용자 힌트 개수에서 차감하여 업데이트
      * @param hintCount 추가할 힌트 개수
      * @param userNo 사용자 번호
