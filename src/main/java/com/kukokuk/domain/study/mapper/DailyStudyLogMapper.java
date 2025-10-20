@@ -20,7 +20,7 @@ public interface DailyStudyLogMapper {
      *                  - "status" : String ("inProgress","completed") 학습상태
      * @return 조회된 사용자의 일일학습 이력 리스트
      */
-    public List<DailyStudyLog> getStudyLogsWithStudyByUserNo(@Param("userNo") int userNo,
+    List<DailyStudyLog> getStudyLogsWithStudyByUserNo(@Param("userNo") int userNo,
         @Param("condition") Map<String, Object> condition);
 
     /**

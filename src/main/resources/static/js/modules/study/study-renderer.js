@@ -28,62 +28,80 @@ export function renderStudyCard(job, index, $studyCard) {
         $studyCard.html(failedHtml);
     } else if (job.status === "DONE") {
         const study = job.result;
-
-        // 학습 상태 태그 설정 NOT_STARTED, IN_PROGRESS, COMPLETED
-        const studyStatus = `학습 ${study.status === 'NOT_STARTED' ? '전' : study.status === 'IN_PROGRESS' ? '중' : '완료'}`;
-        let tagHtml = `<span class="study_tag ${study.status.toLowerCase()}">${studyStatus}</span>`;
-
-        // 서술형 상태 태그 설정
-        const essayStatus = `서술형 ${study.essayQuizCompleted ? '완료' : '미완료'}`;
-        tagHtml += `<span class="study_tag ${study.essayQuizCompleted ? '' : 'essay_undone'}">${essayStatus}</span>`;
-
-        // 학습 완료 후 서술형 완료 여부
-        const isNotEssay = study.status === 'COMPLETED' && !study.essayQuizCompleted;
-
-        // 버튼 색상,텍스트 설정
-        const studyBtnText = study.status === 'NOT_STARTED'
-                                    ? '오늘의 학습 시작하기'
-                                    : study.status === 'IN_PROGRESS'
-                                        ? '지난 학습 이어하기'
-                                        : '복습하기';
-        const studyBtnColor = (study.status === 'NOT_STARTED' || study.status === 'IN_PROGRESS')
-                                    ? 'primary'
-                                    : 'white';
-
-        // 요소 세팅
-        const content = `
-            <div class="study_info">
-                <div class="component_title">${study.title}</div>
-                <div class="study_content">${study.explanation || ''}</div>
-                <div class="study_tag_list">
-                    ${tagHtml}
-                </div>
-                <div class="bar_gauge">
-                    <div class="gauge" style="width: ${study.progressRate}%;"></div>
-                </div>
-                <div class="btn_list column study_card_btns">
-                    <a href="/study/${study.dailyStudyNo}" class="btn primary ${studyBtnColor}">${studyBtnText}</a>
-                    <a href="/study/${study.dailyStudyNo}/essay" class="btn ${isNotEssay ? 'full_blue highlight' : 'blue'}">
-                        AI 피드백 기반 논술형 문제 풀기
-                    </a>
-                </div>
-            </div>
-        `;
-
-        $studyCard.html(content); // 해당 요소에 컨텐츠 추가
+        $studyCard.html(renderStudyCardContent(study)); // 해당 요소에 컨텐츠 추가
         if (index !== 0) $studyCard.addClass("close"); // 첫 번째 요소가 아니라면 커서 닫힌 상태
     }
 }
 
+// 학습 자료 정보로 학습 카드 내용 생성하여 반환(텍스트 기반)
+export function renderStudyCardContent(study) {
+    console.log("renderStudyCardContent() 실행");
+
+    // 학습 상태 태그 설정 NOT_STARTED, IN_PROGRESS, COMPLETED
+    const studyStatus = `학습 ${study.status === 'NOT_STARTED' ? '전' : study.status === 'IN_PROGRESS' ? '중' : '완료'}`;
+    let tagHtml = `<span class="study_tag ${study.status.toLowerCase()}">${studyStatus}</span>`;
+
+    // 서술형 상태 태그 설정
+    const essayStatus = `서술형 ${study.essayQuizCompleted ? '완료' : '미완료'}`;
+    tagHtml += `<span class="study_tag ${study.essayQuizCompleted ? '' : 'essay_undone'}">${essayStatus}</span>`;
+
+    // 학습 완료 후 서술형 완료 여부
+    const isNotEssay = study.status === 'COMPLETED' && !study.essayQuizCompleted;
+
+    // 버튼 색상,텍스트 설정
+    const studyBtnText = study.status === 'NOT_STARTED'
+                                ? '오늘의 학습 시작하기'
+                                : study.status === 'IN_PROGRESS'
+                                    ? '지난 학습 이어하기'
+                                    : '복습하기';
+    const studyBtnColor = (study.status === 'NOT_STARTED' || study.status === 'IN_PROGRESS')
+                                    ? 'primary'
+                                    : 'white';
+
+    return `
+        <div class="study_info">
+            <div class="component_title">${study.title}</div>
+            <div class="study_content">${study.explanation || ''}</div>
+            <div class="study_tag_list">
+                ${tagHtml}
+            </div>
+            <div class="bar_gauge">
+                <div class="gauge" style="width: ${study.progressRate}%;"></div>
+            </div>
+            <div class="btn_list column study_card_btns">
+                <a href="/study/${study.dailyStudyNo}" class="btn primary ${studyBtnColor}">${studyBtnText}</a>
+                <a href="/study/${study.dailyStudyNo}/essay" class="btn ${isNotEssay ? 'full_blue highlight' : 'blue'}">
+                    AI 피드백 기반 논술형 문제 풀기
+                </a>
+            </div>
+        </div>
+    `;
+}
+
 // 스켈레톤 로딩 표시 세팅(유연하게 처리하기 위해 내용만 생성하여 반환/직접 세팅하지 않음)
-export function renderStudyListSkeleton(jobStatusList) {
+export function renderStudyListSkeleton(jobStatusList, isUseSpinner = true) {
     console.log("renderStudyListSkeleton() 실행");
+
+    // 숫자가 들어온 경우 해당 개수만큼 빈 배열 생성
+    if (typeof jobStatusList === 'number') {
+        jobStatusList = Array.from({ length: jobStatusList }, (_, i) => ({
+            jobId: i, // 각 skeleton에 index data-job-id 부여
+        }));
+    }
 
     let content = '';
     for (const job of jobStatusList) {
-        content += `
-            <div class="component base_list_component study_card"
-                data-job-id="${job.jobId}">
+        content += isUseSpinner
+            ? `<div class="component base_list_component study_card" 
+                    data-job-id="${job.jobId}">
+                <div class="study_info">
+                    <div class="loading_spinner">
+                        <p class="info" style="--percent: 0%;">학습 자료 가져오는 중...</p>
+                    </div>
+                </div>
+            </div>`
+            : `<div class="component base_list_component study_card"
+                    data-job-id="${job.jobId}">
                 <div class="study_info">
                     <div class="component_title skeleton _w70"></div>
                     <div class="study_content d_flex column tiny_gap">
@@ -97,8 +115,7 @@ export function renderStudyListSkeleton(jobStatusList) {
                     <div class="bar_gauge skeleton"></div>
                     <div class="btn skeleton"></div>
                 </div>
-            </div>
-        `;
+            </div>`
     }
 
     return content;

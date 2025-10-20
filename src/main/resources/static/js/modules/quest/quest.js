@@ -93,10 +93,10 @@ $(document).ready(async function () {
             console.error("일일 도전과제 리스트 요청 실패: ", error.message);
             $questListContainer.html(
                 `<div class="component_info small with_icon">
-                <div class="list_info">
-                    <p class="list_info">일일 도전과제 목록을 가져오는데 실패하였습니다. 다시 시도해 주세요.</p>
-                </div>
-            </div>`
+                    <div class="list_info">
+                        <p class="list_info">일일 도전과제 목록을 가져오는데 실패하였습니다. 다시 시도해 주세요.</p>
+                    </div>
+                </div>`
             );
         }
     }
