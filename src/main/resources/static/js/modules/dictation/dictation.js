@@ -27,7 +27,7 @@ $(document).ready(() => {
     const $userAnswer = $("#user-answer"); // 정답 입력 인풋 요소
     const $submitAnswer = $("#submitAnswer"); // 정답 제출 버튼 요소
 
-    // 전역 플래그
+    // 전역변수
     let isShowAnswer = false;   // 정답보기 사용 여부
     let usedHintNum  = null;    // 힌트 번호
     /*
@@ -161,13 +161,13 @@ $(document).ready(() => {
             url: "/dictation/submit-answer",
             method: "POST",
             data: {
-                userAnswer: $("#user-answer").val() ?? "",
+                userAnswer: $("#user-answer").val(),
                 showAnswer: isShowAnswer ? "1" : "0",
-                hintNum: usedHintNum ?? ""
+                hintNum: usedHintNum
             }
         });
 
-        // (선택) 플래그 리셋
+        // 플래그 리셋
         isShowAnswer = false;
         usedHintNum  = null;
     }

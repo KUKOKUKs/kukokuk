@@ -64,10 +64,10 @@ public class DictationController {
         return 0;
     }
 
-    @ModelAttribute("mustReloadAfterShowAnswer")
-    public Boolean initMustReloadAfterShowAnswer() {
-        return false;
-    }
+//    @ModelAttribute("mustReloadAfterShowAnswer")
+//    public Boolean initMustReloadAfterShowAnswer() {
+//        return false;
+//    }
 
     /**
      * 받아쓰기 시작 요청을 처리하는 메서드 현재 로그인한 사용자의 번호를 바탕으로, 아직 풀지 않은 받아쓰기 문제 10개를 랜덤으로 가져와 세션에 저장하고, 첫 번째
@@ -121,7 +121,7 @@ public class DictationController {
     public String showQuestion(@ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
         @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
         @ModelAttribute("questionIndex") int questionIndex,
-        @ModelAttribute("mustReloadAfterShowAnswer") Boolean mustReloadAfterShowAnswer,
+//        @ModelAttribute("mustReloadAfterShowAnswer") Boolean mustReloadAfterShowAnswer,
         Model model) {
         log.info("[/solve] questionIndex: {} / size: {}", questionIndex, dictationQuestions.size());
 
@@ -151,11 +151,6 @@ public class DictationController {
 
         log.info("[/solve] 문제번호: {}, tryCount: {}, triesLeft: {}",
             currentQuestion.getDictationQuestionNo(), tryCount, triesLeft);
-
-        // 🟢 화면이 새로 로드되면 플래그 해제
-        if (Boolean.TRUE.equals(mustReloadAfterShowAnswer)) {
-            model.addAttribute("mustReloadAfterShowAnswer", false);
-        }
 
         return "dictation/solve";
     }
@@ -228,21 +223,16 @@ public class DictationController {
      */
     @PostMapping("/submit-answer")
     public String submitAnswer(
-        @RequestParam("userAnswer") String userAnswer,
+        @RequestParam(value = "userAnswer", required = false, defaultValue = "") String userAnswer,
         @RequestParam(value="showAnswer",  required=false, defaultValue="0") String showAnswer,
         @RequestParam(value ="hintNum", required = false, defaultValue = "") Integer hintNum,
         @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
         @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
         @ModelAttribute("questionIndex") int questionIndex,
-        @ModelAttribute("mustReloadAfterShowAnswer") Boolean mustReloadAfterShowAnswer,
         @AuthenticationPrincipal SecurityUser securityUser,
         Model model,
         RedirectAttributes redirectAttributes) {
         log.info(" [@PostMapping(/submit-answer)] submitAnswer 실행 questionIndex: {}, userAnswer: {}", questionIndex, userAnswer);
-
-        if (Boolean.TRUE.equals(mustReloadAfterShowAnswer)) {
-            return "redirect:/dictation/solve";
-        }
 
         // 인덱스가 범위를 벗어나면 즉시 결과 페이지로 이동(제출 문장 제출 시 인덱스)
         if (questionIndex < 0 || questionIndex >= dictationQuestions.size()) {
@@ -259,8 +249,6 @@ public class DictationController {
                 dictationQuestiondto.getTryCount(), dictationQuestiondto.getIsSuccess(), dictationQuestiondto.getUserAnswer(), questionIndex + 1);
 
             model.addAttribute("questionIndex", questionIndex + 1);
-            // 🔴 다음 POST는 무시하도록 플래그 켜기
-            model.addAttribute("mustReloadAfterShowAnswer", true);
             return "redirect:/dictation/solve";
         }
 
@@ -278,7 +266,7 @@ public class DictationController {
             // userService.updateUserHintCountMinus(userNo);
             return "redirect:/dictation/solve";
         } else {
-            // 힌트 번호가 유효하지 않으면 사용 해제(옵션)
+            // 힌트 번호가 유효하지 않으면 사용 해제(예외처리)
             dictationQuestions.get(questionIndex).setUsedHintNum(null);
         }
 
