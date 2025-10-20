@@ -559,13 +559,14 @@ public class StudyService {
         // 경험치 추가 및 도전과제 달성여부 확인& 업데이트 메소드 호출
         if (!alreadyCompleted && "COMPLETED".equals(updateStudyLogRequest.getStatus())) {
 
-            ExpProcessingDto expProcessingDto = new ExpProcessingDto(
-                userNo,
-                ContentTypeEnum.STUDY.name(),
-                existedlog.getDailyStudyLogNo(),
-                20,
-                DailyQuestEnum.STUDY_LEARNING.getDailyQuestNo()
-            );
+            ExpProcessingDto expProcessingDto = ExpProcessingDto.builder()
+                .userNo(userNo)
+                .contentType(ContentTypeEnum.STUDY.name())
+                .contentNo(existedlog.getDailyStudyLogNo())
+                .expGained(20)
+                .dailyQuestNo(DailyQuestEnum.STUDY_LEARNING.getDailyQuestNo())
+                .build();
+
             expProcessingService.expProcessing(expProcessingDto);
             log.info("오늘의 도전과제를 달성했습니다");
         }

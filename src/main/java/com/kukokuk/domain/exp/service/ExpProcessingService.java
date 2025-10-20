@@ -2,6 +2,7 @@ package com.kukokuk.domain.exp.service;
 
 import com.kukokuk.common.constant.DailyQuestEnum;
 import com.kukokuk.domain.exp.dto.ExpProcessingDto;
+import com.kukokuk.domain.exp.dto.ListExpProcessingDto;
 import com.kukokuk.domain.exp.vo.ExpLog;
 import com.kukokuk.domain.quest.service.DailyQuestUserService;
 import com.kukokuk.domain.quest.vo.DailyQuestUser;
@@ -26,6 +27,21 @@ public class ExpProcessingService {
     private final ExpService expService;
     private final DailyQuestUserService dailyQuestUserService;
     private final UserService userService;
+
+    /**
+     * 여러개의 사용자의 경험치 획득 처리와
+     * 경험치 획득 이력 추가,
+     * 사용자 누적 경험치, 조건에 따라 레벨 업데이트
+     * @param expProcessingDtos 경험치 정보 리스트(userNo, contentNo만 사용됨 pair를 위한 개별 객체 필요)
+     * @param contentType 컨텐츠명
+     * @param expGained 일괄 처리할 경험치 획득 값
+     */
+    @Transactional
+    public void groupExpProcessing(ListExpProcessingDto listExpProcessingDto) {
+        log.info("groupExpProcessing() 서비스 실행");
+
+
+    }
     
     /**
      * 컨텐츠별 경험치 획득 처리
