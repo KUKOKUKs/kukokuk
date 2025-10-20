@@ -91,7 +91,7 @@ export function renderStudyListSkeleton(jobStatusList, isUseSpinner = true) {
 
     let content = '';
     for (const job of jobStatusList) {
-        content += !isUseSpinner
+        content += isUseSpinner
             ? `<div class="component base_list_component study_card" 
                     data-job-id="${job.jobId}">
                 <div class="study_info">

@@ -38,9 +38,6 @@ export async function renderFragmentDailyStudies(usableRows, requestRows, $study
             const $studyCard = $studyListContainer.find(`[data-job-id="${job.jobId}"]`);
             if (!$studyCard.length) continue; // 해당 요소가 없다면 다음 루프
 
-            // 폴링 요청할 경로
-            const pollUrl = `/api/studies/status/${job.jobId}}`;
-
             if (job.status !== "PROCESSING") {
                 // 현재 job의 상태가 PROCESSING이 아닐 경우 완료/실패로 판단하여 즉시 랜더링
                 renderStudyCard(job, index, $studyCard); // job 객체, 첫 번째 요소 확인 값, 랜더링 요소
@@ -48,6 +45,8 @@ export async function renderFragmentDailyStudies(usableRows, requestRows, $study
                 // 현재 job의 상태가 PROCESSING일 경우 폴링 요청
                 // 폴링은 각자 독립적으로 진행(병렬 비동기 호출)하기 위해 await을 사용하지 않음
                 // (void로 Promise 무시 의도 명시/IDE 경고 제거)
+                // 폴링 요청할 경로
+                const pollUrl = `/api/studies/status/${job.jobId}`;
                 void pollStudyJobStatus(job, index, pollUrl, $studyCard, isUseSpinner);
             }
         }
