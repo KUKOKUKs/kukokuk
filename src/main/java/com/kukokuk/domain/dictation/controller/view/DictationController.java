@@ -36,7 +36,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Log4j2
 @Controller
-@SessionAttributes({"dictationQuestions", "dictationQuestionLogDto", "startDate", "questionIndex"})
+@SessionAttributes({"dictationQuestions", "dictationQuestionLogDto", "startDate", "questionIndex", "mustReloadAfterShowAnswer"})
 @RequiredArgsConstructor
 @RequestMapping("/dictation")
 public class DictationController {
@@ -62,6 +62,11 @@ public class DictationController {
     final @ModelAttribute("questionIndex")
     public int initQuestionIndex() {
         return 0;
+    }
+
+    @ModelAttribute("mustReloadAfterShowAnswer")
+    public Boolean initMustReloadAfterShowAnswer() {
+        return false;
     }
 
     /**
@@ -116,6 +121,7 @@ public class DictationController {
     public String showQuestion(@ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
         @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
         @ModelAttribute("questionIndex") int questionIndex,
+        @ModelAttribute("mustReloadAfterShowAnswer") Boolean mustReloadAfterShowAnswer,
         Model model) {
         log.info("[/solve] questionIndex: {} / size: {}", questionIndex, dictationQuestions.size());
 
@@ -146,70 +152,74 @@ public class DictationController {
         log.info("[/solve] 문제번호: {}, tryCount: {}, triesLeft: {}",
             currentQuestion.getDictationQuestionNo(), tryCount, triesLeft);
 
+        // 🟢 화면이 새로 로드되면 플래그 해제
+        if (Boolean.TRUE.equals(mustReloadAfterShowAnswer)) {
+            model.addAttribute("mustReloadAfterShowAnswer", false);
+        }
+
         return "dictation/solve";
     }
 
-    /**
-     * 각 문제 힌트 사용 여부
-     * @param questionIndex 세션에 저장된 현재 인덱스
-     * @param dictationQuestionLogDtoList 세션에 저장된 이력 dto 목록
-     * @return 힌트 사용 여부
-     */
-    @PostMapping("/use-hint")
-    @ResponseBody
-    public ResponseEntity<ApiResponse<Void>> useHint(
-        @RequestParam("hintNum") Integer hintNum,
-        @ModelAttribute("questionIndex") int questionIndex,
-        @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
-        @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
-        @AuthenticationPrincipal SecurityUser securityUser
-    ) {
-        log.info("[/use-hint] 실행 - questionIndex: {}", questionIndex);
-
-        //int userNo = securityUser.getUser().getUserNo();
-
-        // 현재 문제만 힌트 사용 처리
-        DictationQuestionLogDto dto = dictationQuestionLogDtoList.get(questionIndex);
-        dto.setUsedHint("Y");
-
-        dictationQuestions.get(questionIndex).setUsedHintNum(hintNum);
-        log.info("[/use-hint] index: {}, usedHint: Y", questionIndex);
-
-        // 힌트 사용 시 유저 힌트 수 -1 차감
-        // userService.updateUserHintCountMinus(userNo);
-
-        return ResponseEntityUtils.ok("힌트 사용 완료");
-    }
-
-    /**
-     * 정답 보기 버튼 누를 시
-     * @param questionIndex 세션에 저장된 현재 인덱스
-     * @param dictationQuestionLogDtoList 세션에 저장된 이력 dto 목록
-     * @return 현재 문제 오답 처리
-     */
-    @PostMapping("/show-answer")
-    @ResponseBody
-    public ResponseEntity<ApiResponse<Void>> showAnswer(
-        @ModelAttribute("questionIndex") int questionIndex,
-        @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList
-    ) {
-        log.info("[@PostMapping(/show-answer)] showAnswer 실행 questionIndex: {}", questionIndex);
-
-        // 정답 보기 사용시 오답 처리, 시도횟수 : 2회, 제출문장: <정답 보기 사용>
-        DictationQuestionLogDto dictationQuestiondto = dictationQuestionLogDtoList.get(questionIndex);
-        dictationService.insertShowAnswerAndSkip(dictationQuestiondto);
-
-        // 변경 후 값 로그 출력
-        log.info("[/show-answer] 변경 후 - tryCount: {}, isSuccess: {}, userAnswer: {} / nextIndex: {}",
-            dictationQuestiondto.getTryCount(), dictationQuestiondto.getIsSuccess(), dictationQuestiondto.getUserAnswer(), questionIndex + 1);
-
-        return ResponseEntityUtils.ok("정답보기 처리 완료");
-    }
+//    /**
+//     * 각 문제 힌트 사용 여부
+//     * @param questionIndex 세션에 저장된 현재 인덱스
+//     * @param dictationQuestionLogDtoList 세션에 저장된 이력 dto 목록
+//     * @return 힌트 사용 여부
+//     */
+//    @PostMapping("/use-hint")
+//    @ResponseBody
+//    public ResponseEntity<ApiResponse<Void>> useHint(
+//        @RequestParam("hintNum") Integer hintNum,
+//        @ModelAttribute("questionIndex") int questionIndex,
+//        @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
+//        @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
+//        @AuthenticationPrincipal SecurityUser securityUser
+//    ) {
+//        log.info("[/use-hint] 실행 - questionIndex: {}", questionIndex);
+//
+//        //int userNo = securityUser.getUser().getUserNo();
+//
+//        // 현재 문제만 힌트 사용 처리
+//        DictationQuestionLogDto dto = dictationQuestionLogDtoList.get(questionIndex);
+//        dto.setUsedHint("Y");
+//
+//        dictationQuestions.get(questionIndex).setUsedHintNum(hintNum);
+//        log.info("[/use-hint] index: {}, usedHint: Y", questionIndex);
+//
+//        // 힌트 사용 시 유저 힌트 수 -1 차감
+//        // userService.updateUserHintCountMinus(userNo);
+//
+//        return ResponseEntityUtils.ok("힌트 사용 완료");
+//    }
+//
+//    /**
+//     * 정답 보기 버튼 누를 시
+//     * @param questionIndex 세션에 저장된 현재 인덱스
+//     * @param dictationQuestionLogDtoList 세션에 저장된 이력 dto 목록
+//     * @return 현재 문제 오답 처리
+//     */
+//    @PostMapping("/show-answer")
+//    @ResponseBody
+//    public ResponseEntity<ApiResponse<Void>> showAnswer(
+//        @ModelAttribute("questionIndex") int questionIndex,
+//        @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList
+//    ) {
+//        log.info("[@PostMapping(/show-answer)] showAnswer 실행 questionIndex: {}", questionIndex);
+//
+//        // 정답 보기 사용시 오답 처리, 시도횟수 : 2회, 제출문장: <정답 보기 사용>
+//        DictationQuestionLogDto dictationQuestiondto = dictationQuestionLogDtoList.get(questionIndex);
+//        dictationService.insertShowAnswerAndSkip(dictationQuestiondto);
+//
+//        // 변경 후 값 로그 출력
+//        log.info("[/show-answer] 변경 후 - tryCount: {}, isSuccess: {}, userAnswer: {} / nextIndex: {}",
+//            dictationQuestiondto.getTryCount(), dictationQuestiondto.getIsSuccess(), dictationQuestiondto.getUserAnswer(), questionIndex + 1);
+//
+//        return ResponseEntityUtils.ok("정답보기 처리 완료");
+//    }
 
     /**
      * 받아쓰기 정답 제출
      * @param userAnswer 사용자 제출 문장
-     * @param skip 기본 : "0", 정답보기 누를 시 : "1"
      * @param dictationQuestionLogDtoList 세션에 저장된 이력 dto 목록
      * @param dictationQuestions 세션에 저장된 받아쓰기 문제 목록
      * @param questionIndex 세션에 저장된 현재 인덱스
@@ -217,20 +227,20 @@ public class DictationController {
      * @return /dictation/solve로 리다이렉트 (다음 문제 또는 동일 문제 재도전)
      */
     @PostMapping("/submit-answer")
-    public String submitAnswer(@RequestParam("userAnswer") String userAnswer,
-        @RequestParam("skip") String skip,
+    public String submitAnswer(
+        @RequestParam("userAnswer") String userAnswer,
+        @RequestParam(value="showAnswer",  required=false, defaultValue="0") String showAnswer,
+        @RequestParam(value ="hintNum", required = false, defaultValue = "") Integer hintNum,
         @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
         @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
         @ModelAttribute("questionIndex") int questionIndex,
+        @ModelAttribute("mustReloadAfterShowAnswer") Boolean mustReloadAfterShowAnswer,
+        @AuthenticationPrincipal SecurityUser securityUser,
         Model model,
         RedirectAttributes redirectAttributes) {
         log.info(" [@PostMapping(/submit-answer)] submitAnswer 실행 questionIndex: {}, userAnswer: {}", questionIndex, userAnswer);
 
-        // 정답보기 누를 시 바로 다음 문제로 이동
-        if ("1".equals(skip)) {
-            DictationQuestionLogDto dictationQuestiondto = dictationQuestionLogDtoList.get(questionIndex);
-            dictationService.insertShowAnswerAndSkip(dictationQuestiondto);
-            model.addAttribute("questionIndex", questionIndex + 1);
+        if (Boolean.TRUE.equals(mustReloadAfterShowAnswer)) {
             return "redirect:/dictation/solve";
         }
 
@@ -239,6 +249,39 @@ public class DictationController {
             log.warn("index 범위 초과 -> /finish 이동");
             return "redirect:/dictation/finish";
         }
+
+        // 정답보기 누를 시 바로 다음 문제로 이동
+        if ("1".equals(showAnswer)) {
+            DictationQuestionLogDto dictationQuestiondto = dictationQuestionLogDtoList.get(questionIndex);
+            dictationService.insertShowAnswerAndSkip(dictationQuestiondto);
+
+            log.info("[/show-answer] 변경 후 - tryCount: {}, isSuccess: {}, userAnswer: {} / nextIndex: {}",
+                dictationQuestiondto.getTryCount(), dictationQuestiondto.getIsSuccess(), dictationQuestiondto.getUserAnswer(), questionIndex + 1);
+
+            model.addAttribute("questionIndex", questionIndex + 1);
+            // 🔴 다음 POST는 무시하도록 플래그 켜기
+            model.addAttribute("mustReloadAfterShowAnswer", true);
+            return "redirect:/dictation/solve";
+        }
+
+        // 힌트 버튼를 눌렀을 때
+        if (hintNum != null) {
+            //int userNo = securityUser.getUser().getUserNo();
+
+            DictationQuestionLogDto dto = dictationQuestionLogDtoList.get(questionIndex);
+            dto.setUsedHint("Y");
+
+            dictationQuestions.get(questionIndex).setUsedHintNum(hintNum);
+            log.info("[/use-hint] index: {}, usedHint: Y", questionIndex);
+
+            // 힌트 사용 시 유저 힌트 수 -1 차감
+            // userService.updateUserHintCountMinus(userNo);
+            return "redirect:/dictation/solve";
+        } else {
+            // 힌트 번호가 유효하지 않으면 사용 해제(옵션)
+            dictationQuestions.get(questionIndex).setUsedHintNum(null);
+        }
+
 
         // 제출 문장 공백 방지 (@RequestParam("userAnswer") : null 값 방지)
         if (userAnswer == null) userAnswer = "";
@@ -357,24 +400,4 @@ public class DictationController {
         return "dictation/result";
     }
 
-//    /**
-//     * 로그인한 사용자의 전체 받아쓰기 세트 결과 목록을 조회하여 뷰에 전달
-//     * @param securityUser 현재 로그인한 사용자 정보
-//     * @param model 결과 목록이 담길 모델
-//     * @return 결과 목록을 보여주는 HTML (result-list.html)
-//     */
-//    @GetMapping("/results")
-//    public String showAllResults(@AuthenticationPrincipal SecurityUser securityUser,
-//        Model model) {
-//        int userNo = securityUser.getUser().getUserNo();
-//        log.info("사용자 번호: {}", userNo);
-//        List<DictationSession> results = dictationService.getResultsByUserNo(userNo, limit);
-//        if (results == null) {
-//            results = new ArrayList<>();
-//        }
-//        log.info("받아쓰기 결과 조회 완료 - 총 {}개 세트 반환", results.size());
-//        model.addAttribute("results", results);
-//        log.info("results: {}", results);
-//        return "dictation/result-list";
-//    }
 }

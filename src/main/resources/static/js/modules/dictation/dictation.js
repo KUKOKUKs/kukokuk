@@ -25,7 +25,9 @@ $(document).ready(() => {
     const dictationQuestionNo = $dictationSpeakingComponent.data("question-no"); // 해당 문제 식별 번호
     const $hintsInfo = $dictationSpeakingComponent.find(".hints_info"); // 힌트 버튼 부모 요소
     const $userAnswer = $("#user-answer"); // 정답 입력 인풋 요소
-    
+    // 전역 플래그
+    let isShowAnswer = false;   // 정답보기 사용 여부
+    let usedHintNum  = null;    // 힌트 번호
     /*
         이벤트 핸들러 등록 및 실행 등 아래와 같이 사용이 가능하나 비동기 랜더링 방식의 
         페이지가 아니므로 랜더링이 완료된 후 리스터 등록이라면 간편히 제이쿼리를 활용하여 
@@ -134,12 +136,13 @@ $(document).ready(() => {
         }); // 힌트 버튼 부모 요소를 제거하여 완전 보이지 않도록 함
     }
 
+
     // 정답 보기 서버 반영 (오답 처리 + tryCount=2)
     async function showAnswerAndSkip() {
         console.log("[markShowAnswer] 함수 실행됨");
         try {
             const response = await $.ajax({
-                url: "/dictation/show-answer",
+                url: "/api/dictation/show-answer",
                 method: "POST",
                 dataType: "json"
             });
@@ -149,7 +152,23 @@ $(document).ready(() => {
         }
 
         // 폼에 'skip'을 히든 추가하고 skipInput 값이 1로 변경되고 제출 누르면 다음 문제로만 이동
-        $("#skipInput").val("1");
+
+    }
+
+    async function submitAnswerNow() {
+        await $.ajax({
+            url: "/dictation/submit-answer",
+            method: "POST",
+            data: {
+                userAnswer: $("#user-answer").val() ?? "",
+                showAnswer: isShowAnswer ? "1" : "0",
+                hintNum: usedHintNum ?? ""
+            }
+        });
+
+        // (선택) 플래그 리셋
+        isShowAnswer = false;
+        usedHintNum  = null;
     }
 
     // 1. 비동기 요청으로 읽어줄 문제와 힌트목록을 요청하는 함수
@@ -174,7 +193,8 @@ $(document).ready(() => {
         $('#user-answer').prop('readonly', true).addClass('disabled');
 
         disableAllHintButtons();
-        await showAnswerAndSkip();
+        isShowAnswer = true;
+        await submitAnswerNow();
     });
 
     // 힌트 사용 Ajax 호출 함수
@@ -207,7 +227,8 @@ $(document).ready(() => {
             showAnswerInSquares(questionInformation.hint1);
         }
         disableAllHintButtons();
-        await useHint(1);
+        usedHintNum = 1;
+        await submitAnswerNow();
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 
@@ -226,7 +247,8 @@ $(document).ready(() => {
             showAnswerInSquares(questionInformation.hint2);
         }
         disableAllHintButtons();
-        await useHint(2);
+        usedHintNum = 2;
+        await submitAnswerNow();
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 
@@ -245,7 +267,8 @@ $(document).ready(() => {
             showAnswerInSquares(questionInformation.hint3);
         }
         disableAllHintButtons();
-        await useHint(3);
+        usedHintNum = 3;
+        await submitAnswerNow();
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 
