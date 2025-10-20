@@ -3,11 +3,13 @@ package com.kukokuk.domain.exp.service;
 import com.kukokuk.common.constant.DailyQuestEnum;
 import com.kukokuk.domain.exp.dto.ExpProcessingDto;
 import com.kukokuk.domain.exp.dto.ListExpProcessingDto;
+import com.kukokuk.domain.exp.mapper.ExpMapper;
 import com.kukokuk.domain.exp.vo.ExpLog;
 import com.kukokuk.domain.quest.service.DailyQuestUserService;
 import com.kukokuk.domain.quest.vo.DailyQuestUser;
 import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.domain.user.vo.User;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -24,7 +26,7 @@ public class ExpProcessingService {
 
     private final ModelMapper modelMapper;
 
-    private final ExpService expService;
+    private final ExpMapper expMapper;
     private final DailyQuestUserService dailyQuestUserService;
     private final UserService userService;
 
@@ -32,15 +34,26 @@ public class ExpProcessingService {
      * 여러개의 사용자의 경험치 획득 처리와
      * 경험치 획득 이력 추가,
      * 사용자 누적 경험치, 조건에 따라 레벨 업데이트
-     * @param expProcessingDtos 경험치 정보 리스트(userNo, contentNo만 사용됨 pair를 위한 개별 객체 필요)
-     * @param contentType 컨텐츠명
-     * @param expGained 일괄 처리할 경험치 획득 값
+     * @param listExpProcessingDto 경험치 정보 리스트(userNo, contentNo만 사용됨 pair를 위한 개별 객체 ExpProcessingDto)
      */
     @Transactional
     public void groupExpProcessing(ListExpProcessingDto listExpProcessingDto) {
         log.info("groupExpProcessing() 서비스 실행");
 
+        String contentType =  listExpProcessingDto.getContentType();
+        Integer expGained = listExpProcessingDto.getExpGained();
+        List<ExpProcessingDto> expProcessingDtos = listExpProcessingDto.getExpProcessingDtos();
 
+        // 경험치 획득 정보 등록
+        expMapper.insertExpLogs(contentType, expGained, expProcessingDtos);
+
+        // userNos 추출하여 사용자 누적경험치 및 레벨 업데이트
+        List<Integer> userNos = expProcessingDtos.stream()
+            .map(ExpProcessingDto::getUserNo)
+            .distinct()
+            .toList();
+
+        userService.updateUserExpByUserNos(userNos, expGained);
     }
     
     /**
@@ -58,7 +71,7 @@ public class ExpProcessingService {
         String contentType = expProcessingDto.getContentType(); // 컨텐츠 타입
 
         // 경헙치 획득 정보 등록
-        expService.insertExpLog(modelMapper.map(expProcessingDto, ExpLog.class));
+        expMapper.insertExpLog(modelMapper.map(expProcessingDto, ExpLog.class));
 
         // 사용자 누적 경험치 증가 및 레벨업(조건 확인)
         User securityUser = userService.getCurrentUser(); // 현재 로그인된 사용자 정보
@@ -92,8 +105,8 @@ public class ExpProcessingService {
 
         // 일일 도전과제 완료 조건 부합 여부
         boolean isQuestCompleted = switch (dailyQuestEnum.getProgressType()) {
-            case EXP -> expService.getTodayTotalExpByTypeWithUserNo(contentType, userNo) >= questTargetValue;
-            case COUNT ->  expService.getTodayCountExpByTypeWithUserNo(contentType, userNo) >= questTargetValue;
+            case EXP -> expMapper.getTodayTotalExpByTypeWithUserNo(contentType, userNo) >= questTargetValue;
+            case COUNT ->  expMapper.getTodayCountExpByTypeWithUserNo(contentType, userNo) >= questTargetValue;
             default -> false;
         };
 
