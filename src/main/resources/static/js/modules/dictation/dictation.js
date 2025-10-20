@@ -19,12 +19,14 @@ $(document).ready(() => {
         hint2: '',      // 초성 힌트
         hint3: ''       // 첫 글자 힌트
     };
-
+    
     // 받아쓰기 관련 요소
     const $dictationSpeakingComponent = $("#dictation-speaking-component"); // 문제, 힌트 제공 컴포넌트
     const dictationQuestionNo = $dictationSpeakingComponent.data("question-no"); // 해당 문제 식별 번호
     const $hintsInfo = $dictationSpeakingComponent.find(".hints_info"); // 힌트 버튼 부모 요소
     const $userAnswer = $("#user-answer"); // 정답 입력 인풋 요소
+    const $submitAnswer = $("#submitAnswer"); // 정답 제출 버튼 요소
+
     // 전역 플래그
     let isShowAnswer = false;   // 정답보기 사용 여부
     let usedHintNum  = null;    // 힌트 번호
@@ -136,13 +138,12 @@ $(document).ready(() => {
         }); // 힌트 버튼 부모 요소를 제거하여 완전 보이지 않도록 함
     }
 
-
     // 정답 보기 서버 반영 (오답 처리 + tryCount=2)
     async function showAnswerAndSkip() {
         console.log("[markShowAnswer] 함수 실행됨");
         try {
             const response = await $.ajax({
-                url: "/api/dictation/show-answer",
+                url: "/dictation/show-answer",
                 method: "POST",
                 dataType: "json"
             });
@@ -190,7 +191,13 @@ $(document).ready(() => {
         // 정답 보기 사용시 '정답 입력' 부분 작성 불가
         // [/submit-answer] 부분 @RequestParam("userAnswer") 값을 넘겨야 하므로 값은 넘기고(db에는 저장x)
         // '정답 입력' 부분 비활성화
-        $('#user-answer').prop('readonly', true).addClass('disabled');
+
+        //**** 정호 잘 읽어라
+        // 이런식으로 속성만 바꾸는 대처는 제발 우리 앱을 버그로 써먹어라 라는거야
+        // $('#user-answer').prop('readonly', true).addClass('disabled');
+
+        $userAnswer.remove(); // 조작 원천 차단
+        $submitAnswer.text("다음"); // 텍스트 변경
 
         disableAllHintButtons();
         isShowAnswer = true;

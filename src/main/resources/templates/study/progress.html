@@ -2,7 +2,7 @@
 <html layout:decorate="~{layout/center}">
 <!--/* 학습 진행화면에서 표시할 네비바 */-->
 <div layout:fragment="custom-nav-fragment"
-     th:replace="~{fragments/study/study-nav :: study-nav-fragment(studyProgress=${data})}"></div>
+     th:replace="~{fragments/study/study-nav :: study-nav-fragment(studyProgressDto=${studyProgressDto})}"></div>
 
 <div layout:fragment="content">
     <div id="center-content" class="content_container">
@@ -25,7 +25,7 @@
                     <div class="quote">학습내용인용 quote</div>
                     <div class="list">학습내용리스트 list</div>
                 </div>
-                <!--    <th:block th:each="card : ${data.cards}">-->
+                <!--    <th:block th:each="card : ${studyProgressDto.cards}">-->
                 <!--      <p th:text="${card.cardIndex}"></p>-->
                 <!--      <p th:text="${card.content}"></p>-->
                 <!--      <p th:text="${card.dailyStudyCardNo}"></p>-->
@@ -47,16 +47,15 @@
 <th:block layout:fragment="script">
     <script th:inline="javascript">
         /*<![CDATA[*/
-        // 백엔드 서버에서 전달된 data.cards 객체 리스트를 자바스크립트 변수로 바인딩
+        // 백엔드 서버에서 전달된 studyProgressDto.cards 객체 리스트를 자바스크립트 변수로 바인딩
         // 자동으로 JSON.stringify()되어 들어간다
-        let cards = /*[[${data.cards}]]*/ [];
-        let dailyStudy = /*[[${data.dailyStudy}]]*/ {};
-        let studyLog = /*[[${data.log}]]*/ {};
-        let quizzes = /*[[${data.quizzes}]]*/ [];
-        let quizLogs = /*[[${data.quizLogs}]]*/ [];
+        let cards = /*[[${studyProgressDto.cards}]]*/ [];
+        let dailyStudy = /*[[${studyProgressDto.dailyStudy}]]*/ {};
+        let studyLog = /*[[${studyProgressDto.log}]]*/ {};
+        let quizzes = /*[[${studyProgressDto.quizzes}]]*/ [];
+        let quizLogs = /*[[${studyProgressDto.quizLogs}]]*/ [];
         /*]]>*/
     </script>
 <!--    <script type="module" th:src="@{/js/modules/study/study-progress.js}"></script>-->
 </th:block>
-dma
 </html>

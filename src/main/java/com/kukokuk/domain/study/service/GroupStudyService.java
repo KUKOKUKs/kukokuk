@@ -20,7 +20,6 @@ import com.kukokuk.integration.redis.WorkerMaterialCallbackRequest;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +28,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -215,15 +212,15 @@ public class GroupStudyService {
      * 그룹에 업로드된 학습자료는 이미 AI 재구성 완료 상태이므로
      * 단순히 DB에서 조회 후 DTO 변환하여 반환한다.
      */
-    public List<DailyStudySummaryResponse> getGroupDailyStudies(User user, int rows, int groupNo) {
-        log.info("getGroupDailyStudies() 실행 - groupNo={}, rows={}", groupNo, rows);
+    public List<DailyStudySummaryResponse> getGroupDailyStudies(User user, int rows) {
+        log.info("getGroupDailyStudies() 실행 - groupNo={}, rows={}", user.getGroupNo(), rows);
 
         Map<String, Object> dailyStudyCondition = new HashMap<>();
         dailyStudyCondition.put("rows", rows);
 
         // Mapper 호출 (단순 SELECT)
         List<UserStudyRecommendationDto> groupStudies = dailyStudyMapper.getDailyStudiessByGroupAndUser(
-            groupNo,
+            user.getGroupNo(),
             user.getUserNo(),
             dailyStudyCondition);
 
