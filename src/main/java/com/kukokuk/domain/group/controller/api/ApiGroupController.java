@@ -61,7 +61,7 @@ public class ApiGroupController {
 
             // 템플릿 구조를 통일하기 위해 Page객체에 담기
             Page<Group> randomGroups = new Page<>();
-            randomGroups.setItems(groupService.getRandomGroups(PaginationEnum.DEFAULT_ROWS));
+            randomGroups.setItems(groupService.getRandomGroups(PaginationEnum.COMPONENT_ROWS));
             return ResponseEntityUtils.ok(randomGroups);
         } else {
             // 검색어 있으면 검색 결과 보여주기

@@ -18,6 +18,28 @@ export async function apiGetStudyDifficultyList() {
 }
 
 /**
+ * 그룹 학습 자료 목록 정보 조회 비동기 요청
+ * @param rows 요청할 자료 수
+ * @returns {Promise<*>} 그룹 학습 자료 목록 정보
+ */
+export async function apiGetGroupStudies(rows) {
+    console.log("apiGetGroupStudies() api 요청 실행");
+    try {
+        const response = await $.ajax({
+            method: "GET",
+            url: "/api/groups/studies",
+            data: {rows},
+            dataType: "json",
+        });
+
+        console.log("apiGetGroupStudies() api 요청 response: ", response);
+        return response.data;
+    } catch (xhr) {
+        apiErrorProcessByXhr(xhr.responseJSON);
+    }
+}
+
+/**
  * 요청할 자료 수를 전달받아 맞춤 학습 자료 비동기 요청
  * @param rows 조회(자료가 없거나 모자를 경우 생성) 요청 개수
  * @returns {Object} List<JobStatusResponse<DailyStudySummaryResponse>>> 객체

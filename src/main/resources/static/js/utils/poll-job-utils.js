@@ -16,7 +16,7 @@ export function pollJobStatus(
     console.log("pollJobStatus() api 요청 실행");
 
     let reqCnt = 1;
-    const interval = 1000; // 폴링 간격(ms)
+    const interval = 1500; // 폴링 간격(ms)
     const timeout = 30000; // 최대 대기 시간(ms)
 
     return new Promise((resolve, reject) => {

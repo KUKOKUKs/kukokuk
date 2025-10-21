@@ -23,7 +23,7 @@
                DAILY_STUDY_NO      AS dailyStudyNo
         FROM KUKOKUK_DAILY_STUDY_CARDS
         WHERE DAILY_STUDY_NO = #{dailyStudyNo}
-        ORDER BY CARD_INDEX ASC
+        ORDER BY CARD_INDEX
     </select>
 
 
