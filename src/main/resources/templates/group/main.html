@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/base}"
+<html layout:decorate="~{layout/base}"
       th:with="title='우리반'
       , menu='group'
       , isTeacher=${#authorization.expression('hasRole(''TEACHER'')')}">

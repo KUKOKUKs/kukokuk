@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/base}" th:with="title='내 정보', menu='profile'">
+<html layout:decorate="~{layout/base}" th:with="title='내 정보', menu='profile'">
 <div layout:fragment="content">
     <div class="form_component"
          sec:authorize="isAuthenticated()"

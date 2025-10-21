@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/base}"
+<html layout:decorate="~{layout/base}"
       th:with="menu='study', title='오늘의 학습',
       user=${#authentication.principal.user},
       isSetStudyLevel=${user != null

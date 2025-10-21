@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/base}"
+<html layout:decorate="~{layout/base}"
       th:with="menu='home',
       isAuth=${#authorization.expression('isAuthenticated()')},
       user=${isAuth ? #authentication.principal.user : null},
