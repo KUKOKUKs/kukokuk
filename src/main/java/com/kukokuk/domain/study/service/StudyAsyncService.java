@@ -74,6 +74,7 @@ public class StudyAsyncService {
      */
     public List<JobStatusResponse<DailyStudySummaryResponse>> getUserDailyStudies(User user, int recommendStudyCount) {
         log.info("getUserDailyStudies 서비스 실행");
+
         // 1단계 : 현재 사용자 수준/진도 기준으로 학습원본데이터_학습자료_학습이력DTO 목록 조회
       /*
         조회 조건
@@ -100,7 +101,7 @@ public class StudyAsyncService {
         );
 
         // 생성되는 DTO 확인 로그
-        userStudyRecommendationDtos.forEach(dto -> log.info("사용자 맞춤 study 조회 : " + dto.toString()));
+        userStudyRecommendationDtos.forEach(dto -> log.info("사용자 맞춤 study 조회 : {}", dto.toString()));
 
         String nowCurrentSchool = user.getCurrentSchool();
         Integer nowCurrentGrade = user.getCurrentGrade();
@@ -128,7 +129,7 @@ public class StudyAsyncService {
             nowCurrentSchool = nextGrade.getLeft();
             nowCurrentGrade = nextGrade.getRight();
 
-            log.info("다음학년 추가 조회 : " + nowCurrentSchool + " ," + nowCurrentGrade);
+            log.info("다음학년 추가 조회 : {}, {}", nowCurrentSchool, nowCurrentGrade);
 
             // 더 조회해야할 학습자료 개수 조건 갱신
             int remainingRowCount = recommendStudyCount - userStudyRecommendationDtos.size();
@@ -168,6 +169,8 @@ public class StudyAsyncService {
                 , user.getStudyDifficulty()
             );
 
+            JobStatusResponse<DailyStudySummaryResponse> status;
+
             // 학습자료가 아직 생성되지 않은 경우
             if (rec.getDailyStudyNo() == null) {
 //                // 해당 학습원본데이터와 사용자수준에 맞는 학습자료 생성하는 메소드 호출
@@ -175,18 +178,16 @@ public class StudyAsyncService {
 //                    user.getStudyDifficulty());
 //                rec.setDailyStudy(newDailyStudy);
 
-                JobStatusResponse<DailyStudySummaryResponse> status;
-
                 // 기존 Job 확인
                 JobStatusResponse<DailyStudySummaryResponse> existingStatus = studyJobStatusStore.get(jobId);
 
                 // 이미 해당 job이 작업 진행 중인 경우 상태저장소에 새 job을 추가하지 않음 (중복 작업 방지)
                 if(existingStatus != null && "PROCESSING".equals(existingStatus.getStatus())) {
                     status = existingStatus;
-                }
-                // 해당 job이 진행중이지 않은 경우 (DONE, FAILED인 경우도 포함)
-                else {
+                } else {
+                    // 해당 job이 진행중이지 않은 경우 (DONE, FAILED인 경우도 포함)
                     // 상태저장소에서 기존 작업 (DONE, FAILED인 경우) 제거
+                    // 제거 후 다시 생성하는게 워커에서 다시 PROCESSING로 인식해서 재 실행 시키도록 하는건가?
                     studyJobStatusStore.delete(jobId);
 
                     // Job 상태 객체 생성 (PROCESSING 상태)
@@ -195,15 +196,12 @@ public class StudyAsyncService {
                         .status("PROCESSING")
                         .progress(0)
                         .result(null)
-                        .message("맞춤 학습 자료 요청 대기 중...")
+                        .message("맞춤 학습 자료 요청 중...")
                         .build();
 
                     // 상태저장소(Redis)에 현재 Job 상태 저장
                     studyJobStatusStore.put(status);
                 }
-
-                // 응답으로 바로 반환할 작업상태 리스트에도 추가
-                responses.add(status);
 
                 // Worker가 실제 처리할 작업 페이로드 생성
                 DailyStudyJobPayload payload = DailyStudyJobPayload.builder()
@@ -215,23 +213,21 @@ public class StudyAsyncService {
                 // 비동기로 AI 호출 및 DB 저장하는 메소드 호출
                 dailyStudyWorker.generateStudyAsync(payload);
 
-            }
-            // 이미 학습자료가 존재하는 경우
-            else {
+            } else {
+                // 이미 학습자료가 존재하는 경우
                 // DONE 상태의 JobStatusResponse 생성
                 // - result에 이미 생성된 학습자료를 담아 반환
-                JobStatusResponse<DailyStudySummaryResponse> status =
-                    JobStatusResponse.<DailyStudySummaryResponse>builder()
-                        .jobId(jobId)
-                        .status("DONE")
-                        .progress(100)
-                        .result(studyService.mapToDailyStudySummaryResponse(rec))
-                        .message("이미 생성된 학습자료입니다")
-                        .build();
-
-                // 응답으로 반환할 job 리스트에 추가
-                responses.add(status);
+                status = JobStatusResponse.<DailyStudySummaryResponse>builder()
+                            .jobId(jobId)
+                            .status("DONE")
+                            .progress(100)
+                            .result(studyService.mapToDailyStudySummaryResponse(rec))
+                            .message("맞춤 학습 자료가 완성되었습니다.")
+                            .build();
             }
+
+            // 응답으로 반환할 job 리스트에 추가
+            responses.add(status);
         }
 
         // 4단계 : 최종 JobStatusResponse 리스트를 컨트롤러로 반환

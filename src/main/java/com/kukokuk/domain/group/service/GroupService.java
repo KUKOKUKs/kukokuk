@@ -2,6 +2,7 @@ package com.kukokuk.domain.group.service;
 
 import com.kukokuk.common.dto.Page;
 import com.kukokuk.common.dto.Pagination;
+import com.kukokuk.domain.group.dto.GruopUsersDto;
 import com.kukokuk.domain.group.mapper.GroupMapper;
 import com.kukokuk.domain.group.vo.Group;
 import java.util.Collections;
@@ -51,6 +52,16 @@ public class GroupService {
     }
 
     /**
+     * 그룹 번호로 그룹 정보와 그룹에 속한 사용자 정보 목록 조회
+     * @param gruopNo 그룹 번호
+     * @return 그룹 정보, 그룹에 속한 사용자 정보 목록
+     */
+    public GruopUsersDto getGruopUsersByGruopNo(int gruopNo) {
+        log.info("getGruopUsersByGruopNo() 서비스 실행");
+        return groupMapper.getGruopUsersByGruopNo(gruopNo);
+    }
+
+    /**
      * 그룹 번호로 그룹 정보 조회
      * @param groupNo 그룹 번호
      * @return 그룹 정보
@@ -58,6 +69,16 @@ public class GroupService {
     public Group getGroupByGroupNo(int groupNo) {
         log.info("getGroupByGroupNo() 서비스 실행 groupNo: {}", groupNo);
         return groupMapper.getGroupByGroupNo(groupNo);
+    }
+
+    /**
+     * 사용자가 속한 그룹 정보 조회
+     * @param userNo 사용자 번호
+     * @return 사용자가 속한 그룹 정보
+     */
+    public Group getGroupByUserNo(int userNo) {
+        log.info("getGroupByUserNo() 서비스 실행");
+        return groupMapper.getGroupByUserNo(userNo);
     }
 
     /**

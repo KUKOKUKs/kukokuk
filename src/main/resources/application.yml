@@ -12,7 +12,7 @@ spring:
     # 개발 환경: dev, 배포 환경: prod
     # 배포 서버에서 실행할 때 prod로 변경
     # java -jar kukokuk.jar --spring.profiles.active=prod
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
   servlet:
     encoding:
@@ -45,3 +45,12 @@ mybatis:
 #WebSocket 주소
 ws:
   url: "http://localhost:8081/ws"
+
+nhn:
+  s3:
+    tenant-id: AUTH_58a0a6438f054792b4338ed8b2440a82
+    endpoint: https://kr1-api-object-storage.nhncloudservice.com
+    access-key: ${OBJECT_STORAGE_ACCESS_KEY}
+    secret-key: ${OBJECT_STORAGE_SECRET_KEY}
+    bucket: kukokuk
+    region-name: KR1

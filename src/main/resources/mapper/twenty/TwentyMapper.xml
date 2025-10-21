@@ -3,6 +3,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kukokuk.domain.twenty.mapper.TwentyMapper">
     <!--
+        - 이 게임방의 참여자 리스트를 반환
         public List<RoomUser> getTwentyPlayerList(int roomNo);
     -->
     <select id="getTwentyPlayerList" resultType="RoomUser">
@@ -14,24 +15,27 @@
             KUKOKUK_TWENTY_ROOM_USERS RU
                 JOIN KUKOKUK_USERS U ON RU.USER_NO = U.USER_NO
         WHERE
-            RU.USER_NO = U.USER_NO AND
-            RU.TWENTY_ROOM_NO = #{roomNo}
+            RU.TWENTY_ROOM_NO = #{roomNo} AND
+            U.IS_DELETED = 'N'
+        ORDER BY U.USER_NO
     </select>
     <!--
+        게임방 참여자의 상태를 업데이트
        public void updateRoomUserStatus(Map<String, Object> map);
     -->
     <update id="updateRoomUserStatus">
         UPDATE KUKOKUK_TWENTY_ROOM_USERS
         SET
-            STATUS = #{status}
+        STATUS = #{status}
         WHERE
-            TWENTY_ROOM_NO =#{roomNo}
-            <if test="userNo != null">
+        TWENTY_ROOM_NO =#{roomNo}
+        <if test="userNo != null">
             AND USER_NO = #{userNo}
-            </if>
+        </if>
     </update>
 
     <!--
+        게임방의 상태를 변경
        public void updateRoomStaus(Map<String, Object> map);
     -->
     <update id="updateRoomStatus">
@@ -44,6 +48,7 @@
     </update>
 
     <!--
+        roomNo로 게임방 1개를 반환
         public TwentyRoom getTwentyRoomByRoomNo(int roomNo);
     -->
     <select id="getTwentyRoomByRoomNo" resultType="TwentyRoom">
@@ -55,22 +60,22 @@
              ,GROUP_NO                   AS groupNo
              ,IS_SUCCESS                 AS isSuccess
              ,TRY_COUNT                  AS tryCnt
-
+             ,TITLE                      AS title
         FROM
             KUKOKUK_TWENTY_ROOMS
         WHERE
             TWENTY_ROOM_NO = #{roomNo}
           AND STATUS NOT IN('COMPLETED', 'STOPPED')
-
     </select>
 
     <!--
-            public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(@Param("groupNo") int groupNo,
-                                                       @Param("limitCnt") int limitCnt );
+         오늘 만들어진 모든 게임방 중 최대 몇개만 조회
+        public List<TwentyRoom> getRecentTodayTwentyRoomListByGroupNo(@Param("groupNo") int groupNo,
+                                                                      @Param("limitCnt") int limitCnt );
     -->
     <select id="getRecentTodayTwentyRoomListByGroupNo" resultType="TwentyRoom">
-         SELECT
-             TWENTY_ROOM_NO                     AS roomNo
+        SELECT
+            TWENTY_ROOM_NO                     AS roomNo
              ,CORRECT_ANSWER                    AS correctAnswer
              ,IS_SUCCESS                        AS isSuccess
              ,TRY_COUNT                         AS tryCnt
@@ -79,13 +84,14 @@
              ,UPDATED_DATE                      AS updatedDate
              ,GROUP_NO                          AS groupNo
              ,WINNER_NO                         AS winnerNo
-         FROM
-             KUKOKUK_TWENTY_ROOMS
-         WHERE
-             GROUP_NO = #{groupNo}
-            AND DATE(CREATED_DATE) = CURDATE()
+             ,TITLE                             AS title
+        FROM
+            KUKOKUK_TWENTY_ROOMS
+        WHERE
+            GROUP_NO = #{groupNo}
+          AND DATE(CREATED_DATE) = CURDATE()
         ORDER BY CREATED_DATE DESC
-        LIMIT  #{limitCnt}
+            LIMIT  #{limitCnt}
     </select>
     <!--
         public void insertTwentyLog(SendStdMsg msg);
@@ -94,16 +100,17 @@
     -->
     <insert id="insertTwentyLog" parameterType="SendStdMsg" useGeneratedKeys="true" keyProperty="logNo" >
         INSERT INTO KUKOKUK_TWENTY_LOGS
-            (USER_NO,
-             TWENTY_ROOM_NO,
-             TYPE,
-             MESSAGE)
+        (USER_NO,
+         TWENTY_ROOM_NO,
+         TYPE,
+         MESSAGE)
         VALUES (#{userNo},
                 #{roomNo},
                 #{type},
                 #{content})
     </insert>
     <!--
+        - 이 게임방의 총 메세지 개수를 조회.
        public Integer getMsgCntByRoomNo(int roomNo);
     -->
     <select id="getMsgCntByRoomNo" resultType="Integer">
@@ -116,73 +123,174 @@
     </select>
 
     <!--
+        - 이 게임방의 가장 최신 메세지 1개 조회.
         public SendStdMsg getRecentMsgByRoomNo(int  roomNo);
     -->
     <select id="getRecentMsgByRoomNo" resultType="SendStdMsg">
         SELECT
             TWENTY_LOG_NO           AS logNo
-            ,TYPE                   AS type
-            ,MESSAGE                AS content
-            ,USER_NO                AS userNo
-            ,TWENTY_ROOM_NO         AS roomNo
+             ,TYPE                   AS type
+             ,MESSAGE                AS content
+             ,USER_NO                AS userNo
+             ,TWENTY_ROOM_NO         AS roomNo
+             ,IS_SUCCESS             AS isSuccess
         FROM
             KUKOKUK_TWENTY_LOGS
         WHERE
             TWENTY_ROOM_NO = #{roomNo}
         ORDER BY CREATED_DATE DESC
-        LIMIT 1
+            LIMIT 1
     </select>
 
     <!--
+        - 게임 종료 버튼 클릭 시, 모든 게임 결과를 게임방 테이블에 저장.
          public void updateTwentyRoomResult(TwentyRoom room);
     -->
     <update id="updateTwentyRoomResult" parameterType="TwentyRoom">
         UPDATE
-            KUKOKUK_TWENTY_ROOMS
+        KUKOKUK_TWENTY_ROOMS
         <set>
             TRY_COUNT = #{tryCnt}
+            ,STATUS = #{status}
             ,IS_SUCCESS = #{isSuccess}
-            <if test="'Y'.equals(isSuccess) ">
+            <if test='isSuccess != null and isSuccess.equals("Y")'>
                 ,WINNER_NO = #{winnerNo}
             </if>
         </set>
         WHERE
-            TWENTY_ROOM_NO = #{roomNo}
+        TWENTY_ROOM_NO = #{roomNo}
     </update>
 
     <!--
+        - 학생이 메세지를 올리고, 교사가 O,X 버튼을 누를 때마다 log 테이블 업데이트
         public void updateTwentyLog(SendStdMsg msg);
     -->
     <update id="updateTwentyLog" parameterType="SendStdMsg">
-    UPDATE
+        UPDATE
         KUKOKUK_TWENTY_LOGS
-    <set>
-        MESSAGE = #{content}
-        <if test="answer != null"> <!-- 질문인 경우 -->
+        <set>
+            MESSAGE = #{content}
             ,ANSWER =#{answer}
-        </if>
-        <if test="isSuccess != null"> <!-- 정답인 경우 -->
-            ,IS_SUCCESS = #{isSuccess}
-        </if>
-    </set>
-    WHERE
+            <if test="isSuccess != null"> <!-- 정답의 경우 IS_SUCCESS 컬럼에 값을 할당-->
+                ,IS_SUCCESS = #{isSuccess}
+            </if>
+        </set>
+        WHERE
         TWENTY_LOG_NO = #{logNo}
     </update>
 
     <!--
+        - 이 게임방의 모든 메세지 리스트를 조회.
         public List<SendStdMsg>getTwentyLogList(int roomNo);
      -->
     <select id="getTwentyLogList" resultType="SendStdMsg">
         SELECT
             L.TWENTY_LOG_NO         AS logNo
-            ,L.USER_NO              AS userNo
-            ,L.TYPE                 AS type
-            ,L.MESSAGE              AS content
-            ,U.NICKNAME             AS nickName
+             ,L.USER_NO              AS userNo
+             ,L.TYPE                 AS type
+             ,L.MESSAGE              AS content
+             ,U.NICKNAME             AS nickName
         FROM
             KUKOKUK_TWENTY_LOGS L
-        JOIN KUKOKUK_USERS U ON L.USER_NO = U.USER_NO
+                JOIN KUKOKUK_USERS U ON L.USER_NO = U.USER_NO
         WHERE
             TWENTY_ROOM_NO=#{roomNo}
     </select>
+
+    <!--
+        KUKOKUK_TWENTY_ROOMS에 아래 내용을 DB에 INSERT함.
+        public void insertTwentyRoom(TwentyRoom room);
+    -->
+    <insert id="insertTwentyRoom" parameterType="TwentyRoom" useGeneratedKeys="true" keyProperty="roomNo">
+        INSERT INTO KUKOKUK_TWENTY_ROOMS
+        (GROUP_NO
+        ,TITLE
+        ,CORRECT_ANSWER
+        ,STATUS)
+        VALUES
+            (#{groupNo}
+            ,#{title}
+            ,#{correctAnswer}
+            ,#{status})
+    </insert>
+
+    <!--
+        KUKOKUK_TWENTY_ROOM_USERS에 아래 내용을 DB에 INSERT함.
+        public void insertTwentyRoomUser(Map<String, Object> map);
+    -->
+    <insert id="insertTwentyRoomUser">
+        INSERT INTO KUKOKUK_TWENTY_ROOM_USERS
+        (USER_NO
+        ,STATUS
+        ,TWENTY_ROOM_NO)
+        VALUES
+        <foreach collection="userNos" item="userNo" separator=",">
+            (#{userNo}
+            ,#{status}
+            ,#{roomNo})
+        </foreach>
+    </insert>
+
+    <!--
+        public TwentyRoom getAllTwentyRoom(int roomNo);
+        조건 없이 바로 roomNo로 게임방 1개 조회.
+    -->
+    <select id="getAllTwentyRoom" resultType="TwentyRoom">
+        SELECT
+            TWENTY_ROOM_NO               AS roomNo
+             ,CORRECT_ANSWER             AS correctAnswer
+             ,STATUS                     AS status
+             ,WINNER_NO                  AS winnerNo
+             ,GROUP_NO                   AS groupNo
+             ,IS_SUCCESS                 AS isSuccess
+             ,TRY_COUNT                  AS tryCnt
+             ,TITLE                      AS title
+        FROM
+            KUKOKUK_TWENTY_ROOMS
+        WHERE
+            TWENTY_ROOM_NO = #{roomNo}
+    </select>
+
+    <!--
+        /**
+         * roomNo로 이 게임방의 결과를 가져온다.
+         * @param roomNo
+         * @return
+         */
+        public TwentyResult getTwentyRoomResult(int roomNo);
+    -->
+    <select id="getTwentyRoomResult" resultType="TwentyResult">
+        SELECT
+            TR.TWENTY_ROOM_NO   AS roomNo,
+            TR.TITLE            AS title,
+            TR.CORRECT_ANSWER   AS answers,
+            TR.IS_SUCCESS       AS isSuccess,
+            TR.TRY_COUNT        AS tryCnt,
+            TR.STATUS           AS status,
+            TR.WINNER_NO        AS winnerNo,
+            U.NICKNAME          AS nickName,
+            G.USER_NO           AS teacherNo
+        FROM
+            KUKOKUK_TWENTY_ROOMS TR
+                JOIN KUKOKUK_USERS U
+                     ON TR.WINNER_NO = U.USER_NO
+                JOIN KUKOKUK_GROUPS G
+                     ON TR.GROUP_NO = G.GROUP_NO
+        WHERE
+            TR.TWENTY_ROOM_NO = #{roomNo}
+    </select>
+    <!--
+         /**
+         * 이 게임방의 총 참여 인원을 가져온다.
+         * @param roomNo
+         * @return
+         */
+        public Integer getTwentyRoomUserTatal(int roomNo);
+    -->
+    <select id="getTwentyRoomUserTatal" resultType="Integer">
+        SELECT COUNT(*)
+        FROM KUKOKUK_TWENTY_ROOM_USERS
+        WHERE TWENTY_ROOM_NO = #{roomNo}
+    </select>
+
 </mapper>

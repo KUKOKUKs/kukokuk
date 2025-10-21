@@ -30,12 +30,12 @@
 
                     <!--/* 순위권 4~5 */-->
                     <th:block th:if="${rank.userRank > 3 && rank.userRank < 6}">
-                        <iconify-icon class="color_gray" th:icon="|ri:number-${rank.userRank}|"></iconify-icon>
+                        <iconify-icon class="small_font color_gray" th:icon="|ri:number-${rank.userRank}|"></iconify-icon>
                     </th:block>
 
                     <!--/* 사용자 순위가 순위권 밖인 경우 */-->
                     <th:block th:if="${isMyRank && rank.userRank > 5}">
-                        <span class="small_font color_gray" th:text="|${rank.userRank}위|"></span>
+                        <span class="tiny_font color_gray" th:text="|${rank.userRank}위|"></span>
                     </th:block>
                 </div>
                 <div class="d_flex align_center tiny_gap">

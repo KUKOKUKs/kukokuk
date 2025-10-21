@@ -14,7 +14,9 @@ import lombok.Setter;
 public class StudyMaterialJobPayload {
     private String jobId; // jobStatus 식별자
     private String fileUrl; // Object Storage 파일 경로
-    private int groupNo; // 그룹 ID
-    private int difficulty; // 학습 난이도
+    private Integer groupNo; // 그룹 ID
+    private Integer difficulty; // 학습 난이도
     private int dailyStudyMaterialNo; // DB PK
+    private String school;
+    private Integer grade;
 }

@@ -1,46 +1,56 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout/base}"
-      th:with="menu='study', title='오늘의 학습',
+      th:with="menu='study',
+      title='오늘의 학습',
       user=${#authentication.principal.user},
       isSetStudyLevel=${user != null
-                      and user.studyDifficulty != null
-                      and user.currentSchool != null
-                      and user.currentGrade != null}">
+                      && user.studyDifficulty != null
+                      && user.currentSchool != null
+                      && user.currentGrade != null}">
 <div layout:fragment="content">
     <div id="main-content" class="content_container">
-        <div class="content_info">
+        <div class="content_info"
+             th:classappend="${user?.groupNo != null ? 'toggle_info_component first' : 'toggle_info_component second'}">
             <div class="content_title">
                 <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
                 오늘의 학습
 
                 <!--/* 그룹에 속해 있을 경우 일반/우리반 토글 스위치 노출 */-->
                 <div th:if="${user?.groupNo != null}"
-                     class="group_toggle_btn on">
+                     class="content_switcher switch_toggle_btn"
+                     data-before="우리반"
+                     data-after="일반">
                     <div class="toggle_switch"></div>
                 </div>
             </div>
 
-            <!--/* 일일학습 카드가 동적으로 추가되는 부분 */-->
-            <div class="study_list_container" th:data-is-study-level-set="${isSetStudyLevel}"></div>
+            <!--/* 그룹에 속한 사용자 */-->
+            <th:block th:if="${user?.groupNo != null}">
+                <div th:replace="~{fragments/study/group-study-list :: group-study-list-fragment(groupStudyRows=5, isUseSpinner=false)}"></div>
+            </th:block>
+
+            <!--/* 학습 진도/단계 설정이 필요한 경우 */-->
+            <div class="component elevate_on_hover toggle_info_second"
+                 th:if="${!isSetStudyLevel}">
+                <button type="button"
+                        class="modal_study_level_btn component_title justify_content_center pd_base tac">
+                    <div class="title_info">
+                        학습 수준을 설정하고 오늘의 학습을 시작해볼까요?
+                    </div>
+                </button>
+            </div>
+
+            <!--/* 학습 진도/단계 설정이 완료된 경우 컨텐츠 추가 */-->
+            <th:block th:if="${isSetStudyLevel}">
+                <div th:replace="~{fragments/study/study-list :: study-list-fragment(studyRows=5, isUseSpinner=false)}"></div>
+            </th:block>
         </div>
     </div>
 
     <div id="sub-content" class="content_container">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
         <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
-        <th:block th:replace="~{fragments/study/study-history :: study-history-fragment(studyHistory=${data})}"></th:block>
+        <th:block th:replace="~{fragments/study/study-history :: study-history-fragment(dailyStudyLogs=${dailyStudyLogs})}"></th:block>
     </div>
 </div>
-
-<th:block layout:fragment="script">
-    <script th:inline="javascript">
-        // 사용자 인증정보로 부터 학습수준/진도를 객체로 저장, JS 에서 활용
-        const userInfo = {
-            difficulty: [[${#authentication?.principal?.user?.studyDifficulty}]],
-            school: [[${#authentication?.principal?.user?.currentSchool}]],
-            grade: [[${#authentication?.principal?.user?.currentGrade}]]
-        };
-    </script>
-    <script type="module" th:src="@{/js/modules/study/study-main.js}"></script>
-</th:block>
 </html>

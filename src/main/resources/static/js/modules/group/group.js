@@ -129,21 +129,6 @@ $(document).ready(function () {
             location.reload(); // 새로 고침
         }
     });
-    
-    // 그룹 학습/검색 스위치 토글 버튼 이벤트
-    const $groupSearchToggleInfo = $(".group_search_toggle_info"); // 학습/검색 요소들의 부모 요소
-    const $groupSwitchToggleBtn = $("#group-switch-toggle-btn"); // 스위치 토글 버튼
-    $groupSwitchToggleBtn.click(function () {
-        const $this = $(this);
-
-        if ($this.hasClass("on")) {
-            $this.removeClass("on");
-            $groupSearchToggleInfo.removeClass("search_on");
-        } else {
-            $this.addClass("on");
-            $groupSearchToggleInfo.addClass("search_on");
-        }
-    });
 
     // 그룹 생성/수정/삭제 모달창 열기
     const $modalGruopEditBtn = $(".modal_gruop_edit_btn"); // 모달창 열기 버튼

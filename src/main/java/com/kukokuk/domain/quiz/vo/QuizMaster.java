@@ -22,7 +22,7 @@ public class QuizMaster {
     private float accuracyRate;  // 정답률 (%)
     private int successAnswer;
     private String questionType;   // ENUM('단어','뜻')
-    private String difficulty;     // ENUM('상','중','하')
+    private String difficulty;     // ENUM('어려움','보통','쉬움')
     private int usageCount;
     private int successCount;
     private Date createdDate; // 생성일

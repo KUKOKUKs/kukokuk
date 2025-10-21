@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 비동기 작업 전용 DTO로(비동기 백그라운드 작업 추적용)
@@ -18,6 +19,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
