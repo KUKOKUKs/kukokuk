@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<!--/*
+    일반 학습 목록을 제공하는 컴포넌트
+    현재는 상황에 따라 토글 컨텐츠로 사용 됨
+
+    ** 사용자가 그룹이 있을 경우
+    마당: [우리반/일반]
+    오늘의 학습: [우리반/일반]
+
+    ** 그룹이 없을 경우 단일 컨텐츠 제공으로 해당 프레그먼츠만 사용 됨
+*/-->
+<th:block th:fragment="study-list-fragment(studyRows, isUseSpinner)">
+    <div id="study-list-container"
+         class="small_list_component toggle_info_second"
+         th:data-study-rows="${studyRows}"
+         th:data-is-spinner="${isUseSpinner != null ? isUseSpinner : ''}"></div>
+    <script type="module" th:src="@{/js/modules/study/study-list.js}"></script>
+</th:block>
+</html>

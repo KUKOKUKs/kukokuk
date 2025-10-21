@@ -25,6 +25,7 @@ $(document).ready(() => {
     const dictationQuestionNo = $dictationSpeakingComponent.data("question-no"); // 해당 문제 식별 번호
     const $hintsInfo = $dictationSpeakingComponent.find(".hints_info"); // 힌트 버튼 부모 요소
     const $userAnswer = $("#user-answer"); // 정답 입력 인풋 요소
+    const $submitAnswer = $("#submitAnswer"); // 정답 제출 버튼 요소
     
     /*
         이벤트 핸들러 등록 및 실행 등 아래와 같이 사용이 가능하나 비동기 랜더링 방식의 
@@ -153,15 +154,11 @@ $(document).ready(() => {
     }
 
     // 1. 비동기 요청으로 읽어줄 문제와 힌트목록을 요청하는 함수
-    // 코드 컨벤션이 맞지않으며 의미가 명확하도록 수정
     // $("#AnswerBtn").on("click", async function () {
     $("#correctAnswer").on("click", async function () {
         console.log("정답 보기 버튼 클릭됨");
 
-        // const $correctAnswerBtn = $(this);  // dictationQuestionNo 변수 선언으로 필요없음
-
         if (!questionInformation.correctAnswer) {
-            // const questionNo = $correctAnswerBtn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
             const response = await getDictationQuestionApi(dictationQuestionNo);
             showAnswerInSquares(response.correctAnswer);
         } else {
@@ -171,7 +168,13 @@ $(document).ready(() => {
         // 정답 보기 사용시 '정답 입력' 부분 작성 불가
         // [/submit-answer] 부분 @RequestParam("userAnswer") 값을 넘겨야 하므로 값은 넘기고(db에는 저장x)
         // '정답 입력' 부분 비활성화
-        $('#user-answer').prop('readonly', true).addClass('disabled');
+
+        //**** 정호 잘 읽어라
+        // 이런식으로 속성만 바꾸는 대처는 제발 우리 앱을 버그로 써먹어라 라는거야
+        // $('#user-answer').prop('readonly', true).addClass('disabled');
+
+        $userAnswer.remove(); // 조작 원천 차단
+        $submitAnswer.text("다음"); // 텍스트 변경
 
         disableAllHintButtons();
         await showAnswerAndSkip();
@@ -197,10 +200,7 @@ $(document).ready(() => {
     $("#hintBtn1").on("click", async function () {
         console.log("띄어 쓰기 힌트 버튼 클릭됨")
 
-        // const $hint1Btn = $(this); // dictationQuestionNo 변수 선언으로 필요없음
-
         if (!questionInformation.hint1) {
-            // const questionNo = $hint1Btn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
             const response = await getDictationQuestionApi(dictationQuestionNo);
             showAnswerInSquares(response.hint1);
         } else {
@@ -216,10 +216,7 @@ $(document).ready(() => {
     $("#hintBtn2").on("click", async function () {
         console.log("초성나열 힌트 버튼 클릭됨")
 
-        // const $hint2Btn = $(this); // dictationQuestionNo 변수 선언으로 필요없음
-
         if (!questionInformation.hint2) {
-            // const questionNo = $hint2Btn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
             const response = await getDictationQuestionApi(dictationQuestionNo);
             showAnswerInSquares(response.hint2);
         } else {
@@ -235,10 +232,7 @@ $(document).ready(() => {
     $("#hintBtn3").on("click", async function () {
         console.log("첫 글자 힌트 버튼 클릭됨")
 
-        // const $hint3Btn = $(this); // dictationQuestionNo 변수 선언으로 필요없음
-
         if (!questionInformation.hint3) {
-            // const questionNo = $hint3Btn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
             const response = await getDictationQuestionApi(dictationQuestionNo);
             showAnswerInSquares(response.hint3);
         } else {

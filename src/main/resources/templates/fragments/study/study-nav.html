@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<th:block th:fragment="study-nav-fragment(studyProgress)">
+<th:block th:fragment="study-nav-fragment(studyProgressDto)">
     <!--/* logo */-->
     <button type="button" id="study_log_btn" class="logo fixed">
         <span class="a11y-hidden">국어국</span>
@@ -17,11 +17,11 @@
 
                     <ul class="study_content">
                         <li class="study_content_info"
-                            th:each="card, state : ${studyProgress.cards}"
+                            th:each="card, state : ${studyProgressDto.cards}"
                             th:data-card-index="${state.count}">
                             <p class="study_content_info_title" th:text="|${state.count}. ${card.title}|">학습 목차</p>
 
-                            <th:block th:if="${studyProgress.log != null && studyProgress.log.studiedCardCount >= state.count}">
+                            <th:block th:if="${studyProgressDto.log != null && studyProgressDto.log.studiedCardCount >= state.count}">
                                 <iconify-icon class="icon sub_font" icon="streamline-sharp-color:check"></iconify-icon>
                             </th:block>
                         </li>
@@ -36,7 +36,7 @@
 
                     <ul class="study_content">
                         <li class="study_content_info"
-                            th:each="quiz, state : ${studyProgress.quizWithLogDtos}"
+                            th:each="quiz, state : ${studyProgressDto.quizWithLogDtos}"
                             th:attr="data-quiz-index=${state.count},
                                  data-quiz-no=${quiz.dailyStudyQuizNo}">
                             <p class="study_content_info_title" th:text="|퀴즈 ${state.count}|">퀴즈 목차</p>

@@ -26,15 +26,15 @@
                         </p>
                     </div>
                     <div class="progress_info">
-                        <div class="hints_info">
+                        <button id="hint-btn" type="button" class="hints_info" style="background: none; border: none; cursor: pointer; padding: 0;">
                             <div class="hint_icon"></div>
                             <span class="hint_count">x <span id="hint-count" th:text="${user.hintCount}">0</span></span>
-                        </div>
+                        </button>
                     </div>
                 </div>
 
                 <div class="bar_gauge">
-                    <div id="step-progress-bar" class="gauge" style="width: 0%;"></div>
+                    <div id="step-progress-bar" class="gauge"></div>
                 </div>
             </div>
         </div>
@@ -42,26 +42,16 @@
         <!--/* 문제 */-->
         <div class="component">
             <p id="quiz-question" class="callout_info bold large_font tac"></p>
-
-            <div class="callout right pd_0 box_shadow_none"
-                 style="--callout-color: transparent;" th:with="isAvailable=${user.hintCount != null && user.hintCount > 0}">
-                <div class="hints_info">
-                    <button type="button"
-                            th:id="${isAvailable ? 'quizHint' : ''}"
-                            class="icon base dictation_hint_btn tooltip"
-                            th:classappend="${!isAvailable ? 'disabled' : ''}"
-                            data-label="보기 1개 제거">
-                        <iconify-icon class="icon title_font" icon="ri:space"></iconify-icon>
-                    </button>
-                </div>
-            </div>
         </div>
 
         <!--/* 보기 */-->
         <div id="quiz-options" class="tiny_list_component"></div>
 
-        <!-- 다음 버튼 -->
-        <button id="next-btn" class="btn primary" type="button">다음</button>
+        <!-- 이전/다음 버튼 -->
+        <div class="btn_list">
+            <button id="prev-btn" class="btn white" type="button">이전</button>
+            <button id="next-btn" class="btn primary" type="button">다음</button>
+        </div>
     </div>
 
     <!-- 결과 제출용 폼 -->
@@ -73,8 +63,8 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
+        const quizMode = "level";
         let quizzes = /*[[${quizList}]]*/ [];
     </script>
-    <script th:src="@{/js/modules/quiz/level.js}"></script>
+    <script type="module" th:src="@{/js/modules/quiz/quiz.js}"></script>
 </th:block>
-</html>

@@ -7,7 +7,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.ibatis.annotations.Param;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor // 초기화 되지않은 final 필드나, @NonNull 이 붙은 필드에 대해 생성자를 생성
 public class ExpService {
 
-    private final ModelMapper modelMapper;
     private final ExpMapper expMapper;
 
     /**

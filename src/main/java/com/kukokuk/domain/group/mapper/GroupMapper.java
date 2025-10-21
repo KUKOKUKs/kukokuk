@@ -1,5 +1,6 @@
 package com.kukokuk.domain.group.mapper;
 
+import com.kukokuk.domain.group.dto.GruopUsersDto;
 import com.kukokuk.domain.group.vo.Group;
 import java.util.List;
 import java.util.Map;
@@ -30,11 +31,25 @@ public interface GroupMapper {
         , @Param("group") Group group);
 
     /**
+     * 그룹 번호로 그룹 정보와 그룹에 속한 사용자 정보 목록 조회
+     * @param gruopNo 그룹 번호
+     * @return 그룹 정보, 그룹에 속한 사용자 정보 목록
+     */
+    GruopUsersDto getGruopUsersByGruopNo(int gruopNo);
+
+    /**
      * 그룹 번호로 그룹 정보 조회
      * @param groupNo 그룹 번호
      * @return 그룹 정보
      */
     Group getGroupByGroupNo(int groupNo);
+
+    /**
+     * 사용자가 속한 그룹 정보 조회
+     * @param userNo 사용자 번호
+     * @return 사용자가 속한 그룹 정보
+     */
+    Group getGroupByUserNo(int userNo);
 
     /**
      * 사용자 번호로 그룹 목록 정보 조회
