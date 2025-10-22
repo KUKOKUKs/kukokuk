@@ -1,6 +1,10 @@
 package com.kukokuk.domain.quiz.service;
 
 import com.kukokuk.common.constant.ContentTypeEnum;
+import com.kukokuk.common.constant.DailyQuestEnum;
+import com.kukokuk.domain.exp.dto.ExpProcessingDto;
+import com.kukokuk.domain.exp.service.ExpProcessingService;
+import com.kukokuk.domain.quiz.dto.QuizLevelResultDto;
 import com.kukokuk.domain.quiz.mapper.QuizMasterMapper;
 import com.kukokuk.domain.quiz.mapper.QuizResultMapper;
 import com.kukokuk.domain.quiz.mapper.QuizSessionSummaryMapper;
@@ -8,6 +12,7 @@ import com.kukokuk.domain.quiz.vo.QuizResult;
 import com.kukokuk.domain.quiz.vo.QuizSessionSummary;
 import com.kukokuk.domain.rank.dto.RankProcessingDto;
 import com.kukokuk.domain.rank.service.RankService;
+import com.kukokuk.domain.user.service.UserService;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +41,8 @@ public class QuizProcessService {
     private static final String QUESTION_TYPE_MEANING = "뜻";
     private static final String QUESTION_TYPE_WORD = "단어";
 
+    private final ExpProcessingService expProcessingService;
+    private final UserService userService;
     private final QuizSessionSummaryMapper quizSessionSummaryMapper;
     private final QuizResultMapper quizResultMapper;
     private final QuizMasterMapper quizMasterMapper;
@@ -70,6 +77,9 @@ public class QuizProcessService {
 
         // 세션 요약 갱신
         updateQuizSessionSummary(summary, totalQuestion, correctAnswers);
+
+        // ✨ 경험치 처리 추가
+        processExperiencePoints(summary, correctAnswers, sessionNo);
 
         log.info("[전체 처리 완료] 세션 {}, 정답 수: {}, 상위 {}%에 속함",
             sessionNo, correctAnswers, summary.getPercentile());
@@ -208,6 +218,77 @@ public class QuizProcessService {
      */
     private void maintainQuizPoolByType(String questionType, Runnable maintainAction) {
         maintainAction.run();
+    }
+
+    /**
+     * ✨ 퀴즈 완료 시 경험치 처리
+     */
+    private void processExperiencePoints(QuizSessionSummary summary, int correctAnswers, int sessionNo) {
+        String quizMode = summary.getQuizMode();
+        int userNo = summary.getUserNo();
+
+        // 경험치 계산
+        int expGained = calculateExperiencePoints(quizMode, correctAnswers, sessionNo);
+
+        if (expGained > 0) {
+            // ExpProcessingDto 생성
+            ExpProcessingDto expProcessingDto = new ExpProcessingDto(
+                userNo,
+                quizMode.equals("speed") ? "SPEED" : "LEVEL",  // contentType
+                sessionNo,                                      // contentNo (세션번호)
+                expGained,                                     // expGained
+                quizMode.equals("speed")
+                    ? DailyQuestEnum.QUIZ_SPEED.getDailyQuestNo()
+                    : DailyQuestEnum.QUIZ_LEVEL.getDailyQuestNo()
+            );
+
+            // 경험치 처리 서비스 호출
+            expProcessingService.expProcessing(expProcessingDto);
+
+            log.info("[경험치 처리 완료] userNo={}, mode={}, exp={}", userNo, quizMode, expGained);
+        }
+    }
+    /**
+     * ✨ 퀴즈 모드별 경험치 계산
+     */
+    private int calculateExperiencePoints(String quizMode, int correctAnswers, int sessionNo) {
+        if ("speed".equals(quizMode)) {
+            // 스피드퀴즈: 정답 1개당 3exp
+            return correctAnswers * 3;
+        } else if ("level".equals(quizMode)) {
+            // 단계별퀴즈: 난이도별 차등 지급
+            return calculateLevelQuizExperience(correctAnswers, sessionNo);
+        }
+        return 0;
+    }
+
+    /**
+     * ✨ 단계별 퀴즈 난이도별 경험치 계산 (수정된 버전)
+     */
+    private int calculateLevelQuizExperience(int correctAnswers, int sessionNo) {
+        // 세션에서 난이도 정보 조회
+        QuizLevelResultDto levelResult = quizMasterMapper.getDifficultyAndQuestionTypeBySessionNo(sessionNo);
+
+        if (levelResult == null || levelResult.getDifficulty() == null) {
+            log.warn("[경험치 계산] 난이도 정보 없음 - sessionNo: {}", sessionNo);
+            return correctAnswers * 3; // 기본값
+        }
+
+        String difficulty = levelResult.getDifficulty();
+        int expPerQuestion = switch (difficulty) {
+            case "쉬움" -> 2;      // 쉬움: 2exp (최대 20exp)
+            case "보통" -> 3;      // 보통: 3exp (최대 30exp)
+            case "어려움" -> 4;    // 어려움: 4exp (최대 40exp)
+            default -> {
+                log.warn("[경험치 계산] 알 수 없는 난이도: {}", difficulty);
+                yield 3;   // 기본값
+            }
+        };
+
+        log.info("[단계별퀴즈 경험치] 난이도: {}, 정답수: {}, 문제당: {}exp, 총: {}exp",
+            difficulty, correctAnswers, expPerQuestion, correctAnswers * expPerQuestion);
+
+        return correctAnswers * expPerQuestion;
     }
 
     /**
