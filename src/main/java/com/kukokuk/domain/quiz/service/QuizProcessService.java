@@ -36,7 +36,6 @@ public class QuizProcessService {
     private static final int TARGET_COUNT = 200;
 
     // 컨텐츠 타입 상수
-//    private static final String CONTENT_TYPE_SPEED = "SPEED"; // enum 사용
     private static final String QUIZ_MODE_SPEED = "speed";
     private static final String QUESTION_TYPE_MEANING = "뜻";
     private static final String QUESTION_TYPE_WORD = "단어";
@@ -78,7 +77,7 @@ public class QuizProcessService {
         // 세션 요약 갱신
         updateQuizSessionSummary(summary, totalQuestion, correctAnswers);
 
-        // ✨ 경험치 처리 추가
+        // 경험치 처리
         processExperiencePoints(summary, correctAnswers, sessionNo);
 
         log.info("[전체 처리 완료] 세션 {}, 정답 수: {}, 상위 {}%에 속함",
@@ -96,7 +95,10 @@ public class QuizProcessService {
     }
 
     /**
-     * 퀴즈 세션 요약 초기화
+     * 퀴즈 세션 요약 정보를 초기화한다.
+     *
+     * @param summary 초기화할 세션 요약 객체
+     * @param totalQuestion 전체 문제 수
      */
     private void initializeQuizSessionSummary(QuizSessionSummary summary, int totalQuestion) {
         summary.setTotalQuestion(totalQuestion);
@@ -107,7 +109,12 @@ public class QuizProcessService {
     }
 
     /**
-     * 퀴즈 결과 처리
+     * 퀴즈 결과를 처리하고 통계를 업데이트한다.
+     * 각 문제별 정답 여부를 확인하고, 결과를 저장하며, 퀴즈 통계를 갱신한다.
+     *
+     * @param results 퀴즈 결과 리스트
+     * @param sessionNo 세션 번호
+     * @return 정답 개수
      */
     private int processQuizResults(List<QuizResult> results, int sessionNo) {
         int correctAnswers = 0;
@@ -136,7 +143,11 @@ public class QuizProcessService {
     }
 
     /**
-     * 퀴즈 통계 업데이트
+     * 퀴즈 통계를 업데이트한다.
+     * 풀이 횟수, 정답 횟수를 증가시키고, 20회 도달 시 정답률과 난이도를 자동 산정한다.
+     *
+     * @param quizNo 퀴즈 번호
+     * @param isCorrect 정답 여부
      */
     private void updateQuizStatistics(int quizNo, boolean isCorrect) {
         // 정답률/난이도는 20회 도달 순간(19→20)에서만 1회 확정
@@ -156,7 +167,12 @@ public class QuizProcessService {
     }
 
     /**
-     * 퀴즈 세션 요약 업데이트
+     * 퀴즈 세션 요약 정보를 업데이트한다.
+     * 정답 수, 평균 풀이 시간, 퍼센타일을 계산하여 갱신한다.
+     *
+     * @param summary 세션 요약 객체
+     * @param totalQuestion 전체 문제 수
+     * @param correctAnswers 정답 수
      */
     private void updateQuizSessionSummary(QuizSessionSummary summary, int totalQuestion, int correctAnswers) {
         summary.setCorrectAnswers(correctAnswers);
@@ -171,7 +187,11 @@ public class QuizProcessService {
     }
 
     /**
-     * 퍼센타일 계산
+     * 백분율을 계산한다.
+     * 현재 세션보다 성적이 좋은 세션의 비율을 백분율로 계산한다.
+     *
+     * @param summary 세션 요약 객체
+     * @return 퍼센티지 (1-100)
      */
     private int calculatePercentile(QuizSessionSummary summary) {
         int betterCount = quizSessionSummaryMapper.getCountBetterSessions(
@@ -214,14 +234,22 @@ public class QuizProcessService {
     }
 
     /**
-     * 특정 타입의 퀴즈 풀 유지
+     * 특정 타입의 퀴즈 풀을 유지한다.
+     *
+     * @param questionType 문제 유형
+     * @param maintainAction 유지 작업을 수행하는 Runnable
      */
     private void maintainQuizPoolByType(String questionType, Runnable maintainAction) {
         maintainAction.run();
     }
 
     /**
-     * ✨ 퀴즈 완료 시 경험치 처리
+     * 퀴즈 완료 시 경험치를 처리한다.
+     * 퀴즈 모드와 정답 수에 따라 경험치를 계산하고, 경험치 처리 서비스를 호출한다.
+     *
+     * @param summary 세션 요약 정보
+     * @param correctAnswers 정답 수
+     * @param sessionNo 세션 번호
      */
     private void processExperiencePoints(QuizSessionSummary summary, int correctAnswers, int sessionNo) {
         String quizMode = summary.getQuizMode();
@@ -248,8 +276,14 @@ public class QuizProcessService {
             log.info("[경험치 처리 완료] userNo={}, mode={}, exp={}", userNo, quizMode, expGained);
         }
     }
+
     /**
-     * ✨ 퀴즈 모드별 경험치 계산
+     * 퀴즈 모드별 경험치를 계산한다.
+     *
+     * @param quizMode 퀴즈 모드 ("speed" 또는 "level")
+     * @param correctAnswers 정답 수
+     * @param sessionNo 세션 번호
+     * @return 획득 경험치
      */
     private int calculateExperiencePoints(String quizMode, int correctAnswers, int sessionNo) {
         if ("speed".equals(quizMode)) {
@@ -263,7 +297,15 @@ public class QuizProcessService {
     }
 
     /**
-     * ✨ 단계별 퀴즈 난이도별 경험치 계산 (수정된 버전)
+     * 단계별 퀴즈의 난이도별 경험치를 계산한다.
+     * 난이도에 따라 문제당 차등 경험치를 지급한다.
+     * - 쉬움: 2exp per question (최대 20exp)
+     * - 보통: 3exp per question (최대 30exp)
+     * - 어려움: 4exp per question (최대 40exp)
+     *
+     * @param correctAnswers 정답 수
+     * @param sessionNo 세션 번호
+     * @return 획득 경험치
      */
     private int calculateLevelQuizExperience(int correctAnswers, int sessionNo) {
         // 세션에서 난이도 정보 조회
@@ -339,14 +381,5 @@ public class QuizProcessService {
             baseScore, timeBonus, finalScore);
 
         return finalScore;
-    }
-
-    /**
-     * @deprecated 월별 랭킹으로 변경됨. processSpeedQuizMonthlyRanking() 사용 권장
-     */
-    @Deprecated
-    private void processSpeedQuizRanking(QuizSessionSummary summary, int correctAnswers, int totalQuestion) {
-        log.warn("Deprecated processSpeedQuizRanking() 호출됨. processSpeedQuizMonthlyRanking() 사용 권장");
-        processSpeedQuizMonthlyRanking(summary, correctAnswers, totalQuestion);
     }
 }
