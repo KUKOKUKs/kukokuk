@@ -259,16 +259,17 @@ public class QuizProcessService {
         int expGained = calculateExperiencePoints(quizMode, correctAnswers, sessionNo);
 
         if (expGained > 0) {
-            // ExpProcessingDto 생성
-            ExpProcessingDto expProcessingDto = new ExpProcessingDto(
-                userNo,
-                quizMode.equals("speed") ? "SPEED" : "LEVEL",  // contentType
-                sessionNo,                                      // contentNo (세션번호)
-                expGained,                                     // expGained
-                quizMode.equals("speed")
+            ExpProcessingDto expProcessingDto = ExpProcessingDto.builder()
+                .userNo(userNo)
+                .contentType(quizMode.equals("speed")
+                    ? ContentTypeEnum.SPEED.name()
+                    : ContentTypeEnum.LEVEL.name())
+                .contentNo(sessionNo)
+                .expGained(expGained)
+                .dailyQuestNo(quizMode.equals("speed")
                     ? DailyQuestEnum.QUIZ_SPEED.getDailyQuestNo()
-                    : DailyQuestEnum.QUIZ_LEVEL.getDailyQuestNo()
-            );
+                    : DailyQuestEnum.QUIZ_LEVEL.getDailyQuestNo())
+                .build();
 
             // 경험치 처리 서비스 호출
             expProcessingService.expProcessing(expProcessingDto);
