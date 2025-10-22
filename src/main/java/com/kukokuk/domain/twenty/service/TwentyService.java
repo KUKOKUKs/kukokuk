@@ -321,7 +321,7 @@ public class TwentyService {
                                                                             .contentType(contentType)
                                                                             .expProcessingDtos(otherDto)
                                                                             .build();
-            /*expProcessingService.listExpProcessing(listExpProcessingDto);*/
+            expProcessingService.listExpProcessing(listExpProcessingDto);
             log.info("addExp : 승리 시, 승리자 제외 다른 학생들 경험치 정상 부여");
         } else {
             log.info("addExp: 패배 시, 경험치 부여 로직 시작");
@@ -339,7 +339,7 @@ public class TwentyService {
                                                                             .contentType(contentType)
                                                                             .expProcessingDtos(loserDto)
                                                                             .build();
-            /*expProcessingService.listExpProcessing(listExpProcessingDto);*/
+            expProcessingService.listExpProcessing(listExpProcessingDto);
             log.info("addExp: 패배 시, 전체 인원 경험치 정상 부여.");
         }
 
