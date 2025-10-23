@@ -64,11 +64,6 @@ public class DictationController {
         return 0;
     }
 
-//    @ModelAttribute("mustReloadAfterShowAnswer")
-//    public Boolean initMustReloadAfterShowAnswer() {
-//        return false;
-//    }
-
     /**
      * 받아쓰기 시작 요청을 처리하는 메서드 현재 로그인한 사용자의 번호를 바탕으로, 아직 풀지 않은 받아쓰기 문제 10개를 랜덤으로 가져와 세션에 저장하고, 첫 번째
      * 문제부터 풀 수 있도록 문제 풀이 페이지로 이동
@@ -121,7 +116,6 @@ public class DictationController {
     public String showQuestion(@ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
         @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
         @ModelAttribute("questionIndex") int questionIndex,
-//        @ModelAttribute("mustReloadAfterShowAnswer") Boolean mustReloadAfterShowAnswer,
         Model model) {
         log.info("[/solve] questionIndex: {} / size: {}", questionIndex, dictationQuestions.size());
 
@@ -225,7 +219,7 @@ public class DictationController {
     public String submitAnswer(
         @RequestParam(value = "userAnswer", required = false, defaultValue = "") String userAnswer,
         @RequestParam(value="showAnswer",  required=false, defaultValue="0") String showAnswer,
-        @RequestParam(value ="hintNum", required = false, defaultValue = "") Integer hintNum,
+        @RequestParam(value ="hintNum", required = false) Integer hintNum,
         @ModelAttribute("dictationQuestionLogDto") List<DictationQuestionLogDto> dictationQuestionLogDtoList,
         @ModelAttribute("dictationQuestions") List<DictationQuestion> dictationQuestions,
         @ModelAttribute("questionIndex") int questionIndex,
@@ -249,6 +243,7 @@ public class DictationController {
                 dictationQuestiondto.getTryCount(), dictationQuestiondto.getIsSuccess(), dictationQuestiondto.getUserAnswer(), questionIndex + 1);
 
             model.addAttribute("questionIndex", questionIndex + 1);
+
             return "redirect:/dictation/solve";
         }
 
@@ -265,9 +260,6 @@ public class DictationController {
             // 힌트 사용 시 유저 힌트 수 -1 차감
             // userService.updateUserHintCountMinus(userNo);
             return "redirect:/dictation/solve";
-        } else {
-            // 힌트 번호가 유효하지 않으면 사용 해제(예외처리)
-            dictationQuestions.get(questionIndex).setUsedHintNum(null);
         }
 
 
@@ -347,15 +339,27 @@ public class DictationController {
             log.info("[/finish] 쪽에서 세션 초기화 완료");
 
             // 5) 경험치 작업
-            ExpProcessingDto expProcessingDto = new ExpProcessingDto(
-                userNo,                                             // 사용자 번호
-                ContentTypeEnum.DICTATION.name(),                   // 컨텐츠 타입
-                sessionNo,                                          // contentNo(임시)
-                dictationService.getCorrectCount(sessionNo)*3,      // EXP(임시)
-                DailyQuestEnum.DICTATION_PLAY.getDailyQuestNo()     // 일일 도전과제 식별자 번호(없으면 null)
-            );
+            // builder 사용버전
+            ExpProcessingDto expProcessingDto = ExpProcessingDto.builder()
+                .userNo(userNo)
+                .contentType(ContentTypeEnum.DICTATION.name())  // String 유지
+                .contentNo(sessionNo)
+                .expGained( dictationService.getCorrectCount(sessionNo)*3)
+                .dailyQuestNo(DailyQuestEnum.DICTATION_PLAY.getDailyQuestNo())
+                .build();
             expProcessingService.expProcessing(expProcessingDto);
             log.info("[/finish] 쪽에서 경험치 반영 완료 userNo: {}, sessionNo: {}", userNo, sessionNo);
+
+            // 새로운 생성자 생성 버전
+//            ExpProcessingDto expProcessingDto = new ExpProcessingDto(
+//                userNo,                                             // 사용자 번호
+//                ContentTypeEnum.DICTATION.name(),                   // 컨텐츠 타입
+//                sessionNo,                                          // contentNo(임시)
+//                dictationService.getCorrectCount(sessionNo)*3,      // EXP(임시)
+//                DailyQuestEnum.DICTATION_PLAY.getDailyQuestNo()     // 일일 도전과제 식별자 번호(없으면 null)
+//            );
+//            expProcessingService.expProcessing(expProcessingDto);
+//            log.info("[/finish] 쪽에서 경험치 반영 완료 userNo: {}, sessionNo: {}", userNo, sessionNo);
 
             return "redirect:/dictation/result?dictationSessionNo=" + sessionNo;
         }
