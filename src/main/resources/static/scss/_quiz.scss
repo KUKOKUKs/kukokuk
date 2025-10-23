@@ -1,39 +1,3 @@
-/* 보기 리스트 관련 */
-#quiz-options {
-    .option_btns {
-        border-radius: var(--bdrs);
-        background-color: var(--baseBackground);
-        border: var(--baseBorder);
-        box-shadow: var(--bxsh);
-        position: relative; /* 추가 */
-        transition: all 0.3s ease; /* 추가 */
-
-        &:hover:not(.hint-removed), &.selected {
-            font-weight: bold;
-            background-color: var(--subColor);
-        }
-
-        /*  힌트로 제거된 보기 스타일 */
-        &.hint-removed {
-            background-color: #f8f8f8 !important;
-            border-color: #e0e0e0 !important;
-            cursor: not-allowed !important;
-            opacity: 0.7;
-
-            &:hover {
-                background-color: #f8f8f8 !important;
-                transform: none !important;
-            }
-
-            .option {
-                text-decoration: line-through;
-                opacity: 0.5;
-                color: #999 !important;
-            }
-        }
-    }
-}
-
 /* 힌트 버튼 스타일 */
 #hint-btn {
     background: none;

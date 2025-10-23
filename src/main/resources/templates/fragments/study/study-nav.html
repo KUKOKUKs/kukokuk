@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
-<th:block th:fragment="study-nav-fragment(studyProgressDto)">
+<th:block th:fragment="study-nav-fragment(studyProgressDto, progressIndex)">
     <!--/* logo */-->
     <button type="button" id="study_log_btn" class="logo fixed">
         <span class="a11y-hidden">국어국</span>
     </button>
 
-    <div id="nav-container" class="nav_container study_nav_container">
+    <div id="nav-container" class="nav_container study_nav_container"
+         th:with="cardCount=${studyProgressDto.dailyStudy.cardCount}
+         , quizCount=${studyProgressDto.quizzes.size()}
+         , isCardProgress=${progressIndex < cardCount}">
         <div class="nav_wrap">
             <div class="nav_list base_gap">
                 <div class="study_content_list">
@@ -15,13 +18,17 @@
                         학습
                     </div>
 
-                    <ul class="study_content">
+                    <ul class="study_content"
+                        th:with="studiedCount=${studyProgressDto.log != null ? studyProgressDto.log.studiedCardCount : 1}">
                         <li class="study_content_info"
                             th:each="card, state : ${studyProgressDto.cards}"
-                            th:data-card-index="${state.count}">
+                            th:with="isSelected=${progressIndex == state.index}
+                            , isChecked=${studiedCount >= state.count}"
+                            th:data-card-index="${card.cardIndex}"
+                            th:classappend="${isSelected ? 'selected' : ''}">
                             <p class="study_content_info_title" th:text="|${state.count}. ${card.title}|">학습 목차</p>
 
-                            <th:block th:if="${studyProgressDto.log != null && studyProgressDto.log.studiedCardCount >= state.count}">
+                            <th:block th:if="${isChecked}">
                                 <iconify-icon class="icon sub_font" icon="streamline-sharp-color:check"></iconify-icon>
                             </th:block>
                         </li>
@@ -31,21 +38,24 @@
                 <div class="study_content_list">
                     <div class="study_list_icon">
                         <iconify-icon class="icon title_font" icon="streamline-color:help-question-1"></iconify-icon>
-                        퀴즈
+                        문제
                     </div>
 
-                    <ul class="study_content">
+                    <ul class="study_content"
+                        th:with="quizProgressIndex=${progressIndex - studyProgressDto.dailyStudy.cardCount}">
                         <li class="study_content_info"
                             th:each="quiz, state : ${studyProgressDto.quizWithLogDtos}"
+                            th:with="isQuizSelected=${quizProgressIndex == state.index}"
                             th:attr="data-quiz-index=${state.count},
-                                 data-quiz-no=${quiz.dailyStudyQuizNo}">
-                            <p class="study_content_info_title" th:text="|퀴즈 ${state.count}|">퀴즈 목차</p>
+                                 data-quiz-no=${quiz.dailyStudyQuizNo}"
+                            th:classappend="${isQuizSelected ? 'selected' : ''}">
+                            <p class="study_content_info_title" th:text="|${state.count}번 문제|">퀴즈 목차</p>
 
                             <th:block th:if="${quiz.dailyStudyQuizLog != null}">
-                                <th:block th:if="${'Y'.equals(quiz.dailyStudyQuizLog.isSuccess)}">
+                                <th:block th:if="${quiz.dailyStudyQuizLog.isSuccess}">
                                     <iconify-icon class="icon sub_font" style="color: var(--blueColor)" icon="proicons:circle"></iconify-icon>
                                 </th:block>
-                                <th:block th:if="${'N'.equals(quiz.dailyStudyQuizLog.isSuccess)}">
+                                <th:block th:if="${!quiz.dailyStudyQuizLog.isSuccess}">
                                     <iconify-icon class="icon sub_font" style="color: var(--redColor)" icon="proicons:cancel"></iconify-icon>
                                 </th:block>
                             </th:block>

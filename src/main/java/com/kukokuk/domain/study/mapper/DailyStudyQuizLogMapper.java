@@ -22,8 +22,10 @@ public interface DailyStudyQuizLogMapper {
 
     /**
      * 학습퀴즈 이력을 생성
+     *
+     * @return
      */
-    void createStudyQuizLog(DailyStudyQuizLog dailyStudyQuizLog);
+    DailyStudyQuizLog createStudyQuizLog(DailyStudyQuizLog dailyStudyQuizLog);
 
     /**
      * 학습퀴즈 이력 번호로 학습퀴즈이력 조회
@@ -33,5 +35,5 @@ public interface DailyStudyQuizLogMapper {
     /**
      * 학습퀴즈 수정
      */
-    void updateStudyQuizLog(DailyStudyQuizLog log);
+    void updateStudyQuizLog(DailyStudyQuizLog dailyStudyQuizLog);
 }

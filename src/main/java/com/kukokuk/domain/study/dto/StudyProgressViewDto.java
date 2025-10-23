@@ -22,4 +22,5 @@ public class StudyProgressViewDto {
     private List<DailyStudyQuiz> quizzes; // JS용 -> 추후 리팩토링
     private List<DailyStudyQuizLog> quizLogs; // JS용 -> 추후 리팩토링
     private List<QuizWithLogDto> quizWithLogDtos; // SSR용
+
 }

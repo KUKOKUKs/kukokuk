@@ -107,7 +107,6 @@ export async function apiCreateStudyLog(dailyStudyNo) {
  *     "updatedDate": "2025-07-31T16:41:42",
  *     "userNo": 2,
  *     "dailyStudyNo": 9,
- *     "questCompleted": true
  *   }
  */
 export async function apiUpdateStudyLog(studyLogNo, requestBody = {}) {
