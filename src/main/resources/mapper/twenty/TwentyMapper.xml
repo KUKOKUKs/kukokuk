@@ -272,7 +272,7 @@
             G.USER_NO           AS teacherNo
         FROM
             KUKOKUK_TWENTY_ROOMS TR
-                JOIN KUKOKUK_USERS U
+                LEFT JOIN KUKOKUK_USERS U
                      ON TR.WINNER_NO = U.USER_NO
                 JOIN KUKOKUK_GROUPS G
                      ON TR.GROUP_NO = G.GROUP_NO
