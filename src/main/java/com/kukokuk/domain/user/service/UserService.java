@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,6 +32,16 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+
+    /**
+     * 사용자 번호들과 경험치를 전달받아 사용자 누적경험치, 레벨 업데이트
+     * @param userNos 사용자 번호들
+     * @param expGained 일괄 처리할 경험치 값
+     */
+    public void updateUserExpByUserNos(List<Integer> userNos , Integer expGained) {
+        log.info("updateUserExpByUserNos() 서비스 실행");
+        userMapper.updateUserExpByUserNos(userNos, expGained);
+    };
 
     /**
      * 사용자 힌트 개수 -1 업데이트

@@ -22,7 +22,7 @@ public class ExpProcessingDto {
         해당 경험치가 어떤 컨텐츠에 관련된 경험치인지 이력을 확인할 수 있도록 함
      */
 
-    private int userNo;             // 사용자 번호
+    private Integer userNo;         // 사용자 번호
     private String contentType;     // 컨텐츠 타입(추후 다른 컨텐츠가 추가가 되더라도 사용 가능)
     private Integer contentNo;      // 컨텐츠 이력 테이블 식별자 값
     private Integer expGained;      // 획득한 경험치

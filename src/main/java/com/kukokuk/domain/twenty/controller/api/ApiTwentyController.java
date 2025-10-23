@@ -29,15 +29,18 @@ public class ApiTwentyController {
 
     /**
      * 게임 종료 버튼 눌렀을 때, 게임 결과 저장 및 경험치 부여
-     * @param map
+     * @param map roomNo만 담겨 있다.
      * @return
      */
     @PostMapping("/gameOver")
     public ResponseEntity<ApiResponse<Void>> gameOver(@RequestBody Map<String,Object> map) {
         int roomNo = (int)map.get("roomNo");
+        // 게임방의 상태 변경 및 게임방의 결과 저장
         twentyService.gameOverTwenty(roomNo);
-        //일단 보류
-        /*twentyService.addExp(roomNo);*/ // 스무고개방 경험치 부여 로직 expProcessing(ExpProcessingDto expProcessingDto)  사용
+        log.info("service 메소드 : gameOverTwenty 정상 실행");
+
+        //게임 승리 여부에 따른 그룹화된 유저 경험치 부여
+        twentyService.addExp(roomNo);
         return ResponseEntityUtils.ok("게임 정상 종료");
     }
 

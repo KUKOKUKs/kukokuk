@@ -20,6 +20,11 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
+  thymeleaf:
+    prefix: classpath:/templates/   # <- 뒤에 슬래시 포함
+    suffix: .html
+    check-template-location: true
+
 server:
   port: 8080
 
