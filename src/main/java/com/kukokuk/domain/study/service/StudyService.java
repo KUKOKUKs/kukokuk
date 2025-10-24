@@ -582,13 +582,9 @@ public class StudyService {
      * @param userNo
      * @return
      */
-    @Transactional
-    public DailyStudyLog updateDailyStudyLog(DailyStudyLog dailyStudyLog, int userNo) {
-        log.info("updateStudyLogRequest 서비스 실행");
-        dailyStudyLogMapper.updateStudyLog(dailyStudyLog); // 수정 요청
-        dailyStudyLog = dailyStudyLogMapper.getStudyLogByNo(dailyStudyLog.getDailyStudyLogNo()); // 수정 후 조회
-
-        return dailyStudyLog;
+    public void updateDailyStudyLog(DailyStudyLog dailyStudyLog) {
+        log.info("updateDailyStudyLog 서비스 실행");
+        dailyStudyLogMapper.updateStudyLog(dailyStudyLog);
     }
 
     /**
@@ -598,8 +594,8 @@ public class StudyService {
      */
     public DailyStudyQuizLog createStudyQuizLog(DailyStudyQuizLog dailyStudyQuizLog) {
         log.info("createStudyQuizLog 서비스 실행");
-        DailyStudyQuizLog updateStudyQuizLog = dailyStudyQuizLogMapper.createStudyQuizLog(dailyStudyQuizLog);
-        return dailyStudyQuizLogMapper.getStudyQuizLogsByNo(updateStudyQuizLog.getDailyStudyQuizLogNo());
+        dailyStudyQuizLogMapper.createStudyQuizLog(dailyStudyQuizLog);
+        return dailyStudyQuizLogMapper.getStudyQuizLogsByNo(dailyStudyQuizLog.getDailyStudyQuizLogNo());
     }
 
     /**

@@ -12,14 +12,15 @@
           th:action="@{/study/progress}"
           th:with="cardCount=${studyProgressDto.dailyStudy.cardCount}
           , quizCount=${studyProgressDto.quizzes.size()}
-          , isCardProgress=${progressIndex < cardCount}">
+          , isCardProgress=${progressIndex < cardCount}
+          , studyIndex=${isCardProgress ? progressIndex : cardCount - 1}
+          , studyCard=${studyProgressDto.cards.get(studyIndex)}
+          , quizIndex=${!isCardProgress ? progressIndex - cardCount : 0}
+          , studyQuiz=${studyProgressDto.quizWithLogDtos.get(quizIndex)}">
         <input type="hidden" name="progressIndex" th:value="${progressIndex}">
 
         <!--/* 학습 진행 상태가 카드일 경우 */-->
-        <div th:if="${isCardProgress}"
-             class="content_info h_100"
-             th:with="studyIndex=${isCardProgress ? progressIndex : cardCount - 1}
-             , studyCard=${studyProgressDto.cards.get(studyIndex)}">
+        <div th:if="${isCardProgress}" class="content_info h_100">
             <div class="content_title study_content_title" th:text="${studyCard.title}">학습 제목</div>
 
             <div class="component tiny_list_component study_progress h_100 pd_0"
@@ -67,10 +68,7 @@
         </div>
 
         <!--/* 학습 진행 상태가 퀴즈일 경우 */-->
-        <div th:if="${!isCardProgress}"
-             class="content_info h_100"
-             th:with="quizIndex=${!isCardProgress ? progressIndex - cardCount : 0}
-             , studyQuiz=${studyProgressDto.quizzes.get(quizIndex)}">
+        <div th:if="${!isCardProgress}" class="content_info h_100">
             <input type="hidden" name="dailyStudyQuizNo" th:value="${studyQuiz.dailyStudyQuizNo}">
 
             <div class="content_title study_content_title justify_content_center" th:text="|${quizIndex + 1}번 문제|">문제 번호</div>
@@ -79,33 +77,19 @@
                 <p class="callout_info bold large_font tac" th:text="${studyQuiz.question}">문제</p>
             </div>
 
-            <div id="quiz-options" class="tiny_list_component">
-                <label for="option1" class="component_info option_btns">
-                    <input type="radio" name="selectedChoice" id="option1" value="1">
+            <div id="quiz-options" class="tiny_list_component"
+                 th:with="selectedOption=${studyQuiz.dailyStudyQuizLog?.selectedChoice ?: 0}">
+                <label th:each="option, state : ${studyQuiz.options}"
+                       th:for="|option${state.count}|"
+                       class="component_info option_btns">
+                    <input type="radio"
+                           name="selectedChoice"
+                           th:id="|option${state.count}|"
+                           th:value="${state.count}"
+                           th:checked="${selectedOption == state.count}">
                     <div class="list_option">
-                        <span class="marker">1.</span>
-                        <p class="option" th:text="${studyQuiz.option1}">보기</p>
-                    </div>
-                </label>
-                <label for="option2" class="component_info option_btns">
-                    <input type="radio" name="selectedChoice" id="option2" value="2">
-                    <div class="list_option">
-                        <span class="marker">2.</span>
-                        <p class="option" th:text="${studyQuiz.option2}">보기</p>
-                    </div>
-                </label>
-                <label for="option3" class="component_info option_btns">
-                    <input type="radio" name="selectedChoice" id="option3" value="3">
-                    <div class="list_option">
-                        <span class="marker">3.</span>
-                        <p class="option" th:text="${studyQuiz.option3}">보기</p>
-                    </div>
-                </label>
-                <label for="option4" class="component_info option_btns">
-                    <input type="radio" name="selectedChoice" id="option4" value="4">
-                    <div class="list_option">
-                        <span class="marker">4.</span>
-                        <p class="option" th:text="${studyQuiz.option4}">보기</p>
+                        <span class="marker" th:text="|${state.count}.|">보기 번호.</span>
+                        <p class="option" th:text="${option}">보기</p>
                     </div>
                 </label>
             </div>

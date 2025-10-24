@@ -76,6 +76,7 @@ public class StudyController {
     @GetMapping("/{dailyStudyNo}")
     public String studyProgress(
         @PathVariable("dailyStudyNo") int dailyStudyNo
+        , @RequestParam(value = "progressIndex", defaultValue = "0") int progressIndex
         , @ModelAttribute("studyProgressDto") StudyProgressViewDto studyProgressDto
         , @AuthenticationPrincipal SecurityUser securityUser
         , Model model) {
@@ -109,7 +110,7 @@ public class StudyController {
 
         // 퀴즈와 사용자의 이력을 합친 DTO 생성
         studyProgressDto.setQuizWithLogDtos(quizWithLogDtos);
-        model.addAttribute("progressIndex", 0); // 최초 입장 시 처음부터
+        model.addAttribute("progressIndex", progressIndex);
         return "study/progress";
     }
 
@@ -145,12 +146,13 @@ public class StudyController {
         DailyStudy dailyStudy = studyProgressDto.getDailyStudy(); // 학습 자료 정보
         DailyStudyLog dailyStudyLog = studyProgressDto.getLog(); // 학습 이력 정보
         List<DailyStudyQuizLog> dailyStudyQuizLogs = studyProgressDto.getQuizLogs(); // 학습 퀴즈 이력 정보 목록
+        List<QuizWithLogDto> quizWithLogDtos = studyProgressDto.getQuizWithLogDtos(); // 학습 퀴즈와 이력 합본 정보 목록
         int userNo = securityUser.getUser().getUserNo(); // 사용자 번호
         int studyCardCount = dailyStudy.getCardCount(); // 학습 카드 수
 
         // 현재 학습 진행 상태 완료 여부
-        // 다음 버튼으로 요청이 된 이후 progressIndex의 값이 totalProgressNum 보다 크거나 같을 경우 완료로 판단됨
-        boolean isAllCompleted = progressIndex >= totalProgressNum;
+        // 다음 버튼으로 요청이 된 이후 progressIndex + 1(인덱스 값으로 0부터 시작)의 값이 totalProgressNum 보다 크거나 같을 경우 완료로 판단됨
+        boolean isAllCompleted = progressIndex + 1 >= totalProgressNum;
         log.info("마지막 학습 완료 여부 isAllCompleted: {}", isAllCompleted);
         
         // 완료되었을 경우 오늘의 학습 페이지로
@@ -189,7 +191,7 @@ public class StudyController {
                 dailyStudyLog.setStudiedCardCount(Math.max(progressIndex, studiedCardCount)); // 학습 진도 세팅
 
                 // 학습 이력 업데이트 요청
-                studyProgressDto.setLog(studyService.updateDailyStudyLog(dailyStudyLog, userNo));
+                studyService.updateDailyStudyLog(dailyStudyLog);
             }
 
             model.addAttribute("progressIndex", progressIndex);
@@ -204,7 +206,7 @@ public class StudyController {
             // 학습 이력 완료 상태로 변경
             dailyStudyLog.setStatus("COMPLETED");
             // 학습 이력 업데이트 요청
-            studyService.updateDailyStudyLog(dailyStudyLog, userNo);
+            studyService.updateDailyStudyLog(dailyStudyLog);
             
             // 경험치 추가
             ExpProcessingDto expProcessingDto = ExpProcessingDto.builder()
@@ -243,12 +245,28 @@ public class StudyController {
                     .build();
                 
                 // 등록 후 dailyStudyQuizLogs에 적용
-                studyProgressDto.getQuizLogs().add(studyService.createStudyQuizLog(newDailyStudyQuizLog));
+                DailyStudyQuizLog createdStudyQuizLog = studyService.createStudyQuizLog(newDailyStudyQuizLog);
+                studyProgressDto.getQuizLogs().add(createdStudyQuizLog); // 퀴즈 이력 적용
+                studyProgressDto.getQuizWithLogDtos().stream() // quizWithLogDto 갱신
+                    .filter(quizWithLogDto -> quizWithLogDto.getDailyStudyQuizNo() == dailyStudyQuizNo)
+                    .findFirst()
+                    .ifPresent(quizWithLogDto -> {
+                        // quizWithLogDto 내부에 DailyStudyQuizLog를 갱신
+                        quizWithLogDto.setDailyStudyQuizLog(createdStudyQuizLog);
+                    });
             } else {
                 // 학습 퀴즈 이력이 있으면 세션어트리뷰트의 값을 변경하고 업데이트 요청
                 savedQuizLog.setSelectedChoice(selectedChoice);
                 savedQuizLog.setIsSuccess(successAnswer == selectedChoice ? "Y" : "N");
                 studyService.updateStudyQuizLog(savedQuizLog);
+
+                studyProgressDto.getQuizWithLogDtos().stream() // quizWithLogDto 갱신
+                    .filter(quizWithLogDto -> quizWithLogDto.getDailyStudyQuizNo() == dailyStudyQuizNo)
+                    .findFirst()
+                    .ifPresent(quizWithLogDto -> {
+                        // quizWithLogDto 내부에 DailyStudyQuizLog를 갱신
+                        quizWithLogDto.setDailyStudyQuizLog(savedQuizLog);
+                    });
             }
         }
 
