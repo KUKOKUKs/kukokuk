@@ -816,6 +816,14 @@
     font-size: var(--subFontSize);
 }
 
+.textarea_info {
+    position: relative;
+
+    &:has(textarea:focus) {
+        border: 2px solid var(--primaryColor);
+    }
+}
+
 .search_form_wrap {
     display: flex;
     justify-content: space-between;
@@ -1423,10 +1431,7 @@
 /* 진행 종료 버튼 */
 .progress_end_btn {
     font-size: var(--smallFontSize);
-    position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
+    margin-left: auto;
 }
 
 /* 자주 사용되는 요소 속성 */

@@ -180,260 +180,37 @@
     }
 }
 
-.study_progress_card {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: var(--smallGap);
-    font-size: var(--largeFontSize);
-
-
-    &.center {
-        justify-content: center;
-        text-align: center;
-    }
-
-    // 강조 텍스트 스타일 (JS에서 <strong> 처리한 부분)
-    .strong {
-        font-weight: 700;
-    }
-
-    .info {
-        font-size: var(--titleFontSize);
-        color: var(--grayColor);
-        font-weight: 500;
-    }
-
-    .title {
-        font-size: var(--pageTitleFontSize);
-        font-weight: 600;
-        color: var(--darkGreenColor);
-        margin-bottom: 1rem;
-    }
-
-    .paragraph {
-        font-size: 20px;
-        font-weight: 400;
-        line-height: 1.6em;
-    }
-
-    .example {
-        font-size: 20px;
-        color: var(--primaryColor);
-
-        .example_label {
-
-        }
-
-    }
-
-    .definition {
-        border-left: 4px solid var(--darkGreenColor);
-        font-size: 20px;
-        padding: var(--basePadding);
-
-        .definition_term {
-            color: var(--darkGreenColor);
-            font-weight: 700;
-            font-size: 1.4rem;
-            margin-right: 0.3rem;
-        }
-    }
-
-    .quote {
-        font-size: 20px;
-
-        .custom_quote {
-            font-size: 20px;
-            font-style: italic;
-            color: var(--grayColor);
-            border-left: 4px solid var(--darkGreenColor);
-            padding-left: 1em;
-            line-height: 1.6;
-            position: relative;
-
-            /* 실제 텍스트 안의 큰따옴표 스타일링 */
-            /* 단순하게 폰트 크기나 색 변경 */
-            .double_quote {
-                color: var(--primaryColor);
-                font-size: 1.2em;
-                font-weight: bold;
-                margin-right: 0.1em;
-            }
-        }
-    }
-
-    .table {
-        .study_table {
-            border-collapse: collapse;
-            margin: 1em 0;
-
-            th, td {
-                border: 1px solid var(--borderColor);
-                text-align: left;
-            }
-
-            th {
-                background-color: var(--subColor);
-                color: var(--darkGreenColor);
-                font-weight: bold;
-                font-size: var(--baseFontSize);
-            }
-
-            tr:nth-child(even) td {
-                background-color: var(--lightYellow);
-            }
-        }
-    }
-
-    .list {
-        .custom_list {
-            padding-left: 1em;
-            margin-top: var(--baseGap);
-            list-style: none; // 기본 브라우저 불릿 제거
-
-            .custom_list_item {
-                position: relative;
-                margin-bottom: 0.5em;
-                padding-left: 1.5em;
-                font-weight: 400;
-
-                // 불릿 기호 스타일
-                &::before {
-                    content: "•"; // 기본 동그라미
-                    position: absolute;
-                    left: 0;
-                    color: var(--primaryColor);
-                    font-weight: bold;
-                    font-size: 1.2em;
-                    line-height: 1;
-                }
-
-                // 만약 번호형으로 쓰고 싶을 때
-                &.numbered::before {
-                    content: attr(data-index) ".";
-                    font-size: 1em;
-                    font-weight: bold;
-                    color: var(--primaryColor);
-                }
-            }
-        }
-    }
-}
-
-.study_quiz_wrapper {
-    width: 800px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--baseGap);
-}
-
-.study_quiz_info {
-    width: 100%;
-    display: flex;
-    gap: var(--smallGap);
-    align-items: center;
-
-    .study_quiz_number {
-        background-color: #eee;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        text-align: center;
-        line-height: 24px;
-        margin-right: 8px;
-        font-weight: 600;
-    }
-
-    .study_quiz_text {
-        font-weight: 600;
-        font-size: var(--largeFontSize);
-    }
-}
-
-.study_quiz_box {
-    border: 4px solid var(--primaryColor);
-    border-radius: var(--bdrs);
-    padding: var(--basePadding);
-    color: var(--darkGreenColor);
-    font-size: var(--largeFontSize);
-    font-weight: 700;
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    &.answer {
-        font-weight: 500;
-        color: var(--blackColor);
-        font-size: 1.2em;
-        font-family: sans-serif;
-        border-color: var(--grayColor);
-        min-height: 300px;
-        resize: vertical;
-    }
-}
-
-.study_quiz_option_list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--smallGap);
-
-    .study_quiz_option {
-        padding: 24px;
-        cursor: pointer;
-        font-size: var(--baseFontSize);
-
-        &:hover {
-            background-color: var(--lightGrayColor);
-        }
-
-        &.selected {
-            background-color: var(--subColor);
-        }
-
-        &:active {
-            transform: scale(0.96); // 살짝 줄어듦
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); // 그림자 줄어듦
-        }
-
-        &.correct {
-            border: 3px solid var(--primaryColor);
-            color: var(--primaryColor);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); // 그림자 줄어듦
-
-        }
-
-        &.wrong {
-            border: 3px solid var(--redColor);
-            color: var(--redColor);
-            background-color: var(--lightRedColor);
-        }
-    }
-}
-
+/* 논술형 AI 피드백 */
 .essay_feedback_container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: var(--baseGap);
+    transition:
+        max-width var(--trst),
+        opacity var(--trst),
+        padding var(--trst);
 
-    .feedback_title {
-        font-weight: 700;
-        font-size: var(--titleFontSize);
-        color: var(--darkGreenColor);
+    &.close {
+        max-width: 0 !important;
+        padding: 0;
+        opacity: 0;
+        overflow: hidden;
     }
 }
 
-.essay_feedback_box_container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: var(--smallGap);
-    height: 100%;
-    justify-content: center;
+.essay_feedback_box {
+    /* 초기 상태: 보이지 않고 아래쪽에서 대기 */
+    opacity: 0;
+    transform: translateY(12px);
+    will-change: transform, opacity;
+
+    /* JS에서 reveal 클래스가 붙으면 애니메이션 실행 */
+    &.reveal {
+        animation: riseIn .5s ease forwards; /* 0.5초동안 부드럽게 올라오기*/
+        animation-delay: var(--delay, 0s); /* JS에서 카드별로 --delay로 순차 적용 */
+    }
+
+    .component_info {
+        display: block;
+        word-break: break-all;
+    }
 }
 
 /* 올라오는 riseIn 애니메이션 정의 */
@@ -446,67 +223,5 @@
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-.essay_feedback_box {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-
-    /* 초기 상태: 보이지 않고 아래쪽에서 대기 */
-    opacity: 0;
-    transform: translateY(12px);
-    will-change: transform, opacity;
-
-    /* JS에서 reveal 클래스가 붙으면 애니메이션 실행 */
-    &.reveal {
-        animation: riseIn .5s ease forwards; /* 0.5초동안 부드럽게 올라오기*/
-        animation-delay: var(--delay, 0s); /* JS에서 카드별로 --delay로 순차 적용 */
-    }
-
-    .title {
-        font-weight: 600;
-        font-size: var(--titleFontSize);
-        margin-bottom: var(--smallPadding);
-    }
-}
-
-/* 내부 퀴즈+피드백 2열 레이아웃 */
-.study_quiz_layout {
-    display: flex;
-    gap: var(--baseGap);
-    width: 100%;
-    transition: all 0.3s ease;
-}
-
-.quiz_area {
-    flex: 1;
-    transition: flex 0.3s ease;
-    padding: var(--containerLargePadding);
-}
-
-.feedback_area {
-    flex: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-/* 피드백 열림 상태 */
-.content.show_essay_feedback {
-    max-width: 100%;
-
-    .quiz_area {
-        flex: 0.7;
-        justify-items: center;
-    }
-
-    .feedback_area {
-        flex: 0.3;
-        opacity: 1;
-        padding: var(--containerLargePadding);
-        justify-items: center;
-        border-left: 2px solid var(--lightGrayColor);
     }
 }

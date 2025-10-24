@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/custom-nav-base}">
+<html layout:decorate="~{layout/custom-nav-base}" th:with="title='학습하기'">
 <!--/* 학습 진행화면에서 표시할 네비바 */-->
 <th:block layout:fragment="custom-nav-fragment">
     <div th:replace="~{fragments/study/study-nav :: study-nav-fragment(studyProgressDto=${studyProgressDto}, progressIndex=${progressIndex})}"></div>
