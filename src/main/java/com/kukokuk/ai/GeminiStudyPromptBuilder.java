@@ -28,9 +28,10 @@ public class GeminiStudyPromptBuilder {
                - type: "paragraph" | "table" | "example" | "definition" | "quote" | "list"
                - content:
                    - paragraph/example/definition/quote → 문자열
+                   - paragraph/example/definition/quote 이 4개 중 최소한 3개 이상이 포함되어야 하며 각각 내용이 공백 제외 30자 이상이어야 합니다.
                    - table → 2차원 배열 [["열1", "열2"], ["내용1", "내용2"]]
                    - list → 배열 ["항목1", "항목2"]
-          3. 카드 내용에서 강조하고 싶은 부분은 마크다운처럼 `**강조 내용**`으로 감싸 주세요.
+          3. 카드 내용에서 강조하고 싶은 부분은 마크다운처럼 "<span class=\\"bold\\">강조 내용</span>"으로 감싸 주세요.
           4. 카드 생성 후, 아래와 같은 형식의 객관식 퀴즈 4개를 생성해주세요:
              - question: 문제 내용
              - options: 보기 4개 (문자열 배열)

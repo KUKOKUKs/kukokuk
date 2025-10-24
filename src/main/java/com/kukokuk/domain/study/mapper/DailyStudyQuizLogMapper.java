@@ -33,5 +33,5 @@ public interface DailyStudyQuizLogMapper {
     /**
      * 학습퀴즈 수정
      */
-    void updateStudyQuizLog(DailyStudyQuizLog log);
+    void updateStudyQuizLog(DailyStudyQuizLog dailyStudyQuizLog);
 }

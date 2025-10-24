@@ -41,7 +41,8 @@ public enum DailyQuestEnum {
         );
 
     // 퀘스트번호로 Enum 조회
-    public static DailyQuestEnum getByDailyQuestNo(int dailyQuestNo) {
+    public static DailyQuestEnum getByDailyQuestNo(Integer dailyQuestNo) {
+        if (dailyQuestNo == null) return null;
         return BY_NO.get(dailyQuestNo); // 존재하지 않으면 null 반환
     }
 

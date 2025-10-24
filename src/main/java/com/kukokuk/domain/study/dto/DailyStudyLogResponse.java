@@ -20,6 +20,4 @@ public class DailyStudyLogResponse {
     private Date updatedDate;
     private int userNo;
     private int dailyStudyNo;
-
-    private boolean questCompleted; // 도전과제를 달성했는지
 }

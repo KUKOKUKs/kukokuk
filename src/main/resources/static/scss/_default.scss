@@ -1162,6 +1162,31 @@
         width: var(--smallIconImage);
     }
 }
+/* 보기 리스트 관련 */
+#quiz-options {
+    .option_btns {
+        border-radius: var(--bdrs);
+        background-color: var(--baseBackground);
+        border: var(--baseBorder);
+        box-shadow: var(--bxsh);
+        transition: var(--trst);
+        position: relative;
+        cursor: pointer;
+
+        input[type=radio] {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+
+        &:hover, &.selected, &:has(input[type=radio]:checked) {
+            font-weight: bold;
+            background-color: var(--subColor);
+        }
+    }
+}
+
 
 /* 콘텐츠 타이틀 우측 이벤트 버튼 */
 .content_switcher {
@@ -1354,6 +1379,15 @@
     &.incorrect {
         background: url("/icons/incorrect.png") 0 0 / contain no-repeat;
         background-size: contain;
+    }
+}
+
+/* 동그란 버튼 자식요소로 아이콘 태그를 가지고 있음 */
+.circle_btn {
+    opacity: .6;
+
+    &:hover {
+        opacity: 1;
     }
 }
 

@@ -7,20 +7,14 @@ import com.kukokuk.common.dto.Page;
 import com.kukokuk.common.exception.BadRequestException;
 import com.kukokuk.common.store.JobStatusStore;
 import com.kukokuk.common.util.ResponseEntityUtils;
-import com.kukokuk.domain.study.dto.CreateStudyLogRequest;
 import com.kukokuk.domain.study.dto.DailyStudyLogDetailResponse;
-import com.kukokuk.domain.study.dto.DailyStudyLogResponse;
 import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
 import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
 import com.kukokuk.domain.study.dto.EssayQuizLogResponse;
 import com.kukokuk.domain.study.dto.GeminiEssayResponse;
-import com.kukokuk.domain.study.dto.StudyQuizLogRequest;
-import com.kukokuk.domain.study.dto.UpdateStudyLogRequest;
 import com.kukokuk.domain.study.service.StudyAsyncService;
 import com.kukokuk.domain.study.service.StudyService;
 import com.kukokuk.domain.study.vo.DailyStudyEssayQuizLog;
-import com.kukokuk.domain.study.vo.DailyStudyLog;
-import com.kukokuk.domain.study.vo.DailyStudyQuizLog;
 import com.kukokuk.domain.study.vo.StudyDifficulty;
 import com.kukokuk.security.SecurityUser;
 import java.util.List;
@@ -96,72 +90,72 @@ public class ApiStudyController {
      * 사용자의 학습자료에 대한 학습이력 생성
      * 요청 바디 : { dailyStudyNo : 학습자료번호 }
      */
-    @PostMapping("/logs")
-    public ResponseEntity<ApiResponse<DailyStudyLog>> createDailyStudyLog(
-        @RequestBody CreateStudyLogRequest createStudyLogRequest,
-        @AuthenticationPrincipal SecurityUser securityUser) {
-        log.info("createDailyStudyLog 컨트롤러 실행");
-
-        DailyStudyLog log = studyService.createDailyStudyLog(
-            createStudyLogRequest.getDailyStudyNo(), securityUser.getUser().getUserNo());
-
-        return ResponseEntityUtils.ok("사용자 학습 이력 생성 성공", log);
-    }
+//    @PostMapping("/logs")
+//    public ResponseEntity<ApiResponse<DailyStudyLog>> createDailyStudyLog(
+//        @RequestBody CreateStudyLogRequest createStudyLogRequest,
+//        @AuthenticationPrincipal SecurityUser securityUser) {
+//        log.info("createDailyStudyLog 컨트롤러 실행");
+//
+//        DailyStudyLog log = studyService.createDailyStudyLog(
+//            createStudyLogRequest.getDailyStudyNo(), securityUser.getUser().getUserNo());
+//
+//        return ResponseEntityUtils.ok("사용자 학습 이력 생성 성공", log);
+//    }
 
     /**
      * PUT /api/studies/logs/{dailyStudyLogNo}
      * 학습 이력 수정
      * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
      */
-    @PutMapping("/logs/{dailyStudyLogNo}")
-    public ResponseEntity<ApiResponse<DailyStudyLogResponse>> updateDailyStudyLog(
-        @RequestBody UpdateStudyLogRequest updateStudyLogRequest,
-        @PathVariable("dailyStudyLogNo") int dailyStudyLogNo,
-        @AuthenticationPrincipal SecurityUser securityUser
-    ) {
-        log.info("updateDailyStudyLog 컨트롤러 실행");
-
-        DailyStudyLogResponse response = studyService.updateDailyStudyLog(dailyStudyLogNo,
-            updateStudyLogRequest, securityUser.getUser().getUserNo());
-
-        return ResponseEntityUtils.ok("사용자 학습 이력 수정 성공", response);
-    }
+//    @PutMapping("/logs/{dailyStudyLogNo}")
+//    public ResponseEntity<ApiResponse<DailyStudyLogResponse>> updateDailyStudyLog(
+//        @RequestBody UpdateStudyLogRequest updateStudyLogRequest,
+//        @PathVariable("dailyStudyLogNo") int dailyStudyLogNo,
+//        @AuthenticationPrincipal SecurityUser securityUser
+//    ) {
+//        log.info("updateDailyStudyLog 컨트롤러 실행");
+//
+//        DailyStudyLogResponse response = studyService.updateDailyStudyLog(dailyStudyLogNo,
+//            updateStudyLogRequest, securityUser.getUser().getUserNo());
+//
+//        return ResponseEntityUtils.ok("사용자 학습 이력 수정 성공", response);
+//    }
 
     /**
      * POST /api/studies/quizzes/logs
      * 사용자의 학습퀴즈 이력 생성
      * 요청 바디 : { dailyStudyQuizNo : 학습퀴즈번호. selectedChoice : 사용자가 선택한 보기 }
      */
-    @PostMapping("/quizzes/logs")
-    public ResponseEntity<ApiResponse<DailyStudyQuizLog>> createStudyQuizLog(
-        @RequestBody StudyQuizLogRequest studyQuizLogRequest,
-        @AuthenticationPrincipal SecurityUser securityUser) {
-        log.info("createStudyQuizLog 컨트롤러 실행");
-
-        DailyStudyQuizLog log = studyService.createStudyQuizLog(studyQuizLogRequest,
-            securityUser.getUser().getUserNo());
-
-        return ResponseEntityUtils.ok("사용자 퀴즈 이력 생성 성공", log);
-    }
+//    @PostMapping("/quizzes/logs")
+//    public ResponseEntity<ApiResponse<DailyStudyQuizLog>> createStudyQuizLog(
+//        @RequestBody StudyQuizLogRequest studyQuizLogRequest,
+//        @AuthenticationPrincipal SecurityUser securityUser) {
+//        log.info("createStudyQuizLog 컨트롤러 실행");
+//
+//        DailyStudyQuizLog log = studyService.createStudyQuizLog(studyQuizLogRequest,
+//            securityUser.getUser().getUserNo());
+//
+//        return ResponseEntityUtils.ok("사용자 퀴즈 이력 생성 성공", log);
+//    }
 
     /**
      * PUT /api/studies/logs/{dailyStudyLogNo}
      * 학습 이력 수정
      * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
      */
-    @PutMapping("/quizzes/logs/{studyQuizLogNo}")
-    public ResponseEntity<ApiResponse<DailyStudyQuizLog>> updateStudyQuizLog(
-        @RequestBody StudyQuizLogRequest studyQuizLogRequest,
-        @PathVariable("studyQuizLogNo") int studyQuizLogNo,
-        @AuthenticationPrincipal SecurityUser securityUser
-    ) {
-        log.info("updateStudyQuizLog 컨트롤러 실행");
-
-        DailyStudyQuizLog updatedlog = studyService.updateStudyQuizLog(studyQuizLogNo,
-            studyQuizLogRequest, securityUser.getUser().getUserNo());
-
-        return ResponseEntityUtils.ok("사용자 학습퀴즈 이력 수정 성공", updatedlog);
-    }
+//    @PutMapping("/quizzes/logs/{studyQuizLogNo}")
+//    public ResponseEntity<ApiResponse<DailyStudyQuizLog>> updateStudyQuizLog(
+//        @RequestBody StudyQuizLogRequest studyQuizLogRequest,
+//        @PathVariable("studyQuizLogNo") int studyQuizLogNo,
+//        @AuthenticationPrincipal SecurityUser securityUser
+//    ) {
+//        log.info("updateStudyQuizLog 컨트롤러 실행");
+//
+//        DailyStudyQuizLog updatedlog = studyService.updateStudyQuizLog(studyQuizLogNo,
+//            studyQuizLogRequest, securityUser.getUser().getUserNo());
+//
+//        return ResponseEntityUtils.ok("사용자 학습퀴즈 이력 수정 성공", updatedlog);
+//    }
 
     @GetMapping("/difficulties")
     public ResponseEntity<ApiResponse<List<StudyDifficulty>>> getStudyDifficulties() {

@@ -18,7 +18,7 @@
                                 , EXP_GAINED
                                 , USER_NO)
         VALUES
-        <foreach collection="list" item="item" separator=",">
+        <foreach collection="expProcessingDtos" item="item" separator=",">
             (#{contentType}, #{item.contentNo}, #{expGained}, #{item.userNo})
         </foreach>
     </insert>

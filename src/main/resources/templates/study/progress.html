@@ -1,61 +1,108 @@
 <!DOCTYPE html>
-<html layout:decorate="~{layout/center}">
+<html layout:decorate="~{/layout/custom-nav-base}">
 <!--/* 학습 진행화면에서 표시할 네비바 */-->
-<div layout:fragment="custom-nav-fragment"
-     th:replace="~{fragments/study/study-nav :: study-nav-fragment(studyProgressDto=${studyProgressDto})}"></div>
+<th:block layout:fragment="custom-nav-fragment">
+    <div th:replace="~{fragments/study/study-nav :: study-nav-fragment(studyProgressDto=${studyProgressDto}, progressIndex=${progressIndex})}"></div>
+</th:block>
 
 <div layout:fragment="content">
-    <div id="center-content" class="content_container">
-        <div class="content_info">
-            <div class="bar_gauge">
-                <div id="study-progress" class="gauge"></div>
-                <iconify-icon id="study-quiz-marker" class="icon title_font marker" icon="streamline-color:help-question-1"></iconify-icon>
+    <form id="main-content"
+          class="content_container"
+          method="post"
+          th:action="@{/study/progress}"
+          th:with="cardCount=${studyProgressDto.dailyStudy.cardCount}
+          , quizCount=${studyProgressDto.quizzes.size()}
+          , isCardProgress=${progressIndex < cardCount}
+          , studyIndex=${isCardProgress ? progressIndex : cardCount - 1}
+          , studyCard=${studyProgressDto.cards.get(studyIndex)}
+          , quizIndex=${!isCardProgress ? progressIndex - cardCount : 0}
+          , studyQuiz=${studyProgressDto.quizWithLogDtos.get(quizIndex)}">
+        <input type="hidden" name="progressIndex" th:value="${progressIndex}">
+
+        <!--/* 학습 진행 상태가 카드일 경우 */-->
+        <div th:if="${isCardProgress}" class="content_info h_100">
+            <div class="content_title study_content_title" th:text="${studyCard.title}">학습 제목</div>
+
+            <div class="component tiny_list_component study_progress h_100 pd_0"
+                 style="--cols: 14; --indexCols: 1;">
+                <th:block th:each="item : ${studyCard.studyCardContent}">
+                    <div th:if="${item.type == 'paragraph'}" class="component_info">
+                        <div class="index_list">
+                            <div class="mark">📖</div>
+                            <p class="paragraph" th:utext="${item.asString()}">학습내용 paragraph</p>
+                        </div>
+                    </div>
+
+                    <div th:if="${item.type == 'definition'}" class="component_info">
+                        <div class="index_list">
+                            <div class="mark">📌</div>
+                            <p class="definition" th:utext="${item.asString()}">학습내용정의 definition</p>
+                        </div>
+                    </div>
+
+                    <div th:if="${item.type == 'example'}" class="component_info">
+                        <div class="index_list">
+                            <div class="mark">💡</div>
+                            <p class="example" th:utext="${item.asString()}">학습내용예시 example</p>
+                        </div>
+                    </div>
+
+                    <div th:if="${item.type == 'quote'}" class="component_info">
+                        <div class="index_list">
+                            <div class="mark">💬</div>
+                            <p class="quote" th:utext="${item.asString()}">학습내용인용 quote</p>
+                        </div>
+                    </div>
+
+                    <ul th:if="${item.type == 'list'}" class="list">
+                        <li th:each="li : ${item.asList()}" th:utext="${li}">학습내용리스트 list</li>
+                    </ul>
+
+                    <table th:if="${item.type == 'table'}" class="table">
+                        <tr th:each="row : ${item.asTable()}">
+                            <td th:each="cell : ${row}" th:utext="${cell}">학습내용테이블 table</td>
+                        </tr>
+                    </table>
+                </th:block>
             </div>
-
-
         </div>
 
-        <div class="component h_100">
-            <div id="main-study-content">
-                <div class="study_progress_card">
-                    <div class="title">학습제목</div>
-                    <div class="paragraph">학습내용 paragraph</div>
-                    <div class="example">학습내용예시 example</div>
-                    <div class="definition">학습내용정의 definition</div>
-                    <div class="quote">학습내용인용 quote</div>
-                    <div class="list">학습내용리스트 list</div>
-                </div>
-                <!--    <th:block th:each="card : ${studyProgressDto.cards}">-->
-                <!--      <p th:text="${card.cardIndex}"></p>-->
-                <!--      <p th:text="${card.content}"></p>-->
-                <!--      <p th:text="${card.dailyStudyCardNo}"></p>-->
-                <!--    </th:block>-->
+        <!--/* 학습 진행 상태가 퀴즈일 경우 */-->
+        <div th:if="${!isCardProgress}" class="content_info h_100">
+            <input type="hidden" name="dailyStudyQuizNo" th:value="${studyQuiz.dailyStudyQuizNo}">
+
+            <div class="content_title study_content_title justify_content_center" th:text="|${quizIndex + 1}번 문제|">문제 번호</div>
+
+            <div class="component">
+                <p class="callout_info bold large_font tac" th:text="${studyQuiz.question}">문제</p>
+            </div>
+
+            <div id="quiz-options" class="tiny_list_component"
+                 th:with="selectedOption=${studyQuiz.dailyStudyQuizLog?.selectedChoice ?: 0}">
+                <label th:each="option, state : ${studyQuiz.options}"
+                       th:for="|option${state.count}|"
+                       class="component_info option_btns">
+                    <input type="radio"
+                           name="selectedChoice"
+                           th:id="|option${state.count}|"
+                           th:value="${state.count}"
+                           th:checked="${selectedOption == state.count}">
+                    <div class="list_option">
+                        <span class="marker" th:text="|${state.count}.|">보기 번호.</span>
+                        <p class="option" th:text="${option}">보기</p>
+                    </div>
+                </label>
             </div>
         </div>
 
         <div class="btn_list base_gap justify_content_center">
-            <button class="circle_btn" id="prev-btn">
+            <button th:if="${progressIndex > 0}" type="submit" name="direction" class="circle_btn" value="prev">
                 <iconify-icon class="icon large" icon="emojione:left-arrow"></iconify-icon>
             </button>
-            <button class="circle_btn" id="next-btn">
+            <button type="submit" name="direction" class="circle_btn" value="next">
                 <iconify-icon class="icon large" icon="emojione:right-arrow"></iconify-icon>
             </button>
         </div>
-    </div>
+    </form>
 </div>
-
-<th:block layout:fragment="script">
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        // 백엔드 서버에서 전달된 studyProgressDto.cards 객체 리스트를 자바스크립트 변수로 바인딩
-        // 자동으로 JSON.stringify()되어 들어간다
-        let cards = /*[[${studyProgressDto.cards}]]*/ [];
-        let dailyStudy = /*[[${studyProgressDto.dailyStudy}]]*/ {};
-        let studyLog = /*[[${studyProgressDto.log}]]*/ {};
-        let quizzes = /*[[${studyProgressDto.quizzes}]]*/ [];
-        let quizLogs = /*[[${studyProgressDto.quizLogs}]]*/ [];
-        /*]]>*/
-    </script>
-<!--    <script type="module" th:src="@{/js/modules/study/study-progress.js}"></script>-->
-</th:block>
 </html>
