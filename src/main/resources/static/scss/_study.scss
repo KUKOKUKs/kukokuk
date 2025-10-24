@@ -142,6 +142,44 @@
     }
 }
 
+/* 학습 진행 관련 요소 */
+.study_content_title {
+    padding: 0 var(--smallGap);
+    background-color: var(--subColor);
+
+    &::before {
+        content: "";
+        display: inline-block;
+        width: 5px;
+        height: 100%;
+        background-color: var(--blueColor);
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+}
+
+.study_progress {
+    .component_info {
+        border-radius: 0;
+
+        &:nth-child(odd) {
+            background-color: transparent;
+        }
+
+        .mark {
+            text-align: center;
+        }
+
+        .bold {
+            display: inline-block;
+            background-color: var(--lightYellowColor); /* 형광펜 배경 */
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone; /* 크롬/사파리용 */
+        }
+    }
+}
+
 .study_progress_card {
     width: 100%;
     display: flex;

@@ -111,11 +111,13 @@
                 KUKOKUK_DAILY_STUDY_LOGS
                 (
                  DAILY_STUDY_NO,
+                 STUDIED_CARD_COUNT,
                  USER_NO
                 )
             VALUES
                 (
                  #{dailyStudyNo},
+                 #{studiedCardCount},
                  #{userNo}
                 )
     </insert>
