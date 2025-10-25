@@ -43,18 +43,18 @@ public class ApiStudyController {
     private final ModelMapper modelMapper;
     private final JobStatusStore<DailyStudySummaryResponse> studyJobStatusStore;
 
-    /**
-     * POST /api/studies 아직 사용할 일 없어서 추후 수정 예정
-     */
-    @PostMapping()
-    public ResponseEntity<ApiResponse> createStudy() {
-
-        studyService.createDailyStudyByAi(3, 1);
-
-        return ResponseEntity
-            .ok()
-            .body(null);
-    }
+//    /**
+//     * POST /api/studies 아직 사용할 일 없어서 추후 수정 예정
+//     */
+//    @PostMapping()
+//    public ResponseEntity<ApiResponse> createStudy() {
+//
+//        studyService.createDailyStudyByAi(3, 1);
+//
+//        return ResponseEntity
+//            .ok()
+//            .body(null);
+//    }
 
     /**
      * GET /api/studies?rows=
@@ -85,11 +85,11 @@ public class ApiStudyController {
         return ResponseEntityUtils.ok(responses);
     }
 
-    /**
-     * POST /api/studies/logs
-     * 사용자의 학습자료에 대한 학습이력 생성
-     * 요청 바디 : { dailyStudyNo : 학습자료번호 }
-     */
+//    /**
+//     * POST /api/studies/logs
+//     * 사용자의 학습자료에 대한 학습이력 생성
+//     * 요청 바디 : { dailyStudyNo : 학습자료번호 }
+//     */
 //    @PostMapping("/logs")
 //    public ResponseEntity<ApiResponse<DailyStudyLog>> createDailyStudyLog(
 //        @RequestBody CreateStudyLogRequest createStudyLogRequest,
@@ -102,11 +102,11 @@ public class ApiStudyController {
 //        return ResponseEntityUtils.ok("사용자 학습 이력 생성 성공", log);
 //    }
 
-    /**
-     * PUT /api/studies/logs/{dailyStudyLogNo}
-     * 학습 이력 수정
-     * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
-     */
+//    /**
+//     * PUT /api/studies/logs/{dailyStudyLogNo}
+//     * 학습 이력 수정
+//     * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
+//     */
 //    @PutMapping("/logs/{dailyStudyLogNo}")
 //    public ResponseEntity<ApiResponse<DailyStudyLogResponse>> updateDailyStudyLog(
 //        @RequestBody UpdateStudyLogRequest updateStudyLogRequest,
@@ -121,11 +121,11 @@ public class ApiStudyController {
 //        return ResponseEntityUtils.ok("사용자 학습 이력 수정 성공", response);
 //    }
 
-    /**
-     * POST /api/studies/quizzes/logs
-     * 사용자의 학습퀴즈 이력 생성
-     * 요청 바디 : { dailyStudyQuizNo : 학습퀴즈번호. selectedChoice : 사용자가 선택한 보기 }
-     */
+//    /**
+//     * POST /api/studies/quizzes/logs
+//     * 사용자의 학습퀴즈 이력 생성
+//     * 요청 바디 : { dailyStudyQuizNo : 학습퀴즈번호. selectedChoice : 사용자가 선택한 보기 }
+//     */
 //    @PostMapping("/quizzes/logs")
 //    public ResponseEntity<ApiResponse<DailyStudyQuizLog>> createStudyQuizLog(
 //        @RequestBody StudyQuizLogRequest studyQuizLogRequest,
@@ -138,11 +138,11 @@ public class ApiStudyController {
 //        return ResponseEntityUtils.ok("사용자 퀴즈 이력 생성 성공", log);
 //    }
 
-    /**
-     * PUT /api/studies/logs/{dailyStudyLogNo}
-     * 학습 이력 수정
-     * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
-     */
+//    /**
+//     * PUT /api/studies/logs/{dailyStudyLogNo}
+//     * 학습 이력 수정
+//     * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
+//     */
 //    @PutMapping("/quizzes/logs/{studyQuizLogNo}")
 //    public ResponseEntity<ApiResponse<DailyStudyQuizLog>> updateStudyQuizLog(
 //        @RequestBody StudyQuizLogRequest studyQuizLogRequest,
@@ -236,7 +236,6 @@ public class ApiStudyController {
     }
 
     // 맞춤 학습 자료 폴링(최초 요청시 응답 받은 jobId)
-    // 왜 여기서 jobId로 JobStatusResponse을 가져오지 못할까..?
     @GetMapping("/status/{jobId}")
     public ResponseEntity<ApiResponse<JobStatusResponse<?>>> getStudiesByUserStatus(
         @PathVariable("jobId") String jobId) {

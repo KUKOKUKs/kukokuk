@@ -62,138 +62,138 @@ export async function apiGetDailyStudies(rows) {
     }
 }
 
-/**
- * 학습 이력을 생성하는 비동기 요청
- * @param dailyStudyNo 학습이력을 생성할 학습자료 번호
- * @returns {Promise<*>} {
- *        "dailyStudyLogNo": 6,
- *         "studiedCardCount": 6,
- *         "completedDate": "2025-07-31T16:41:42",
- *         "status": "COMPLETED",
- *         "createdDate": "2025-07-31T15:36:08",
- *         "updatedDate": "2025-07-31T16:41:42",
- *         "userNo": 2,
- *         "dailyStudyNo": 9,
- *         "dailyStudy": null
- *     }
- */
-export async function apiCreateStudyLog(dailyStudyNo) {
-    try {
-        const response = await $.ajax({
-            url: `/api/studies/logs`,
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ dailyStudyNo }),
-            dataType: 'json',
-        });
+// /**
+//  * 학습 이력을 생성하는 비동기 요청
+//  * @param dailyStudyNo 학습이력을 생성할 학습자료 번호
+//  * @returns {Promise<*>} {
+//  *        "dailyStudyLogNo": 6,
+//  *         "studiedCardCount": 6,
+//  *         "completedDate": "2025-07-31T16:41:42",
+//  *         "status": "COMPLETED",
+//  *         "createdDate": "2025-07-31T15:36:08",
+//  *         "updatedDate": "2025-07-31T16:41:42",
+//  *         "userNo": 2,
+//  *         "dailyStudyNo": 9,
+//  *         "dailyStudy": null
+//  *     }
+//  */
+// export async function apiCreateStudyLog(dailyStudyNo) {
+//     try {
+//         const response = await $.ajax({
+//             url: `/api/studies/logs`,
+//             type: 'POST',
+//             contentType: 'application/json',
+//             data: JSON.stringify({ dailyStudyNo }),
+//             dataType: 'json',
+//         });
+//
+//         console.log("apiCreateStudyLog() api 요청 response: ", response);
+//         return response.data;
+//     } catch (xhr) {
+//         apiErrorProcessByXhr(xhr.responseJSON);
+//     }
+// }
 
-        console.log("apiCreateStudyLog() api 요청 response: ", response);
-        return response.data;
-    } catch (xhr) {
-        apiErrorProcessByXhr(xhr.responseJSON);
-    }
-}
+// /**
+//  * 학습 이력을 수정하는 비동기 요청
+//  * @param studyLogNo 수정할 학습 이력의 번호
+//  * @param requestBody 수정할 필드 {studiedCardCount, status}
+//  * @returns {Promise<*>} {
+//  *     "dailyStudyLogNo": 6,
+//  *     "studiedCardCount": 6,
+//  *     "completedDate": "2025-07-31T16:41:42",
+//  *     "status": "COMPLETED",
+//  *     "createdDate": "2025-07-31T15:36:08",
+//  *     "updatedDate": "2025-07-31T16:41:42",
+//  *     "userNo": 2,
+//  *     "dailyStudyNo": 9,
+//  *   }
+//  */
+// export async function apiUpdateStudyLog(studyLogNo, requestBody = {}) {
+//     try {
+//         const response = await $.ajax({
+//             url: `/api/studies/logs/${studyLogNo}`,
+//             type: 'PUT',
+//             contentType: 'application/json',
+//             data: JSON.stringify(requestBody), // 바디 비워서 updatedDate만 수정
+//             dataType: 'json',
+//         });
+//
+//         console.log("apiUpdateStudyLog() api 요청 response: ", response);
+//         return response.data;
+//     } catch (xhr) {
+//         apiErrorProcessByXhr(xhr.responseJSON);
+//     }
+// }
 
-/**
- * 학습 이력을 수정하는 비동기 요청
- * @param studyLogNo 수정할 학습 이력의 번호
- * @param requestBody 수정할 필드 {studiedCardCount, status}
- * @returns {Promise<*>} {
- *     "dailyStudyLogNo": 6,
- *     "studiedCardCount": 6,
- *     "completedDate": "2025-07-31T16:41:42",
- *     "status": "COMPLETED",
- *     "createdDate": "2025-07-31T15:36:08",
- *     "updatedDate": "2025-07-31T16:41:42",
- *     "userNo": 2,
- *     "dailyStudyNo": 9,
- *   }
- */
-export async function apiUpdateStudyLog(studyLogNo, requestBody = {}) {
-    try {
-        const response = await $.ajax({
-            url: `/api/studies/logs/${studyLogNo}`,
-            type: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(requestBody), // 바디 비워서 updatedDate만 수정
-            dataType: 'json',
-        });
+// /**
+//  * 학습 퀴즈 이력을 생성하는 비동기 요청
+//  * @param dailyStudyQuizNo
+//  * @param selectedChoice
+//  * @returns {Promise<*>} {
+//  *         "dailyStudyQuizLogNo": 1,
+//  *         "isSuccess": "N",
+//  *         "selectedChoice": 3,
+//  *         "createdDate": "2025-08-01T10:13:14",
+//  *         "updatedDate": "2025-08-01T10:35:45",
+//  *         "userNo": 2,
+//  *         "dailyStudyQuizNo": 6,
+//  *         "dailyStudyQuiz": null
+//  *     }
+//  */
+// export async function apiCreateQuizLog(dailyStudyQuizNo, selectedChoice) {
+//     try {
+//         const response = await $.ajax({
+//             url: '/api/studies/quizzes/logs',
+//             type: 'POST',
+//             contentType: 'application/json',
+//             data: JSON.stringify({
+//                 dailyStudyQuizNo,
+//                 selectedChoice
+//             }),
+//             dataType: 'json',
+//         });
+//
+//         console.log("apiCreateQuizLog() api 요청 response: ", response);
+//         return response.data;
+//     } catch (xhr) {
+//         apiErrorProcessByXhr(xhr.responseJSON);
+//     }
+// }
 
-        console.log("apiUpdateStudyLog() api 요청 response: ", response);
-        return response.data;
-    } catch (xhr) {
-        apiErrorProcessByXhr(xhr.responseJSON);
-    }
-}
-
-/**
- * 학습 퀴즈 이력을 생성하는 비동기 요청
- * @param dailyStudyQuizNo
- * @param selectedChoice
- * @returns {Promise<*>} {
- *         "dailyStudyQuizLogNo": 1,
- *         "isSuccess": "N",
- *         "selectedChoice": 3,
- *         "createdDate": "2025-08-01T10:13:14",
- *         "updatedDate": "2025-08-01T10:35:45",
- *         "userNo": 2,
- *         "dailyStudyQuizNo": 6,
- *         "dailyStudyQuiz": null
- *     }
- */
-export async function apiCreateQuizLog(dailyStudyQuizNo, selectedChoice) {
-    try {
-        const response = await $.ajax({
-            url: '/api/studies/quizzes/logs',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                dailyStudyQuizNo,
-                selectedChoice
-            }),
-            dataType: 'json',
-        });
-
-        console.log("apiCreateQuizLog() api 요청 response: ", response);
-        return response.data;
-    } catch (xhr) {
-        apiErrorProcessByXhr(xhr.responseJSON);
-    }
-}
-
-/**
- * 학습 퀴즈 이력을 수정하는 비동기 요청
- * @param studyQuizLogNo
- * @param selectedChoice
- * @returns {Promise<*>} {
- *         "dailyStudyQuizLogNo": 1,
- *         "isSuccess": "N",
- *         "selectedChoice": 3,
- *         "createdDate": "2025-08-01T10:13:14",
- *         "updatedDate": "2025-08-01T10:35:45",
- *         "userNo": 2,
- *         "dailyStudyQuizNo": 6,
- *         "dailyStudyQuiz": null
- *     }
- */
-export async function apiUpdateQuizLog(studyQuizLogNo, selectedChoice) {
-    try {
-        const response = await $.ajax({
-            url: `/api/studies/quizzes/logs/${studyQuizLogNo}`,
-            type: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                selectedChoice
-            }),
-            dataType: 'json',
-        });
-
-        console.log("apiUpdateQuizLog() api 요청 response: ", response);
-        return response.data;
-    } catch (xhr) {
-        apiErrorProcessByXhr(xhr.responseJSON);
-    }
-}
+// /**
+//  * 학습 퀴즈 이력을 수정하는 비동기 요청
+//  * @param studyQuizLogNo
+//  * @param selectedChoice
+//  * @returns {Promise<*>} {
+//  *         "dailyStudyQuizLogNo": 1,
+//  *         "isSuccess": "N",
+//  *         "selectedChoice": 3,
+//  *         "createdDate": "2025-08-01T10:13:14",
+//  *         "updatedDate": "2025-08-01T10:35:45",
+//  *         "userNo": 2,
+//  *         "dailyStudyQuizNo": 6,
+//  *         "dailyStudyQuiz": null
+//  *     }
+//  */
+// export async function apiUpdateQuizLog(studyQuizLogNo, selectedChoice) {
+//     try {
+//         const response = await $.ajax({
+//             url: `/api/studies/quizzes/logs/${studyQuizLogNo}`,
+//             type: 'PUT',
+//             contentType: 'application/json',
+//             data: JSON.stringify({
+//                 selectedChoice
+//             }),
+//             dataType: 'json',
+//         });
+//
+//         console.log("apiUpdateQuizLog() api 요청 response: ", response);
+//         return response.data;
+//     } catch (xhr) {
+//         apiErrorProcessByXhr(xhr.responseJSON);
+//     }
+// }
 
 /**
  * 서술형 퀴즈 이력 생성
