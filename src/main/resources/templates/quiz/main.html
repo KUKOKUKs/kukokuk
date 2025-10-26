@@ -119,8 +119,9 @@
 
                             <p class="history_title">
                                 <span class="bold color_blue"
-                                      th:text="|[${log.difficulty}]|">[난이도]</span>
-                                <span th:text="|정답 ${log.correctAnswers}/${log.totalQuestion}|">정답 n/n</span>
+                                      th:text="|정답 ${log.correctAnswers}/${log.totalQuestion}|">정답 n/n</span>
+                                <span class="sub_font"
+                                      th:text="|(${log.difficulty})|">(난이도)</span>
                             </p>
                         </div>
 
@@ -145,13 +146,16 @@
                        class="component_info small with_icon history_info_list">
                         <div class="list_info">
                             <div class="history_info tiny_font">
+                                <span class="color_primary"
+                                      th:text="|총 풀이 시간 ${log.totalTimeSec}초|">총 풀이 시간 n.n초</span>
                                 <span th:text="${#dates.format(log.createdDate, 'yyyy.M.d')}">이력 일자</span>
                             </div>
 
                             <p class="history_title">
                                 <span class="bold color_blue"
-                                      th:text="|[${log.difficulty}]|">[난이도]</span>
-                                <span th:text="|정답 ${log.correctAnswers}/${log.totalQuestion}|">정답 n/n</span>
+                                      th:text="|${log.correctScore}점|">n점</span>
+                                <span class="sub_font"
+                                      th:text="|(정답 ${log.correctCount}/10)|">(정답 n/10)</span>
                             </p>
                         </div>
 
