@@ -37,8 +37,8 @@ public class ExpProcessingService {
      * @param listExpProcessingDto 경험치 정보 리스트(userNo, contentNo만 사용됨 pair를 위한 개별 객체 ExpProcessingDto)
      */
     @Transactional
-    public void groupExpProcessing(ListExpProcessingDto listExpProcessingDto) {
-        log.info("groupExpProcessing() 서비스 실행");
+    public void listExpProcessing(ListExpProcessingDto listExpProcessingDto) {
+        log.info("listExpProcessing() 서비스 실행");
 
         String contentType =  listExpProcessingDto.getContentType();
         Integer expGained = listExpProcessingDto.getExpGained();

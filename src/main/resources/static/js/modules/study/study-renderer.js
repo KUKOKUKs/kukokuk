@@ -54,9 +54,9 @@ export function renderStudyCardContent(study) {
                                 : study.status === 'IN_PROGRESS'
                                     ? '지난 학습 이어하기'
                                     : '복습하기';
-    const studyBtnColor = (study.status === 'NOT_STARTED' || study.status === 'IN_PROGRESS')
-                                    ? 'primary'
-                                    : 'white';
+    const studyBtnColor = study.status === 'COMPLETED'
+                                    ? ''
+                                    : 'primary';
 
     return `
         <div class="study_info">
@@ -69,7 +69,7 @@ export function renderStudyCardContent(study) {
                 <div class="gauge" style="width: ${study.progressRate}%;"></div>
             </div>
             <div class="btn_list column study_card_btns">
-                <a href="/study/${study.dailyStudyNo}" class="btn primary ${studyBtnColor}">${studyBtnText}</a>
+                <a href="/study/${study.dailyStudyNo}" class="btn ${studyBtnColor}">${studyBtnText}</a>
                 <a href="/study/${study.dailyStudyNo}/essay" class="btn ${isNotEssay ? 'full_blue highlight' : 'blue'}">
                     AI 피드백 기반 논술형 문제 풀기
                 </a>

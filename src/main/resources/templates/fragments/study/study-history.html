@@ -3,10 +3,15 @@
 <div th:fragment="study-history-fragment(dailyStudyLogs)"
      id="study-history-container"
      class="component small_list_component">
-    <div class="component_title">
+    <div class="component_title column small_gap">
         <p class="title_info">학습 이력</p>
+        <span th:if="${#lists.isEmpty(dailyStudyLogs)}"
+              class="component_sub_title">
+            AI가 맞춤형 학습을 도와줄 준비가 되어 있어요.
+        </span>
     </div>
-    <div class="tiny_list_component show_scroll">
+    <div th:if="${!#lists.isEmpty(dailyStudyLogs)}"
+         class="tiny_list_component show_scroll">
         <a class="study_history_info component_info small with_icon"
            th:each="log : ${dailyStudyLogs}"
            th:href="@{/study/{dailyStudyNo}(dailyStudyNo=${log.dailyStudyNo})}">
