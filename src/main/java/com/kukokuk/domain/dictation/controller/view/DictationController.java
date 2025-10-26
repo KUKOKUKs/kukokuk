@@ -14,6 +14,7 @@ import com.kukokuk.domain.exp.dto.ExpProcessingDto;
 import com.kukokuk.domain.exp.service.ExpProcessingService;
 import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.security.SecurityUser;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -242,6 +243,8 @@ public class DictationController {
             log.info("[/show-answer] 변경 후 - tryCount: {}, isSuccess: {}, userAnswer: {} / nextIndex: {}",
                 dictationQuestiondto.getTryCount(), dictationQuestiondto.getIsSuccess(), dictationQuestiondto.getUserAnswer(), questionIndex + 1);
 
+            // 새로고침 유지할 때 사용할 showAnswer 세팅 "1"일때 넘겨줌
+            dictationQuestions.get(questionIndex).setUsedShowAnswer("1");
             model.addAttribute("questionIndex", questionIndex + 1);
 
             return "redirect:/dictation/solve";
@@ -254,6 +257,7 @@ public class DictationController {
             DictationQuestionLogDto dto = dictationQuestionLogDtoList.get(questionIndex);
             dto.setUsedHint("Y");
 
+            // 새로고침 유지할 때 사용할 hintNum 세팅
             dictationQuestions.get(questionIndex).setUsedHintNum(hintNum);
             log.info("[/use-hint] index: {}, usedHint: Y", questionIndex);
 
@@ -334,11 +338,7 @@ public class DictationController {
             dictationService.insertDictationSessionResult(sessionNo, userNo, startDate, endDate);
             log.info("[/finish]에서 세트 결과 저장 완료 sessionNo: {},userNo: {}, startDate: {}, endDate: {})",sessionNo, userNo, startDate, endDate);
 
-            // 4) 세션 정리
-            sessionStatus.setComplete();
-            log.info("[/finish] 쪽에서 세션 초기화 완료");
-
-            // 5) 경험치 작업
+            // 4) 경험치 작업
             // builder 사용버전
             ExpProcessingDto expProcessingDto = ExpProcessingDto.builder()
                 .userNo(userNo)
@@ -361,6 +361,10 @@ public class DictationController {
 //            expProcessingService.expProcessing(expProcessingDto);
 //            log.info("[/finish] 쪽에서 경험치 반영 완료 userNo: {}, sessionNo: {}", userNo, sessionNo);
 
+
+            // 5) 세션 정리
+            sessionStatus.setComplete();
+            log.info("[/finish] 쪽에서 세션 초기화 완료");
             return "redirect:/dictation/result?dictationSessionNo=" + sessionNo;
         }
 

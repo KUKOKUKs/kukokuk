@@ -269,81 +269,81 @@ public class TwentyService {
      *
      * @param roomNo
      */
-    public void addExp(int roomNo){
-        //전체 참여자 리스트 조회, 게임방 결과 조회
-        List<RoomUser> roomUsers = twentyMapper.getTwentyPlayerList(roomNo);        // 참여자 리스트
-        TwentyResult result = twentyMapper.getTwentyRoomResult(roomNo);             // 게임방 결과
-        int teacherNo = result.getTeacherNo();
-        log.info("addExp : 참여자 리스트, 게임방 결과 정상 조회");
-
-        // 참여자 리스트에는 교사도 포함되어 있어, 교사를 제외한 학생들의 리스트를 생성.
-        List<RoomUser> students = new ArrayList<>();
-        for(RoomUser roomUser : roomUsers){
-            if(roomUser.getUserNo() != teacherNo){
-                students.add(roomUser);
-            }
-        }
-
-        //공통 파라미터
-        int contentNo  = roomNo;
-        String contentType = "TWENTY";
-        Integer winnerNo = result.getWinnerNo();
-        String isSuccess = result.getIsSuccess();
-
-        // 게임에서 이겼을 때
-        if("Y".equals(isSuccess)){
-            log.info("addExp : 승리시 경험치 로직 시작");
-            //정답 제출자에게 60EXP 부여
-            ExpProcessingDto winnerDto = ExpProcessingDto.builder()
-                                                    .userNo(winnerNo)
-                                                    .contentNo(contentNo)
-                                                    .contentType(contentType)
-                                                    .expGained(60)
-                                                    .build();
-            expProcessingService.expProcessing(winnerDto);
-            log.info("addExp : 승리 시, 정답 제출자 경험치 정상 등록");
-
-            //그 외 사람들에게 30Exp씩 부여
-            List<ExpProcessingDto> otherDto = new ArrayList<>();        // 남은 참여자에 대한 경험치 정보.
-            for(RoomUser  student : students){
-                if(student.getUserNo() != winnerNo){
-                    otherDto.add(
-                        ExpProcessingDto.builder()
-                                        .contentNo(contentNo)
-                                        .userNo(student.getUserNo())
-                                        .build()
-                    );
-                }
-            }
-
-            ListExpProcessingDto listExpProcessingDto = ListExpProcessingDto.builder()
-                                                                            .expGained(30)
-                                                                            .contentType(contentType)
-                                                                            .expProcessingDtos(otherDto)
-                                                                            .build();
-            expProcessingService.listExpProcessing(listExpProcessingDto);
-            log.info("addExp : 승리 시, 승리자 제외 다른 학생들 경험치 정상 부여");
-        } else {
-            log.info("addExp: 패배 시, 경험치 부여 로직 시작");
-            List<ExpProcessingDto> loserDto = new ArrayList<>();
-            for(RoomUser  student : students){
-                loserDto.add(
-                    ExpProcessingDto.builder()
-                                    .userNo(student.getUserNo())
-                                    .contentNo(contentNo)
-                                    .build()
-                );
-            }
-            ListExpProcessingDto listExpProcessingDto = ListExpProcessingDto.builder()
-                                                                            .expGained(10)
-                                                                            .contentType(contentType)
-                                                                            .expProcessingDtos(loserDto)
-                                                                            .build();
-            expProcessingService.listExpProcessing(listExpProcessingDto);
-            log.info("addExp: 패배 시, 전체 인원 경험치 정상 부여.");
-        }
-
-    }
+//    public void addExp(int roomNo){
+//        //전체 참여자 리스트 조회, 게임방 결과 조회
+//        List<RoomUser> roomUsers = twentyMapper.getTwentyPlayerList(roomNo);        // 참여자 리스트
+//        TwentyResult result = twentyMapper.getTwentyRoomResult(roomNo);             // 게임방 결과
+//        int teacherNo = result.getTeacherNo();
+//        log.info("addExp : 참여자 리스트, 게임방 결과 정상 조회");
+//
+//        // 참여자 리스트에는 교사도 포함되어 있어, 교사를 제외한 학생들의 리스트를 생성.
+//        List<RoomUser> students = new ArrayList<>();
+//        for(RoomUser roomUser : roomUsers){
+//            if(roomUser.getUserNo() != teacherNo){
+//                students.add(roomUser);
+//            }
+//        }
+//
+//        //공통 파라미터
+//        int contentNo  = roomNo;
+//        String contentType = "TWENTY";
+//        Integer winnerNo = result.getWinnerNo();
+//        String isSuccess = result.getIsSuccess();
+//
+//        // 게임에서 이겼을 때
+//        if("Y".equals(isSuccess)){
+//            log.info("addExp : 승리시 경험치 로직 시작");
+//            //정답 제출자에게 60EXP 부여
+//            ExpProcessingDto winnerDto = ExpProcessingDto.builder()
+//                                                    .userNo(winnerNo)
+//                                                    .contentNo(contentNo)
+//                                                    .contentType(contentType)
+//                                                    .expGained(60)
+//                                                    .build();
+//            expProcessingService.expProcessing(winnerDto);
+//            log.info("addExp : 승리 시, 정답 제출자 경험치 정상 등록");
+//
+//            //그 외 사람들에게 30Exp씩 부여
+//            List<ExpProcessingDto> otherDto = new ArrayList<>();        // 남은 참여자에 대한 경험치 정보.
+//            for(RoomUser  student : students){
+//                if(student.getUserNo() != winnerNo){
+//                    otherDto.add(
+//                        ExpProcessingDto.builder()
+//                                        .contentNo(contentNo)
+//                                        .userNo(student.getUserNo())
+//                                        .build()
+//                    );
+//                }
+//            }
+//
+//            ListExpProcessingDto listExpProcessingDto = ListExpProcessingDto.builder()
+//                                                                            .expGained(30)
+//                                                                            .contentType(contentType)
+//                                                                            .expProcessingDtos(otherDto)
+//                                                                            .build();
+//            expProcessingService.listExpProcessing(listExpProcessingDto);
+//            log.info("addExp : 승리 시, 승리자 제외 다른 학생들 경험치 정상 부여");
+//        } else {
+//            log.info("addExp: 패배 시, 경험치 부여 로직 시작");
+//            List<ExpProcessingDto> loserDto = new ArrayList<>();
+//            for(RoomUser  student : students){
+//                loserDto.add(
+//                    ExpProcessingDto.builder()
+//                                    .userNo(student.getUserNo())
+//                                    .contentNo(contentNo)
+//                                    .build()
+//                );
+//            }
+//            ListExpProcessingDto listExpProcessingDto = ListExpProcessingDto.builder()
+//                                                                            .expGained(10)
+//                                                                            .contentType(contentType)
+//                                                                            .expProcessingDtos(loserDto)
+//                                                                            .build();
+//            expProcessingService.listExpProcessing(listExpProcessingDto);
+//            log.info("addExp: 패배 시, 전체 인원 경험치 정상 부여.");
+//        }
+//
+//    }
 
     /**
      * 아무 조건 없이 roomNo로 이 게임방의 모든 정보를 조회

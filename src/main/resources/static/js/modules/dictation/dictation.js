@@ -139,24 +139,6 @@ $(document).ready(() => {
         }); // 힌트 버튼 부모 요소를 제거하여 완전 보이지 않도록 함
     }
 
-    // 정답 보기 서버 반영 (오답 처리 + tryCount=2)
-    async function showAnswerAndSkip() {
-        console.log("[markShowAnswer] 함수 실행됨");
-        try {
-            const response = await $.ajax({
-                url: "/dictation/show-answer",
-                method: "POST",
-                dataType: "json"
-            });
-            console.log("정답보기 반영 완료:", response);
-        } catch (e) {
-            console.error("[markShowAnswer] 에러", e);
-        }
-
-        // 폼에 'skip'을 히든 추가하고 skipInput 값이 1로 변경되고 제출 누르면 다음 문제로만 이동
-
-    }
-
 
     // 1. 비동기 요청으로 읽어줄 문제와 힌트목록을 요청하는 함수
     // 코드 컨벤션이 맞지않으며 의미가 명확하도록 수정
@@ -189,24 +171,8 @@ $(document).ready(() => {
         isShowAnswer = true;
     });
 
-
-    // 힌트 사용 Ajax 호출 함수
-    async function useHint(hintNum) {
-        try {
-            const response = await $.ajax({
-                url: "api/dictation/use-hint",
-                method: "POST",
-                data: {hintNum},
-                dataType: "json"
-            });
-            console.log("힌트 사용 반영 완료", response);
-        } catch (e) {
-            console.error("힌트 사용 반영 실패", e);
-        }
-    }
-
     // 정답 보기 버튼 클릭 시 showAnswer hidden 추가
-    $("#main-content").submit(function (e) {
+    $mainContent.submit(function (e) {
         e.preventDefault();
         const $this = $(this);
 
@@ -216,17 +182,6 @@ $(document).ready(() => {
         // 그대로 submit
         this.submit();
     });
-
-
-    $("#usedHint").submit(function (e) {
-        e.preventDefault();
-        const $this = $(this);
-
-        $this.append('<input type="hidden" name="hintNum" value="' + hintNum + '">')
-
-        // 그대로 submit
-        this.submit();
-    })
 
     // 코드 컨벤션이 맞지않아 수정
     // $("#HintBtn1").on("click", async function () {

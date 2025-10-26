@@ -53,4 +53,18 @@ public interface DictationQuestionLogMapper {
       @Param("dictationSessionNo") int dictationSessionNo,
       @Param("userNo") int userNo
   );
+
+  /**
+   * 랭킹 절대값 계산에 필요한 총 문항 수 조회
+   * @param dictationSessionNo 문제 세트 번호
+   * @return 총 문항 수
+   */
+  int getCountTotalQuestions(@Param("dictationSessionNo") int dictationSessionNo);
+
+  /**
+   * 랭킹 절대값 계산에 필요한 총 시도 횟수 조회
+   * @param dictationSessionNo 문제 세트 번호
+   * @return 총 시도 횟수
+   */
+  int getCountAllTries(@Param("dictationSessionNo") int dictationSessionNo);
 }
