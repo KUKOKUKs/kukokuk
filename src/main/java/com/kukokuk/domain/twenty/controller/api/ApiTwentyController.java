@@ -40,7 +40,7 @@ public class ApiTwentyController {
         log.info("service 메소드 : gameOverTwenty 정상 실행");
 
         //게임 승리 여부에 따른 그룹화된 유저 경험치 부여
-//        twentyService.addExp(roomNo);
+        twentyService.addExp(roomNo);
         return ResponseEntityUtils.ok("게임 정상 종료");
     }
 
