@@ -417,6 +417,17 @@
     }
 }
 
+/* 이력 컴포넌트 */
+.history_info_list {
+    .list_info {
+        gap: 0;
+    }
+
+    &:hover .history_title {
+        color: var(--primaryColor);
+    }
+}
+
 /* 문단 앞 인덱스/마커가 있는 리스트 */
 .index_list {
     display: grid;
@@ -860,7 +871,7 @@
 /* tab content */
 .tab_btn_list {
     width: 100%;
-    background-color: #fff;
+    background-color: var(--lightGrayColor);
     display: flex;
     align-items: center;
     border-radius: var(--bdrs) var(--bdrs) 0 0;
@@ -877,6 +888,7 @@
         align-items: center;
         justify-content: center;
         font-size: var(--smallFontSize);
+        background-color: var(--lightGrayColor);
         color: var(--grayColor);
         border-right: var(--baseBorder);
         cursor: pointer;
@@ -886,7 +898,7 @@
             display: none;
             width: calc(100% + (var(--bdrs) * 4));
             height: calc(var(--bdrs) * 2);
-            background-color: var(--subColor);
+            background-color: #fff;
             position: absolute;
             bottom: -1px;
             left: 50%;
@@ -898,7 +910,7 @@
                 display: block;
                 width: calc(var(--bdrs) * 2);
                 height: calc(var(--bdrs) * 2);
-                background-color: #fff;
+                background-color: var(--lightGrayColor);
                 border-width: 0 1px 1px 0;
                 border-style: solid;
                 border-color: var(--borderColor);
@@ -914,7 +926,7 @@
                 display: block;
                 width: calc(var(--bdrs) * 2);
                 height: calc(var(--bdrs) * 2);
-                background-color: #fff;
+                background-color: var(--lightGrayColor);
                 border-width: 0 0 1px 1px;
                 border-style: solid;
                 border-color: var(--borderColor);
@@ -929,7 +941,7 @@
         &.selected {
             font-weight: bold;
             color: var(--primaryColor);
-            background-color: var(--subColor);
+            background-color: #fff;
             border-bottom-color: transparent;
             border-left: var(--baseBorder);
             border-radius: var(--bdrs) var(--bdrs) 0 0;
@@ -963,6 +975,7 @@
 
 .tab_content {
     display: none;
+    border-radius: 0 0 var(--bdrs) var(--bdrs);
 
     &.selected {
         display: block;
@@ -1505,6 +1518,10 @@
     overflow: visible !important;
 }
 
+.ov_h {
+    overflow: hidden !important;
+}
+
 .d_flex {
     width: 100%;
     display: flex;
@@ -1540,6 +1557,10 @@
 
 .align_end {
     align-items: flex-end !important; /* 끝 정렬 */
+}
+
+.gap_0 {
+    gap: 0 !important;
 }
 
 .base_gap {
@@ -1630,7 +1651,15 @@
 }
 
 .border_none {
-    border: none;
+    border: none !important;
+}
+
+.bt_none {
+    border-top: none !important;
+}
+
+.border_base {
+    border: var(--baseBorder);
 }
 
 /* 그림자 */

@@ -57,6 +57,82 @@
     <div id="sub-content" class="content_container">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
         <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
+
+        <!--/* 스피드, 단계별, 받아쓰기 간략 이력 컴포넌트 */-->
+        <div class="component tiny_list_component tab_content_list pd_0 gap_0 border_none">
+            <div class="tab_btn_list">
+                <button type="button" class="tab_btn selected">스피드<span class="active"></span></button>
+                <button type="button" class="tab_btn">단계별<span class="active"></span></button>
+                <button type="button" class="tab_btn">받아쓰기<span class="active"></span></button>
+            </div>
+
+            <!--/* 스피드퀴즈 이력 */-->
+            <div class="tab_content selected border_base bt_none">
+                <div class="tiny_list_component pd_base">
+                    <div th:if="${#lists.isEmpty(speedHistory)}"
+                         class="list_info">
+                        제한 시간 내 문제를 풀고, 순위를 확인해 보세요!
+                    </div>
+
+                    <a th:if="${!#lists.isEmpty(speedHistory)}"
+                       th:each="log : ${speedHistory}"
+                       th:href="@{/quiz/result(sessionNo=${log.sessionNo})}"
+                       class="component_info small with_icon history_info_list">
+                        <div class="list_info">
+                            <div class="history_info tiny_font">
+                                <span class="color_primary"
+                                      th:text="|문제당 평균 ${log.averageTimePerQuestion}초|">문제당 평균 n.n초</span>
+                                <span th:text="${#dates.format(log.updatedDate, 'yyyy.M.d')}">이력 일자</span>
+                            </div>
+
+                            <p class="history_title">
+                                <span class="bold color_blue"
+                                      th:text="|상위 ${log.percentile}%|">상위 n%</span>
+                                <span class="sub_font"
+                                      th:text="|(정답 ${log.correctAnswers}/${log.totalQuestion})|">(정답 n/n)</span>
+                            </p>
+                        </div>
+
+                        <span class="icon small">
+                            <iconify-icon icon="ep:arrow-right-bold"></iconify-icon>
+                        </span>
+                    </a>
+                </div>
+            </div>
+
+            <!--/* 단계별퀴즈 이력 */-->
+            <div class="tab_content border_base bt_none">
+                <div class="tiny_list_component pd_base">
+                    <div th:if="${#lists.isEmpty(levelHistory)}"
+                         class="list_info">
+                        단계별 문제를 풀며 실력을 키워보세요!
+                    </div>
+
+                    <a th:if="${!#lists.isEmpty(levelHistory)}"
+                       th:each="log : ${levelHistory}"
+                       th:href="@{/quiz/result(sessionNo=${log.sessionNo})}"
+                       class="component_info small with_icon history_info_list">
+                        <div class="list_info">
+                            <div class="history_info tiny_font">
+                                <span th:text="${#dates.format(log.updatedDate, 'yyyy.M.d')}">이력 일자</span>
+                            </div>
+
+                            <p class="history_title">
+                                <span class="bold color_blue"
+                                      th:text="|[${log.difficulty}]|">[난이도]</span>
+                                <span th:text="|정답 ${log.correctAnswers}/${log.totalQuestion}|">정답 n/n</span>
+                            </p>
+                        </div>
+
+                        <span class="icon small">
+                            <iconify-icon icon="ep:arrow-right-bold"></iconify-icon>
+                        </span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="tab_content tiny_list_component pd_base"></div>
+        </div>
     </div>
 </div>
 </html>

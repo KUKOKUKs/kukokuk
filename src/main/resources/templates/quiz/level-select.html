@@ -5,7 +5,7 @@
         <form class="w_100 d_flex column large_gap"
               th:action="@{/quiz/level}"
               method="get"
-              id="levelQuizForm">
+              id="level-quiz-form">
             <div class="content_info">
                 <div class="content_title">
                     <iconify-icon icon="token-branded:step"></iconify-icon>
@@ -83,13 +83,10 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn primary">시작하기</button>
-        </form>
-
-        <!--/* 이 폼이 왜 있는지 이해가 안됨 */-->
-        <form id="quiz-result-form" th:action="@{/quiz/submit}" method="post">
-            <input type="hidden" name="difficulty" th:value="${difficulty}">
-            <input type="hidden" name="questionType" th:value="${questionType}">
+            <div class="btn_list">
+                <a th:href="@{/quiz}" class="btn white">놀이터로</a>
+                <button type="submit" class="btn primary">시작하기</button>
+            </div>
         </form>
     </div>
 

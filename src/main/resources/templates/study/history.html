@@ -14,7 +14,7 @@
             <div class="component small_list_component h_100">
                 <div class="tiny_list_component full show_scroll">
                     <div th:each="log : ${studyLogs.items}"
-                       class="component_info small with_icon study_history_info">
+                       class="component_info small with_icon history_info_list tiny_gap">
                         <div class="list_info">
                             <div class="history_info tiny_font">
                                 <span class="bold color_blue" th:text="|[${log.difficulty}단계]|">[n단계]</span>
@@ -29,7 +29,7 @@
                                       th:text="${#dates.format(log.startedDate, 'yyyy.M.d')} + '~'"></span>
                             </div>
 
-                            <p class="study_title text_ellipsis" th:text="${log.dailyStudyTitle}">일일학습 제목</p>
+                            <p class="history_title text_ellipsis" th:text="${log.dailyStudyTitle}">일일학습 제목</p>
                         </div>
 
                         <div class="btn_list tiny_gap w_max_content">

@@ -48,7 +48,7 @@ $(document).ready(() => {
         // 형제 요소의 탭 버튼들
         const $tabBtns = $this.closest(".tab_btn_list").find(".tab_btn");
         // 같은 모달창에 있는 탭 컨텐츠 요소
-        const $tabContents = $this.closest(".form_input_list").find(".tab_content");
+        const $tabContents = $this.closest(".tab_content_list").find(".tab_content");
 
         // 클래스 초기화
         $tabBtns.removeClass("selected_left selected");

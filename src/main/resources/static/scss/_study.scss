@@ -58,17 +58,6 @@
     }
 }
 
-/* 학습 이력 컴포넌트 */
-.study_history_info {
-    .list_info {
-        gap: 0;
-    }
-
-    &:hover .study_title {
-        color: var(--primaryColor);
-    }
-}
-
 /* 학습 진행 네비바 */
 .study_nav_container {
     .nav_list {

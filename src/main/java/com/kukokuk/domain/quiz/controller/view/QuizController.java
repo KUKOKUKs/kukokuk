@@ -1,9 +1,9 @@
 package com.kukokuk.domain.quiz.controller.view;
 
+import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
-import com.kukokuk.domain.quiz.dto.QuizHistoryDto;
 import com.kukokuk.domain.quiz.dto.QuizLevelResultDto;
 import com.kukokuk.domain.quiz.dto.QuizResultDto;
 import com.kukokuk.domain.quiz.dto.QuizSubmitDto;
@@ -21,6 +21,7 @@ import com.kukokuk.domain.user.vo.User;
 import com.kukokuk.security.SecurityUser;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -59,23 +60,23 @@ public class QuizController {
         log.info("[퀴즈 메인] 사용자 {}의 학습이력 조회", userNo);
 
         // 각 도메인에서 최근 이력 조회 (5개씩만 - 메인 페이지용)
-        List<QuizHistoryDto> speedHistory = quizService.getSpeedHistoryByUserNoWithLimit(userNo,
-            PaginationEnum.COMPONENT_ROWS);
-        List<QuizHistoryDto> levelHistory = quizService.getLevelHistoryByUserNoWithLimit(userNo,
-            PaginationEnum.COMPONENT_ROWS);
+        List<QuizSessionSummary> speedHistory = quizSessionSummaryService.getQuizSessionSummaryByUserNoAndMode(
+            userNo
+            , ContentTypeEnum.SPEED.name().toLowerCase(Locale.ROOT)
+            , PaginationEnum.COMPONENT_ROWS);
+        List<QuizSessionSummary> levelHistory = quizSessionSummaryService.getQuizSessionSummaryByUserNoAndMode(
+            userNo
+            , ContentTypeEnum.LEVEL.name().toLowerCase(Locale.ROOT)
+            , PaginationEnum.COMPONENT_ROWS);
 
-        // 받아쓰기 도메인 구현 완료 후 주석 해제
-        // List<DictationHistoryDto> dictationHistory = dictationService.getRecentDictationHistory(userNo, 3);
+//         List<DictationSession> dictationHistory = dictationService.getRecentDictationHistory(userNo, 3);
 
         // Model에 학습이력 데이터 추가
         model.addAttribute("speedHistory", speedHistory);
         model.addAttribute("levelHistory", levelHistory);
         // model.addAttribute("dictationHistory", dictationHistory);
 
-        log.info("[퀴즈 메인] 학습이력 조회 완료 - 스피드: {}개, 단계별: {}개",
-            speedHistory.size(), levelHistory.size());
-            
-        return "quiz/main"; // templates/quiz/main.html
+        return "quiz/main";
     }
 
     // 단계별 퀴즈 선택 페이지
