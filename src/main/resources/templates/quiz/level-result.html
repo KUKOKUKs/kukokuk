@@ -103,7 +103,7 @@
                         th:data-quiz-no="${result.quizNo}"
                         th:data-bookmarked="${result.isBookmarked()}"
                         th:data-label="|북마크 ${result.isBookmarked() ? '제거' : '추가'}|">
-                    <iconify-icon class="icon title_font"
+                    <iconify-icon class="icon title_font bookmard_icon"
                                   th:classappend="${result.isBookmarked() ? 'color_yellow' : 'color_border'}"
                                   icon="material-symbols:bookmark-star"></iconify-icon>
                 </button>
@@ -118,6 +118,6 @@
 </div>
 
 <th:block layout:fragment="script">
-    <script th:src="@{/js/modules/quiz/bookmark.js}"></script>
+    <script type="module" th:src="@{/js/modules/quiz/bookmark.js}"></script>
 </th:block>
 </html>

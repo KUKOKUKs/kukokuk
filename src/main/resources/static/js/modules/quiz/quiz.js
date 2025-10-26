@@ -10,12 +10,8 @@ import {
 } from "./quiz-handler.js";
 import {actionHint} from "../../utils/handler-util.js";
 
-/**
- * 통합 퀴즈 UI 및 이벤트 처리
- * Speed 퀴즈와 Level 퀴즈의 UI 렌더링, DOM 조작, 이벤트 리스너를 담당합니다.
- * quiz-api.js와 quiz-handler.js에 의존합니다.
- */
 $(document).ready(function () {
+    // 스피드, 단계별 퀴즈 관련
     // --- 유효성 검사 ---
     if (typeof quizMode === 'undefined') {
         console.error("quizMode 변수가 정의되지 않았습니다. HTML에서 quizMode를 선언해주세요.");
@@ -180,13 +176,7 @@ $(document).ready(function () {
     function submitResults() {
         console.log("퀴즈 완료! 결과 폼 제출");
         const payload = createResultPayload(quizMode, quizzes);
-        const $form = $("#quiz-result-form").empty();
-
-        // CSRF 토큰 추가
-        const csrfToken = $("meta[name='_csrf']").attr("content");
-        if (csrfToken) {
-            $form.append(`<input type="hidden" name="_csrf" value="${csrfToken}">`);
-        }
+        const $form = $("#quiz-result-form");
 
         $form.append(`<input type="hidden" name="totalTimeSec" value="${payload.totalTimeSec}">`);
         $form.append(`<input type="hidden" name="quizMode" value="${payload.quizMode}">`);
