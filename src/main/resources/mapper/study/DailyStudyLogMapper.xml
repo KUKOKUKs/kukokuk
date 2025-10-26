@@ -180,7 +180,7 @@
             l.UPDATED_DATE            AS updatedDate,            -- 마지막 업데이트일
             s.CARD_COUNT              AS totalCardCount,         -- 전체 학습 카드 수
             l.STUDIED_CARD_COUNT    AS completedCardCount,       -- 완료 카드 수
-            s.DIFFICULTY              AS difficulty,             -- 학습 난이도 (1~6)
+            s.STUDY_DIFFICULTY              AS difficulty,             -- 학습 난이도 (1~6)
             -- 퀴즈 관련
             IFNULL(qt.totalQuizCount, 0) AS totalQuizCount,
             IFNULL(qs.successedQuizCount, 0) AS successedQuizCount,
@@ -239,17 +239,7 @@
             AND l.STATUS = #{condition.status}
         </if>
 
-        <if test="condition.order != null">
-            <choose>
-                <when test="condition.order == 'updatedDate'">
-                    ORDER BY
-                    l.UPDATED_DATE
-                </when>
-                <otherwise>
-                    ORDER BY l.UPDATED_DATE DESC
-                </otherwise>
-            </choose>
-        </if>
+        ORDER BY l.UPDATED_DATE DESC
 
         <if test="condition.rows != null and condition.offset != null">
             LIMIT #{condition.rows} OFFSET #{condition.offset}
@@ -259,7 +249,7 @@
     <!--
      int getStudyLogsTotalCount(int userNo);
     -->
-    <select id="countStudyLogsByUserNo" resultType="int">
+    <select id="getStudyLogsTotalCount" resultType="int">
         SELECT COUNT(*)
         FROM KUKOKUK_DAILY_STUDY_LOGS
         WHERE USER_NO = #{userNo}

@@ -1,12 +1,12 @@
 package com.kukokuk.domain.quiz.controller.view;
 
+import com.kukokuk.common.constant.ContentTypeEnum;
+import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.dictation.service.DictationService;
 import com.kukokuk.domain.dictation.vo.DictationSession;
-import com.kukokuk.domain.quiz.dto.QuizHistoryDto;
 import com.kukokuk.domain.quiz.dto.QuizLevelResultDto;
-import com.kukokuk.domain.quiz.dto.QuizMasterDto;
 import com.kukokuk.domain.quiz.dto.QuizResultDto;
 import com.kukokuk.domain.quiz.dto.QuizSubmitDto;
 import com.kukokuk.domain.quiz.dto.QuizSubmitResultDto;
@@ -23,6 +23,7 @@ import com.kukokuk.domain.user.vo.User;
 import com.kukokuk.security.SecurityUser;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -62,46 +63,45 @@ public class QuizController {
         log.info("[퀴즈 메인] 사용자 {}의 학습이력 조회", userNo);
 
         // 각 도메인에서 최근 이력 조회 (5개씩만 - 메인 페이지용)
-        List<QuizHistoryDto> speedHistory = quizService.getSpeedHistoryByUserNoWithLimit(userNo,
-            5);
-        List<QuizHistoryDto> levelHistory = quizService.getLevelHistoryByUserNoWithLimit(userNo,
-            5);
+        List<QuizSessionSummary> speedHistory = quizSessionSummaryService.getQuizSessionSummaryByUserNoAndMode(
+            userNo
+            , ContentTypeEnum.SPEED.name().toLowerCase(Locale.ROOT)
+            , PaginationEnum.COMPONENT_ROWS);
+        List<QuizSessionSummary> levelHistory = quizSessionSummaryService.getQuizSessionSummaryByUserNoAndMode(
+            userNo
+            , ContentTypeEnum.LEVEL.name().toLowerCase(Locale.ROOT)
+            , PaginationEnum.COMPONENT_ROWS);
 
-        // 받아쓰기 도메인 구현 완료 후 주석 해제
-        List<DictationSession> dictationHistory = dictationService.getResultsSessionsByUserNo(userNo, 5);
+        List<DictationSession> dictationHistory = dictationService.getResultsSessionsByUserNo(userNo, PaginationEnum.COMPONENT_ROWS);
 
         // Model에 학습이력 데이터 추가
         model.addAttribute("speedHistory", speedHistory);
         model.addAttribute("levelHistory", levelHistory);
         model.addAttribute("dictationHistory", dictationHistory);
 
-        log.info("[퀴즈 메인] 학습이력 조회 완료 - 스피드: {}개, 단계별: {}개",
-            speedHistory.size(), levelHistory.size());
-            
-        return "quiz/main"; // templates/quiz/main.html
+        return "quiz/main";
+    }
+
+    // 단계별 퀴즈 선택 페이지
+    @GetMapping("/level-select")
+    public String selectLevelQuizSetting() {
+        log.info("QuizController selectLevelQuizSetting() 실행");
+        return "quiz/level-select";
     }
 
     // [단계별 퀴즈] 난이도 선택 후 문제 10개 조회
     @GetMapping("/level")
-    public String viewLevelQuizList(@RequestParam(required = false) String difficulty,
-        @RequestParam(required = false) String questionType,
-        Model model) {
-        if (difficulty == null || questionType == null) {
-            return "redirect:/quiz/level-select";
-        }
+    public String viewLevelQuizList(
+        @RequestParam String difficulty
+        , @RequestParam String questionType
+        , Model model) {
+        log.info("QuizController viewLevelQuizList() 실행");
 
-        // DTO 변환 추가
-        List<QuizMasterDto> quizList = quizService.getLevelQuizList(difficulty, questionType)
-            .stream()
-            .map(QuizMasterDto::from)
-            .toList();
-
-        model.addAttribute("quizList", quizList);
+        model.addAttribute("quizList", quizService.getLevelQuizList(difficulty, questionType));
         model.addAttribute("difficulty", difficulty);
         model.addAttribute("questionType", questionType);
         return "quiz/level";
     }
-
 
     // [공통] 퀴즈 결과 저장 처리
     @PostMapping("/result")
@@ -159,54 +159,15 @@ public class QuizController {
         return "quiz/speed-result";
     }
 
-    // [공통] 퀴즈 결과 상세 페이지 렌더링
-    @GetMapping("/result/detail")
-    public String viewQuizResultDetail(@RequestParam int sessionNo,
-        @AuthenticationPrincipal SecurityUser securityUser,
-        Model model) {
-        int userNo = securityUser.getUser().getUserNo();
-        QuizSessionSummary summary = quizSessionSummaryService.getSummaryBySessionNoAndUserNo(
-            sessionNo, userNo);
-        List<QuizResultDto> results = quizResultService.getQuizResultsBySession(sessionNo, userNo);
-
-        model.addAttribute("summary", summary);
-        model.addAttribute("results", results);
-        QuizLevelResultDto levelResult = quizService.getDifficultyAndQuestionTypeBySessionNo(
-            sessionNo);
-        model.addAttribute("difficulty", levelResult.getDifficulty());
-        model.addAttribute("questionType", levelResult.getQuestionType());
-
-        if ("level".equals(summary.getQuizMode())) {
-            return "quiz/level-result-detail";
-        }
-        return "quiz/speed-result-detail";
-    }
-
     // [스피드 퀴즈] 문제 10개 조회
     @GetMapping("/speed")
     public String viewSpeedQuizList(Model model) {
         int usageThreshold = 20;
         int limit = 10;
 
-        List<QuizMasterDto> quizList = quizService.getSpeedQuizList(usageThreshold, limit)
-            .stream()
-            .map(QuizMasterDto::from)
-            .toList();
-
-        model.addAttribute("quizList", quizList);
+        model.addAttribute("quizList", quizService.getSpeedQuizList(usageThreshold, limit));
         return "quiz/speed";
     }
-
-    @GetMapping("/select")
-    public String selectQuizMode() {
-        return "quiz/select";
-    }
-
-    @GetMapping("/level-select")
-    public String selectLevelQuizSetting() {
-        return "quiz/level-select";
-    }
-
 
     /**
      * [북마크] 내가 북마크한 퀴즈 목록

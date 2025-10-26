@@ -20,6 +20,8 @@ public class QuizSessionSummary {
     private int percentile;                 // 상위 퍼센티지
     private float averageTimePerQuestion;   // 문항당 평균 소요시간
 
+    private String difficulty;              // 단계별일 경우 포함
+
     private Date createdDate;
     private Date updatedDate;
 

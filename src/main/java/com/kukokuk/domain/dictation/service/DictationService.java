@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kukokuk.ai.GeminiClient;
 import com.kukokuk.common.constant.ContentTypeEnum;
-import com.kukokuk.common.constant.DailyQuestEnum;
 import com.kukokuk.common.exception.AppException;
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
 import com.kukokuk.domain.dictation.dto.DictationResultLogDto;
@@ -17,14 +16,8 @@ import com.kukokuk.domain.dictation.mapper.DictationSessionMapper;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationQuestionLog;
 import com.kukokuk.domain.dictation.vo.DictationSession;
-import com.kukokuk.domain.exp.dto.ExpProcessingDto;
-import com.kukokuk.domain.exp.mapper.ExpMapper;
-import com.kukokuk.domain.exp.service.ExpProcessingService;
-import com.kukokuk.domain.exp.service.ExpService;
-import com.kukokuk.domain.exp.vo.ExpLog;
 import com.kukokuk.domain.rank.dto.RankProcessingDto;
 import com.kukokuk.domain.rank.service.RankService;
-import io.lettuce.core.Limit;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -655,12 +648,7 @@ public class DictationService {
      * @return 받아쓰기 세트 결과
      */
     public List<DictationSession> getResultsSessionsByUserNo(int userNo, int limit) {
-        try {
-            return dictationSessionMapper.getDictationSessionResultsByUserNo(userNo, limit);
-        } catch (DataAccessException e) {
-            log.info("getResultsByUserNo 예외처리 실행");
-            throw new AppException("이력 컴포넌트를 불러오지 못했습니다");
-        }
+        return dictationSessionMapper.getDictationSessionResultsByUserNo(userNo, limit);
     }
 
     /**

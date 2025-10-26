@@ -9,15 +9,17 @@
                       && user.currentGrade != null}">
 <div layout:fragment="content">
     <div id="main-content" class="content_container">
-        <div class="content_info"
-             th:classappend="${user?.groupNo != null ? 'toggle_info_component first' : 'toggle_info_component second'}">
+        <div class="content_info toggle_info_component second">
             <div class="content_title">
                 <iconify-icon icon="fluent-color:book-open-24"></iconify-icon>
                 오늘의 학습
 
-                <!--/* 그룹에 속해 있을 경우 일반/우리반 토글 스위치 노출 */-->
+                <!--/*
+                    그룹에 속해 있을 경우 일반/우리반 토글 스위치 노출
+                    오늘의 학습에서는 무조건 일반 먼저 노출(우리반 자료 없을 경우 컨텐츠가 비어보임)
+                */-->
                 <div th:if="${user?.groupNo != null}"
-                     class="content_switcher switch_toggle_btn"
+                     class="content_switcher switch_toggle_btn on"
                      data-before="우리반"
                      data-after="일반">
                     <div class="toggle_switch"></div>

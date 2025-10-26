@@ -1,6 +1,7 @@
 package com.kukokuk.domain.quiz.mapper;
 
 import com.kukokuk.domain.quiz.vo.QuizSessionSummary;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -11,20 +12,30 @@ import org.apache.ibatis.annotations.Param;
 public interface QuizSessionSummaryMapper {
 
     /**
+     * 사용자의 특정 컨텐츠타입의 최신 세션 목록 정보 조회
+     * @param userNo 사용자 번호
+     * @param quizMode 조회할 퀴즈모드
+     * @param sessionCount 조회할 개수
+     * @return 최근 등록 정렬된 세션 목록 정보
+     */
+    List<QuizSessionSummary> getQuizSessionSummaryByUserNoAndMode(
+        @Param("userNo") int userNo
+        , @Param("quizMode") String quizMode
+        , @Param("sessionCount") int sessionCount);
+
+    /**
      * 퀴즈 세션 요약 정보를 저장한다.
      *
      * @param summary 저장할 퀴즈 세션 요약 객체
-     * @return insert된 행 수 (성공 시 1)
      */
-    int insertQuizSessionSummary(QuizSessionSummary summary);
+    void insertQuizSessionSummary(QuizSessionSummary summary);
 
     /**
      * 퀴즈 세션 요약 정보를 수정한다. 총 정답 수, 평균 시간 등을 세션 완료 후 갱신할 때 사용한다.
      *
      * @param summary 수정할 퀴즈 세션 요약 객체
-     * @return 수정된 행 수 (성공 시 1)
      */
-    int updateQuizSessionSummary(QuizSessionSummary summary);
+    void updateQuizSessionSummary(QuizSessionSummary summary);
 
     /**
      * 세션 번호와 유저 번호로 퀴즈 세션 요약 정보를 조회한다. 결과 화면에 표시할 요약 정보 조회 시 사용.

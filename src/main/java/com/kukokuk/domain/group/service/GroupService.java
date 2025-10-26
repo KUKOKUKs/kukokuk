@@ -113,7 +113,6 @@ public class GroupService {
         // 페이징 처리 조건
         Pagination pagination = new Pagination(page, totalRows); // 페이지네이션 객체 생성
         condition.put("offset", pagination.getOffset());
-        condition.put("rows", pagination.getRows());
 
         // 조건에 해당하는 그룹 조회 요청
         List<Group> groups = groupMapper.getGroups(condition);
