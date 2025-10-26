@@ -22,6 +22,7 @@ public class DictationQuestion {
     private Date createdDate;          // 생성일 (NOW())
     private Date updatedDate;          // 수정일 (ON UPDATE NOW())
     private Integer usedHintNum;       // hint1 = 1, hint2 =2, hint3= 3
+    private String usedShowAnswer;
 
     // 자바스크립트에서 번호를 받아 어떤 힌트를 사용했는지 알 수 있는 getter
     public String getHint(Integer usedHintNum) {
@@ -37,6 +38,20 @@ public class DictationQuestion {
     public List<String> getHintChars() {
         if (usedHintNum != null) {
             return Arrays.asList(getHint(usedHintNum).split(""));
+        }
+        return null;
+    }
+
+
+    // 정답보기 사용 시 정답 텍스트 반환
+    public String getCorrectAnswerIfShown() {
+        return "1".equals(usedShowAnswer) ? correctAnswer : null;
+    }
+
+    // 정답보기 사용 시 글자 단위 리스트 반환
+    public List<String> getCorrectAnswerChars() {
+        if ("1".equals(usedShowAnswer) && correctAnswer != null) {
+            return Arrays.asList(correctAnswer.split(""));
         }
         return null;
     }

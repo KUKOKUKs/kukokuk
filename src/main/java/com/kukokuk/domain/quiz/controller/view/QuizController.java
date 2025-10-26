@@ -4,6 +4,9 @@ import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
+import com.kukokuk.domain.dictation.service.DictationService;
+import com.kukokuk.domain.dictation.vo.DictationSession;
+import com.kukokuk.domain.quiz.dto.QuizHistoryDto;
 import com.kukokuk.domain.quiz.dto.QuizLevelResultDto;
 import com.kukokuk.domain.quiz.dto.QuizResultDto;
 import com.kukokuk.domain.quiz.dto.QuizSubmitDto;
@@ -48,6 +51,7 @@ public class QuizController {
     private final QuizResultService quizResultService;
     private final QuizBookmarkService quizBookmarkService;
     private final UserService userService;
+    private final DictationService dictationService;
 
     /**
      * 퀴즈 메인 페이지 (학습이력 위젯 포함) 퀴즈 선택 + 최근 학습이력을 함께 표시
@@ -69,12 +73,13 @@ public class QuizController {
             , ContentTypeEnum.LEVEL.name().toLowerCase(Locale.ROOT)
             , PaginationEnum.COMPONENT_ROWS);
 
-//         List<DictationSession> dictationHistory = dictationService.getRecentDictationHistory(userNo, 3);
+        // 받아쓰기 도메인 구현 완료 후 주석 해제
+        List<DictationSession> dictationHistory = dictationService.getResultsSessionsByUserNo(userNo, 5);
 
         // Model에 학습이력 데이터 추가
         model.addAttribute("speedHistory", speedHistory);
         model.addAttribute("levelHistory", levelHistory);
-        // model.addAttribute("dictationHistory", dictationHistory);
+        model.addAttribute("dictationHistory", dictationHistory);
 
         return "quiz/main";
     }
