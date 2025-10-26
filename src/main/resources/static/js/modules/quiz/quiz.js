@@ -1,12 +1,12 @@
-import { apiUseHint } from "./quiz-api.js";
+import {apiUseHint} from "./quiz-api.js";
 import {
-    quizState,
-    initializeQuizState,
-    selectAnswer,
-    recordHintUsage,
-    goToNext,
+    createResultPayload,
     getRandomWrongOption,
-    createResultPayload
+    goToNext,
+    initializeQuizState,
+    quizState,
+    recordHintUsage,
+    selectAnswer
 } from "./quiz-handler.js";
 
 /**
@@ -259,10 +259,8 @@ $(document).ready(function () {
 
         const isLastQuiz = quizState.currentQuizIndex === quizzes.length - 1;
         if (isLastQuiz) {
-            if (confirm("퀴즈를 제출하시겠습니까?")) {
-                $(this).addClass("disabled").text("제출 중...");
-                submitResults();
-            }
+            $(this).addClass("disabled");
+            submitResults();
         } else {
             if(quizState.currentQuizIndex < quizzes.length - 1) {
                 goToNext();

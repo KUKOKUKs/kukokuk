@@ -154,7 +154,7 @@ $(document).ready(async function () {
                 if (successCount === 0 || successCount === obtainedCount) {
                     $batchObtainBtn.remove(); // 현재 활성화된 일괄 획득 버튼(submit) 및 id 제거
                     $batchObtainBtnInfo.html(`
-                        <span class="btn primary disabled">일괄 획득</span>
+                        <span class="btn tiny primary disabled">일괄 획득</span>
                     `);
                 }
             }
