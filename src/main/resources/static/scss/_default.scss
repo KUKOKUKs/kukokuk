@@ -220,6 +220,7 @@
         padding: var(--tinyPadding);
         background-color: #fff;
         font-size: var(--fixEtcTinyFontSize);
+        color: var(--blackColor);
         border-radius: var(--bdrs);
         box-shadow: var(--bxsh);
         position: absolute;
@@ -1170,6 +1171,7 @@
         width: var(--smallIconImage);
     }
 }
+
 /* 보기 리스트 관련 */
 #quiz-options {
     .option_btns {
@@ -1195,6 +1197,36 @@
     }
 }
 
+/* 상세페이지 정답 결과란 */
+.check_correct {
+    width: 100%;
+    padding: var(--tinyPadding);
+    background-color: #fff;
+    border-radius: var(--bdrs);
+    overflow: hidden;
+    position: relative;
+
+    &::after {
+        content: '정답 확인';
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--blueColor);
+        text-align: center;
+        background-color: #fff;
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    &.checked::after {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
 
 /* 콘텐츠 타이틀 우측 이벤트 버튼 */
 .content_switcher {
@@ -1428,6 +1460,23 @@
     }
 }
 
+/* 힌트 사용 버튼 */
+.callout_hint_btn {
+    border-radius: var(--bdrs);
+    background-color: var(--bgColor, var(--yellowColor));
+    color: var(--ftColor, var(--blackColor));
+    position: relative;
+
+    /* 아이콘이 아닌 직접 텍스트로 입력한 경우 스타일 조정 */
+    .initial_hint {
+        font-size: var(--tinyFontSize); /* 글자 크기 */
+        font-weight: 500;               /* 아이콘 두께에 맞춰 조정 */
+        line-height: 1;                 /* 글자 높이 */
+        letter-spacing: -0.4em;         /* 자간 */
+        transform: translateX(-0.15em); /* 자간 조정으로 인한 위치 조정 */
+    }
+}
+
 /* 진행 종료 버튼 */
 .progress_end_btn {
     font-size: var(--smallFontSize);
@@ -1515,7 +1564,8 @@
 
 .h_100 {
     height: 100% !important;
-    overflow: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden;
 }
 
 .full {

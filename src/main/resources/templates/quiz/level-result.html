@@ -101,10 +101,10 @@
                 <button type="button"
                         class="bookmark_btn tooltip"
                         th:data-quiz-no="${result.quizNo}"
-                        th:data-bookmarked="${result.bookmarked}"
-                        th:data-label="|북마크 ${result.bookmarked == 'Y' ? '제거' : '추가'}|">
+                        th:data-bookmarked="${result.isBookmarked()}"
+                        th:data-label="|북마크 ${result.isBookmarked() ? '제거' : '추가'}|">
                     <iconify-icon class="icon title_font"
-                                  th:classappend="${result.bookmarked == 'Y' ? 'color_yellow' : 'color_border'}"
+                                  th:classappend="${result.isBookmarked() ? 'color_yellow' : 'color_border'}"
                                   icon="material-symbols:bookmark-star"></iconify-icon>
                 </button>
             </div>
@@ -113,7 +113,6 @@
         <div class="btn_list">
             <a href="/quiz" class="btn">국어 놀이터로</a>
             <a href="/" class="btn white">마당으로</a>
-            <a href="/quiz/speed" class="btn primary">다시 도전!</a>
         </div>
     </div>
 </div>

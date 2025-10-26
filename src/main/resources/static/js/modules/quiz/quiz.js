@@ -8,6 +8,7 @@ import {
     recordHintUsage,
     selectAnswer
 } from "./quiz-handler.js";
+import {actionHint} from "../../utils/handler-util.js";
 
 /**
  * 통합 퀴즈 UI 및 이벤트 처리
@@ -42,14 +43,10 @@ $(document).ready(function () {
     const $hintBtn = $("#hint-btn");
     const $hintCount = $("#hint-count");
     const $progressBar = $("#step-progress-bar");
-    const $prevBtn = $("#prev-btn"); // Level 모드에서 숨김 처리
     const $nextBtn = $("#next-btn");
 
     // --- 초기화 ---
     initializeQuizState(quizzes.length);
-    if (isLevelMode) {
-        $prevBtn.hide();
-    }
     renderCurrentQuiz();
 
     // --- 함수 선언 ---
@@ -75,8 +72,8 @@ $(document).ready(function () {
             const isSelected = quizState.selectedAnswers[idx] === choiceNum;
 
             optionsHtml += `
-                <button type="button" class="component_info option_btns ${isDisabled ? 'hint-removed' : ''} ${isSelected ? 'selected' : ''}" 
-                        data-choice="${choiceNum}" ${isDisabled ? 'disabled' : ''}>
+                <button type="button" class="component_info option_btns ${isDisabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}" 
+                        data-choice="${choiceNum}">
                     <div class="list_option">
                         <span class="marker">${choiceNum}.</span>
                         <p class="option">${optionText}</p>
@@ -139,9 +136,9 @@ $(document).ready(function () {
         const isHintUsedForCurrent = quizState.usedHints[quizState.currentQuizIndex];
 
         if (userHintCount <= 0 || isHintUsedForCurrent) {
-            $hintBtn.addClass("disabled").prop("disabled", true);
+            $hintBtn.addClass("disabled");
         } else {
-            $hintBtn.removeClass("disabled").prop("disabled", false);
+            $hintBtn.removeClass("disabled");
         }
     }
 
@@ -151,8 +148,8 @@ $(document).ready(function () {
      */
     function disableOption(optionNumber) {
         const $optionBtn = $quizOptions.find(`button[data-choice="${optionNumber}"]`);
-        $optionBtn.addClass("hint-removed").prop("disabled", true).off("click");
-        $optionBtn.find(".option").css({ "text-decoration": "line-through", "opacity": "0.5", "color": "#999" });
+        $optionBtn.addClass("disabled").off("click");
+        $optionBtn.find(".option").css({ "text-decoration": "line-through"});
         if ($optionBtn.hasClass("selected")) {
             $optionBtn.removeClass("selected");
             selectAnswer(undefined); // 선택 해제
@@ -206,12 +203,13 @@ $(document).ready(function () {
     // --- 이벤트 리스너 ---
 
     // 보기 선택 이벤트
-    $(document).on("click", ".option_btns:not(.hint-removed):not(.disabled)", function () {
-        const choiceNumber = Number($(this).data("choice"));
+    $(document).on("click", ".option_btns:not(.disabled)", function () {
+        const $this = $(this);
+        const choiceNumber = Number($this.data("choice"));
         selectAnswer(choiceNumber);
 
         $quizOptions.find(".option_btns").removeClass("selected");
-        $(this).addClass("selected");
+        $this.addClass("selected");
 
         if (isSpeedMode) {
             $quizOptions.find(".option_btns").addClass("disabled");
@@ -221,31 +219,22 @@ $(document).ready(function () {
 
     // 힌트 버튼 클릭 이벤트 (Level 모드)
     $hintBtn.on("click", async function () {
-        if ($(this).hasClass("disabled") || !isLevelMode) return;
-        if (parseInt($hintCount.text()) <= 0 || quizState.usedHints[quizState.currentQuizIndex]) return;
-        if (!confirm("힌트를 사용하시겠습니까? (1개 차감)")) return;
-
-        $(this).addClass("disabled").prop("disabled", true);
-
+        const $this = $(this);
         const currentQuiz = quizzes[quizState.currentQuizIndex];
         const removedOption = getRandomWrongOption(currentQuiz);
-
-        disableOption(removedOption);
-        recordHintUsage();
         currentQuiz.hintRemovedOption = removedOption; // API 전송 및 렌더링을 위해 quiz 객체에 직접 기록
 
+        $this.addClass("disabled");
+
         try {
-            const response = await apiUseHint(quizState.currentQuizIndex, removedOption);
-            if (response.success && response.data !== undefined) {
-                $hintCount.text(response.data);
-            }
+            const hintCount = await apiUseHint(quizState.currentQuizIndex, removedOption);
+            actionHint(hintCount, $hintCount);
+            disableOption(removedOption);
+            recordHintUsage();
         } catch (e) {
             alert("힌트 사용에 실패했습니다. 다시 시도해주세요.");
             // 실패 시 UI 원복 또는 재시도 로직이 필요할 수 있으나, 우선 경고만 표시
-            $(this).removeClass("disabled").prop("disabled", false);
-        } finally {
-            $hintCount.addClass("action");
-            setTimeout(() => $hintCount.removeClass("action"), 200);
+            $this.removeClass("disabled");
         }
     });
 
@@ -260,6 +249,7 @@ $(document).ready(function () {
         const isLastQuiz = quizState.currentQuizIndex === quizzes.length - 1;
         if (isLastQuiz) {
             $(this).addClass("disabled");
+            $quizOptions.find(".option_btns").addClass("disabled");
             submitResults();
         } else {
             if(quizState.currentQuizIndex < quizzes.length - 1) {

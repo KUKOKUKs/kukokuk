@@ -1,6 +1,8 @@
 package com.kukokuk.domain.quiz.vo;
 
+import com.kukokuk.common.util.QuizUtil;
 import java.util.Date;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,4 +29,10 @@ public class QuizMaster {
     private int successCount;
     private Date createdDate; // 생성일
     private Date updatedDate; // 수정일
+
+    // 보기들을 한번에 꺼내 사용할 수 있도록 하는 게터
+    public List<String> getOptions() {
+        return QuizUtil.extractOptions(option1, option2, option3, option4);
+    }
+
 }

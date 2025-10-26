@@ -2,6 +2,7 @@ import {
     apiGetDailyQuestList,
     apiPutDailyQuestUserObtainReward
 } from "./quest-api.js";
+import {actionHint} from "../../utils/handler-util.js";
 
 $(document).ready(async function () {
     // 일일도전과제 컴포넌트 관련
@@ -10,7 +11,6 @@ $(document).ready(async function () {
     const $questListContainer = $(".quest_list_container");
     const $qusetTotalCount = $("#total-count"); // 일일 도전과제 총 개수 요소
     const $qusetObtainedCount = $("#obtained-count"); // 보상 수령건 요소
-    const $batchObtainBtn = $("#batch-obtain-btn"); // 일괄 획득 버튼
     const $batchObtainBtnInfo = $("#batch-obtain-btn-info"); // 일괄 획득 버튼 부모 요소
     let totalCount = 0; // 일일 도전과제 개수
     let obtainedCount = Number($questListContainer.data("obtained-count")) || 0; // 보상 수령 개수
@@ -132,8 +132,7 @@ $(document).ready(async function () {
                 if ($questContainer.length) {
                     // 일일 도전과제 컴포넌트 fragment로 사용되는 곳에서만 수행
                     $this.closest(".component_info").remove(); // 퀘스트 리스트 제거
-                    getHintCountAction(response); // 프로필 힌트 개수 업데이트
-                    
+
                     if ($questListToggleBtn.length && totalCount - obtainedCount <= 2) {
                         // 남은 퀘스트가 2개 이하로 남았을 경우 토글버튼 제거
                         $questListToggleBtn.remove();
@@ -152,10 +151,16 @@ $(document).ready(async function () {
 
                 // 퀘스트 완료 개수와 보상 획득 수가 같다면 일괄 획득 버튼 비활성화
                 if (successCount === 0 || successCount === obtainedCount) {
-                    $batchObtainBtn.remove(); // 현재 활성화된 일괄 획득 버튼(submit) 및 id 제거
+                    console.log(!$questContainer.length);
                     $batchObtainBtnInfo.html(`
-                        <span class="btn tiny primary disabled">일괄 획득</span>
+                        <span class="btn primary disabled ${!$questContainer.length ? '' : 'tiny'}">일괄 획득</span>
                     `);
+                }
+
+                // 프로필 힌트 개수 증가 액션
+                const $profileHintCount = $("#hint-count"); // 프로필 힌트 개수 표시 요소
+                if ($profileHintCount.length) {
+                    actionHint(response, $profileHintCount);
                 }
             }
         } catch (error) {
@@ -164,19 +169,6 @@ $(document).ready(async function () {
             location.reload();
         }
     });
-    
-    // 프로필 힌트 개수 증가 액션
-    const $profileHintCount = $("#hint-count"); // 프로필 힌트 개수 표시 요소
-    function getHintCountAction(hintCount) {
-        // 일일 도전과제 컴포넌트 fragment로 사용되는 곳에서만 수행
-        if (!$profileHintCount.length) return;
-
-        // 액션 효과 추가
-        $profileHintCount.text(hintCount).addClass("action");
-
-        // 일정 시간 지난 후 제거
-        setTimeout(() => $profileHintCount.removeClass("action"), 200);
-    }
     
     // 퀘스트 토글 버튼 이벤트
     $questListToggleBtn.click(function() {
