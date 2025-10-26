@@ -16,6 +16,6 @@ public class ListExpProcessingDto {
     private Integer expGained;      // 획득한 경험치
     private Integer dailyQuestNo;   // 일일 도전과제 식별자 값(관련 컨텐츠일 경우 추가(아닐경우 null)) - 추후 확정성을 위해 추가해 둠
 
-    List<ExpProcessingDto> expProcessingDtos;   // 컨텐츠 이력 번호와 사용자 pair를 위한 객체 리스트
+    private List<ExpProcessingDto> expProcessingDtos;   // 컨텐츠 이력 번호와 사용자 pair를 위한 객체 리스트
 
 }
