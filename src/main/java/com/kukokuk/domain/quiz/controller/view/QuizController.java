@@ -2,6 +2,8 @@ package com.kukokuk.domain.quiz.controller.view;
 
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
+import com.kukokuk.domain.dictation.service.DictationService;
+import com.kukokuk.domain.dictation.vo.DictationSession;
 import com.kukokuk.domain.quiz.dto.QuizHistoryDto;
 import com.kukokuk.domain.quiz.dto.QuizLevelResultDto;
 import com.kukokuk.domain.quiz.dto.QuizMasterDto;
@@ -47,6 +49,7 @@ public class QuizController {
     private final QuizResultService quizResultService;
     private final QuizBookmarkService quizBookmarkService;
     private final UserService userService;
+    private final DictationService dictationService;
 
     /**
      * 퀴즈 메인 페이지 (학습이력 위젯 포함) 퀴즈 선택 + 최근 학습이력을 함께 표시
@@ -65,12 +68,12 @@ public class QuizController {
             5);
 
         // 받아쓰기 도메인 구현 완료 후 주석 해제
-        // List<DictationHistoryDto> dictationHistory = dictationService.getRecentDictationHistory(userNo, 3);
+        List<DictationSession> dictationHistory = dictationService.getResultsSessionsByUserNo(userNo, 5);
 
         // Model에 학습이력 데이터 추가
         model.addAttribute("speedHistory", speedHistory);
         model.addAttribute("levelHistory", levelHistory);
-        // model.addAttribute("dictationHistory", dictationHistory);
+        model.addAttribute("dictationHistory", dictationHistory);
 
         log.info("[퀴즈 메인] 학습이력 조회 완료 - 스피드: {}개, 단계별: {}개",
             speedHistory.size(), levelHistory.size());

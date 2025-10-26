@@ -7,7 +7,9 @@
     <form th:action="@{/dictation/submit-answer}"
           method="post"
           id="main-content"
-          class="content_container">
+          class="content_container"
+          th:data-correct="${correct}"
+          th:data-second-fail="${secondFail}">
         <div class="content_info">
             <div class="content_title justify_content_center">
                 <iconify-icon icon="flat-color-icons:voice-presentation"></iconify-icon>
@@ -100,9 +102,6 @@
             </div>
         </div>
 
-        <input type="hidden" id="skipInput" name="skip" value="0" />
-        <input type="hidden" id="flash-correct" th:if="${correct}" value="1">
-        <input type="hidden" id="flash-second-fail" th:if="${secondFail}" value="1">
         <button type="submit" id="submitAnswer" class="btn primary">
             정답 제출(<span th:text="|남은 기회: ${triesLeft}회|">남은 기회: n회</span>)
         </button>
