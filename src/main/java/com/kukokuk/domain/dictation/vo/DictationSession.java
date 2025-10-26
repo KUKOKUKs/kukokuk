@@ -19,5 +19,13 @@ public class DictationSession {
   private int hintUsedCount;      // 사용한 힌트 수
   private Date createdDate;        // 생성일 (NOW())
 
+  // totalTimeSec 커스텀 Getter
+  public Double getTotalTimeSec() {
+    if (startDate == null || endDate == null) {
+      return null;
+    }
+    long ts = Math.max(0L, endDate.getTime() - startDate.getTime()); // 음수 방지
+    return ts / 1000.0; // 12345(ms) -> 12.345(s)
+  }
 
 }
