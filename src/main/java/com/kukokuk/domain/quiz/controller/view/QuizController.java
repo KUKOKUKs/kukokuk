@@ -6,7 +6,6 @@ import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.dictation.service.DictationService;
 import com.kukokuk.domain.dictation.vo.DictationSession;
-import com.kukokuk.domain.quiz.dto.QuizHistoryDto;
 import com.kukokuk.domain.quiz.dto.QuizLevelResultDto;
 import com.kukokuk.domain.quiz.dto.QuizResultDto;
 import com.kukokuk.domain.quiz.dto.QuizSubmitDto;
@@ -73,8 +72,7 @@ public class QuizController {
             , ContentTypeEnum.LEVEL.name().toLowerCase(Locale.ROOT)
             , PaginationEnum.COMPONENT_ROWS);
 
-        // 받아쓰기 도메인 구현 완료 후 주석 해제
-        List<DictationSession> dictationHistory = dictationService.getResultsSessionsByUserNo(userNo, 5);
+        List<DictationSession> dictationHistory = dictationService.getResultsSessionsByUserNo(userNo, PaginationEnum.COMPONENT_ROWS);
 
         // Model에 학습이력 데이터 추가
         model.addAttribute("speedHistory", speedHistory);

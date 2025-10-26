@@ -131,7 +131,36 @@
                 </div>
             </div>
 
-            <div class="tab_content tiny_list_component pd_base"></div>
+            <!--/* 받아쓰기 이력 */-->
+            <div class="tab_content border_base bt_none">
+                <div class="tiny_list_component pd_base">
+                    <div th:if="${#lists.isEmpty(dictationHistory)}"
+                         class="list_info">
+                        AI가 생성한 문장을 듣고 받아쓰기에 도전해 보세요!
+                    </div>
+
+                    <a th:if="${!#lists.isEmpty(dictationHistory)}"
+                       th:each="log : ${dictationHistory}"
+                       th:href="@{/dictation/result(dictationSessionNo=${log.dictationSessionNo})}"
+                       class="component_info small with_icon history_info_list">
+                        <div class="list_info">
+                            <div class="history_info tiny_font">
+                                <span th:text="${#dates.format(log.createdDate, 'yyyy.M.d')}">이력 일자</span>
+                            </div>
+
+                            <p class="history_title">
+                                <span class="bold color_blue"
+                                      th:text="|[${log.difficulty}]|">[난이도]</span>
+                                <span th:text="|정답 ${log.correctAnswers}/${log.totalQuestion}|">정답 n/n</span>
+                            </p>
+                        </div>
+
+                        <span class="icon small">
+                            <iconify-icon icon="ep:arrow-right-bold"></iconify-icon>
+                        </span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
