@@ -2,6 +2,7 @@ package com.kukokuk.domain.group.controller.view;
 
 import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.Page;
+import com.kukokuk.common.exception.AppException;
 import com.kukokuk.domain.group.service.GroupService;
 import com.kukokuk.domain.group.vo.Group;
 import com.kukokuk.domain.twenty.service.TwentyService;
@@ -19,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -145,6 +147,45 @@ public class GroupController {
         model.addAttribute("currentGroupActiveRoomNo", currentGroupActiveRoomNo);
 
         return "group/teacher";
+    }
+
+    /**
+     * 사용자의 그룹 탈퇴 요청
+     * @param groupNo 그룹 번호
+     * @param securityUser 사용자 정보
+     * @return 그룹 메인 페이지 요청
+     */
+    @PostMapping("/delete")
+    public String groupOut(
+        @RequestParam("groupNo") int groupNo
+        , @AuthenticationPrincipal SecurityUser securityUser) {
+        log.info("GroupController groupOut() 컨트롤러 실행 groupNo: {}", groupNo);
+
+        // 사용자가 속한 그룹인지 확인
+        int userNo = securityUser.getUser().getUserNo();
+        Group userGroup = groupService.getGroupByUserNo(userNo);
+        if (userGroup == null || userGroup.getGroupNo() != groupNo) {
+            throw new AppException("해당 그룹에 접근 권한이 없습니다.");
+        }
+
+        groupService.deleteGroupUser(userNo, groupNo); // 사용자 그룹 탈퇴 요청
+
+        return "redirect:/group"; // 그룹 페이지 요청
+    }
+
+    /**
+     * 사용자 그룹 가입 요청
+     * @param groupNo 그룹 번호
+     * @param securityUser 사용자 번호
+     * @return 그룹 메인 페이지 요청
+     */
+    @PostMapping("/join")
+    public String groupJoin(
+        @RequestParam("groupNo") int groupNo
+        , @AuthenticationPrincipal SecurityUser securityUser) {
+        log.info("GroupController groupJoin() 컨트롤러 실행 groupNo: {}", groupNo);
+        groupService.insertGroupUser(securityUser.getUser().getUserNo(), groupNo);
+        return "redirect:/group"; // 그룹 페이지 요청
     }
 
 }

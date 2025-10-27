@@ -2,6 +2,7 @@
 <html layout:decorate="~{layout/base}"
       th:with="title='우리반'
       , menu='group'
+      , isJoinedGroup=${myGroup != null}
       , isTeacher=${#authorization.expression('hasRole(''TEACHER'')')}">
 <div layout:fragment="content">
     <div id="main-content" class="content_container">
@@ -36,7 +37,8 @@
 
             <!--/* 그룹이 없는 사용자에게는 검색 컴포넌트만 제공 */-->
             <div id="group-search-component"
-                 class="component small_list_component toggle_info_second">
+                 class="component small_list_component toggle_info_second"
+                 th:data-joined-group="${isJoinedGroup}">
                 <div class="search_form_wrap">
                     <form class="search_form" id="group-search-form">
                         <input type="text"
@@ -57,7 +59,10 @@
                     </button>
                 </div>
 
-                <div class="full show_scroll">
+                <form method="post"
+                      th:action="@{/group/join}"
+                      id="group-join-form"
+                      class="full show_scroll">
                     <div id="group-search-list-component" class="grid_list_component column">
                         <div class="group_serach_list" th:each="group : ${groups.items}">
                             <div class="list_info">
@@ -87,13 +92,14 @@
 
                                 <!--/* 그룹이 없는 사용자만 입반 버튼 노출 */-->
                                 <button th:if="${myGroup == null}"
-                                        type="button"
+                                        type="submit"
                                         class="btn tiny small_font white group_join_btn"
-                                        th:data-group-no="${group.groupNo}">입반 신청</button>
+                                        name="groupNo"
+                                        th:value="${group.groupNo}">입반 신청</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
 
                 <!--/* pagination(총 페이지 수가 1보다 클 경우) */-->
                 <th:block th:replace="~{fragments/common/pagination :: pagination-fragment(
@@ -175,10 +181,10 @@
                           class="d_flex justify_content_between align_center small_gap"
                           id="group-out-form"
                           method="post"
-                          action="">
+                          th:action="@{/group/delete}">
                         <input type="hidden" name="groupNo" th:value="${myGroup.groupNo}">
                         <p class="text_ellipsis" th:text="${myGroup.title}">우리반 이름</p>
-                        <button type="button" class="btn tiny white">나가기</button>
+                        <button type="submit" class="btn tiny white">나가기</button>
                     </form>
                 </div>
             </div>

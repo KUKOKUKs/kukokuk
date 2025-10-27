@@ -11,6 +11,20 @@ import org.apache.ibatis.annotations.Param;
 public interface GroupMapper {
 
     /**
+     * 사용자의 그룹 탈퇴
+     * @param userNo 사용자 번호
+     * @param groupNo 그룹 번호
+     */
+    void deleteGroupUser(@Param("userNo") int userNo, @Param("groupNo") int groupNo);
+
+    /**
+     * 사용자의 그룹 가입
+     * @param userNo 사용자 번호
+     * @param groupNo 그룹 번호
+     */
+    void insertGroupUser(@Param("userNo") int userNo, @Param("groupNo") int groupNo);
+
+    /**
      * 그룹 정보를 전달받아 그룹 삭제
      * @param group 삭제할 그룹 정보
      */

@@ -2,8 +2,10 @@
  * 그룹 목록, 목록이 추가될 부모 요소를 전달 받아 리스트 세팅
  * @param groups 그룹 목록
  * @param $groupSearchListComponent 리스트 추가될 부모 요소
+ * @param isJoinedGroup 사용자의 그룹 가입 여부
  */
-export function setGroupList(groups, $groupSearchListComponent) {
+export function setGroupList(groups, $groupSearchListComponent, isJoinedGroup) {
+    console.log("setGroupList() 실행 isJoinedGroup: ", isJoinedGroup);
     if ($groupSearchListComponent.length) {
         let content = "";
 
@@ -14,11 +16,9 @@ export function setGroupList(groups, $groupSearchListComponent) {
                         <div class="list_info">
                             <div class="group_info group_title_info">
                                 ${group.password != null
-                        ? `
-                                    <iconify-icon class="icon base_font"
-                                        icon="streamline-color:padlock-square-1-flat"></iconify-icon>
-                                `
-                        : ""}
+                                ? `<iconify-icon class="icon base_font"
+                                        icon="streamline-color:padlock-square-1-flat"></iconify-icon>`
+                                : ""}
                                 <p class="group_title text_ellipsis">${group.title}</p>
                                 <span class="group_users">(${group.memberCountFormatted}명)</span>
                             </div>
@@ -33,15 +33,18 @@ export function setGroupList(groups, $groupSearchListComponent) {
                             <div class="group_teacher_profile">
                                 <div class="icon title group_profile_img">
                                     ${group.teacher.profileFilename != null
-                        ? `<img src="${group.teacher.profileFileUrl}" alt="profile thumbnail"/>`
-                        : `<img src="/images/basic_profile_img.jpg" alt="profile thumbnail">`}
+                                    ? `<img src="${group.teacher.profileFileUrl}" alt="profile thumbnail"/>`
+                                    : `<img src="/images/basic_profile_img.jpg" alt="profile thumbnail">`}
                                 </div>
                                 <span class="group_teacher_name text_ellipsis">${group.teacher.nickname}</span>
                             </div>
-    
-                            <button type="button"
-                                    class="btn tiny small_font white group_join_btn"
-                                    data-group-no="${group.groupNo}">입반 신청</button>
+                            
+                            ${!isJoinedGroup 
+                            ? `<button type="submit"
+                                    class="btn tiny small_font white"
+                                    name="groupNo"
+                                    value="${group.groupNo}">입반 신청</button>`
+                            : ""}
                         </div>
                     </div>
                 `;
