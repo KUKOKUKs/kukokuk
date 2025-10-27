@@ -4,24 +4,93 @@
 
 <mapper namespace="com.kukokuk.domain.quiz.mapper.QuizBookmarkedMapper">
 
-    <resultMap id="QuizBookmarkedMap" type="QuizBookmarked">
+    <!-- 사용자의 북마크한 문제 및 이력 조회 ResultMap -->
+    <resultMap id="BookmarkedQuizDtoResultMap" type="BookmarkedQuizDto">
+        <!-- 문제 -->
         <id property="bookmarkNo" column="BOOKMARK_NO"/>
-        <result property="userNo" column="USER_NO"/>
         <result property="quizNo" column="QUIZ_NO"/>
         <result property="createdDate" column="CREATED_DATE"/>
+        <result property="question" column="QUESTION"/>
+        <result property="option1" column="OPTION1"/>
+        <result property="option2" column="OPTION2"/>
+        <result property="option3" column="OPTION3"/>
+        <result property="option4" column="OPTION4"/>
+        <result property="successAnswer" column="SUCCESS_ANSWER"/>
+        <result property="questionType" column="QUESTION_TYPE"/>
+        <result property="difficulty" column="DIFFICULTY"/>
+        <result property="usageCount" column="USAGE_COUNT"/>
+        <result property="successCount" column="SUCCESS_COUNT"/>
+        <result property="accuracyRate" column="ACCURACY_RATE"/>
+
+        <!-- 이력 -->
+        <result property="resultNo" column="RESULT_NO"/>
+        <result property="sessionNo" column="SESSION_NO"/>
+        <result property="selectedChoice" column="SELECTED_CHOICE"/>
+        <result property="isSuccess" column="IS_SUCCESS"/>
+        <result property="resultDate" column="RESULT_DATE"/>
     </resultMap>
 
     <!--
-        * 북마크 단건 조회(유저+퀴즈 기준)
-        * @param userNo 사용자 번호
-        * @param quizNo 퀴즈 번호
-        * @return QuizBookmarked 객체 (없으면 null)
+         * 조건에 맞는 북마크한 이력 및 문제 목록 정보 조회
+         * @param condition 조회할 데이터의 조건 값들이 담겨 있는 Map 객체 offset, rows, userNo
+         * @return 북마크한 이력 및 문제 목록 정보
+        List<BookmarkedQuizDto> getBookmarkQuizzes(Map<String, Object> condition);
     -->
-    <select id="getQuizBookmarkedByUserNoAndQuizNo" resultMap="QuizBookmarkedMap">
-        SELECT BOOKMARK_NO, USER_NO, QUIZ_NO, CREATED_DATE
+    <select id="getBookmarkQuizzes" parameterType="map" resultMap="BookmarkedQuizDtoResultMap">
+        WITH LATEST_RESULTS AS (
+            -- 각 QUIZ_NO + USER_NO 조합에 대해 UPDATED_DATE 기준 최신 행에 ROW_NUMBER = 1 부여
+            -- 동일 UPDATED_DATE가 있을 경우 RESULT_NO 내림차순으로 더 큰 것을 우선, 따라서 동시성으로 동일타임스탬프여도 deterministic
+            SELECT QR.RESULT_NO
+                 , QR.QUIZ_NO
+                 , QR.USER_NO
+                 , QR.SESSION_NO
+                 , QR.IS_SUCCESS
+                 , QR.SELECTED_CHOICE
+                 , QR.UPDATED_DATE                                AS RESULT_DATE
+                 , ROW_NUMBER() over (PARTITION BY QR.QUIZ_NO, QR.USER_NO
+                ORDER BY QR.UPDATED_DATE DESC, QR.RESULT_NO DESC) AS RN
+            FROM KUKOKUK_QUIZ_RESULTS QR)
+        SELECT B.BOOKMARK_NO
+             , B.QUIZ_NO
+             , B.CREATED_DATE
+             , M.QUESTION
+             , M.OPTION1
+             , M.OPTION2
+             , M.OPTION3
+             , M.OPTION4
+             , M.SUCCESS_ANSWER
+             , M.QUESTION_TYPE
+             , M.DIFFICULTY
+             , M.USAGE_COUNT
+             , M.SUCCESS_COUNT
+             , M.ACCURACY_RATE
+             , R.RESULT_NO
+             , R.SESSION_NO
+             , R.SELECTED_CHOICE
+             , R.IS_SUCCESS
+             , R.RESULT_DATE
+        FROM KUKOKUK_QUIZ_BOOKMARKED B
+                 INNER JOIN KUKOKUK_QUIZ_MASTERS M
+                            ON M.QUIZ_NO = B.QUIZ_NO
+                 LEFT JOIN LATEST_RESULTS R
+                           ON R.QUIZ_NO = B.QUIZ_NO
+                               AND R.USER_NO = B.USER_NO
+                               AND R.RN = 1 -- 각 그룹의 '하나의 최신 행'만 매칭
+        WHERE B.USER_NO = #{userNo}
+        ORDER BY B.CREATED_DATE DESC
+        LIMIT #{offset}, #{rows}
+    </select>
+
+    <!--
+         * 조회할 데이터의 총 행의 수 조회
+         * @param condition 조회할 데이터의 조건 값들이 담겨 있는 Map 객체
+         * @return 조회할 데이터의 총 데이터 행의 수
+        int getTotalRows(int userNo);
+    -->
+    <select id="getTotalRows">
+        SELECT COUNT(*)
         FROM KUKOKUK_QUIZ_BOOKMARKED
         WHERE USER_NO = #{userNo}
-          AND QUIZ_NO = #{quizNo}
     </select>
 
     <!--
@@ -47,58 +116,5 @@
         WHERE USER_NO = #{userNo}
           AND QUIZ_NO = #{quizNo}
     </delete>
-
-    <!--
-        * 해당 사용자의 전체 북마크 리스트 조회
-        * @param userNo 사용자 번호
-        * @return List<QuizBookmarked>
-    -->
-    <select id="getQuizBookmarkedListByUserNo" resultMap="QuizBookmarkedMap">
-        SELECT BOOKMARK_NO, USER_NO, QUIZ_NO, CREATED_DATE
-        FROM KUKOKUK_QUIZ_BOOKMARKED
-        WHERE USER_NO = #{userNo}
-        ORDER BY CREATED_DATE DESC
-    </select>
-
-    <!--
-    * 해당 사용자의 북마크 퀴즈 목록 조회 (페이징)
-    * @param userNo 사용자 번호
-    * @param offset 시작 위치
-    * @param limit 조회 개수
-    * @return List<BookmarkedQuizDto>
--->
-    <select id="getBookmarkedQuizzes" resultType="BookmarkedQuizDto">
-        SELECT
-            b.BOOKMARK_NO,
-            b.QUIZ_NO,
-            b.CREATED_DATE,
-            q.QUESTION,
-            q.OPTION1,
-            q.OPTION2,
-            q.OPTION3,
-            q.OPTION4,
-            q.QUESTION_TYPE,
-            q.DIFFICULTY,
-            q.USAGE_COUNT,
-            q.SUCCESS_COUNT,
-            q.ACCURACY_RATE
-        FROM KUKOKUK_QUIZ_BOOKMARKED b
-                 JOIN KUKOKUK_QUIZ_MASTERS q
-                      ON b.QUIZ_NO = q.QUIZ_NO
-        WHERE b.USER_NO = #{userNo}
-        ORDER BY b.CREATED_DATE DESC
-        LIMIT #{offset}, #{limit}
-    </select>
-
-    <!--
-        * 해당 사용자의 북마크 퀴즈 총 개수 조회
-        * @param userNo 사용자 번호
-        * @return int (북마크된 퀴즈 개수)
-    -->
-    <select id="getCountBookmarkedQuizzes" resultType="int">
-        SELECT COUNT(*)
-        FROM KUKOKUK_QUIZ_BOOKMARKED
-        WHERE USER_NO = #{userNo}
-    </select>
 
 </mapper>

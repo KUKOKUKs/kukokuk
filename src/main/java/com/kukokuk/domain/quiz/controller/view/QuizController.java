@@ -15,7 +15,6 @@ import com.kukokuk.domain.quiz.service.QuizProcessService;
 import com.kukokuk.domain.quiz.service.QuizResultService;
 import com.kukokuk.domain.quiz.service.QuizService;
 import com.kukokuk.domain.quiz.service.QuizSessionSummaryService;
-import com.kukokuk.domain.quiz.vo.QuizMaster;
 import com.kukokuk.domain.quiz.vo.QuizResult;
 import com.kukokuk.domain.quiz.vo.QuizSessionSummary;
 import com.kukokuk.domain.user.service.UserService;
@@ -178,20 +177,19 @@ public class QuizController {
      */
     @GetMapping("/bookmark")
     public String bookmarkListPage(
-        @AuthenticationPrincipal SecurityUser securityUser,
-        Model model) {
+        @RequestParam(defaultValue = "1") int page
+        , @AuthenticationPrincipal SecurityUser securityUser
+        , Model model) {
+        log.info("QuizController bookmarkListPage() 컨트롤러 실행");
+
         int userNo = securityUser.getUser().getUserNo();
-        List<QuizMaster> quizList = quizBookmarkService.getBookmarkedQuizList(userNo);
-        model.addAttribute("quizList", quizList);
-        model.addAttribute("listType", "bookmark");
-        /*DailyQuestEnum.QUIZ_SPEED.getDailyQuestNo()*/
-        return "quiz/bookmark"; // templates/quiz/bookmark.html
+        model.addAttribute(
+            "bookmarkedQuizDto"
+            , quizBookmarkService.getBookmarkQuizzes(page, PaginationEnum.DEFAULT_ROWS, userNo)
+        );
 
+        return "quiz/bookmark";
     }
-
-// QuizController 클래스 (src/main/java/com/kukokuk/domain/quiz/controller/view/QuizController.java)
-// 클래스 상단에 UserService 의존성 주입 추가 필요:
-// private final UserService userService;
 
     /**
      * 퀴즈 힌트 사용 처리
@@ -230,8 +228,6 @@ public class QuizController {
                 null);
             return ResponseEntity.status(500).body(errorResponse);
         }
-
-
     }
 
 }

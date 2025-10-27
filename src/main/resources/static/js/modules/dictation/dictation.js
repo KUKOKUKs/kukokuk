@@ -28,6 +28,8 @@ $(document).ready(() => {
     const $submitAnswer = $("#submitAnswer"); // 정답 제출 버튼 요소
     const $mainContent = $("#main-content");  // 받아쓰기 진행화면
 
+    $userAnswer.focus();
+
     // 전역변수
     let isShowAnswer = false;   // 정답보기 사용 여부
     let hintNum  = null;    // 힌트 번호
@@ -55,6 +57,7 @@ $(document).ready(() => {
             // 읽고있는 중이라면 중단
             speechSynthesis.cancel();
             $dictationSpeakingComponent.removeClass("action");
+            $userAnswer.focus();
             return;
         }
 
@@ -142,34 +145,33 @@ $(document).ready(() => {
 
     // 1. 비동기 요청으로 읽어줄 문제와 힌트목록을 요청하는 함수
     // 코드 컨벤션이 맞지않으며 의미가 명확하도록 수정
-    // $("#AnswerBtn").on("click", async function () {
-    $("#correctAnswer").on("click", async function () {
-        console.log("정답 보기 버튼 클릭됨");
-
-        // const $correctAnswerBtn = $(this);  // dictationQuestionNo 변수 선언으로 필요없음
-
-        if (!questionInformation.correctAnswer) {
-            // const questionNo = $correctAnswerBtn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
-            const response = await getDictationQuestionApi(dictationQuestionNo);
-            showAnswerInSquares(response.correctAnswer);
-        } else {
-            showAnswerInSquares(questionInformation.correctAnswer);
-        }
-
-        // 정답 보기 사용시 '정답 입력' 부분 작성 불가
-        // [/submit-answer] 부분 @RequestParam("userAnswer") 값을 넘겨야 하므로 값은 넘기고(db에는 저장x)
-        // '정답 입력' 부분 비활성화
-
-        //**** 정호 잘 읽어라
-        // 이런식으로 속성만 바꾸는 대처는 제발 우리 앱을 버그로 써먹어라 라는거야
-        // $('#user-answer').prop('readonly', true).addClass('disabled');
-
-        $userAnswer.remove(); // 조작 원천 차단
-        $submitAnswer.text("다음"); // 텍스트 변경
-
-        disableAllHintButtons();
-        isShowAnswer = true;
-    });
+    // $("#correctAnswer").on("click", async function () {
+    //     console.log("정답 보기 버튼 클릭됨");
+    //
+    //     // const $correctAnswerBtn = $(this);  // dictationQuestionNo 변수 선언으로 필요없음
+    //
+    //     if (!questionInformation.correctAnswer) {
+    //         // const questionNo = $correctAnswerBtn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
+    //         const response = await getDictationQuestionApi(dictationQuestionNo);
+    //         showAnswerInSquares(response.correctAnswer);
+    //     } else {
+    //         showAnswerInSquares(questionInformation.correctAnswer);
+    //     }
+    //
+    //     // 정답 보기 사용시 '정답 입력' 부분 작성 불가
+    //     // [/submit-answer] 부분 @RequestParam("userAnswer") 값을 넘겨야 하므로 값은 넘기고(db에는 저장x)
+    //     // '정답 입력' 부분 비활성화
+    //
+    //     //**** 정호 잘 읽어라
+    //     // 이런식으로 속성만 바꾸는 대처는 제발 우리 앱을 버그로 써먹어라 라는거야
+    //     // $('#user-answer').prop('readonly', true).addClass('disabled');
+    //
+    //     $userAnswer.remove(); // 조작 원천 차단
+    //     $submitAnswer.text("다음"); // 텍스트 변경
+    //
+    //     disableAllHintButtons();
+    //     isShowAnswer = true;
+    // });
 
     // 정답 보기 버튼 클릭 시 showAnswer hidden 추가
     $mainContent.submit(function (e) {

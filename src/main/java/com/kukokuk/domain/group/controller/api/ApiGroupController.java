@@ -68,8 +68,7 @@ public class ApiGroupController {
             log.info("ApiGroupController getGroups() 검색 그룹 목록 조회");
             Map<String, Object> condition = new HashMap<>();
             condition.put("keyword", keyword);
-            condition.put("rows", PaginationEnum.COMPONENT_ROWS);
-            return ResponseEntityUtils.ok(groupService.getGroups(page, condition));
+            return ResponseEntityUtils.ok(groupService.getGroups(page, condition, PaginationEnum.COMPONENT_ROWS));
         }
     }
 

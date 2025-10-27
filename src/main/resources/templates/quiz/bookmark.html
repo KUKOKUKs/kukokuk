@@ -1,14 +1,79 @@
 <!DOCTYPE html>
-<html layout:decorate="~{layout/base}"
-      th:with="menu='quiz', title='북마크'">
+<html layout:decorate="~{layout/base}" th:with="menu='quiz', title='북마크'">
 <div layout:fragment="content">
-    <div id="main-content" class="content_container">
+    <div id="center-content" class="content_container">
         <div class="content_info">
-            <div class="content_title">
-                <iconify-icon icon="material-symbols:bookmark-star"></iconify-icon>
+            <div class="content_title justify_content_center">
+                <iconify-icon class="color_yellow" icon="material-symbols:bookmark-star"></iconify-icon>
                 북마크
             </div>
         </div>
+
+        <div class="content_info h_100 show_scroll">
+            <div class="grid_list_component" style="--cols: 2; --callout-color: transparent; --position: var(--smallPadding);">
+                <div th:each="item : ${bookmarkedQuizDto.items}"
+                     class="component grid_list pd_small">
+                    <div class="tiny_list_component">
+                        <span class="callout right pd_0 color_gray box_shadow_none tiny_font"
+                              th:text="${#dates.format(item.createdDate, 'yyyy.M.d')}">북마크 등록일자</span>
+
+                        <div class="tag_list small_font">
+                            <span class="tag" th:text="${item.difficulty}"
+                                  th:classappend="${item.difficulty == '쉬움' ? 'bg_light_gray'
+                                                    : item.difficulty == '보통' ? 'bg_light_blue'
+                                                    : item.difficulty == '어려움' ? 'bg_light_red' : 'bg_light_gray'}">쉬움/보통/어려움 단계</span>
+                            <span class="tag bg_sub" th:text="${item.questionType}">뜻/단어 문제</span>
+                            <span class="tag bg_light_yellow" th:text="|정답률 ${item.calculatedAccuracyRate}%|">정답률 nn.n%</span>
+
+                            <button type="button"
+                                    class="bookmark_btn ml_a"
+                                    th:data-quiz-no="${item.quizNo}"
+                                    th:data-bookmarked="true">
+                                <iconify-icon class="icon title_font bookmard_icon color_yellow"
+                                              icon="material-symbols:bookmark-star"></iconify-icon>
+                            </button>
+                        </div>
+
+                        <div class="pos_r pd_tiny sub_font bg_sub border_radius tac"
+                             th:classappend="|question_${item.bookmarkNo}|"
+                             th:text="${item.question}">문제</div>
+
+                        <div class="tiny_list_component small_font bookmark_options">
+                            <label th:each="opt, state : ${item.options}" th:with="id='opt'+${item.bookmarkNo}+'-'+${state.count}"
+                                   th:for="${id}"
+                                   class="list_option">
+                                <input type="radio" th:name="|selectedOption${item.bookmarkNo}|" th:id="${id}" th:value="${state.count}">
+                                <span class="marker" th:text="|${state.count}.|">번호.</span>
+                                <p class="option" th:text="${opt}">보기</p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="btn_list justify_content_between">
+                        <!--/* 북마크의 문제 풀이는 연습용으로 DB저장하지 않음 dataset에 답 세팅 */-->
+                        <div class="btn tiny primary answer_check_btn"
+                             th:data-correct-check="${item.successAnswer}"
+                             th:data-bookmark-no="${item.bookmarkNo}">정답확인</div>
+                        <a th:if="${item.resultNo != null}"
+                           th:href="@{/quiz/result(sessionNo=${item.sessionNo})}"
+                           class="d_flex align_center w_max_content tiny_font">
+                            이 문제를 포함한 최근 풀이 결과
+                            <iconify-icon icon="ep:arrow-right"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--/* pagination(총 페이지 수가 1보다 클 경우) */-->
+        <th:block th:replace="~{fragments/common/pagination :: pagination-fragment(
+            paging=${bookmarkedQuizDto.pagination}
+            , conditionQuery=${bookmarkedQuizDto.getConditionQuery()}
+        )}"></th:block>
     </div>
 </div>
+
+<th:block layout:fragment="script">
+    <script type="module" th:src="@{/js/modules/quiz/bookmark.js}"></script>
+</th:block>
 </html>
