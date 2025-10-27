@@ -63,8 +63,7 @@ public class GroupController {
             log.info("검색어 있음: 검색 결과 노출");
             Map<String, Object> condition = new HashMap<>();
             condition.put("keyword", keyword);
-            condition.put("rows", PaginationEnum.COMPONENT_ROWS);
-            model.addAttribute("groups", groupService.getGroups(page, condition));
+            model.addAttribute("groups", groupService.getGroups(page, condition, PaginationEnum.COMPONENT_ROWS));
         }
         
         int userNo = securityUser.getUser().getUserNo(); // 사용자 번호

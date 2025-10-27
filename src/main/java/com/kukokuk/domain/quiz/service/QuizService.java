@@ -1,10 +1,8 @@
 package com.kukokuk.domain.quiz.service;
 
-import com.kukokuk.domain.quiz.dto.QuizHistoryDto;
 import com.kukokuk.domain.quiz.dto.QuizLevelResultDto;
 import com.kukokuk.domain.quiz.mapper.DictEntryMapper;
 import com.kukokuk.domain.quiz.mapper.QuizMasterMapper;
-import com.kukokuk.domain.quiz.mapper.QuizHistoryMapper;  // 🔧 추가
 import com.kukokuk.domain.quiz.vo.DictEntry;
 import com.kukokuk.domain.quiz.vo.QuizMaster;
 import java.util.ArrayList;
@@ -21,7 +19,6 @@ public class QuizService {
 
     private final QuizMasterMapper quizMasterMapper;
     private final DictEntryMapper dictEntryMapper;
-    private final QuizHistoryMapper quizHistoryMapper;  // 🔧 추가
 
     /**
      * 사전 데이터에서 무작위 단어 1개로 퀴즈를 생성하고 저장한다.
@@ -110,7 +107,6 @@ public class QuizService {
         }
     }
 
-
     /**
      * 최초 1회만 실행되는 함수
      * 사전 데이터의 랜덤한 단어를 기반으로 서로 다른 유형의 퀴즈를 200개 생성한다.
@@ -128,6 +124,7 @@ public class QuizService {
 
         }
     }
+
     //원하는 퀴즈 유형을 임의로 생성하고 싶을 때 사용하는 함수
     public void insertRandomTypeQuizBulk(int usageCount) {
         final int targetCount = 100;
@@ -147,7 +144,6 @@ public class QuizService {
             insertQuizByDefRandomEntry(wordToCreate);
             log.info("생성된 단어유형 퀴즈 수 : {}", wordToCreate);
         }
-
     }
 
     /**
@@ -180,78 +176,4 @@ public class QuizService {
     public QuizLevelResultDto getDifficultyAndQuestionTypeBySessionNo(int sessionNo) {
         return quizMasterMapper.getDifficultyAndQuestionTypeBySessionNo(sessionNo);
     }
-
-    /**
-     * 사용자 번호로 스피드 퀴즈 최근 이력을 조회한다.
-     *
-     * @param userNo 사용자 번호
-     * @param limit 조회할 개수
-     * @return 스피드 퀴즈 이력 리스트
-     */
-    public List<QuizHistoryDto> getSpeedHistoryByUserNoWithLimit(int userNo, int limit) {
-        log.info("[Service] 스피드 퀴즈 이력 조회 - userNo: {}, limit: {}", userNo, limit);
-
-        try {
-            List<QuizHistoryDto> historyList = quizHistoryMapper.getSpeedHistoryByUserNoWithLimit(userNo, limit);
-            log.info("[Service] 스피드 퀴즈 이력 조회 성공 - 조회된 개수: {}", historyList.size());
-            return historyList;
-        } catch (Exception e) {
-            log.error("[Service] 스피드 퀴즈 이력 조회 실패 - userNo: {}", userNo, e);
-            throw new RuntimeException("스피드 퀴즈 이력 조회 중 오류가 발생했습니다.", e);
-        }
-    }
-
-    /**
-     * 사용자 번호로 단계별 퀴즈 최근 이력을 조회한다.
-     *
-     * @param userNo 사용자 번호
-     * @param limit 조회할 개수
-     * @return 단계별 퀴즈 이력 리스트
-     */
-    public List<QuizHistoryDto> getLevelHistoryByUserNoWithLimit(int userNo, int limit) {
-        log.info("[Service] 단계별 퀴즈 이력 조회 - userNo: {}, limit: {}", userNo, limit);
-
-        try {
-            List<QuizHistoryDto> historyList = quizHistoryMapper.getLevelHistoryByUserNoWithLimit(userNo, limit);
-            log.info("[Service] 단계별 퀴즈 이력 조회 성공 - 조회된 개수: {}", historyList.size());
-            return historyList;
-        } catch (Exception e) {
-            log.error("[Service] 단계별 퀴즈 이력 조회 실패 - userNo: {}", userNo, e);
-            throw new RuntimeException("단계별 퀴즈 이력 조회 중 오류가 발생했습니다.", e);
-        }
-    }
-/*
-    *//*
-     * 사용자 번호로 퀴즈 이력 전체(스피드 + 단계별)를 조회한다.
-     * 최근 이력 순으로 정렬하여 반환한다.
-     * 추후에 필요할 시 사용
-     * @param userNo 사용자 번호
-     * @param limit 조회할 개수
-     * @return 퀴즈 이력 리스트 (스피드 + 단계별 통합)
-     *//*
-    public List<QuizHistoryDto> getQuizHistoryByUserNoWithLimit(int userNo, int limit) {
-        log.info("[Service] 퀴즈 이력 전체 조회 - userNo: {}, limit: {}", userNo, limit);
-
-        try {
-            // 스피드와 단계별 이력을 각각 조회
-            List<QuizHistoryDto> speedHistory = quizHistoryMapper.getSpeedHistoryByUserNoWithLimit(userNo, limit);
-            List<QuizHistoryDto> levelHistory = quizHistoryMapper.getLevelHistoryByUserNoWithLimit(userNo, limit);
-
-            // 두 리스트를 합치고 생성일 기준으로 최신순 정렬
-            List<QuizHistoryDto> allHistory = new ArrayList<>();
-            allHistory.addAll(speedHistory);
-            allHistory.addAll(levelHistory);
-
-            // 생성일 기준 내림차순 정렬 후 limit 개수만큼 자르기
-            return allHistory.stream()
-                .sorted((h1, h2) -> h2.getCreatedDate().compareTo(h1.getCreatedDate()))
-                .limit(limit)
-                .toList();
-
-        } catch (Exception e) {
-            log.error("[Service] 퀴즈 이력 전체 조회 실패 - userNo: {}", userNo, e);
-            throw new RuntimeException("퀴즈 이력 조회 중 오류가 발생했습니다.", e);
-        }
-    }
-    */
 }

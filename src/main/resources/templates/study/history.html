@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html layout:decorate="~{layout/base}" th:with="menu='study', title='학습 이력'">
 <div layout:fragment="content">
-    <form id="main-content"
-          class="content_container"
-          method="get"
-          th:action="@{/study/history}">
+    <div id="main-content" class="content_container">
         <div class="content_info">
             <div class="content_title">
                 <iconify-icon icon="twemoji:books"></iconify-icon>
@@ -21,10 +18,10 @@
                                 <span class="bold"
                                       th:text="${log.status == 'COMPLETED'} ? '학습완료' : '학습중'"
                                       th:classappend="${log.status == 'COMPLETED'} ? 'color_primary' : 'color_red'">학습 상태</span>
-                                <!-- COMPLETED 일 경우 시작일부터 종료일 -->
+                                <!--/* COMPLETED 일 경우 시작일부터 종료일 */-->
                                 <span th:if="${log.status == 'COMPLETED'}"
                                       th:text="${#dates.format(log.startedDate, 'yyyy.M.d')} + '~' + ${#dates.format(log.updatedDate, 'yyyy.M.d')}"></span>
-                                <!-- IN_PROGRESS 일 경우 시작일부터 -->
+                                <!--/* IN_PROGRESS 일 경우 시작일부터 */-->
                                 <span th:if="${log.status == 'IN_PROGRESS'}"
                                       th:text="${#dates.format(log.startedDate, 'yyyy.M.d')} + '~'"></span>
                             </div>
@@ -57,7 +54,9 @@
                 )}"></th:block>
             </div>
         </div>
-    </form>
+
+        <a th:href="@{/study}" class="btn white">오늘의 학습으로</a>
+    </div>
 
     <div id="sub-content" class="content_container">
         <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>

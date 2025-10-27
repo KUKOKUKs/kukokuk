@@ -11,7 +11,7 @@
             </div>
 
             <div class="grid_list_component column">
-                <a href="/quiz/speed" class="component grid_list elevate_on_hover">
+                <a th:href="@{/quiz/speed}" class="component grid_list elevate_on_hover">
                     <div class="component_title">
                         <p class="title_info column">
                             스피드 퀴즈
@@ -24,7 +24,7 @@
                         <iconify-icon icon="flat-color-icons:flash-on"></iconify-icon>
                     </span>
                 </a>
-                <a href="/quiz/level-select" class="component grid_list elevate_on_hover">
+                <a th:href="@{/quiz/level-select}" class="component grid_list elevate_on_hover">
                     <div class="component_title">
                         <p class="title_info column">
                             단계별 퀴즈
@@ -37,7 +37,7 @@
                         <iconify-icon icon="token-branded:step"></iconify-icon>
                     </span>
                 </a>
-                <a href="/dictation/start" class="component grid_list elevate_on_hover">
+                <a th:href="@{/dictation/start}" class="component grid_list elevate_on_hover">
                     <div class="component_title">
                         <p class="title_info column">
                             받아쓰기
@@ -48,6 +48,19 @@
                     </div>
                     <span class="icon base">
                         <iconify-icon icon="flat-color-icons:voice-presentation"></iconify-icon>
+                    </span>
+                </a>
+                <a th:href="@{/quiz/bookmark}" class="component grid_list elevate_on_hover">
+                    <div class="component_title">
+                        <p class="title_info column">
+                            북마크
+                            <span class="component_sub_title">
+                                다시 보고 싶은 문제를 북마크로 확인하고 관리해 보세요!
+                            </span>
+                        </p>
+                    </div>
+                    <span class="icon base">
+                        <iconify-icon class="color_yellow" icon="material-symbols:bookmark-star"></iconify-icon>
                     </span>
                 </a>
             </div>

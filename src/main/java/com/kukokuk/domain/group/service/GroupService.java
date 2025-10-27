@@ -97,7 +97,7 @@ public class GroupService {
      * @param condition 조회할 데이터의 조건 값들이 담겨 있는 Map 객체
      * @return 페이지네이션, 그룹 목록 정보
      */
-    public Page<Group> getGroups(int page, Map<String, Object> condition) {
+    public Page<Group> getGroups(int page, Map<String, Object> condition, int rows) {
         log.info("getGroups() 서비스 실행 page: {}, condition: {}", page, condition);
 
         Page<Group> groupPage = new Page<>(); // 그룹 목록을 담을 Page 객체 생성
@@ -111,8 +111,9 @@ public class GroupService {
         }
 
         // 페이징 처리 조건
-        Pagination pagination = new Pagination(page, totalRows); // 페이지네이션 객체 생성
+        Pagination pagination = new Pagination(page, totalRows, rows); // 페이지네이션 객체 생성
         condition.put("offset", pagination.getOffset());
+        condition.put("rows", pagination.getRows());
 
         // 조건에 해당하는 그룹 조회 요청
         List<Group> groups = groupMapper.getGroups(condition);

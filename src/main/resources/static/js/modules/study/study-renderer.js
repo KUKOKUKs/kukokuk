@@ -39,11 +39,11 @@ export function renderStudyCardContent(study) {
 
     // 학습 상태 태그 설정 NOT_STARTED, IN_PROGRESS, COMPLETED
     const studyStatus = `학습 ${study.status === 'NOT_STARTED' ? '전' : study.status === 'IN_PROGRESS' ? '중' : '완료'}`;
-    let tagHtml = `<span class="study_tag ${study.status.toLowerCase()}">${studyStatus}</span>`;
+    let tagHtml = `<span class="tag ${study.status.toLowerCase()}">${studyStatus}</span>`;
 
     // 서술형 상태 태그 설정
     const essayStatus = `서술형 ${study.essayQuizCompleted ? '완료' : '미완료'}`;
-    tagHtml += `<span class="study_tag ${study.essayQuizCompleted ? '' : 'essay_undone'}">${essayStatus}</span>`;
+    tagHtml += `<span class="tag ${study.essayQuizCompleted ? '' : 'essay_undone'}">${essayStatus}</span>`;
 
     // 학습 완료 후 서술형 완료 여부
     const isNotEssay = study.status === 'COMPLETED' && !study.essayQuizCompleted;
@@ -62,7 +62,7 @@ export function renderStudyCardContent(study) {
         <div class="study_info">
             <div class="component_title">${study.title}</div>
             <div class="study_content">${study.explanation || ''}</div>
-            <div class="study_tag_list">
+            <div class="tag_list">
                 ${tagHtml}
             </div>
             <div class="bar_gauge">
@@ -108,9 +108,9 @@ export function renderStudyListSkeleton(jobStatusList, isUseSpinner = true) {
                         <p class="skeleton"></p>
                         <p class="skeleton _w70"></p>
                     </div>
-                    <div class="study_tag_list">
-                        <div class="study_tag skeleton _w30"></div>
-                        <div class="study_tag skeleton _w30"></div>
+                    <div class="tag_list">
+                        <div class="tag skeleton _w30"></div>
+                        <div class="tag skeleton _w30"></div>
                     </div>
                     <div class="bar_gauge skeleton"></div>
                     <div class="btn skeleton"></div>
