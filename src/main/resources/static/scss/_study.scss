@@ -152,6 +152,10 @@
             background-color: transparent;
         }
 
+        &:has(.table) {
+            background-color: transparent;
+        }
+
         .mark {
             text-align: center;
         }
@@ -161,6 +165,11 @@
             background-color: var(--lightYellowColor); /* 형광펜 배경 */
             box-decoration-break: clone;
             -webkit-box-decoration-break: clone; /* 크롬/사파리용 */
+        }
+
+        .list {
+            list-style: circle;
+            padding-left: var(--baseIcon);
         }
     }
 }

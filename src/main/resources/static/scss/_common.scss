@@ -191,19 +191,35 @@ q:before, q:after {
 
 table {
     width: 100%;
+    background-color: #fff;
     table-layout: fixed;
     border-collapse: collapse;
-}
 
-th, td {
-    font-size: var(--subFontSize);
-    padding: 0.3em;
-    border-bottom: var(--baseBorder);
-}
+    tr {
+        border-top: var(--baseBorder);
 
-th {
-    background-color: var(--lightGrayColor);
-    font-weight: bold;
+        &:first-child {
+            border-top: none;
+        }
+    }
+
+    th, td {
+        font-size: var(--subFontSize);
+        padding: var(--tinyPadding);
+        border-right: var(--baseBorder);
+        vertical-align: middle;
+        text-align: left;
+
+        &:last-child {
+            border-right: none;
+        }
+    }
+
+    th {
+        text-align: center;
+        font-weight: bold;
+        background-color: var(--lightGrayColor);
+    }
 }
 
 /* 스크롤 커스텀 */
