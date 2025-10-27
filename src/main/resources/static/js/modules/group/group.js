@@ -157,5 +157,21 @@ $(document).ready(function () {
         if (!isConfirm) return false;
         this.submit(); // 폼 제출
     });
+    
+    // 그룹 가입 신청 폼 제출 이벤트 핸들러
+    const $groupJoinForm = $("#group-join-form"); // 그룹 가입 신청 폼
+    $(document).on("click", ".group_join_btn", async function () {
+        const $this = $(this);
+        const isSecret = $this.attr("data-is-secret") === "true";
+        const groupNo = $this.attr("data-group-no");
+        const $groupNoInput = $groupJoinForm.find("input:hidden[name='groupNo']");
+
+        if (isSecret) {
+
+        }
+
+        $groupNoInput.val(groupNo);
+        $groupJoinForm.submit();
+    });
 
 });

@@ -40,10 +40,10 @@ export function setGroupList(groups, $groupSearchListComponent, isJoinedGroup) {
                             </div>
                             
                             ${!isJoinedGroup 
-                            ? `<button type="submit"
-                                    class="btn tiny small_font white"
-                                    name="groupNo"
-                                    value="${group.groupNo}">입반 신청</button>`
+                            ? `<button type="button"
+                                    class="btn tiny small_font white group_join_btn"
+                                    data-is-secret="${group.password !== null}"
+                                    data-group-no="${group.groupNo}">입반 신청</button>`
                             : ""}
                         </div>
                     </div>

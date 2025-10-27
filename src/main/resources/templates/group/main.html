@@ -63,6 +63,7 @@
                       th:action="@{/group/join}"
                       id="group-join-form"
                       class="full show_scroll">
+                    <input type="hidden" name="groupNo" value="">
                     <div id="group-search-list-component" class="grid_list_component column">
                         <div class="group_serach_list" th:each="group : ${groups.items}">
                             <div class="list_info">
@@ -92,10 +93,10 @@
 
                                 <!--/* 그룹이 없는 사용자만 입반 버튼 노출 */-->
                                 <button th:if="${myGroup == null}"
-                                        type="submit"
+                                        type="button"
                                         class="btn tiny small_font white group_join_btn"
-                                        name="groupNo"
-                                        th:value="${group.groupNo}">입반 신청</button>
+                                        th:data-is-secret="${group.password != null}"
+                                        th:data-group-no="${group.groupNo}">입반 신청</button>
                             </div>
                         </div>
                     </div>

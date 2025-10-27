@@ -1,5 +1,6 @@
 package com.kukokuk.domain.dictation.vo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class DictationSession {
   private int correctCount;       // 맞은 개수
   private int hintUsedCount;      // 사용한 힌트 수
   private Date createdDate;        // 생성일 (NOW())
+  private BigDecimal absoluteScore;
 
   // totalTimeSec 커스텀 Getter
   public Double getTotalTimeSec() {
