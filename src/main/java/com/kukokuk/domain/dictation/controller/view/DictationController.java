@@ -1,10 +1,7 @@
 package com.kukokuk.domain.dictation.controller.view;
 
-
 import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.common.constant.DailyQuestEnum;
-import com.kukokuk.common.dto.ApiResponse;
-import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
 import com.kukokuk.domain.dictation.dto.DictationResultSummaryDto;
 import com.kukokuk.domain.dictation.service.DictationService;
@@ -12,15 +9,12 @@ import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationSession;
 import com.kukokuk.domain.exp.dto.ExpProcessingDto;
 import com.kukokuk.domain.exp.service.ExpProcessingService;
-import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.security.SecurityUser;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +23,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
