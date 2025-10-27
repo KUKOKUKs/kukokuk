@@ -337,9 +337,9 @@ public class DictationService {
                 dictationSessionMapper.updateDictationSessionResult(session);
 
                 // 랭킹 처리 호출
-//                processDictationMonthlyRanking(
-//                    userNo, dictationSessionNo, startDate, endDate, correctCount, hintUsedCount
-//                );
+                processDictationMonthlyRanking(
+                    userNo, dictationSessionNo, startDate, endDate, correctCount, hintUsedCount
+                );
 
             } catch (DataAccessException e) {
                 throw new AppException("결과를 저장하지 못했습니다.");
@@ -648,11 +648,39 @@ public class DictationService {
      * @return 받아쓰기 세트 결과
      */
     public List<DictationSession> getResultsSessionsByUserNo(int userNo, int limit) {
-        return dictationSessionMapper.getDictationSessionResultsByUserNo(userNo, limit);
+        List<DictationSession> dictationSessions = dictationSessionMapper.getDictationSessionResultsByUserNo(userNo, limit);
+
+        log.info("getResultsSessionsByUserNo 실행");
+        for (DictationSession s : dictationSessions) {
+            BigDecimal abs = calculateDictationRankScore(
+                s.getDictationSessionNo(),
+                s.getCorrectCount(),
+                s.getHintUsedCount(),
+                s.getStartDate(),
+                s.getEndDate()
+            );
+            s.setAbsoluteScore(abs); // ✅ VO의 비매핑 필드에 주입
+            s.setUserNo(userNo);
+
+            log.info("[getResultsSessionsByUserNo] dictationSessionNo={}, userNo={}, correctCount={}, hintUsedCount={}, startDate={}, endDate={}, absoluteScore={}",
+                s.getDictationSessionNo(),
+                s.getUserNo(),
+                s.getCorrectCount(),
+                s.getHintUsedCount(),
+                s.getStartDate(),
+                s.getEndDate(),
+                abs.toPlainString()
+            );
+        }
+
+        return dictationSessions;
     }
 
     /**
      * 랭킹 점수에 쓰일 절댓값 계산
+     * 받아쓰기 랭킹 점수 계산(정수부: correctCount*10, 소수부: 정규화 지표 가중합 × 0.99999)
+     * - 소수부는 반드시 1 미만 → 정수부 우선 정렬 보장
+     * - 결과는 소수점 5자리 고정(내림)
      * @param dictationSessionNo 받아쓰기 세트 번호
      * @param correctCount 해당 받아쓰기 세트 맞은 개수
      * @param hintUsedCount 해당 받아쓰기 힌트 사용 개수
@@ -667,28 +695,48 @@ public class DictationService {
         Date startDate,
         Date endDate
     ) {
-        int tq       = Math.max(dictationQuestionLogMapper.getCountTotalQuestions(dictationSessionNo), 1);
-        int tries    = Math.max(dictationQuestionLogMapper.getCountAllTries(dictationSessionNo), 10);
+        // 총 문항 수(tq) : 세션에서 시도된 서로 다른 문제 수. (항상 10이라면 int tq = 10;로 고정해도 됨)
+        int tq = Math.max(dictationQuestionLogMapper.getCountTotalQuestions(dictationSessionNo), 1);
+
+        // 총 시도 수(tries) : 문항별 최종 시도 횟수의 합(1 또는 2) — 최소 10 보정(문항당 최소 1회 가정)
+        int tries = Math.max(dictationQuestionLogMapper.getCountAllTries(dictationSessionNo), 10);
+
+        // 문항당 힌트 최대치(3개 가정) × 문항수 → 힌트 정규화에 사용
         int maxHints = Math.max(tq * 3, 1);
 
-        long ts = Math.max(0L, endDate.getTime() - startDate.getTime());
-        double totalTimeSec = Math.round((ts / 1000.0) * 1000.0) / 1000.0;
+        // 총 소요 시간(초, 소수 셋째자리까지) : end - start (ms) → sec 로 변환 후 소수점 3자리 반올림
+        long ts = Math.max(0L, endDate.getTime() - startDate.getTime()); // 음수 방지
+        double totalTimeSec = Math.round((ts / 1000.0) * 1000.0) / 1000.0; // 예: 12.345초
 
+        // 정답률(0~1) : correctCount / tq (과잉 방지를 위해 1.0 상한)
         double accNorm = Math.min(1.0, (double) correctCount / tq);
 
-        double MIN_T   = 10.0 * tq;
-        double MAX_T   = 60.0 * tq;
-        double clamped = Math.max(MIN_T, Math.min(MAX_T, totalTimeSec));
-        double timeNorm = (MAX_T - clamped) / (MAX_T - MIN_T);
+        // 시간 정규화(0~1) : 문항당 10~60초 밴드로 클램프 후, 빠를수록 1에 가깝게
+        double MIN_T = 10.0 * tq; // 하한 = 문항당 10초 × 문항수
+        double MAX_T = 60.0 * tq; // 상한 = 문항당 60초 × 문항수
+        double clamped = Math.max(MIN_T, Math.min(MAX_T, totalTimeSec)); // 밴드 밖 값은 잘라냄
+        double timeNorm = (MAX_T - clamped) / (MAX_T - MIN_T); // MIN_T → 1.0, MAX_T → 0.0
 
-        double avgTry  = (double) tries / tq;
-        double tryNorm = Math.max(0.0, Math.min(1.0, 2.0 - avgTry));
+        // 시도 정규화(0~1) : avgTry = tries/tq (1.0~2.0), 1회일수록 1.0, 2회면 0.0
+        double avgTry = (double) tries / tq;                 // 평균 시도 횟수(1~2)
+        double tryNorm = Math.max(0.0, Math.min(1.0, 2.0 - avgTry)); // 선형 매핑
 
+        // 힌트 정규화(0~1) : 적게 쓸수록 1.0, 많이 쓸수록 0.0
         double hintNorm = 1.0 - ((double) Math.min(hintUsedCount, maxHints) / maxHints);
 
-        double W_ACC=0.15, W_TIME=0.35, W_TRY=0.25, W_HINT=0.25;
-        double fractional = (W_ACC*accNorm) + (W_TIME*timeNorm) + (W_TRY*tryNorm) + (W_HINT*hintNorm);
+        // 가중치(합=1.0) : 정답률/시간/시도/힌트의 중요도. 필요 시 숫자만 조정
+        double W_ACC = 0.15; // 정답률(정수부가 정답수를 이미 반영하므로 낮게)
+        double W_TIME = 0.35; // 시간(빠를수록 가산)
+        double W_TRY = 0.25;  // 시도(적을수록 가산)
+        double W_HINT = 0.25; // 힌트(적을수록 가산)
 
+        // 소수부 원시값(0~1) : 정규화 지표들의 가중 합
+        double fractional = (W_ACC * accNorm) + (W_TIME * timeNorm) + (W_TRY * tryNorm) + (W_HINT * hintNorm);
+
+        // 최종 점수 = 정수부 + 소수부
+        // - 정수부: correctCount * 10 (기존 규칙 유지)
+        // - 소수부: fractional × 0.99999 → 항상 1 미만 보장(정수부 우선)
+        // - 소수점 5자리 고정(내림)으로 저장/반환
         BigDecimal score = BigDecimal.valueOf((long) correctCount * 10L)
             .add(BigDecimal.valueOf(fractional).multiply(new BigDecimal("0.99999")))
             .setScale(5, RoundingMode.DOWN);

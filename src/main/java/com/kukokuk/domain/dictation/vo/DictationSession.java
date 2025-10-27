@@ -1,5 +1,6 @@
 package com.kukokuk.domain.dictation.vo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,5 +28,5 @@ public class DictationSession {
     long ts = Math.max(0L, endDate.getTime() - startDate.getTime()); // 음수 방지
     return ts / 1000.0; // 12345(ms) -> 12.345(s)
   }
-
+  private BigDecimal absoluteScore;
 }
