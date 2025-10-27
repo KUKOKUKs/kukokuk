@@ -72,110 +72,112 @@
         <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
 
         <!--/* 스피드, 단계별, 받아쓰기 간략 이력 컴포넌트 */-->
-        <div class="component tiny_list_component tab_content_list pd_0 gap_0 border_none">
-            <div class="tab_btn_list">
-                <button type="button" class="tab_btn selected">스피드<span class="active"></span></button>
-                <button type="button" class="tab_btn">단계별<span class="active"></span></button>
-                <button type="button" class="tab_btn">받아쓰기<span class="active"></span></button>
+        <div class="component small_list_component pd_0 bg_none border_none box_shadow_none">
+            <div class="component_title pd_base pd_top_bottom_0 bg_none border_none">
+                <p class="title_info">놀이터 이력</p>
             </div>
 
-            <!--/* 스피드퀴즈 이력 */-->
-            <div class="tab_content selected border_base bt_none">
-                <div class="tiny_list_component pd_base">
-                    <div th:if="${#lists.isEmpty(speedHistory)}"
-                         class="list_info">
-                        제한 시간 내 문제를 풀고, 순위를 확인해 보세요!
-                    </div>
+            <div class="tab_content_list bg_base border_radius box_shadow">
+                <div class="tab_btn_list">
+                    <button type="button" class="tab_btn selected">스피드<span class="active"></span></button>
+                    <button type="button" class="tab_btn">단계별<span class="active"></span></button>
+                    <button type="button" class="tab_btn">받아쓰기<span class="active"></span></button>
+                </div>
 
-                    <a th:if="${!#lists.isEmpty(speedHistory)}"
-                       th:each="log : ${speedHistory}"
-                       th:href="@{/quiz/result(sessionNo=${log.sessionNo})}"
-                       class="component_info small with_icon history_info_list">
-                        <div class="list_info">
-                            <div class="history_info tiny_font">
+                <!--/* 스피드퀴즈 이력 */-->
+                <div class="tab_content selected border_base bt_none">
+                    <div class="tiny_list_component pd_base">
+                        <div th:if="${#lists.isEmpty(speedHistory)}"
+                             class="list_info">
+                            제한 시간 내 문제를 풀고, 순위를 확인해 보세요!
+                        </div>
+
+                        <a th:if="${!#lists.isEmpty(speedHistory)}"
+                           th:each="log : ${speedHistory}"
+                           th:href="@{/quiz/result(sessionNo=${log.sessionNo})}"
+                           class="component_info small with_icon history_info_list">
+                            <div class="list_info">
+                                <div class="history_info tiny_font">
                                 <span class="color_primary"
                                       th:text="|문제당 평균 ${log.averageTimePerQuestion}초|">문제당 평균 n.n초</span>
-                                <span th:text="${#dates.format(log.updatedDate, 'yyyy.M.d')}">이력 일자</span>
-                            </div>
+                                    <span th:text="${#dates.format(log.updatedDate, 'yyyy.M.d')}">이력 일자</span>
+                                </div>
 
-                            <p class="history_title">
+                                <p class="history_title">
                                 <span class="bold color_blue"
                                       th:text="|상위 ${log.percentile}%|">상위 n%</span>
-                                <span class="sub_font"
-                                      th:text="|(정답 ${log.correctAnswers}/${log.totalQuestion})|">(정답 n/n)</span>
-                            </p>
-                        </div>
-
-                        <span class="icon small">
-                            <iconify-icon icon="ep:arrow-right-bold"></iconify-icon>
-                        </span>
-                    </a>
-                </div>
-            </div>
-
-            <!--/* 단계별퀴즈 이력 */-->
-            <div class="tab_content border_base bt_none">
-                <div class="tiny_list_component pd_base">
-                    <div th:if="${#lists.isEmpty(levelHistory)}"
-                         class="list_info">
-                        단계별 문제를 풀며 실력을 키워보세요!
-                    </div>
-
-                    <a th:if="${!#lists.isEmpty(levelHistory)}"
-                       th:each="log : ${levelHistory}"
-                       th:href="@{/quiz/result(sessionNo=${log.sessionNo})}"
-                       class="component_info small with_icon history_info_list">
-                        <div class="list_info">
-                            <div class="history_info tiny_font">
-                                <span th:text="${#dates.format(log.updatedDate, 'yyyy.M.d')}">이력 일자</span>
+                                    <span class="sub_font"
+                                          th:text="|(정답 ${log.correctAnswers}/${log.totalQuestion})|">(정답 n/n)</span>
+                                </p>
                             </div>
 
-                            <p class="history_title">
+                            <div class="btn small w_max_content white" th:text="|${log.absoluteScore}점|">nn.nn점</div>
+                        </a>
+                    </div>
+                </div>
+
+                <!--/* 단계별퀴즈 이력 */-->
+                <div class="tab_content border_base bt_none">
+                    <div class="tiny_list_component pd_base">
+                        <div th:if="${#lists.isEmpty(levelHistory)}"
+                             class="list_info">
+                            단계별 문제를 풀며 실력을 키워보세요!
+                        </div>
+
+                        <a th:if="${!#lists.isEmpty(levelHistory)}"
+                           th:each="log : ${levelHistory}"
+                           th:href="@{/quiz/result(sessionNo=${log.sessionNo})}"
+                           class="component_info small with_icon history_info_list">
+                            <div class="list_info">
+                                <div class="history_info tiny_font">
+                                    <span th:text="${#dates.format(log.updatedDate, 'yyyy.M.d')}">이력 일자</span>
+                                </div>
+
+                                <p class="history_title">
                                 <span class="bold color_blue"
                                       th:text="|정답 ${log.correctAnswers}/${log.totalQuestion}|">정답 n/n</span>
-                                <span class="sub_font"
-                                      th:text="|(${log.difficulty})|">(난이도)</span>
-                            </p>
-                        </div>
-
-                        <span class="icon small">
-                            <iconify-icon icon="ep:arrow-right-bold"></iconify-icon>
-                        </span>
-                    </a>
-                </div>
-            </div>
-
-            <!--/* 받아쓰기 이력 */-->
-            <div class="tab_content border_base bt_none">
-                <div class="tiny_list_component pd_base">
-                    <div th:if="${#lists.isEmpty(dictationHistory)}"
-                         class="list_info">
-                        AI가 생성한 문장을 듣고 받아쓰기에 도전해 보세요!
-                    </div>
-
-                    <a th:if="${!#lists.isEmpty(dictationHistory)}"
-                       th:each="log : ${dictationHistory}"
-                       th:href="@{/dictation/result(dictationSessionNo=${log.dictationSessionNo})}"
-                       class="component_info small with_icon history_info_list">
-                        <div class="list_info">
-                            <div class="history_info tiny_font">
-                                <span class="color_primary"
-                                      th:text="|총 풀이 시간 ${log.totalTimeSec}초|">총 풀이 시간 n.n초</span>
-                                <span th:text="${#dates.format(log.createdDate, 'yyyy.M.d')}">이력 일자</span>
+                                    <span class="sub_font"
+                                          th:text="|(${log.difficulty})|">(난이도)</span>
+                                </p>
                             </div>
 
-                            <p class="history_title">
-                                <span class="bold color_blue"
-                                      th:text="|${log.correctScore}점|">n점</span>
-                                <span class="sub_font"
-                                      th:text="|(정답 ${log.correctCount}/10)|">(정답 n/10)</span>
-                            </p>
+                            <div class="btn small w_max_content white" th:text="|${log.absoluteScore}점|">nn.nn점</div>
+                        </a>
+                    </div>
+                </div>
+
+                <!--/* 받아쓰기 이력 */-->
+                <div class="tab_content border_base bt_none">
+                    <div class="tiny_list_component pd_base">
+                        <div th:if="${#lists.isEmpty(dictationHistory)}"
+                             class="list_info">
+                            AI가 생성한 문장을 듣고 받아쓰기에 도전해 보세요!
                         </div>
 
-                        <span class="icon small">
+                        <a th:if="${!#lists.isEmpty(dictationHistory)}"
+                           th:each="log : ${dictationHistory}"
+                           th:href="@{/dictation/result(dictationSessionNo=${log.dictationSessionNo})}"
+                           class="component_info small with_icon history_info_list">
+                            <div class="list_info">
+                                <div class="history_info tiny_font">
+                                <span class="color_primary"
+                                      th:text="|총 풀이 시간 ${log.totalTimeSec}초|">총 풀이 시간 n.n초</span>
+                                    <span th:text="${#dates.format(log.createdDate, 'yyyy.M.d')}">이력 일자</span>
+                                </div>
+
+                                <p class="history_title">
+                                <span class="bold color_blue"
+                                      th:text="|${log.correctScore}점|">n점</span>
+                                    <span class="sub_font"
+                                          th:text="|(정답 ${log.correctCount}/10)|">(정답 n/10)</span>
+                                </p>
+                            </div>
+
+                            <span class="icon small">
                             <iconify-icon icon="ep:arrow-right-bold"></iconify-icon>
                         </span>
-                    </a>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

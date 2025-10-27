@@ -1609,6 +1609,10 @@
     max-height: max-content !important;
 }
 
+.pd_base {
+    padding: var(--basePadding) !important;
+}
+
 .pd_0 {
     padding: 0 !important;
 }
@@ -1616,6 +1620,7 @@
 .pl_0 {
     padding-left: 0 !important;
 }
+
 .pd_tiny {
     padding: var(--tinyPadding) !important;
 }
@@ -1635,10 +1640,6 @@
 .pd_top_bottom_0 {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
-}
-
-.pd_base {
-    padding: var(--basePadding) !important;
 }
 
 .pt_base {
@@ -1690,6 +1691,14 @@
 /* 배경 */
 .bg_none {
     background: none !important;
+}
+
+.bg_base {
+    background-color: var(--baseBackground) !important;
+}
+
+.bg_white {
+    background-color: #fff !important;
 }
 
 .bg_primary {

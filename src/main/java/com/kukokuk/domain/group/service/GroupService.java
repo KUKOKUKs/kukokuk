@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -18,15 +17,33 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor // 초기화 되지않은 final 필드나, @NonNull 이 붙은 필드에 대해 생성자를 생성
 public class GroupService {
 
-    private final ModelMapper modelMapper;
     private final GroupMapper groupMapper;
+
+    /**
+     * 사용자의 그룹 탈퇴
+     * @param userNo 사용자 번호
+     */
+    public void deleteGroupUser(int userNo, int groupNo) {
+        log.info("GroupService deleteGroupUser() 서비스 실행");
+        groupMapper.deleteGroupUser(userNo, groupNo);
+    }
+
+    /**
+     * 사용자의 그룹 가입
+     * @param userNo 사용자 번호
+     * @param groupNo 그룹 번호
+     */
+    public void insertGroupUser(int userNo, int groupNo) {
+        log.info("GroupService insertGroupUser() 서비스 실행");
+        groupMapper.insertGroupUser(userNo, groupNo);
+    }
 
     /**
      * 그룹 정보를 전달받아 그룹 삭제
      * @param group 삭제할 그룹 정보
      */
     public void deleteGroup(Group group) {
-        log.info("deleteGroup() 서비스 실행");
+        log.info("GroupService deleteGroup() 서비스 실행");
         groupMapper.deleteGroup(group);
     }
 
@@ -35,7 +52,7 @@ public class GroupService {
      * @param group 수정할 그룹 정보
      */
     public void updateGroup(Group group) {
-        log.info("updateGroup() 서비스 실행");
+        log.info("GroupService updateGroup() 서비스 실행");
         groupMapper.updateGroup(group);
     }
 
@@ -46,7 +63,7 @@ public class GroupService {
      * @return 생성된 groupNo
      */
     public int insertGroup(int teacherNo, Group group) {
-        log.info("insertGroup() 서비스 실행");
+        log.info("GroupService insertGroup() 서비스 실행");
         groupMapper.insertGroup(teacherNo, group);
         return group.getGroupNo(); // XML에서 useGeneratedKeys 설정
     }
@@ -57,7 +74,7 @@ public class GroupService {
      * @return 그룹 정보, 그룹에 속한 사용자 정보 목록
      */
     public GruopUsersDto getGruopUsersByGruopNo(int gruopNo) {
-        log.info("getGruopUsersByGruopNo() 서비스 실행");
+        log.info("GroupService getGruopUsersByGruopNo() 서비스 실행");
         return groupMapper.getGruopUsersByGruopNo(gruopNo);
     }
 
@@ -67,7 +84,7 @@ public class GroupService {
      * @return 그룹 정보
      */
     public Group getGroupByGroupNo(int groupNo) {
-        log.info("getGroupByGroupNo() 서비스 실행 groupNo: {}", groupNo);
+        log.info("GroupService getGroupByGroupNo() 서비스 실행 groupNo: {}", groupNo);
         return groupMapper.getGroupByGroupNo(groupNo);
     }
 
@@ -77,7 +94,7 @@ public class GroupService {
      * @return 사용자가 속한 그룹 정보
      */
     public Group getGroupByUserNo(int userNo) {
-        log.info("getGroupByUserNo() 서비스 실행");
+        log.info("GroupService getGroupByUserNo() 서비스 실행");
         return groupMapper.getGroupByUserNo(userNo);
     }
 
@@ -87,7 +104,7 @@ public class GroupService {
      * @return 그룹 목록 정보
      */
     public List<Group> getTeacherGroups(int teacherNo) {
-        log.info("getTeacherGroups() 서비스 실행 teacherNo: {}", teacherNo);
+        log.info("GroupService getTeacherGroups() 서비스 실행 teacherNo: {}", teacherNo);
         return groupMapper.getTeacherGroups(teacherNo);
     }
 
@@ -98,7 +115,7 @@ public class GroupService {
      * @return 페이지네이션, 그룹 목록 정보
      */
     public Page<Group> getGroups(int page, Map<String, Object> condition, int rows) {
-        log.info("getGroups() 서비스 실행 page: {}, condition: {}", page, condition);
+        log.info("GroupService getGroups() 서비스 실행 page: {}, condition: {}", page, condition);
 
         Page<Group> groupPage = new Page<>(); // 그룹 목록을 담을 Page 객체 생성
         int totalRows = groupMapper.getTotalRows(condition); // 조건에 맞는 모든 데이터 행의 수
@@ -133,7 +150,7 @@ public class GroupService {
      * @return 그룹 목록 정보
      */
     public List<Group> getRandomGroups(int groupCount) {
-        log.info("getRandomGroups() 서비스 실행 groupCount: {}", groupCount);
+        log.info("GroupService getRandomGroups() 서비스 실행 groupCount: {}", groupCount);
         return groupMapper.getRandomGroups(groupCount);
     }
 

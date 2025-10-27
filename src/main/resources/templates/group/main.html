@@ -2,6 +2,7 @@
 <html layout:decorate="~{layout/base}"
       th:with="title='우리반'
       , menu='group'
+      , isJoinedGroup=${myGroup != null}
       , isTeacher=${#authorization.expression('hasRole(''TEACHER'')')}">
 <div layout:fragment="content">
     <div id="main-content" class="content_container">
@@ -36,7 +37,8 @@
 
             <!--/* 그룹이 없는 사용자에게는 검색 컴포넌트만 제공 */-->
             <div id="group-search-component"
-                 class="component small_list_component toggle_info_second">
+                 class="component small_list_component toggle_info_second"
+                 th:data-joined-group="${isJoinedGroup}">
                 <div class="search_form_wrap">
                     <form class="search_form" id="group-search-form">
                         <input type="text"
@@ -57,7 +59,10 @@
                     </button>
                 </div>
 
-                <div class="full show_scroll">
+                <form method="post"
+                      th:action="@{/group/join}"
+                      id="group-join-form"
+                      class="full show_scroll">
                     <div id="group-search-list-component" class="grid_list_component column">
                         <div class="group_serach_list" th:each="group : ${groups.items}">
                             <div class="list_info">
@@ -87,13 +92,14 @@
 
                                 <!--/* 그룹이 없는 사용자만 입반 버튼 노출 */-->
                                 <button th:if="${myGroup == null}"
-                                        type="button"
+                                        type="submit"
                                         class="btn tiny small_font white group_join_btn"
-                                        th:data-group-no="${group.groupNo}">입반 신청</button>
+                                        name="groupNo"
+                                        th:value="${group.groupNo}">입반 신청</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
 
                 <!--/* pagination(총 페이지 수가 1보다 클 경우) */-->
                 <th:block th:replace="~{fragments/common/pagination :: pagination-fragment(
@@ -175,10 +181,10 @@
                           class="d_flex justify_content_between align_center small_gap"
                           id="group-out-form"
                           method="post"
-                          action="">
+                          th:action="@{/group/delete}">
                         <input type="hidden" name="groupNo" th:value="${myGroup.groupNo}">
                         <p class="text_ellipsis" th:text="${myGroup.title}">우리반 이름</p>
-                        <button type="button" class="btn tiny white">나가기</button>
+                        <button type="submit" class="btn tiny white">나가기</button>
                     </form>
                 </div>
             </div>
@@ -223,13 +229,35 @@
             <a th:if="${isTeacher}" th:href="@{/group/teacher}" class="btn tiny blue w_100 small_font">나의 반 관리하러 가기</a>
         </div>
 
-        <!--/* 랭킹 컴포넌트 추가 예정 */-->
+        <!--/* 스피드, 단계별, 받아쓰기 그룹 랭킹 컴포넌트 */-->
         <div th:if="${myGroup != null}"
-             class="component small_list_component">
-            <div class="component_title">우리반 순위</div>
-            컨텐츠별 탭 버튼으로 변환(스피드, 받아쓰기, 스무고개)
-            반에서 기준이 될 데이터로 1~5순위 정도로 정렬하여 노출(사용자가 1~5순위에 포함되지 않았다면 최하단에 사용자의 순위로 사용자 점수 표시)
-            1~3순위는 특수 프레임 이미지/스타일 적용
+             class="component small_list_component pd_0 bg_none border_none box_shadow_none">
+            <div class="component_title pd_base pd_top_bottom_0 bg_none border_none">
+                <p class="title_info">우리반 순위</p>
+            </div>
+
+            <div class="tab_content_list bg_base border_radius box_shadow ranks_component">
+                <div class="tab_btn_list">
+                    <button type="button" class="tab_btn selected">스피드<span class="active"></span></button>
+                    <button type="button" class="tab_btn">단계별<span class="active"></span></button>
+                    <button type="button" class="tab_btn">받아쓰기<span class="active"></span></button>
+                </div>
+
+                <!--/* 스피드퀴즈 그룹 랭크 */-->
+                <div id="speed-ranks-component" class="tab_content selected border_base bt_none pd_base">
+                    <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${speedQuizRanks}, useTitle=false)}"></div>
+                </div>
+
+                <!--/* 단계별 퀴즈 그룹 랭크 */-->
+                <div id="level-ranks-component" class="tab_content border_base bt_none pd_base">
+                    <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${levelQuizRanks}, useTitle=false)}"></div>
+                </div>
+
+                <!--/* 받아쓰기 퀴즈 그룹 랭크 */-->
+                <div id="dictation-ranks-component" class="tab_content border_base bt_none pd_base">
+                    <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${dictationQuizRanks}, useTitle=false)}"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

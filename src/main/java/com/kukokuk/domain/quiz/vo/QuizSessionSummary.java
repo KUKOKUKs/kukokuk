@@ -31,7 +31,6 @@ public class QuizSessionSummary {
         return "speed".equals(quizMode);
     }
 
-
     /**
      * 이력 조회 시 사용할 절대값 점수 계산 게터
      * 스피드: 복잡한 점수 계산 (기본점수 + 시간보너스)
@@ -40,11 +39,10 @@ public class QuizSessionSummary {
      * @return 계산된 절대값 점수
      */
     public BigDecimal getAbsoluteScore() {
-        if ("speed".equals(quizMode)) {
+        if (isSpeedMode()) {
             return QuizScoreUtil.calculateSpeedScore(correctAnswers, totalQuestion, totalTimeSec);
-        } else if ("level".equals(quizMode)) {
+        } else {
             return QuizScoreUtil.calculateLevelScore(correctAnswers, totalQuestion);
         }
-        return BigDecimal.ZERO;
     }
 }
