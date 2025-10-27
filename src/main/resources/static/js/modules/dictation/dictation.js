@@ -173,6 +173,12 @@ $(document).ready(() => {
     //     isShowAnswer = true;
     // });
 
+    // 건너띄기 버튼 클릭시 isShowAnswer = true
+    $("#skip-btn").on("click", function () {
+        console.log("건너띄기 버튼 클릭됨")
+        isShowAnswer = true;
+    })
+
     // 정답 보기 버튼 클릭 시 showAnswer hidden 추가
     $mainContent.submit(function (e) {
         e.preventDefault();

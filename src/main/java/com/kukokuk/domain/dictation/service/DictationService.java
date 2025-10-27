@@ -337,9 +337,9 @@ public class DictationService {
                 dictationSessionMapper.updateDictationSessionResult(session);
 
                 // 랭킹 처리 호출
-                processDictationMonthlyRanking(
-                    userNo, dictationSessionNo, startDate, endDate, correctCount, hintUsedCount
-                );
+//                processDictationMonthlyRanking(
+//                    userNo, dictationSessionNo, startDate, endDate, correctCount, hintUsedCount
+//                );
 
             } catch (DataAccessException e) {
                 throw new AppException("결과를 저장하지 못했습니다.");
