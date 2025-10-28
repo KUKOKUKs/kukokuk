@@ -3,7 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
 	// SCSS 컴파일을 위한 플러그인 추가
-	id 'org.siouan.frontend-jdk17' version '8.0.0'
+	id 'com.github.node-gradle.node' version '3.6.0'
 }
 
 group = 'com.kukokuk'
@@ -99,14 +99,19 @@ configurations.all {
 	exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
-
-// SCSS 컴파일 설정 추가
-frontend {
-	nodeVersion = "18.19.0"
-	assembleScript = "run build"
-	cleanScript = "run clean"
-	packageJsonDirectory = file("${projectDir}")
+node {
+	version = '20.9.0'   // Node 자동 다운로드
+	download = true
 }
 
-// processResources 태스크가 frontend 빌드 후 실행되도록 설정
-processResources.dependsOn('assembleFrontend')
+tasks.register('buildScss', Exec) {
+	group = "build"
+	description = "Compile SCSS into CSS"
+	// ⚡ SCSS → CSS 변환
+	commandLine "npx", "sass", "--no-source-map", "src/main/resources/static/scss:src/main/resources/static/css"
+}
+
+// build 시 자동 실행되도록 연결
+processResources {
+	dependsOn("buildScss")
+}
