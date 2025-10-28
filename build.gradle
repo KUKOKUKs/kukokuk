@@ -2,8 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
-	// SCSS 컴파일을 위한 플러그인 추가
-	id 'com.github.node-gradle.node' version '3.6.0'
 }
 
 group = 'com.kukokuk'
@@ -99,17 +97,4 @@ configurations.all {
 	exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
-node {
-	version = '20.9.0'   // Node 버전
-	download = true       // ✅ 서버에 Node 없어도 자동 설치
-}
 
-tasks.register("buildScss", com.github.gradle.node.npm.task.NpxTask) {
-	dependsOn("npmInstall")   // Node/Sass 설치 먼저
-	command = "sass"
-	args = ["--no-source-map", "src/main/resources/static/scss:src/main/resources/static/css"]
-}
-
-processResources {
-	dependsOn("buildScss")
-}
