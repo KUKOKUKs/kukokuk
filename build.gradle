@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	// SCSS 컴파일을 위한 플러그인 추가
+	id 'org.siouan.frontend-jdk17' version '8.0.0'
 }
 
 group = 'com.kukokuk'
@@ -96,3 +98,15 @@ configurations.all {
 	// logback-classic은 log4j2와 충돌하므로 명시적으로 제거
 	exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
+
+
+// SCSS 컴파일 설정 추가
+frontend {
+	nodeVersion = "18.19.0"
+	assembleScript = "run build"
+	cleanScript = "run clean"
+	packageJsonDirectory = file("${projectDir}")
+}
+
+// processResources 태스크가 frontend 빌드 후 실행되도록 설정
+processResources.dependsOn('assembleFrontend')
