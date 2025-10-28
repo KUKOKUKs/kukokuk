@@ -261,6 +261,7 @@ public class UserService {
      * 회원가입 처리
      * @param form 신규 사용자 회원가입 정보
      */
+    @Transactional
     public void registerUser(UserFormDto form) {
         log.info("registerUser() 서비스 실행");
 

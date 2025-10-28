@@ -211,7 +211,7 @@ public class GroupController {
     }
 
     /**
-     * 사용자 그룹 가입 요청
+     * 사용자 그룹 가입 요청(비밀번호 설정되지 않은 그룹 가입 신청건만 유효)
      * @param groupNo 그룹 번호
      * @param securityUser 사용자 번호
      * @return 그룹 메인 페이지 요청
