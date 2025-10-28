@@ -212,7 +212,7 @@ public class QuizController {
             int userNo = securityUser.getUser().getUserNo();
 
             // 사용자 힌트 개수 차감
-            userService.updateUserHintCountMinus(userNo);
+            userService.minusUserHintCount(userNo);
 
             // 차감 후 남은 힌트 개수 조회
             User updatedUser = userService.getUserByUserNo(userNo);

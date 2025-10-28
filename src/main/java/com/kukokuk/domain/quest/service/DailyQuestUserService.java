@@ -81,7 +81,7 @@ public class DailyQuestUserService {
         dailyQuestUserMapper.updateDailyQuestUserObtained(savedDailyQuestUser);
 
         // 해당 완료된 일일 도전과제 보상 수령으로 사용자 힌트 개수 증가 처리
-        userService.updateUserHintCountPlus(userNo);
+        userService.plusUserHintCount(userNo);
 
         // 업데이트 후 힌트 개수 반환
         return userService.getCurrentUser().getHintCount();

@@ -13,8 +13,8 @@ public class SecurityUtil {
      * 현재 로그인 사용자의 Authentication을 갱신
      * @param updatedUser DB에서 갱신된 사용자 정보
      */
-    public static void updateAuthentication(User updatedUser) {
-        log.info("updateAuthentication() SecurityUser 갱신");
+    public static void refreshAuthentication(User updatedUser) {
+        log.info("refreshAuthentication() SecurityUser 갱신");
         Authentication oldAuth =  SecurityContextHolder.getContext().getAuthentication();
 
         // 새로운 Principal(SecurityUser) 생성

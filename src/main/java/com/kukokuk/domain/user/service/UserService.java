@@ -41,14 +41,14 @@ public class UserService {
     public void updateUserExpByUserNos(List<Integer> userNos , Integer expGained) {
         log.info("updateUserExpByUserNos() 서비스 실행");
         userMapper.updateUserExpByUserNos(userNos, expGained);
-    };
+    }
 
     /**
      * 사용자 힌트 개수 -1 업데이트
      * @param userNo 사용자 번호
      */
-    public void updateUserHintCountMinus(int userNo) {
-        log.info("updateUserHintCountMinus() 서비스 실행");
+    public void minusUserHintCount(int userNo) {
+        log.info("minusUserHintCount() 서비스 실행");
         updateUserHintCountMinus(1, userNo);
     }
 
@@ -60,17 +60,14 @@ public class UserService {
     public void updateUserHintCountMinus(int hintCount, int userNo) {
         log.info("updateUserHintCountMinus({}) 서비스 실행", hintCount);
         userMapper.updateUserHintCountMinus(hintCount, userNo);
-
-        // 현재 로그인 사용자의 Authentication 갱신
-        updateAuthentication(userNo);
     }
 
     /**
      * 사용자 힌트 개수 +1 업데이트
      * @param userNo 사용자 번호
      */
-    public void updateUserHintCountPlus(int userNo) {
-        log.info("updateUserHintCountPlus() 서비스 실행");
+    public void plusUserHintCount(int userNo) {
+        log.info("plusUserHintCount() 서비스 실행");
         updateUserHintCountPlus(1, userNo);
     }
 
@@ -82,9 +79,6 @@ public class UserService {
     public void updateUserHintCountPlus(int hintCount, int userNo) {
         log.info("updateUserHintCountPlus({}) 서비스 실행", hintCount);
         userMapper.updateUserHintCountPlus(hintCount, userNo);
-
-        // 현재 로그인 사용자의 Authentication 갱신
-        updateAuthentication(userNo);
     }
 
     /**
@@ -103,9 +97,6 @@ public class UserService {
             try {
                 Files.deleteIfExists(uploadDir); // 파일 삭제
                 userMapper.updateUserProfileImage(userNo, null);
-
-                // 현재 로그인 사용자의 Authentication 갱신
-                updateAuthentication(userNo);
             } catch (IOException ioException) {
                 log.warn("파일 삭제 실패: {}", ioException.getMessage());
             }
@@ -161,9 +152,6 @@ public class UserService {
         // DB 저장 시 오류 발생하면 파일 삭제
         try {
             userMapper.updateUserProfileImage(userNo, profileFilename);
-
-            // 현재 로그인 사용자의 Authentication 갱신
-            updateAuthentication(userNo);
         } catch (DataAccessException e) {
             if (destinationPath != null) {
                 try {
@@ -183,11 +171,7 @@ public class UserService {
     @Transactional
     public void updateUser(User updateUser) {
         log.info("updateUser() 서비스 실행");
-
         userMapper.updateUser(updateUser);
-
-        // 현재 로그인 사용자의 Authentication 갱신
-        updateAuthentication(updateUser.getUserNo());
     }
 
     /**
@@ -196,10 +180,10 @@ public class UserService {
      * principal로 표현식을 사용하는 html에 적용되도록 함
      * @param userNo 사용자 번호
      */
-    void updateAuthentication(int userNo) {
-        log.info("updateAuthentication() 서비스 실행");
+    public void refreshAuthentication(int userNo) {
+        log.info("refreshAuthentication() 서비스 실행");
         User updatedUser = getUserByUserNoWithRoleNames(userNo);
-        SecurityUtil.updateAuthentication(updatedUser);
+        SecurityUtil.refreshAuthentication(updatedUser);
     }
 
     /**
