@@ -19,14 +19,20 @@ $(document).ready(() => {
         hint2: '',      // 초성 힌트
         hint3: ''       // 첫 글자 힌트
     };
-    
+
     // 받아쓰기 관련 요소
     const $dictationSpeakingComponent = $("#dictation-speaking-component"); // 문제, 힌트 제공 컴포넌트
     const dictationQuestionNo = $dictationSpeakingComponent.data("question-no"); // 해당 문제 식별 번호
     const $hintsInfo = $dictationSpeakingComponent.find(".hints_info"); // 힌트 버튼 부모 요소
     const $userAnswer = $("#user-answer"); // 정답 입력 인풋 요소
     const $submitAnswer = $("#submitAnswer"); // 정답 제출 버튼 요소
-    
+    const $mainContent = $("#main-content");  // 받아쓰기 진행화면
+
+    $userAnswer.focus();
+
+    // 전역변수
+    let isShowAnswer = false;   // 정답보기 사용 여부
+    let hintNum  = null;    // 힌트 번호
     /*
         이벤트 핸들러 등록 및 실행 등 아래와 같이 사용이 가능하나 비동기 랜더링 방식의 
         페이지가 아니므로 랜더링이 완료된 후 리스터 등록이라면 간편히 제이쿼리를 활용하여 
@@ -51,6 +57,7 @@ $(document).ready(() => {
             // 읽고있는 중이라면 중단
             speechSynthesis.cancel();
             $dictationSpeakingComponent.removeClass("action");
+            $userAnswer.focus();
             return;
         }
 
@@ -135,79 +142,70 @@ $(document).ready(() => {
         }); // 힌트 버튼 부모 요소를 제거하여 완전 보이지 않도록 함
     }
 
-    // 정답 보기 서버 반영 (오답 처리 + tryCount=2)
-    async function showAnswerAndSkip() {
-        console.log("[markShowAnswer] 함수 실행됨");
-        try {
-            const response = await $.ajax({
-                url: "/dictation/show-answer",
-                method: "POST",
-                dataType: "json"
-            });
-            console.log("정답보기 반영 완료:", response);
-        } catch (e) {
-            console.error("[markShowAnswer] 에러", e);
-        }
-
-        // 폼에 'skip'을 히든 추가하고 skipInput 값이 1로 변경되고 제출 누르면 다음 문제로만 이동
-        $("#skipInput").val("1");
-    }
 
     // 1. 비동기 요청으로 읽어줄 문제와 힌트목록을 요청하는 함수
-    // $("#AnswerBtn").on("click", async function () {
-    $("#correctAnswer").on("click", async function () {
-        console.log("정답 보기 버튼 클릭됨");
+    // 코드 컨벤션이 맞지않으며 의미가 명확하도록 수정
+    // $("#correctAnswer").on("click", async function () {
+    //     console.log("정답 보기 버튼 클릭됨");
+    //
+    //     // const $correctAnswerBtn = $(this);  // dictationQuestionNo 변수 선언으로 필요없음
+    //
+    //     if (!questionInformation.correctAnswer) {
+    //         // const questionNo = $correctAnswerBtn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
+    //         const response = await getDictationQuestionApi(dictationQuestionNo);
+    //         showAnswerInSquares(response.correctAnswer);
+    //     } else {
+    //         showAnswerInSquares(questionInformation.correctAnswer);
+    //     }
+    //
+    //     // 정답 보기 사용시 '정답 입력' 부분 작성 불가
+    //     // [/submit-answer] 부분 @RequestParam("userAnswer") 값을 넘겨야 하므로 값은 넘기고(db에는 저장x)
+    //     // '정답 입력' 부분 비활성화
+    //
+    //     //**** 정호 잘 읽어라
+    //     // 이런식으로 속성만 바꾸는 대처는 제발 우리 앱을 버그로 써먹어라 라는거야
+    //     // $('#user-answer').prop('readonly', true).addClass('disabled');
+    //
+    //     $userAnswer.remove(); // 조작 원천 차단
+    //     $submitAnswer.text("다음"); // 텍스트 변경
+    //
+    //     disableAllHintButtons();
+    //     isShowAnswer = true;
+    // });
 
-        if (!questionInformation.correctAnswer) {
-            const response = await getDictationQuestionApi(dictationQuestionNo);
-            showAnswerInSquares(response.correctAnswer);
-        } else {
-            showAnswerInSquares(questionInformation.correctAnswer);
-        }
+    // 건너띄기 버튼 클릭시 isShowAnswer = true
+    $("#skip-btn").on("click", function () {
+        console.log("건너띄기 버튼 클릭됨")
+        isShowAnswer = true;
+    })
 
-        // 정답 보기 사용시 '정답 입력' 부분 작성 불가
-        // [/submit-answer] 부분 @RequestParam("userAnswer") 값을 넘겨야 하므로 값은 넘기고(db에는 저장x)
-        // '정답 입력' 부분 비활성화
+    // 정답 보기 버튼 클릭 시 showAnswer hidden 추가
+    $mainContent.submit(function (e) {
+        e.preventDefault();
+        const $this = $(this);
 
-        //**** 정호 잘 읽어라
-        // 이런식으로 속성만 바꾸는 대처는 제발 우리 앱을 버그로 써먹어라 라는거야
-        // $('#user-answer').prop('readonly', true).addClass('disabled');
+        // showAnswer hidden 추가
+        $this.append('<input type="hidden" name="showAnswer" value="' + (isShowAnswer ? '1' : '0') + '">');
 
-        $userAnswer.remove(); // 조작 원천 차단
-        $submitAnswer.text("다음"); // 텍스트 변경
-
-        disableAllHintButtons();
-        await showAnswerAndSkip();
+        // 그대로 submit
+        this.submit();
     });
-
-    // 힌트 사용 Ajax 호출 함수
-    async function useHint(hintNum) {
-        try {
-            const response = await $.ajax({
-                url: "/dictation/use-hint",
-                method: "POST",
-                data: {hintNum},
-                dataType: "json"
-            });
-            console.log("힌트 사용 반영 완료", response);
-        } catch (e) {
-            console.error("힌트 사용 반영 실패", e);
-        }
-    }
 
     // 코드 컨벤션이 맞지않아 수정
     // $("#HintBtn1").on("click", async function () {
     $("#hintBtn1").on("click", async function () {
         console.log("띄어 쓰기 힌트 버튼 클릭됨")
 
+        // const $hint1Btn = $(this); // dictationQuestionNo 변수 선언으로 필요없음
+
         if (!questionInformation.hint1) {
+            // const questionNo = $hint1Btn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
             const response = await getDictationQuestionApi(dictationQuestionNo);
             showAnswerInSquares(response.hint1);
         } else {
             showAnswerInSquares(questionInformation.hint1);
         }
         disableAllHintButtons();
-        await useHint(1);
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 
@@ -216,14 +214,16 @@ $(document).ready(() => {
     $("#hintBtn2").on("click", async function () {
         console.log("초성나열 힌트 버튼 클릭됨")
 
+        // const $hint2Btn = $(this); // dictationQuestionNo 변수 선언으로 필요없음
+
         if (!questionInformation.hint2) {
+            // const questionNo = $hint2Btn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
             const response = await getDictationQuestionApi(dictationQuestionNo);
             showAnswerInSquares(response.hint2);
         } else {
             showAnswerInSquares(questionInformation.hint2);
         }
         disableAllHintButtons();
-        await useHint(2);
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
     });
 
@@ -232,15 +232,28 @@ $(document).ready(() => {
     $("#hintBtn3").on("click", async function () {
         console.log("첫 글자 힌트 버튼 클릭됨")
 
+        // const $hint3Btn = $(this); // dictationQuestionNo 변수 선언으로 필요없음
+
         if (!questionInformation.hint3) {
+            // const questionNo = $hint3Btn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
             const response = await getDictationQuestionApi(dictationQuestionNo);
             showAnswerInSquares(response.hint3);
         } else {
             showAnswerInSquares(questionInformation.hint3);
         }
         disableAllHintButtons();
-        await useHint(3);
         $userAnswer.focus(); // 사용자 편리성으로 자동으로 포커스 되도록 추가
+    });
+
+    // 힌트 사용 시 새로 고침해도 같은 hintNum으로 힌트유지
+    $("#hintBtn1, #hintBtn2, #hintBtn3").on("click", function () {
+        const hintnum = this.id === "hintBtn1" ? 1 : (this.id === "hintBtn2" ? 2 : 3);
+
+        $mainContent.append('<input type="hidden" name="hintNum" value="' + hintnum + '">');
+        $mainContent.append('<input type="hidden" name="showAnswer" value="0">');
+
+        // $("#main-content") 부분 e.preventDefault()를 건너뛰고, 브라우저의 기본 폼 제출을 직접 실행시키기 위해 추가
+        $mainContent[0].submit();
     });
 
     // 2. 문제 번호를 인자로 넘겨 getDictationQuestionApi 함수 실행
@@ -367,12 +380,19 @@ $(document).ready(() => {
     flashAlerts();
 
     function flashAlerts() {
-        if ($('#flash-correct').val() === '1') {
+
+        const $flags = $('#main-content');
+        if (!$flags.length) return;
+
+        const correct    = $flags.data('correct');
+        const secondFail = $flags.data('secondFail');
+
+        if (correct) {
             alert('정답입니다.\n다음 문제로 이동합니다.');
             // 2번째 시도 후 정답일 경우 둘 다 활성화되기 때문에 이 알림 한 번만 띄우도록 함
-            return;
+            return; // 동시 세팅이면 정답 알림만 1회
         }
-        if ($('#flash-second-fail').val() === '1') {
+        if (secondFail) {
             alert('오답입니다.\n다음 문제로 이동합니다.');
         }
     }

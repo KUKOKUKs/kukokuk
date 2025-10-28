@@ -4,7 +4,7 @@ import {
     allClearFormErrorMessage
 } from "../../utils/form-error-util.js";
 
-// 그룹 생성 폼 유효성 검사
+// 그룹 생성 폼 유효성 검사 (교사권한 사용자)
 export function validateCreateGroupForm($form) {
     let isValid = true;
     const $title = $form.find('input[name="title"]');
@@ -22,7 +22,7 @@ export function validateCreateGroupForm($form) {
     return isValid;
 }
 
-// 그룹 수정 폼 유효성 검사
+// 그룹 수정 폼 유효성 검사 (교사권한 사용자)
 export function validateModifyGroupForm($form) {
     let isValid = true;
     const $title = $form.find('input[name="title"]');
@@ -40,7 +40,7 @@ export function validateModifyGroupForm($form) {
     return isValid;
 }
 
-// 그룹 삭제 폼 유효성 검사
+// 그룹 삭제 폼 유효성 검사 (교사권한 사용자)
 export function validateDeleteGroupForm($form) {
     let isValid = true;
 

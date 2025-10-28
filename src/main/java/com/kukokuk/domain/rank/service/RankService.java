@@ -197,4 +197,5 @@ public class RankService {
             .ranks(processRanksIncludeUserRank(fetchRanks, userNo, limit))
             .build();
     }
+
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kukokuk.ai.GeminiClient;
+import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.common.exception.AppException;
 import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
 import com.kukokuk.domain.dictation.dto.DictationResultLogDto;
@@ -15,12 +16,10 @@ import com.kukokuk.domain.dictation.mapper.DictationSessionMapper;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationQuestionLog;
 import com.kukokuk.domain.dictation.vo.DictationSession;
-import com.kukokuk.domain.exp.dto.ExpProcessingDto;
-import com.kukokuk.domain.exp.mapper.ExpMapper;
-import com.kukokuk.domain.exp.service.ExpProcessingService;
-import com.kukokuk.domain.exp.service.ExpService;
-import com.kukokuk.domain.exp.vo.ExpLog;
-import io.lettuce.core.Limit;
+import com.kukokuk.domain.rank.dto.RankProcessingDto;
+import com.kukokuk.domain.rank.service.RankService;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +40,7 @@ public class DictationService {
     private final DictationQuestionLogMapper dictationQuestionLogMapper;
     private final DictationSessionMapper dictationSessionMapper;
     private final GeminiClient geminiClient;
-    private final ExpProcessingService  expProcessingService;
+    private final RankService rankService;
 
     /**
      * Gemini를 통해 문장을 받아와서 힌트들을 생성하고 DB에 저장하는 메소드
@@ -336,6 +335,12 @@ public class DictationService {
                 session.setCorrectScore(correctScore);
 
                 dictationSessionMapper.updateDictationSessionResult(session);
+
+                // 랭킹 처리 호출
+                processDictationMonthlyRanking(
+                    userNo, dictationSessionNo, startDate, endDate, correctCount, hintUsedCount
+                );
+
             } catch (DataAccessException e) {
                 throw new AppException("결과를 저장하지 못했습니다.");
         }
@@ -453,15 +458,15 @@ public class DictationService {
     }
 
 
-    /**
-     * 받아쓰기 세트의 이력 조회
-     * @param dictationSessionNo 문제 세트 번호
-     * @param userNo 사용자 번호
-     * @return 받아쓰기 세트의 이력
-     */
-    public List<DictationResultLogDto> getLogsBySessionNo(int dictationSessionNo, int userNo) {
-        return dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo, userNo);
-    }
+//    /**
+//     * 받아쓰기 세트의 이력 조회
+//     * @param dictationSessionNo 문제 세트 번호
+//     * @param userNo 사용자 번호
+//     * @return 받아쓰기 세트의 이력
+//     */
+//    public List<DictationResultLogDto> getLogsBySessionNo(int dictationSessionNo, int userNo) {
+//        return dictationQuestionLogMapper.getDictationQuestionLogBySessionNo(dictationSessionNo, userNo);
+//    }
 
     /**
      * 문제 번호로 받아쓰기 문제를 조회
@@ -606,21 +611,34 @@ public class DictationService {
     }
 
 
+//    /**
+//     * expProcessing 부분에 넘길 값
+//     * @param userNo 사용자 번호
+//     */
+//    @Transactional
+//    public void insertSaveExpLog(int userNo, int dictationSessionNo, int correctCount) {
+//        ExpProcessingDto expProcessingDto = new ExpProcessingDto(
+//            userNo,                                             // 사용자 번호
+//            ContentTypeEnum.DICTATION.name(),                   // 컨텐츠 타입
+//            dictationSessionNo,                                 // contentNo(임시)
+//            correctCount*3,                                     // EXP(임시)
+//            DailyQuestEnum.DICTATION_PLAY.getDailyQuestNo()     // 일일 도전과제 식별자 번호(없으면 null)
+//        );
+//        expProcessingService.expProcessing(expProcessingDto);
+//    }
+
     /**
-     * expProcessing 부분에 넘길 값
-     * @param userNo 사용자 번호
-     * @param dailyQuestNo 일일 도전과제 식별자 번호
+     * 경험치 exp에 반영될 받아쓰기 맞은 개수 가져오기
+     * @param dictationSessionNo 받아쓰기 세트
+     * @return 경험치에 반영될 받아쓰기 맞은 개수
      */
-    @Transactional
-    public void insertSaveExpLog(int userNo, Integer dailyQuestNo) {
-        ExpProcessingDto expProcessingDto = new ExpProcessingDto(
-            userNo,             // 사용자 번호
-            "DICTATION",        // 컨텐츠 타입
-            3,                  // contentNo(임시)
-            50,                 // EXP(임시)
-            dailyQuestNo        // 일일 도전과제 식별자 번호(없으면 null)
-        );
-        expProcessingService.expProcessing(expProcessingDto);
+    public int getCorrectCount(int dictationSessionNo) {
+        try{
+            return dictationQuestionLogMapper.getCountCorrectAnswers(dictationSessionNo);
+        } catch (DataAccessException e) {
+            log.info("getCorrectCount 예외처리 실행");
+            throw new AppException("경험치에 반영될 받아쓰기 맞은 개수를 불러오지 못했습니다");
+        }
     }
 
     /**
@@ -630,13 +648,144 @@ public class DictationService {
      * @return 받아쓰기 세트 결과
      */
     public List<DictationSession> getResultsSessionsByUserNo(int userNo, int limit) {
-        try {
-            return dictationSessionMapper.getDictationSessionResultsByUserNo(userNo, limit);
-        } catch (DataAccessException e) {
-            log.info("getResultsByUserNo 예외처리 실행");
-            throw new AppException("이력 컴포넌트를 불러오지 못했습니다");
+        List<DictationSession> dictationSessions = dictationSessionMapper.getDictationSessionResultsByUserNo(userNo, limit);
+
+        log.info("getResultsSessionsByUserNo 실행");
+        for (DictationSession s : dictationSessions) {
+            BigDecimal abs = calculateDictationRankScore(
+                s.getDictationSessionNo(),
+                s.getCorrectCount(),
+                s.getHintUsedCount(),
+                s.getStartDate(),
+                s.getEndDate()
+            );
+            s.setAbsoluteScore(abs); // ✅ VO의 비매핑 필드에 주입
+            s.setUserNo(userNo);
+
+            log.info("[getResultsSessionsByUserNo] dictationSessionNo={}, userNo={}, correctCount={}, hintUsedCount={}, startDate={}, endDate={}, absoluteScore={}",
+                s.getDictationSessionNo(),
+                s.getUserNo(),
+                s.getCorrectCount(),
+                s.getHintUsedCount(),
+                s.getStartDate(),
+                s.getEndDate(),
+                abs.toPlainString()
+            );
         }
+
+        return dictationSessions;
+    }
+
+    /**
+     * 랭킹 점수에 쓰일 절댓값 계산
+     * 받아쓰기 랭킹 점수 계산(정수부: correctCount*10, 소수부: 정규화 지표 가중합 × 0.99999)
+     * - 소수부는 반드시 1 미만 → 정수부 우선 정렬 보장
+     * - 결과는 소수점 5자리 고정(내림)
+     * @param dictationSessionNo 받아쓰기 세트 번호
+     * @param correctCount 해당 받아쓰기 세트 맞은 개수
+     * @param hintUsedCount 해당 받아쓰기 힌트 사용 개수
+     * @param startDate 시작 시간
+     * @param endDate 종료 시간
+     * @return 랭킹 점수에 쓰일 절댓값
+     */
+    private BigDecimal calculateDictationRankScore(
+        int dictationSessionNo,
+        int correctCount,
+        int hintUsedCount,
+        Date startDate,
+        Date endDate
+    ) {
+        // 총 문항 수(tq) : 세션에서 시도된 서로 다른 문제 수. (항상 10이라면 int tq = 10;로 고정해도 됨)
+        int tq = Math.max(dictationQuestionLogMapper.getCountTotalQuestions(dictationSessionNo), 1);
+
+        // 총 시도 수(tries) : 문항별 최종 시도 횟수의 합(1 또는 2) — 최소 10 보정(문항당 최소 1회 가정)
+        int tries = Math.max(dictationQuestionLogMapper.getCountAllTries(dictationSessionNo), 10);
+
+        // 문항당 힌트 최대치(3개 가정) × 문항수 → 힌트 정규화에 사용
+        int maxHints = Math.max(tq * 3, 1);
+
+        // 총 소요 시간(초, 소수 셋째자리까지) : end - start (ms) → sec 로 변환 후 소수점 3자리 반올림
+        long ts = Math.max(0L, endDate.getTime() - startDate.getTime()); // 음수 방지
+        double totalTimeSec = Math.round((ts / 1000.0) * 1000.0) / 1000.0; // 예: 12.345초
+
+        // 정답률(0~1) : correctCount / tq (과잉 방지를 위해 1.0 상한)
+        double accNorm = Math.min(1.0, (double) correctCount / tq);
+
+        // 시간 정규화(0~1) : 문항당 10~60초 밴드로 클램프 후, 빠를수록 1에 가깝게
+        double MIN_T = 10.0 * tq; // 하한 = 문항당 10초 × 문항수
+        double MAX_T = 60.0 * tq; // 상한 = 문항당 60초 × 문항수
+        double clamped = Math.max(MIN_T, Math.min(MAX_T, totalTimeSec)); // 밴드 밖 값은 잘라냄
+        double timeNorm = (MAX_T - clamped) / (MAX_T - MIN_T); // MIN_T → 1.0, MAX_T → 0.0
+
+        // 시도 정규화(0~1) : avgTry = tries/tq (1.0~2.0), 1회일수록 1.0, 2회면 0.0
+        double avgTry = (double) tries / tq;                 // 평균 시도 횟수(1~2)
+        double tryNorm = Math.max(0.0, Math.min(1.0, 2.0 - avgTry)); // 선형 매핑
+
+        // 힌트 정규화(0~1) : 적게 쓸수록 1.0, 많이 쓸수록 0.0
+        double hintNorm = 1.0 - ((double) Math.min(hintUsedCount, maxHints) / maxHints);
+
+        // 가중치(합=1.0) : 정답률/시간/시도/힌트의 중요도. 필요 시 숫자만 조정
+        double W_ACC = 0.15; // 정답률(정수부가 정답수를 이미 반영하므로 낮게)
+        double W_TIME = 0.35; // 시간(빠를수록 가산)
+        double W_TRY = 0.25;  // 시도(적을수록 가산)
+        double W_HINT = 0.25; // 힌트(적을수록 가산)
+
+        // 소수부 원시값(0~1) : 정규화 지표들의 가중 합
+        double fractional = (W_ACC * accNorm) + (W_TIME * timeNorm) + (W_TRY * tryNorm) + (W_HINT * hintNorm);
+
+        // 최종 점수 = 정수부 + 소수부
+        // - 정수부: correctCount * 10 (기존 규칙 유지)
+        // - 소수부: fractional × 0.99999 → 항상 1 미만 보장(정수부 우선)
+        // - 소수점 5자리 고정(내림)으로 저장/반환
+        BigDecimal score = BigDecimal.valueOf((long) correctCount * 10L)
+            .add(BigDecimal.valueOf(fractional).multiply(new BigDecimal("0.99999")))
+            .setScale(5, RoundingMode.DOWN);
+
+        return score;
     }
 
 
+    /**
+     * 받아쓰기 점수 계산 및 월별 랭킹 처리
+     * @param userNo 사용자 번호
+     * @param dictationSessionNo 받아쓰기 세트 번호
+     * @param startDate 시작 시간
+     * @param endDate 종료 시간
+     * @param correctCount 맞은 개수
+     * @param hintUsedCount 힌트 사용 개수
+     */
+    private void processDictationMonthlyRanking(
+        int userNo,
+        int dictationSessionNo,
+        Date startDate,
+        Date endDate,
+        int correctCount,
+        int hintUsedCount
+    ) {
+        log.info("[DICTATION 월랭 처리 시작] userNo={}, sessionNo={}, correct={}, hintUsed={}",
+            userNo, dictationSessionNo, correctCount, hintUsedCount);
+
+        // 점수 계산 (소수점 5자리 BigDecimal)
+        BigDecimal finalScore = calculateDictationRankScore(
+            dictationSessionNo, correctCount, hintUsedCount, startDate, endDate
+        );
+
+        // 월별 랭킹 처리
+        try {
+            rankService.rankProcessing(
+                RankProcessingDto.builder()
+                    .userNo(userNo)
+                    .contentType(ContentTypeEnum.DICTATION.name())
+                    .score(finalScore) // BigDecimal 그대로
+                    .build()
+            );
+            log.info("[DICTATION 월랭 처리 완료] userNo={}, sessionNo={}, score={}",
+                userNo, dictationSessionNo, finalScore.toPlainString());
+        } catch (DataAccessException e) {
+            // 랭킹 실패가 본 처리 흐름을 망치지 않도록 예외만 로그
+            log.error("[DICTATION 월랭 처리 실패] userNo={}, sessionNo={}, score={}",
+                userNo, dictationSessionNo, finalScore.toPlainString());
+            throw new AppException("랭킹 처리에 실패하였습니다");
+        }
+    }
 }

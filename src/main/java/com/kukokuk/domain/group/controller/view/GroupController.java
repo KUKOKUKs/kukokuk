@@ -1,12 +1,18 @@
 package com.kukokuk.domain.group.controller.view;
 
+import com.kukokuk.common.constant.ContentTypeEnum;
 import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.Page;
+import com.kukokuk.common.exception.AppException;
+import com.kukokuk.common.util.DateUtil;
 import com.kukokuk.domain.group.service.GroupService;
 import com.kukokuk.domain.group.vo.Group;
+import com.kukokuk.domain.rank.dto.RankRequestDto;
+import com.kukokuk.domain.rank.service.RankService;
 import com.kukokuk.domain.twenty.service.TwentyService;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
 import com.kukokuk.security.SecurityUser;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +25,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -30,6 +37,7 @@ public class GroupController {
 
     private final GroupService groupService;
     private final TwentyService twentyService;
+    private final RankService rankService;
 
     /**
      * 그룹 메인 페이지
@@ -63,7 +71,7 @@ public class GroupController {
             log.info("검색어 있음: 검색 결과 노출");
             Map<String, Object> condition = new HashMap<>();
             condition.put("keyword", keyword);
-            model.addAttribute("groups", groupService.getGroups(page, condition));
+            model.addAttribute("groups", groupService.getGroups(page, condition, PaginationEnum.COMPONENT_ROWS));
         }
         
         int userNo = securityUser.getUser().getUserNo(); // 사용자 번호
@@ -72,12 +80,43 @@ public class GroupController {
         Group myGroup = null; // 내가 가입한 그룹
         List<TwentyRoom> myGroupTwentyRooms = Collections.emptyList(); // 스무고개 방 리스트
         Integer myGroupActiveRoomNo = null; // 그룹의 스무고개 방을 생성했을 경우 방 번호
+
         if (myGroupNo != null) {
             myGroup = groupService.getGroupByUserNo(userNo);
             myGroupTwentyRooms = twentyService.getRecentTodayTwentyRoomListByGroupNo(myGroupNo, 3);
             myGroupActiveRoomNo = twentyService.getRoomNoByRoomList(myGroupTwentyRooms);
-        }
 
+            // 그룹에 속해 있을 경우 컨텐츠별 그룹 랭킹 가져오기(스피드, 단계별, 받아쓰기)
+            // 컨텐츠별 데이터 조회하여 model에 담기
+            // thread-safety 이슈 방지로 rankRequestDto 객체 간의 독립성이 보장을 위해
+            // RankRequestDto 각각 적용
+            // 정확한 컨텐츠 타입을 입력 및 enum 메소드 활용하기 위해 ContentTypeEnum 사용
+            List<ContentTypeEnum> contentTypes = Arrays.asList(
+                ContentTypeEnum.SPEED // sppedQuizRanks에 사용
+                , ContentTypeEnum.LEVEL // levelQuizRanks에 사용
+                , ContentTypeEnum.DICTATION // dictationQuizRanks에 사용
+            );
+
+            String rankMonth = DateUtil.getToday("yyyy-MM"); // 당월
+
+            // contentTypes을 순환하며 model에 담기
+            // speedQuizRanks, levelQuizRanks, dictationQuizRanks
+            for (ContentTypeEnum type : contentTypes) {
+                RankRequestDto rankRequestDto = RankRequestDto.builder()
+                    .userNo(userNo)
+                    .groupNo(myGroupNo)
+                    .rankMonth(rankMonth)
+                    .limit(PaginationEnum.COMPONENT_ROWS)
+                    .contentType(type.name()) // String으로 변환
+                    .build();
+
+                // 속성명 동적으로 구성(컨텐츠 타입 소문자 + QuizRanks)
+                model.addAttribute(type.name().toLowerCase() + "QuizRanks",
+                    rankService.getContentRanksIncludeUserByMonth(rankRequestDto)
+                );
+            }
+        }
+        
         model.addAttribute("myGroup", myGroup);
         model.addAttribute("myGroupTwentyRooms", myGroupTwentyRooms);
         model.addAttribute("myGroupActiveRoomNo", myGroupActiveRoomNo);
@@ -145,6 +184,45 @@ public class GroupController {
         model.addAttribute("currentGroupActiveRoomNo", currentGroupActiveRoomNo);
 
         return "group/teacher";
+    }
+
+    /**
+     * 사용자의 그룹 탈퇴 요청
+     * @param groupNo 그룹 번호
+     * @param securityUser 사용자 정보
+     * @return 그룹 메인 페이지 요청
+     */
+    @PostMapping("/delete")
+    public String groupOut(
+        @RequestParam("groupNo") int groupNo
+        , @AuthenticationPrincipal SecurityUser securityUser) {
+        log.info("GroupController groupOut() 컨트롤러 실행 groupNo: {}", groupNo);
+
+        // 사용자가 속한 그룹인지 확인
+        int userNo = securityUser.getUser().getUserNo();
+        Group userGroup = groupService.getGroupByUserNo(userNo);
+        if (userGroup == null || userGroup.getGroupNo() != groupNo) {
+            throw new AppException("해당 그룹에 접근 권한이 없습니다.");
+        }
+
+        groupService.deleteGroupUser(userNo, groupNo); // 사용자 그룹 탈퇴 요청
+
+        return "redirect:/group"; // 그룹 페이지 요청
+    }
+
+    /**
+     * 사용자 그룹 가입 요청
+     * @param groupNo 그룹 번호
+     * @param securityUser 사용자 번호
+     * @return 그룹 메인 페이지 요청
+     */
+    @PostMapping("/join")
+    public String groupJoin(
+        @RequestParam("groupNo") int groupNo
+        , @AuthenticationPrincipal SecurityUser securityUser) {
+        log.info("GroupController groupJoin() 컨트롤러 실행 groupNo: {}", groupNo);
+        groupService.insertGroupUser(securityUser.getUser().getUserNo(), groupNo);
+        return "redirect:/group"; // 그룹 페이지 요청
     }
 
 }

@@ -30,16 +30,8 @@
     }
 }
 
-.study_tag_list {
-    display: flex;
-    align-items: center;
-    gap: var(--tinyGap);
-
-    .study_tag {
-        padding: var(--tinyPadding) var(--smallPadding);
-        border-radius: var(--tagBdrs);
-        font-size: var(--smallFontSize);
-
+.tag_list {
+    .tag {
         &.not_started {
             background-color: var(--lightRedColor);
         }
@@ -55,13 +47,6 @@
         &.essay_undone {
             background-color: var(--lightBlueColor);
         }
-    }
-}
-
-/* 학습 이력 컴포넌트 */
-#study-history-container {
-    .study_history_info:hover .study_title {
-        color: var(--primaryColor);
     }
 }
 
@@ -167,6 +152,10 @@
             background-color: transparent;
         }
 
+        &:has(.table) {
+            background-color: transparent;
+        }
+
         .mark {
             text-align: center;
         }
@@ -176,6 +165,11 @@
             background-color: var(--lightYellowColor); /* 형광펜 배경 */
             box-decoration-break: clone;
             -webkit-box-decoration-break: clone; /* 크롬/사파리용 */
+        }
+
+        .list {
+            list-style: circle;
+            padding-left: var(--baseIcon);
         }
     }
 }

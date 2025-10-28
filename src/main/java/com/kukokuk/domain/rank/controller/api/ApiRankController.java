@@ -5,7 +5,6 @@ import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.DateUtil;
 import com.kukokuk.common.util.ResponseEntityUtils;
-import com.kukokuk.domain.rank.dto.LevelRankDto;
 import com.kukokuk.domain.rank.dto.RankRequestDto;
 import com.kukokuk.domain.rank.dto.RanksResponseDto;
 import com.kukokuk.domain.rank.service.RankService;
@@ -35,8 +34,8 @@ public class ApiRankController {
      * 사용자 랭크를 포함한 랭크 목록 조회
      * <p>
      *     groupNo 입력 여부에 따라 그룹/일반 컨텐츠별 랭크 목록 조회 요청
-     * @param rankRequestDto 랭크 조회 조건 정보 DTO
-     * @param errors 필수 입력 항목 유요성 체크
+     * @param rankMonth 랭크를 조회할 월
+     * @param groupNo 그룹 번호
      * @param securityUser 사용자 정보
      * @return 랭크 목록 정보(userRank 정렬)
      */
@@ -88,24 +87,5 @@ public class ApiRankController {
         // 사용자 랭크 포함 랭크 목록 정보(groupNo 여부에 따라 그룹/일반 컨텐츠별 랭크 목록)
         return ResponseEntityUtils.ok(ranksResponseDtos);
     }
-    /**
-     * 레벨 기준 사용자를 포함한 상위 랭크 목록 조회
-     * @param securityUser 사용자 정보
-     * @return 레벨 랭크 목록 정보
-     */
-    @GetMapping("/level")
-    public ResponseEntity<ApiResponse<LevelRankDto>> levelRanks(
-        @AuthenticationPrincipal SecurityUser securityUser) {
-        log.info("ApiRankController levelRanks() 컨트롤러 실행");
 
-        int userNo = securityUser.getUser().getUserNo(); // 사용자 번호
-
-        // 레벨 기준 랭크 목록 조회
-        LevelRankDto levelRanks = rankService.getLevelRanksIncludeUser(
-            userNo
-            , PaginationEnum.COMPONENT_ROWS
-        );
-
-        return ResponseEntityUtils.ok(levelRanks);
-    }
 }

@@ -1,9 +1,26 @@
 import {apiErrorProcessByXhr} from '../../utils/api-error-util.js';
 
 /**
- * 통합 퀴즈 API 모듈
- * 서버와의 데이터 통신(AJAX)을 담당합니다.
+ * 북마트 추가/제거 비동기 요청
+ * @param quizNo 북마크 추가/제거할 퀴즈 번호
+ * @param isBookmarked 현재 북마트 상태
+ * @returns {Promise<*>} 성공여부
  */
+export async function apiToggleBookmark(quizNo, isBookmarked) {
+    console.log(`apiToggleBookmark() 실행 quizNo: ${quizNo}, isBookmarked: ${isBookmarked}`);
+    try {
+        const response = await $.ajax({
+            url: `/api/quiz/bookmark/${quizNo}`,
+            method: `${isBookmarked ? 'DELETE' : 'POST'}`,
+            dataType: "json"
+        });
+
+        console.log("apiToggleBookmark() API 요청 response:", response);
+        return response.data;
+    } catch (xhr) {
+        apiErrorProcessByXhr(xhr.responseJSON);
+    }
+}
 
 /**
  * 힌트 사용 API를 호출합니다.

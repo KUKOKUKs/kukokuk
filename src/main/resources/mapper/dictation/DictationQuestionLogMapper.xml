@@ -140,4 +140,38 @@
       ORDER BY
           L.CREATED_DATE ASC
 </select>
+
+    <!--
+    /**
+   * 랭킹 절대값 계산에 필요한 총 문항 수 조회
+   * @param dictationSessionNo 문제 세트 번호
+   * @return 총 문항 수
+   */
+  int getCountTotalQuestions(@Param("dictationSessionNo") int dictationSessionNo);
+    -->
+    <select id="getCountTotalQuestions" parameterType="int" resultType="int">
+        SELECT
+            COUNT(DISTINCT DICTATION_QUESTION_NO)
+        FROM
+            KUKOKUK_DICTATION_QUESTION_LOGS
+        WHERE
+            DICTATION_SESSION_NO = #{dictationSessionNo}
+    </select>
+
+    <!--
+    /**
+   * 랭킹 절대값 계산에 필요한 총 시도 횟수 조회
+   * @param dictationSessionNo 문제 세트 번호
+   * @return 총 시도 횟수
+   */
+    -->
+    <select id="getCountAllTries" parameterType="int" resultType="int">
+        SELECT
+            COUNT(DISTINCT DICTATION_QUESTION_NO)                                                   -- 시도한 문항 수(= 최소 1회)
+          + COUNT(DISTINCT CASE WHEN TRY_COUNT >= 2 THEN DICTATION_QUESTION_NO END)                 -- 2회차까지 간 문항 수
+        FROM
+            KUKOKUK_DICTATION_QUESTION_LOGS
+        WHERE
+            DICTATION_SESSION_NO = #{dictationSessionNo}
+    </select>
 </mapper>

@@ -1,10 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html layout:decorate="~{layout/base}" th:with="menu='study', title='학습 이력'">
+<div layout:fragment="content">
+    <div id="main-content" class="content_container">
+        <div class="content_info">
+            <div class="content_title">
+                <iconify-icon icon="twemoji:books"></iconify-icon>
+                학습 이력
+            </div>
 
-</body>
+            <div class="component small_list_component h_100">
+                <div class="tiny_list_component full show_scroll">
+                    <div th:each="log : ${studyLogs.items}"
+                       class="component_info small with_icon history_info_list tiny_gap">
+                        <div class="list_info">
+                            <div class="history_info tiny_font">
+                                <span class="bold color_blue" th:text="|[${log.difficulty}단계]|">[n단계]</span>
+                                <span class="bold"
+                                      th:text="${log.status == 'COMPLETED'} ? '학습완료' : '학습중'"
+                                      th:classappend="${log.status == 'COMPLETED'} ? 'color_primary' : 'color_red'">학습 상태</span>
+                                <!--/* COMPLETED 일 경우 시작일부터 종료일 */-->
+                                <span th:if="${log.status == 'COMPLETED'}"
+                                      th:text="${#dates.format(log.startedDate, 'yyyy.M.d')} + '~' + ${#dates.format(log.updatedDate, 'yyyy.M.d')}"></span>
+                                <!--/* IN_PROGRESS 일 경우 시작일부터 */-->
+                                <span th:if="${log.status == 'IN_PROGRESS'}"
+                                      th:text="${#dates.format(log.startedDate, 'yyyy.M.d')} + '~'"></span>
+                            </div>
+
+                            <p class="history_title text_ellipsis" th:text="${log.dailyStudyTitle}">일일학습 제목</p>
+                        </div>
+
+                        <div class="btn_list tiny_gap w_max_content">
+                            <a th:href="@{/study/{dailyStudyNo}(dailyStudyNo=${log.dailyStudyNo})}"
+                               class="btn small w_max_content"
+                               th:text="|학습(${log.completedCardCount}/${log.totalCardCount})|"
+                               th:classappend="${log.completedCardCount >= log.totalCardCount ? 'white' : 'primary'}">학습(0/5)</a>
+
+                            <a th:href="@{/study/{dailyStudyNo}(dailyStudyNo=${log.dailyStudyNo}, progressIndex=${log.totalCardCount})}"
+                               class="btn small w_max_content"
+                               th:text="|문제(${log.successedQuizCount}/${log.totalQuizCount})|"
+                               th:classappend="${log.successedQuizCount >= log.totalQuizCount ? 'white' : 'primary'}">문제(0/5)</a>
+
+                            <a th:href="@{/study/{dailyStudyNo}/essay(dailyStudyNo=${log.dailyStudyNo})}"
+                               class="btn small w_max_content"
+                               th:classappend="${log.essaySubmitted ? 'white' : 'full_blue highlight'}">AI&nbsp;피드백</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!--/* pagination(총 페이지 수가 1보다 클 경우) */-->
+                <th:block th:replace="~{fragments/common/pagination :: pagination-fragment(
+                    paging=${studyLogs.pagination}
+                    , conditionQuery=${studyLogs.getConditionQuery()}
+                )}"></th:block>
+            </div>
+        </div>
+
+        <a th:href="@{/study}" class="btn white">오늘의 학습으로</a>
+    </div>
+
+    <div id="sub-content" class="content_container">
+        <th:block th:replace="~{fragments/common/profile :: profile-fragment}"></th:block>
+        <th:block th:replace="~{fragments/common/quest :: quest-fragment}"></th:block>
+    </div>
+</div>
 </html>
