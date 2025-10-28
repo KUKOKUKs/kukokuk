@@ -7,7 +7,6 @@ import com.kukokuk.common.exception.AppException;
 import com.kukokuk.domain.exp.dto.ExpProcessingDto;
 import com.kukokuk.domain.exp.service.ExpProcessingService;
 import com.kukokuk.domain.quiz.dto.QuizWithLogDto;
-import com.kukokuk.domain.study.dto.StudyCompleteViewDto;
 import com.kukokuk.domain.study.dto.StudyEssayViewDto;
 import com.kukokuk.domain.study.dto.StudyProgressViewDto;
 import com.kukokuk.domain.study.service.StudyService;
@@ -275,19 +274,19 @@ public class StudyController {
         return "study/progress";
     }
 
-    @GetMapping("/{dailyStudyNo}/complete")
-    public String studyComplete(
-        @PathVariable("dailyStudyNo") int dailyStudyNo,
-        @AuthenticationPrincipal SecurityUser securityUser,
-        Model model) {
-
-        StudyCompleteViewDto dto = studyService.getStudyCompleteView(dailyStudyNo, securityUser.getUser().getUserNo());
-
-        model.addAttribute("data", dto);
-        model.addAttribute("dailyStudyNo", dailyStudyNo);
-
-        return "study/complete";
-    }
+//    @GetMapping("/{dailyStudyNo}/complete")
+//    public String studyComplete(
+//        @PathVariable("dailyStudyNo") int dailyStudyNo,
+//        @AuthenticationPrincipal SecurityUser securityUser,
+//        Model model) {
+//
+//        StudyCompleteViewDto dto = studyService.getStudyCompleteView(dailyStudyNo, securityUser.getUser().getUserNo());
+//
+//        model.addAttribute("data", dto);
+//        model.addAttribute("dailyStudyNo", dailyStudyNo);
+//
+//        return "study/complete";
+//    }
 
     @GetMapping("/{dailyStudyNo}/essay")
     public String studyEssay(@PathVariable("dailyStudyNo") int dailyStudyNo,
@@ -295,10 +294,8 @@ public class StudyController {
         Model model) {
         log.info("studyEssay 컨트롤러 실행");
 
-        Integer userNo = securityUser != null ? securityUser.getUser().getUserNo() : null;
-        StudyEssayViewDto dto = studyService.getStudyEssayView(dailyStudyNo, userNo);
-
-        model.addAttribute("data", dto);
+        StudyEssayViewDto dto = studyService.getStudyEssayView(dailyStudyNo, securityUser.getUser().getUserNo());
+        model.addAttribute("studyEssayViewDto", dto);
 
         return "study/essay";
     }

@@ -20,6 +20,17 @@ export function setGradeOptions(count) {
     return options;
 }
 
+// 힌트 개수 증감 효과
+export function actionHint(hintCount, $hintElement) {
+    if ($hintElement.length) {
+        // 액션 효과 추가
+        $hintElement.text(hintCount).addClass("action");
+
+        // 일정 시간 지난 후 제거
+        setTimeout(() => $hintElement.removeClass("action"), 200);
+    }
+}
+
 /**
  * FormData 모든 정보 로그
  * @param formData FormData

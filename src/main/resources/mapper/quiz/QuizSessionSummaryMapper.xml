@@ -17,9 +17,44 @@
         <result property="percentile" column="PERCENTILE"/>
         <result property="averageTimePerQuestion" column="AVERAGE_TIME_PER_QUESTION"/>
         <result property="quizMode" column="QUIZ_MODE"/>
+        <result property="difficulty" column="DIFFICULTY"/>
         <result property="createdDate" column="CREATED_DATE"/>
         <result property="updatedDate" column="UPDATED_DATE"/>
     </resultMap>
+
+    <!--
+         * 사용자의 특정 컨텐츠타입의 최신 세션 목록 정보 조회
+         * @param userNo 사용자 번호
+         * @param quizMode 조회할 퀴즈모드
+         * @param sessionCount 조회할 개수
+         * @return 최근 등록 정렬된 세션 목록 정보
+        List<QuizSessionSummary> getQuizSessionSummaryByUserNoAndMode(
+            @Param("userNo") int userNo
+            , @Param("quizMode") String quizMode
+            , @Param("sessionCount") int sessionCount);
+    -->
+    <select id="getQuizSessionSummaryByUserNoAndMode" resultMap="quizSessionSummaryMap">
+        SELECT S.SESSION_NO
+             , S.USER_NO
+             , S.TOTAL_QUESTION
+             , S.TOTAL_TIME_SEC
+             , S.CORRECT_ANSWERS
+             , S.PERCENTILE
+             , S.AVERAGE_TIME_PER_QUESTION
+             , S.QUIZ_MODE
+             , S.CREATED_DATE
+             , S.UPDATED_DATE
+             , IF(S.QUIZ_MODE = 'level', (SELECT DISTINCT M.DIFFICULTY
+                                          FROM KUKOKUK_QUIZ_RESULTS R
+                                                   JOIN KUKOKUK_QUIZ_MASTERS M ON R.QUIZ_NO = M.QUIZ_NO
+                                          WHERE R.SESSION_NO = S.SESSION_NO
+                                          LIMIT 1), NULL) AS DIFFICULTY
+        FROM KUKOKUK_QUIZ_SESSION_SUMMARIES S
+        WHERE S.USER_NO = #{userNo}
+          AND S.QUIZ_MODE = #{quizMode}
+        ORDER BY S.UPDATED_DATE DESC
+        LIMIT #{sessionCount}
+    </select>
 
     <!--
         퀴즈 세션 요약 정보를 저장한다.

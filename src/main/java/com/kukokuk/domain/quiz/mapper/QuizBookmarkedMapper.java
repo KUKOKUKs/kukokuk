@@ -3,6 +3,7 @@ package com.kukokuk.domain.quiz.mapper;
 import com.kukokuk.domain.quiz.dto.BookmarkedQuizDto;
 import com.kukokuk.domain.quiz.vo.QuizBookmarked;
 import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,58 +14,33 @@ import org.apache.ibatis.annotations.Param;
 public interface QuizBookmarkedMapper {
 
     /**
-     * 특정 사용자와 퀴즈 번호에 대해 북마크 여부를 조회한다.
-     *
-     * @param userNo 사용자 번호
-     * @param quizNo 퀴즈 번호
-     * @return 북마크 정보 (존재하지 않으면 null)
+     * 조건에 맞는 북마크한 이력 및 문제 목록 정보 조회
+     * @param condition 조회할 데이터의 조건 값들이 담겨 있는 Map 객체 offset, rows, userNo
+     * @return 북마크한 이력 및 문제 목록 정보
      */
-    QuizBookmarked getQuizBookmarkedByUserNoAndQuizNo(@Param("userNo") int userNo,
-        @Param("quizNo") int quizNo);
+    List<BookmarkedQuizDto> getBookmarkQuizzes(Map<String, Object> condition);
+
+    /**
+     * 조회할 데이터의 총 행의 수 조회
+     * @param condition 조회할 데이터의 조건 값들이 담겨 있는 Map 객체
+     * @return 조회할 데이터의 총 데이터 행의 수
+     */
+    int getTotalRows(int userNo);
 
     /**
      * 퀴즈 북마크 등록
      *
      * @param quizBookmarked 북마크 정보
-     * @return 등록된 row 수
      */
-    int insertQuizBookmarked(QuizBookmarked quizBookmarked);
+    void insertQuizBookmarked(QuizBookmarked quizBookmarked);
 
     /**
      * 퀴즈 북마크 삭제
      *
      * @param userNo 사용자 번호
      * @param quizNo 퀴즈 번호
-     * @return 삭제된 row 수
      */
-    int deleteQuizBookmarkedByUserNoAndQuizNo(@Param("userNo") int userNo,
+    void deleteQuizBookmarkedByUserNoAndQuizNo(@Param("userNo") int userNo,
         @Param("quizNo") int quizNo);
 
-    /**
-     * 해당 사용자의 모든 북마크 목록 조회
-     *
-     * @param userNo 사용자 번호
-     * @return 북마크 리스트
-     */
-    List<QuizBookmarked> getQuizBookmarkedListByUserNo(int userNo);
-
-    /**
-     * 해당 사용자의 북마크 퀴즈 목록 조회 (페이징)
-     * @param userNo 사용자 번호
-     * @param offset 시작 위치
-     * @param limit 조회 개수
-     * @return List<BookmarkedQuizDto>
-     */
-    List<BookmarkedQuizDto> getBookmarkedQuizzes(
-        @Param("userNo") int userNo,
-        @Param("offset") int offset,
-        @Param("limit") int limit
-    );
-
-    /**
-     * 해당 사용자의 북마크 퀴즈 총 개수 조회
-     * @param userNo 사용자 번호
-     * @return int (북마크된 퀴즈 개수)
-     */
-    int getCountBookmarkedQuizzes(int userNo);
 }

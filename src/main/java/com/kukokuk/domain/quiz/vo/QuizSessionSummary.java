@@ -1,5 +1,7 @@
 package com.kukokuk.domain.quiz.vo;
 
+import com.kukokuk.domain.quiz.util.QuizScoreUtil;
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,10 +22,27 @@ public class QuizSessionSummary {
     private int percentile;                 // 상위 퍼센티지
     private float averageTimePerQuestion;   // 문항당 평균 소요시간
 
+    private String difficulty;              // 단계별일 경우 포함
+
     private Date createdDate;
     private Date updatedDate;
 
     public boolean isSpeedMode() {
         return "speed".equals(quizMode);
+    }
+
+    /**
+     * 이력 조회 시 사용할 절대값 점수 계산 게터
+     * 스피드: 복잡한 점수 계산 (기본점수 + 시간보너스)
+     * 단계별: 정답률 기반 점수 (정답수/전체문제수 * 100)
+     *
+     * @return 계산된 절대값 점수
+     */
+    public BigDecimal getAbsoluteScore() {
+        if (isSpeedMode()) {
+            return QuizScoreUtil.calculateSpeedScore(correctAnswers, totalQuestion, totalTimeSec);
+        } else {
+            return QuizScoreUtil.calculateLevelScore(correctAnswers, totalQuestion);
+        }
     }
 }

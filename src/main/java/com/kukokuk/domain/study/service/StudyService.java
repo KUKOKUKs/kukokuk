@@ -703,24 +703,24 @@ public class StudyService {
      * @param userNo
      */
     @Transactional(readOnly = true)
-    public StudyEssayViewDto getStudyEssayView(int dailyStudyNo, Integer userNo) {
+    public StudyEssayViewDto getStudyEssayView(int dailyStudyNo, int userNo) {
         log.info("getStudyEssayView 서비스 실행");
 
-        StudyEssayViewDto dto = new StudyEssayViewDto();
+        StudyEssayViewDto studyEssayViewDto = new StudyEssayViewDto();
+
+        // 학습 자료 조회
+        studyEssayViewDto.setDailyStudy(dailyStudyMapper.getDailyStudyByNo(dailyStudyNo));
 
         // 서술형 퀴즈 데이터 조회
         DailyStudyEssayQuiz essay = dailyStudyEssayQuizMapper.getEssayQuizByDailyStudyNo(
             dailyStudyNo);
-        dto.setEssay(essay);
+        studyEssayViewDto.setEssay(essay);
 
         // 사용자의 서술형 퀴즈 이력 조회
-        if (userNo != null) {
-            DailyStudyEssayQuizLog essayLog = dailyStudyEssayQuizMapper.getEssayQuizLogByQuizNoAndUserNo(
-                essay.getDailyStudyEssayQuizNo(), userNo);
-            dto.setEssayLog(essayLog);
-        }
+        studyEssayViewDto.setEssayLog(dailyStudyEssayQuizMapper.getEssayQuizLogByQuizNoAndUserNo(
+            essay.getDailyStudyEssayQuizNo(), userNo));
 
-        return dto;
+        return studyEssayViewDto;
     }
 
     /**

@@ -1,80 +1,74 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/center}">
-
+<html layout:decorate="~{layout/custom-nav-base}" th:with="title='논술형 AI 피드백 받기'">
 <div layout:fragment="content">
+    <div id="main-content" class="content_container">
+        <div class="content_info">
+            <div class="content_title">
+                <iconify-icon icon="streamline-kameleon-color:pencil-2-duo"></iconify-icon>
+                <span th:text="${studyEssayViewDto.dailyStudy.title}">학습 제목</span>
 
-    <!--/* 왼쪽 퀴즈 영역 */-->
-    <div class="quiz_area">
-        <div class="study_quiz_wrapper">
-            <!-- 퀴즈 번호 및 제목 -->
-            <div class="study_quiz_info">
-                <div class="icon_btn primary">
-                    <iconify-icon icon="line-md:question-circle-twotone"></iconify-icon>
-                </div>
-                <span class="study_quiz_text">문제</span>
-            </div>
-
-            <!-- 문제 박스 -->
-            <div class="study_quiz_box"
-                th:text="${data.essay.question}"></div>
-
-            <!-- 보기 리스트 -->
-            <div class="study_quiz_option_wrapper">
-                <div class="study_quiz_info">
-                    <div class="icon_btn">
-                        <iconify-icon icon="line-md:pencil-twotone"></iconify-icon>
-                    </div>
-                    <span class="study_quiz_text">답변하기</span>
+                <div class="progress_end_btn">
+                    <button type="button" class="btn tiny">종료하기</button>
                 </div>
             </div>
+        </div>
 
-            <!--/* 답변 박스 */-->
-            <textarea class="study_quiz_box answer" id="essay-answer-input" th:text="${data.essayLog != null ? data.essayLog.userAnswer : ''}">
-
-            </textarea>
-
-            <!--/* 버튼  */-->
-            <div class="btn_list">
-                <button type="button" class="btn primary d_flex tiny_gap" id="essay-feedback-btn">
-                    <div class="icon_btn">
-                        <iconify-icon icon="mingcute:ai-fill"></iconify-icon>
-                    </div>
-                    AI 피드백
-                </button>
-                <button type="button" class="btn white" id="essay-save-btn">임시저장하기</button>
+        <div class="component">
+            <div class="callout center title_font box_shadow_none"
+                 style="--callout-color: transparent;">
+                <iconify-icon icon="streamline-color:help-question-1"></iconify-icon>
             </div>
 
-            <div class="d_flex justify_content_end">
-                <a href="/study" type="button" class="btn small gray">돌아가기</a>
-            </div>
+            <p class="callout_info bold large_font tac" th:text="${studyEssayViewDto.essay.question}">문제</p>
+        </div>
+
+        <label for="essay-answer-input" class="component h_100 textarea_info">
+            <textarea id="essay-answer-input"
+                      placeholder="입력해 주세요"
+                      th:text="${studyEssayViewDto.essayLog != null ? studyEssayViewDto.essayLog.userAnswer : ''}"></textarea>
+        </label>
+
+
+        <div class="btn_list">
+            <button type="button" class="btn full_blue tiny_gap" id="essay-feedback-btn">
+                <iconify-icon icon="mingcute:ai-fill"></iconify-icon>
+                AI 피드백
+            </button>
+            <button type="button" class="btn white" id="essay-save-btn">임시저장</button>
         </div>
     </div>
 
-    <!--/* 오른쪽 피드백 영역 */-->
-    <div class="feedback_area">
-        <div class="essay_feedback_container">
-            <div class="feedback_title">
+    <div id="sub-content"
+         class="content_container essay_feedback_container"
+         th:with="isEssayAiLog=${studyEssayViewDto.essayLog?.aiFeedback != null}"
+         th:data-quiz-no="${studyEssayViewDto.essay.dailyStudyEssayQuizNo}"
+         th:data-quiz-log-no="${studyEssayViewDto.essayLog?.dailyStudyEssayQuizLogNo}"
+         th:classappend="${isEssayAiLog ? '' : 'close'}">
+        <div class="content_info">
+            <div class="content_title highlight">
+                <iconify-icon class="color_blue" icon="mingcute:ai-fill"></iconify-icon>
                 AI 피드백
             </div>
-            <div id="essay-feedback-box-container" class="essay_feedback_box_container">
-                <!-- AI 피드백이 동적으로 생성되어 추가하는 부분 -->
+        </div>
+
+        <div id="essay-feedback-list" class="content_info base_gap">
+            <div th:if="${isEssayAiLog}"
+                 th:each="section : ${studyEssayViewDto.essayLog?.feedbackSections}"
+                 class="component small_list_component essay_feedback_box reveal">
+                <div class="component_title">
+                    <p class="title_info" th:text="|${section.icon} ${section.title}|"></p>
+                </div>
+                <div class="component_info w_100">
+                    <th:block th:each="item : ${section.items}" th:text="|${item.text} |"></th:block>
+                </div>
             </div>
         </div>
     </div>
 
+    <div th:replace="~{fragments/modal/modal-essay-exit :: modal-essay-exit-fragment}"></div>
 </div>
 
 <th:block layout:fragment="script">
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        //SSR로 조회한 data.essayLog에서 dailyStudyEssayQuizLogNo를 변수로 저장해놓기
-        let essayQuizLogNo  = /*[[${data.essayLog?.dailyStudyEssayQuizLogNo}]]*/ null;
-        const essayQuizNo = /*[[${data.essay?.dailyStudyEssayQuizNo}]]*/ null;
-        const essayQuizLogAiFeedback = /*[[${data.essayLog?.aiFeedback}]]*/ null;
-        /*]]>*/
-    </script>
     <script type="module" th:src="@{/js/modules/study/study-essay.js}"></script>
 </th:block>
 </html>

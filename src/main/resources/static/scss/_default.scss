@@ -115,7 +115,7 @@
     position: relative;
 
     &:has(.callout) {
-        margin-top: var(--basePadding);
+        margin-top: var(--position, var(--basePadding));
     }
 }
 
@@ -176,7 +176,7 @@
     }
 
     &.left {
-        left: var(--basePadding);
+        left: var(--position, var(--basePadding));
 
         &::after {
             border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
@@ -188,7 +188,7 @@
     }
 
     &.right {
-        right: var(--basePadding);
+        right: var(--position, var(--basePadding));
 
         &::after {
             border-top: 5px solid var(--callout-color, var(--primaryColor)); // 기본은 primaryColor
@@ -220,6 +220,7 @@
         padding: var(--tinyPadding);
         background-color: #fff;
         font-size: var(--fixEtcTinyFontSize);
+        color: var(--blackColor);
         border-radius: var(--bdrs);
         box-shadow: var(--bxsh);
         position: absolute;
@@ -252,7 +253,7 @@
     gap: var(--smallGap);
 
     &.limit {
-        max-height: 150px;       /* 처음에 1.5개 정도 보이게 */
+        max-height: 200px;       /* 처음에 1.5개 정도 보이게 */
         transition: max-height var(--trst);
 
         &.open {
@@ -287,16 +288,6 @@
     grid-template-columns: repeat(var(--cols, 3), 1fr); /* --cols 없으면 3분할로 기본값 적용 */
     gap: var(--tinyGap);
 
-    /* 리스트가 1개일 때 → 전체 차지 */
-    &:has(.grid_list:first-child:last-child) {
-        grid-template-columns: 1fr;
-    }
-
-    /* 리스트가 2개일 때 → 2등분 */
-    &:has(.grid_list:nth-child(2):last-child) {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
     &.column {
         grid-template-columns: 1fr !important; /* 한 라인씩 세로형 리스트 */
     }
@@ -305,7 +296,7 @@
         grid-column: 1 / -1; /* 특정 그리드 요소를 전체 컬럼을 차지 */
     }
 
-    .grid_list {
+    >.grid_list {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -321,7 +312,7 @@
             align-self: flex-end;
         }
 
-        &:has(input[type=radio]) {  /* 리스트가 라디오 버튼으로 사용될 경우 */
+        &:has(> input[type=radio]) {  /* 리스트가 라디오 버튼으로 사용될 경우 */
             cursor: pointer;
 
             input[type=radio] {
@@ -331,12 +322,12 @@
                 opacity: 0;
             }
 
-            &:has(input[type=radio]:checked) {
-                background-color: var(--primaryColor);
-                color: #fff;
+            &:has(> input[type=radio]:checked) {
+                background-color: var(--bgColor, var(--primaryColor));
+                color: var(--fontColor, #fff);
 
                 .component_sub_title {
-                    color: #fff;
+                    color: var(--fontColor, #fff);
                 }
             }
         }
@@ -416,6 +407,17 @@
     }
 }
 
+/* 이력 컴포넌트 */
+.history_info_list {
+    .list_info {
+        gap: 0;
+    }
+
+    &:hover .history_title {
+        color: var(--primaryColor);
+    }
+}
+
 /* 문단 앞 인덱스/마커가 있는 리스트 */
 .index_list {
     display: grid;
@@ -441,6 +443,7 @@
     align-items: flex-start;
     gap: var(--tinyGap);
     text-align: left;
+    cursor: pointer;
 
     .marker {
         flex: 0 0 auto;
@@ -598,6 +601,20 @@
                 background-color: var(--primaryColor);
             }
         }
+    }
+}
+
+/* tag list */
+.tag_list {
+    display: flex;
+    align-items: center;
+    gap: var(--tinyGap);
+
+    .tag {
+        width: max-content;
+        padding: var(--tinyPadding) var(--smallPadding);
+        border-radius: var(--tagBdrs);
+        font-size: var(--smallFontSize);
     }
 }
 
@@ -816,6 +833,14 @@
     font-size: var(--subFontSize);
 }
 
+.textarea_info {
+    position: relative;
+
+    &:has(textarea:focus) {
+        border: 2px solid var(--primaryColor);
+    }
+}
+
 .search_form_wrap {
     display: flex;
     justify-content: space-between;
@@ -851,7 +876,7 @@
 /* tab content */
 .tab_btn_list {
     width: 100%;
-    background-color: #fff;
+    background-color: var(--lightGrayColor);
     display: flex;
     align-items: center;
     border-radius: var(--bdrs) var(--bdrs) 0 0;
@@ -868,6 +893,7 @@
         align-items: center;
         justify-content: center;
         font-size: var(--smallFontSize);
+        background-color: var(--lightGrayColor);
         color: var(--grayColor);
         border-right: var(--baseBorder);
         cursor: pointer;
@@ -877,7 +903,7 @@
             display: none;
             width: calc(100% + (var(--bdrs) * 4));
             height: calc(var(--bdrs) * 2);
-            background-color: var(--subColor);
+            background-color: #fff;
             position: absolute;
             bottom: -1px;
             left: 50%;
@@ -889,7 +915,7 @@
                 display: block;
                 width: calc(var(--bdrs) * 2);
                 height: calc(var(--bdrs) * 2);
-                background-color: #fff;
+                background-color: var(--lightGrayColor);
                 border-width: 0 1px 1px 0;
                 border-style: solid;
                 border-color: var(--borderColor);
@@ -905,7 +931,7 @@
                 display: block;
                 width: calc(var(--bdrs) * 2);
                 height: calc(var(--bdrs) * 2);
-                background-color: #fff;
+                background-color: var(--lightGrayColor);
                 border-width: 0 0 1px 1px;
                 border-style: solid;
                 border-color: var(--borderColor);
@@ -920,7 +946,7 @@
         &.selected {
             font-weight: bold;
             color: var(--primaryColor);
-            background-color: var(--subColor);
+            background-color: #fff;
             border-bottom-color: transparent;
             border-left: var(--baseBorder);
             border-radius: var(--bdrs) var(--bdrs) 0 0;
@@ -954,6 +980,7 @@
 
 .tab_content {
     display: none;
+    border-radius: 0 0 var(--bdrs) var(--bdrs);
 
     &.selected {
         display: block;
@@ -1162,6 +1189,7 @@
         width: var(--smallIconImage);
     }
 }
+
 /* 보기 리스트 관련 */
 #quiz-options {
     .option_btns {
@@ -1187,6 +1215,36 @@
     }
 }
 
+/* 상세페이지 정답 결과란 */
+.check_correct {
+    width: 100%;
+    padding: var(--tinyPadding);
+    background-color: #fff;
+    border-radius: var(--bdrs);
+    overflow: hidden;
+    position: relative;
+
+    &::after {
+        content: '정답 확인';
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--blueColor);
+        text-align: center;
+        background-color: #fff;
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    &.checked::after {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
 
 /* 콘텐츠 타이틀 우측 이벤트 버튼 */
 .content_switcher {
@@ -1420,13 +1478,27 @@
     }
 }
 
+/* 힌트 사용 버튼 */
+.callout_hint_btn {
+    border-radius: var(--bdrs);
+    background-color: var(--bgColor, var(--yellowColor));
+    color: var(--ftColor, var(--blackColor));
+    position: relative;
+
+    /* 아이콘이 아닌 직접 텍스트로 입력한 경우 스타일 조정 */
+    .initial_hint {
+        font-size: var(--tinyFontSize); /* 글자 크기 */
+        font-weight: 500;               /* 아이콘 두께에 맞춰 조정 */
+        line-height: 1;                 /* 글자 높이 */
+        letter-spacing: -0.4em;         /* 자간 */
+        transform: translateX(-0.15em); /* 자간 조정으로 인한 위치 조정 */
+    }
+}
+
 /* 진행 종료 버튼 */
 .progress_end_btn {
     font-size: var(--smallFontSize);
-    position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
+    margin-left: auto;
 }
 
 /* 자주 사용되는 요소 속성 */
@@ -1449,6 +1521,10 @@
 
 .ov_v {
     overflow: visible !important;
+}
+
+.ov_h {
+    overflow: hidden !important;
 }
 
 .d_flex {
@@ -1488,6 +1564,10 @@
     align-items: flex-end !important; /* 끝 정렬 */
 }
 
+.gap_0 {
+    gap: 0 !important;
+}
+
 .base_gap {
     gap: var(--baseGap) !important; /* 기본 gap */
 }
@@ -1510,7 +1590,8 @@
 
 .h_100 {
     height: 100% !important;
-    overflow: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden;
 }
 
 .full {
@@ -1528,6 +1609,10 @@
     max-height: max-content !important;
 }
 
+.pd_base {
+    padding: var(--basePadding) !important;
+}
+
 .pd_0 {
     padding: 0 !important;
 }
@@ -1536,12 +1621,16 @@
     padding-left: 0 !important;
 }
 
+.pd_tiny {
+    padding: var(--tinyPadding) !important;
+}
+
 .pt_tiny {
-    padding-top: var(--tinyGap) !important;
+    padding-top: var(--tinyPadding) !important;
 }
 
 .pb_tiny {
-    padding-bottom: var(--tinyGap) !important;
+    padding-bottom: var(--tinyPadding) !important;
 }
 
 .pb_0 {
@@ -1553,16 +1642,20 @@
     padding-bottom: 0 !important;
 }
 
-.pd_base {
-    padding: var(--basePadding) !important;
-}
-
 .pt_base {
     padding-top: var(--basePadding) !important;
 }
 
 .pb_base {
     padding-bottom: var(--basePadding) !important;
+}
+
+.pd_small {
+    padding: var(--smallPadding) !important;
+}
+
+.ml_a {
+    margin-left: auto !important;
 }
 
 /* 테두리 */
@@ -1575,7 +1668,15 @@
 }
 
 .border_none {
-    border: none;
+    border: none !important;
+}
+
+.bt_none {
+    border-top: none !important;
+}
+
+.border_base {
+    border: var(--baseBorder);
 }
 
 /* 그림자 */
@@ -1592,16 +1693,20 @@
     background: none !important;
 }
 
+.bg_base {
+    background-color: var(--baseBackground) !important;
+}
+
+.bg_white {
+    background-color: #fff !important;
+}
+
 .bg_primary {
     background-color: var(--primaryColor) !important;
 }
 
 .bg_sub {
     background-color: var(--subColor) !important;
-}
-
-.bg_light_gray {
-    background-color: var(--lightGrayColor) !important;
 }
 
 .bg_blue {
@@ -1614,6 +1719,22 @@
 
 .bg_yellow {
     background-color: var(--yellowColor) !important;
+}
+
+.bg_light_gray {
+    background-color: var(--lightGrayColor) !important;
+}
+
+.bg_light_blue {
+    background-color: var(--lightBlueColor) !important;
+}
+
+.bg_light_red {
+    background-color: var(--lightRedColor) !important;
+}
+
+.bg_light_yellow {
+    background-color: var(--lightYellowColor) !important;
 }
 
 /* 글자 */

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/custom-nav-base}">
+<html layout:decorate="~{layout/custom-nav-base}" th:with="title='학습하기'">
 <!--/* 학습 진행화면에서 표시할 네비바 */-->
 <th:block layout:fragment="custom-nav-fragment">
     <div th:replace="~{fragments/study/study-nav :: study-nav-fragment(studyProgressDto=${studyProgressDto}, progressIndex=${progressIndex})}"></div>
@@ -26,43 +26,63 @@
             <div class="component tiny_list_component study_progress h_100 pd_0"
                  style="--cols: 14; --indexCols: 1;">
                 <th:block th:each="item : ${studyCard.studyCardContent}">
-                    <div th:if="${item.type == 'paragraph'}" class="component_info">
+                    <div th:if="${item.isStringType()} and ${item.type} == 'paragraph'" class="component_info">
                         <div class="index_list">
                             <div class="mark">📖</div>
                             <p class="paragraph" th:utext="${item.asString()}">학습내용 paragraph</p>
                         </div>
                     </div>
 
-                    <div th:if="${item.type == 'definition'}" class="component_info">
+                    <div th:if="${item.isStringType()} and ${item.type} == 'definition'" class="component_info">
                         <div class="index_list">
                             <div class="mark">📌</div>
                             <p class="definition" th:utext="${item.asString()}">학습내용정의 definition</p>
                         </div>
                     </div>
 
-                    <div th:if="${item.type == 'example'}" class="component_info">
+                    <div th:if="${item.isStringType()} and ${item.type} == 'example'" class="component_info">
                         <div class="index_list">
                             <div class="mark">💡</div>
                             <p class="example" th:utext="${item.asString()}">학습내용예시 example</p>
                         </div>
                     </div>
 
-                    <div th:if="${item.type == 'quote'}" class="component_info">
+                    <div th:if="${item.isStringType()} and ${item.type} == 'quote'" class="component_info">
                         <div class="index_list">
                             <div class="mark">💬</div>
                             <p class="quote" th:utext="${item.asString()}">학습내용인용 quote</p>
                         </div>
                     </div>
 
-                    <ul th:if="${item.type == 'list'}" class="list">
-                        <li th:each="li : ${item.asList()}" th:utext="${li}">학습내용리스트 list</li>
-                    </ul>
+                    <div th:if="${item.list}" class="component_info">
+                        <ul class="list">
+                            <li th:each="li : ${item.asList()}" th:utext="${li}">학습내용리스트 list</li>
+                        </ul>
+                    </div>
 
-                    <table th:if="${item.type == 'table'}" class="table">
-                        <tr th:each="row : ${item.asTable()}">
-                            <td th:each="cell : ${row}" th:utext="${cell}">학습내용테이블 table</td>
-                        </tr>
-                    </table>
+                    <div th:if="${item.table}" class="component_info">
+                        <div class="border_base border_radius ov_h box_shadow">
+                            <table class="table">
+                                <colgroup>
+                                    <col style="width: 30%;">
+                                    <col th:each="i : ${#numbers.sequence(2, item.tableHeader().size())}"
+                                         th:style="|width: calc(70% / ${item.tableHeader().size() - 1});|">
+                                </colgroup>
+
+                                <thead>
+                                    <tr>
+                                        <th th:each="cell : ${item.tableHeader()}" th:utext="${cell}"></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr th:each="row : ${item.tableBody()}">
+                                        <td th:each="cell : ${row}" th:utext="${cell}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </th:block>
             </div>
         </div>

@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
 <!--/* id를 동적으로 반영(예: speed-ranks-component) */-->
-<div th:fragment="rank-component-fragment(ranksDto)"
-     th:id="${ranksDto.contentType.toLowerCase()} + '-ranks-component'"
-     class="component tiny_list_component ranks_component">
-    <div class="component_title">
+<th:block th:fragment="rank-component-fragment(ranksDto, useTitle)">
+    <div th:if="${useTitle}" class="component_title">
         <div class="title_info align_center">
             <iconify-icon th:if="${ranksDto.contentType == 'SPEED'}" icon="flat-color-icons:flash-on"></iconify-icon>
             <iconify-icon th:if="${ranksDto.contentType == 'LEVEL'}" icon="token-branded:step"></iconify-icon>
@@ -71,5 +69,5 @@
             </div>
         </div>
     </div>
-</div>
+</th:block>
 </html>

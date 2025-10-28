@@ -1,13 +1,10 @@
 package com.kukokuk.domain.study.controller.api;
 
-import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.dto.JobStatusResponse;
-import com.kukokuk.common.dto.Page;
 import com.kukokuk.common.exception.BadRequestException;
 import com.kukokuk.common.store.JobStatusStore;
 import com.kukokuk.common.util.ResponseEntityUtils;
-import com.kukokuk.domain.study.dto.DailyStudyLogDetailResponse;
 import com.kukokuk.domain.study.dto.DailyStudySummaryResponse;
 import com.kukokuk.domain.study.dto.EssayQuizLogRequest;
 import com.kukokuk.domain.study.dto.EssayQuizLogResponse;
@@ -43,18 +40,18 @@ public class ApiStudyController {
     private final ModelMapper modelMapper;
     private final JobStatusStore<DailyStudySummaryResponse> studyJobStatusStore;
 
-    /**
-     * POST /api/studies 아직 사용할 일 없어서 추후 수정 예정
-     */
-    @PostMapping()
-    public ResponseEntity<ApiResponse> createStudy() {
-
-        studyService.createDailyStudyByAi(3, 1);
-
-        return ResponseEntity
-            .ok()
-            .body(null);
-    }
+//    /**
+//     * POST /api/studies 아직 사용할 일 없어서 추후 수정 예정
+//     */
+//    @PostMapping()
+//    public ResponseEntity<ApiResponse> createStudy() {
+//
+//        studyService.createDailyStudyByAi(3, 1);
+//
+//        return ResponseEntity
+//            .ok()
+//            .body(null);
+//    }
 
     /**
      * GET /api/studies?rows=
@@ -85,11 +82,11 @@ public class ApiStudyController {
         return ResponseEntityUtils.ok(responses);
     }
 
-    /**
-     * POST /api/studies/logs
-     * 사용자의 학습자료에 대한 학습이력 생성
-     * 요청 바디 : { dailyStudyNo : 학습자료번호 }
-     */
+//    /**
+//     * POST /api/studies/logs
+//     * 사용자의 학습자료에 대한 학습이력 생성
+//     * 요청 바디 : { dailyStudyNo : 학습자료번호 }
+//     */
 //    @PostMapping("/logs")
 //    public ResponseEntity<ApiResponse<DailyStudyLog>> createDailyStudyLog(
 //        @RequestBody CreateStudyLogRequest createStudyLogRequest,
@@ -102,11 +99,11 @@ public class ApiStudyController {
 //        return ResponseEntityUtils.ok("사용자 학습 이력 생성 성공", log);
 //    }
 
-    /**
-     * PUT /api/studies/logs/{dailyStudyLogNo}
-     * 학습 이력 수정
-     * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
-     */
+//    /**
+//     * PUT /api/studies/logs/{dailyStudyLogNo}
+//     * 학습 이력 수정
+//     * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
+//     */
 //    @PutMapping("/logs/{dailyStudyLogNo}")
 //    public ResponseEntity<ApiResponse<DailyStudyLogResponse>> updateDailyStudyLog(
 //        @RequestBody UpdateStudyLogRequest updateStudyLogRequest,
@@ -121,11 +118,11 @@ public class ApiStudyController {
 //        return ResponseEntityUtils.ok("사용자 학습 이력 수정 성공", response);
 //    }
 
-    /**
-     * POST /api/studies/quizzes/logs
-     * 사용자의 학습퀴즈 이력 생성
-     * 요청 바디 : { dailyStudyQuizNo : 학습퀴즈번호. selectedChoice : 사용자가 선택한 보기 }
-     */
+//    /**
+//     * POST /api/studies/quizzes/logs
+//     * 사용자의 학습퀴즈 이력 생성
+//     * 요청 바디 : { dailyStudyQuizNo : 학습퀴즈번호. selectedChoice : 사용자가 선택한 보기 }
+//     */
 //    @PostMapping("/quizzes/logs")
 //    public ResponseEntity<ApiResponse<DailyStudyQuizLog>> createStudyQuizLog(
 //        @RequestBody StudyQuizLogRequest studyQuizLogRequest,
@@ -138,11 +135,11 @@ public class ApiStudyController {
 //        return ResponseEntityUtils.ok("사용자 퀴즈 이력 생성 성공", log);
 //    }
 
-    /**
-     * PUT /api/studies/logs/{dailyStudyLogNo}
-     * 학습 이력 수정
-     * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
-     */
+//    /**
+//     * PUT /api/studies/logs/{dailyStudyLogNo}
+//     * 학습 이력 수정
+//     * 요청 바디 : { studiedCardCount : 학습카드개수, status: 학습 상태 }
+//     */
 //    @PutMapping("/quizzes/logs/{studyQuizLogNo}")
 //    public ResponseEntity<ApiResponse<DailyStudyQuizLog>> updateStudyQuizLog(
 //        @RequestBody StudyQuizLogRequest studyQuizLogRequest,
@@ -236,7 +233,6 @@ public class ApiStudyController {
     }
 
     // 맞춤 학습 자료 폴링(최초 요청시 응답 받은 jobId)
-    // 왜 여기서 jobId로 JobStatusResponse을 가져오지 못할까..?
     @GetMapping("/status/{jobId}")
     public ResponseEntity<ApiResponse<JobStatusResponse<?>>> getStudiesByUserStatus(
         @PathVariable("jobId") String jobId) {
@@ -253,58 +249,58 @@ public class ApiStudyController {
         return ResponseEntityUtils.ok(status);
     }
 
-    /**
-     * [GET] /api/studies/logs
-     *
-     * 학습 히스토리 화면에서 사용자별 학습 이력(상세 정보 포함)을 조회
-     *
-     * 요청 파라미터:
-     *  - page : 현재 페이지 번호 (기본값 1)
-     *  - rows : 한 페이지당 행 수 (기본값 10)
-     *
-     * 응답 구조:
-     * {
-     *   "success": true,
-     *   "status": 200,
-     *   "message": "학습 이력 목록 조회 성공",
-     *   "data": [
-     *     {
-     *       "dailyStudyLogNo": 1,
-     *       "dailyStudyNo": 23,
-     *       "dailyStudyTitle": "속담 익히기 1일차",
-     *       "status": "COMPLETED",
-     *       "startedDate": "2025-10-09T13:20:00",
-     *       "updatedDate": "2025-10-09T14:10:00",
-     *       "totalCardCount": 5,
-     *       "completedCardCount": 5,
-     *       "totalQuizCount": 3,
-     *       "successedQuizCount": 2,
-     *       "essaySubmitted": true,
-     *       "difficulty": 3
-     *     }
-     *   ]
-     * }
-     *
-     * @param securityUser 현재 로그인한 사용자
-     * @param page 페이지 번호 (기본값 1)
-     * @param rows 한 페이지당 행 수 (기본값 10)
-     * @return 학습 이력 목록을 포함한 표준 ApiResponse
-     */
-    @GetMapping("/logs")
-    public ResponseEntity<ApiResponse<Page<DailyStudyLogDetailResponse>>> getStudyLogs(
-        @AuthenticationPrincipal SecurityUser securityUser
-        , @RequestParam(defaultValue = "1") int page
-        , @RequestParam(required = false) Integer rows) {
-        log.info("ApiStudyController getStudyLogs() 컨트롤러 실헹");
-
-        // 조회할 행의 수를 입력하지 않았을 경우 기본 값 10
-        if (rows == null) {
-            rows = PaginationEnum.DEFAULT_ROWS;
-        }
-
-        return ResponseEntityUtils.ok(
-            "학습 이력 목록 조회 성공"
-            , studyService.getStudyLogsDetail(securityUser.getUser().getUserNo(), page, rows)
-        );
-    }
+//    /**
+//     * [GET] /api/studies/logs
+//     *
+//     * 학습 히스토리 화면에서 사용자별 학습 이력(상세 정보 포함)을 조회
+//     *
+//     * 요청 파라미터:
+//     *  - page : 현재 페이지 번호 (기본값 1)
+//     *  - rows : 한 페이지당 행 수 (기본값 10)
+//     *
+//     * 응답 구조:
+//     * {
+//     *   "success": true,
+//     *   "status": 200,
+//     *   "message": "학습 이력 목록 조회 성공",
+//     *   "data": [
+//     *     {
+//     *       "dailyStudyLogNo": 1,
+//     *       "dailyStudyNo": 23,
+//     *       "dailyStudyTitle": "속담 익히기 1일차",
+//     *       "status": "COMPLETED",
+//     *       "startedDate": "2025-10-09T13:20:00",
+//     *       "updatedDate": "2025-10-09T14:10:00",
+//     *       "totalCardCount": 5,
+//     *       "completedCardCount": 5,
+//     *       "totalQuizCount": 3,
+//     *       "successedQuizCount": 2,
+//     *       "essaySubmitted": true,
+//     *       "difficulty": 3
+//     *     }
+//     *   ]
+//     * }
+//     *
+//     * @param securityUser 현재 로그인한 사용자
+//     * @param page 페이지 번호 (기본값 1)
+//     * @param rows 한 페이지당 행 수 (기본값 10)
+//     * @return 학습 이력 목록을 포함한 표준 ApiResponse
+//     */
+//    @GetMapping("/logs")
+//    public ResponseEntity<ApiResponse<Page<DailyStudyLogDetailResponse>>> getStudyLogs(
+//        @AuthenticationPrincipal SecurityUser securityUser
+//        , @RequestParam(defaultValue = "1") int page
+//        , @RequestParam(required = false) Integer rows) {
+//        log.info("ApiStudyController getStudyLogs() 컨트롤러 실헹");
+//
+//        // 조회할 행의 수를 입력하지 않았을 경우 기본 값 10
+//        if (rows == null) {
+//            rows = PaginationEnum.DEFAULT_ROWS;
+//        }
+//
+//        return ResponseEntityUtils.ok(
+//            "학습 이력 목록 조회 성공"
+//            , studyService.getStudyLogsDetail(securityUser.getUser().getUserNo(), page, rows)
+//        );
+//    }
 }
