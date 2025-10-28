@@ -100,18 +100,16 @@ configurations.all {
 }
 
 node {
-	version = '20.9.0'   // Node 자동 다운로드
-	download = true
+	version = '20.9.0'   // Node 버전
+	download = true       // ✅ 서버에 Node 없어도 자동 설치
 }
 
-tasks.register('buildScss', Exec) {
-	group = "build"
-	description = "Compile SCSS into CSS"
-	// ⚡ SCSS → CSS 변환
-	commandLine "npx", "sass", "--no-source-map", "src/main/resources/static/scss:src/main/resources/static/css"
+tasks.register("buildScss", com.github.gradle.node.npm.task.NpxTask) {
+	dependsOn("npmInstall")   // Node/Sass 설치 먼저
+	command = "sass"
+	args = ["--no-source-map", "src/main/resources/static/scss:src/main/resources/static/css"]
 }
 
-// build 시 자동 실행되도록 연결
 processResources {
 	dependsOn("buildScss")
 }
