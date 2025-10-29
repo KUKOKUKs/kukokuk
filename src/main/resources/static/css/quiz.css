@@ -1,0 +1,22 @@
+@charset "UTF-8";
+/* 라디오 버튼 숨기기 */
+.btn input[type=radio] {
+  position: absolute;
+  opacity: 0;
+}
+
+/* 기본 상태 - 흰색 버튼 */
+.btn.white {
+  border-color: var(--borderColor);
+  background-color: #fff;
+  color: var(--primaryColor);
+}
+
+/* 선택된 상태 유지 */
+.btn.white:has(input[type=radio]:checked) {
+  background-color: var(--primaryColor);
+  border-color: var(--primaryColor);
+  color: #fff;
+}
+
+/*# sourceMappingURL=quiz.css.map */

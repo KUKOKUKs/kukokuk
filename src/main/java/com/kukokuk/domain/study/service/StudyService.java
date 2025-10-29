@@ -598,6 +598,7 @@ public class StudyService {
         return dailyStudyQuizLogMapper.getStudyQuizLogsByNo(dailyStudyQuizLog.getDailyStudyQuizLogNo());
     }
 
+
     /**
      * 수정할 학습 퀴즈 이력 정보를 전달받아 수정
      * <p>

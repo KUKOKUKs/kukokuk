@@ -99,3 +99,5 @@ configurations.all {
 	// logback-classic은 log4j2와 충돌하므로 명시적으로 제거
 	exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
+
+
