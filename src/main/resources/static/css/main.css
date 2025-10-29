@@ -503,12 +503,10 @@ table th {
 .small_list_component.limit {
   max-height: 200px; /* 처음에 1.5개 정도 보이게 */
   transition: max-height var(--trst);
+  /* 세로 토글 버튼 */
 }
 .small_list_component.limit.open {
   max-height: 1000px; /* 충분히 큰 값으로 설정 */
-}
-.small_list_component.limit {
-  /* 세로 토글 버튼 */
 }
 .small_list_component.limit .vertical_toggle_btn .arrow {
   transition: transform var(--trst);
@@ -2657,6 +2655,7 @@ table th {
   justify-content: center;
   align-items: center;
   gap: var(--tinyGap);
+  /* 버튼 이벤트로 다른 독립 클래스 사용 */
 }
 .paging .page_link {
   display: inline-block;
@@ -2673,9 +2672,6 @@ table th {
 .paging .page_link:hover:not(.current) {
   color: var(--blackColor);
   background-color: var(--lightGrayColor);
-}
-.paging {
-  /* 버튼 이벤트로 다른 독립 클래스 사용 */
 }
 .paging .current {
   display: inline-block;
@@ -2716,3 +2712,5 @@ table th {
 .ranks_component .component_info .rank_score {
   margin-left: auto;
 }
+
+/*# sourceMappingURL=main.css.map */
