@@ -9,6 +9,8 @@ import com.kukokuk.domain.group.service.GroupService;
 import com.kukokuk.domain.group.vo.Group;
 import com.kukokuk.domain.rank.dto.RankRequestDto;
 import com.kukokuk.domain.rank.service.RankService;
+import com.kukokuk.domain.study.dto.TeacherDailyStudyResponse;
+import com.kukokuk.domain.study.service.GroupStudyService;
 import com.kukokuk.domain.twenty.service.TwentyService;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
 import com.kukokuk.security.SecurityUser;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class GroupController {
 
     private final GroupService groupService;
+    private final GroupStudyService groupStudyService;
     private final TwentyService twentyService;
     private final RankService rankService;
 
@@ -175,6 +178,40 @@ public class GroupController {
                 .toList();
             currentGroupTwentyRooms = twentyService.getRecentTodayTwentyRoomListByGroupNo(currentGroupNo, 3);
             currentGroupActiveRoomNo = twentyService.getRoomNoByRoomList(currentGroupTwentyRooms);
+            
+            // 교사 권한 사용자가 등록한 학습 자료 조회
+            List<TeacherDailyStudyResponse> teacherStudies = groupStudyService.getTeacherGroupDailyStudies(currentGroupNo);
+            model.addAttribute("teacherStudies", teacherStudies);
+
+            // 교사 권한 사용자가 생성한 그룹이 있을 컨텐츠별 그룹 랭킹 가져오기(스피드, 단계별, 받아쓰기)
+            // 컨텐츠별 데이터 조회하여 model에 담기
+            // thread-safety 이슈 방지로 rankRequestDto 객체 간의 독립성이 보장을 위해
+            // RankRequestDto 각각 적용
+            // 정확한 컨텐츠 타입을 입력 및 enum 메소드 활용하기 위해 ContentTypeEnum 사용
+            List<ContentTypeEnum> contentTypes = Arrays.asList(
+                ContentTypeEnum.SPEED // sppedQuizRanks에 사용
+                , ContentTypeEnum.LEVEL // levelQuizRanks에 사용
+                , ContentTypeEnum.DICTATION // dictationQuizRanks에 사용
+            );
+
+            String rankMonth = DateUtil.getToday("yyyy-MM"); // 당월
+
+            // contentTypes을 순환하며 model에 담기
+            // speedQuizRanks, levelQuizRanks, dictationQuizRanks
+            for (ContentTypeEnum type : contentTypes) {
+                RankRequestDto rankRequestDto = RankRequestDto.builder()
+                    .userNo(userNo) // 교사는 그룹 랭킹에 포함되지 않기 때문에 기본값 유지를 위해 포함
+                    .groupNo(currentGroupNo)
+                    .rankMonth(rankMonth)
+                    .limit(PaginationEnum.COMPONENT_ROWS)
+                    .contentType(type.name()) // String으로 변환
+                    .build();
+
+                // 속성명 동적으로 구성(컨텐츠 타입 소문자 + QuizRanks)
+                model.addAttribute(type.name().toLowerCase() + "QuizRanks",
+                    rankService.getContentRanksIncludeUserByMonth(rankRequestDto)
+                );
+            }
         }
 
         // groupNo가 null이고 teacherGroups도 빈 리스트라면 전부 null 또는 빈 리스트 값

@@ -11,6 +11,7 @@ $(document).ready(function () {
     // 그룹 검색 관련
     const $searchComponent = $("#group-search-component"); // 검색 컴포넌트
     const isJoinedGroup = $searchComponent.attr("data-joined-group") === "true"; // 사용자의 그룹 가입 여부
+    const userNo = Number($searchComponent.attr("data-user-no")); // 로그인 사용자 번호
     const $searchFormWrap = $searchComponent.find(".search_form_wrap"); // 검색 폼 부모 요소
     const $groupSearchForm = $("#group-search-form"); // 그룹 검색 폼
     const $groupSearchInput = $groupSearchForm.find(".search_input"); // 검색 인풋
@@ -58,7 +59,7 @@ $(document).ready(function () {
             history.replaceState(null, "", newUrl);
 
             // 그룹 리스트 세팅
-            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup);
+            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup, userNo);
             
             // 페이지네이션 세팅(페이지네이션 세팅 전 url 수정되어 있어야 함)
             // 랜덤 리스트 요청일 경우 페이지네이션 세팅 로직 내에 null 처리 됨으로 페이징 추가 안됨
@@ -89,8 +90,8 @@ $(document).ready(function () {
             history.replaceState(null, "", location.pathname);
 
             // 그룹 리스트 세팅
-            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup);
-            
+            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup, userNo);
+
             // 랜덤 그룹 목록은 한 페이지로 페지이네이션 정보가 없어 페지이네이션 요소 제거
             $searchComponent.find(".pagination").remove();
         } catch (error) {
@@ -125,7 +126,7 @@ $(document).ready(function () {
             history.replaceState(null, "", newUrl);
 
             // 그룹 리스트 세팅
-            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup);
+            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup, userNo);
 
             // 페이지네이션 세팅(페이지네이션 세팅 전 url 수정되어 있어야 함)
             setPagination(groupsAndPagination.pagination, $searchComponent);

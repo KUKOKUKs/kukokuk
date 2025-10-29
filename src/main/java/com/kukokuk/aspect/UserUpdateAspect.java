@@ -1,4 +1,4 @@
-package com.kukokuk.domain.user.aspect;
+package com.kukokuk.aspect;
 
 import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.domain.user.vo.User;
@@ -17,8 +17,10 @@ public class UserUpdateAspect {
     private final UserService userService;
 
     @AfterReturning(
-        pointcut = "execution(* com.kukokuk.domain.user.service.UserService.update*(..)) "
+        pointcut = "execution(* com.kukokuk.domain.user.service.UserService.update*(..))"
             + "|| execution(* com.kukokuk.domain.user.service.UserService.delete*(..))"
+            + "|| execution(* com.kukokuk.domain.group.service.GroupService.insertGroupUser(..))"
+            + "|| execution(* com.kukokuk.domain.group.service.GroupService.deleteGroupUser(..))"
     )
     public void refreshAuthenticationAdvice() {
         log.info("UserUpdateAspect refreshAuthenticationAdvice() 실행 Authentication 갱신");

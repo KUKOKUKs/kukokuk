@@ -1,7 +1,25 @@
 <!DOCTYPE html>
 <html layout:decorate="~{layout/base}" th:with="menu='quiz', title='북마크'">
 <div layout:fragment="content">
-    <div id="center-content" class="content_container">
+    <!--/* 북마크 내역이 없을 경우 */-->
+    <div th:if="${#lists.isEmpty(bookmarkedQuizDto.items)}" id="main-content" class="content_container">
+        <div class="content_info">
+            <div class="content_title justify_content_center">
+                <iconify-icon class="color_yellow" icon="material-symbols:bookmark-star"></iconify-icon>
+                북마크
+            </div>
+
+            <div class="component">
+                <div class="component_title justify_content_center pd_base tac">
+                    <div class="title_info">
+                        북마크한 문제가 없습니다. 국어 놀이터에서 단계별 문제를 풀어보며 북마크하여 복습을 해보세요!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(bookmarkedQuizDto.items)}" id="center-content" class="content_container">
         <div class="content_info">
             <div class="content_title justify_content_center">
                 <iconify-icon class="color_yellow" icon="material-symbols:bookmark-star"></iconify-icon>
@@ -13,10 +31,10 @@
             <div class="grid_list_component" style="--cols: 2; --callout-color: transparent; --position: var(--smallPadding);">
                 <div th:each="item : ${bookmarkedQuizDto.items}"
                      class="component grid_list pd_small">
-                    <div class="tiny_list_component">
-                        <span class="callout right pd_0 color_gray box_shadow_none tiny_font"
-                              th:text="${#dates.format(item.createdDate, 'yyyy.M.d')}">북마크 등록일자</span>
+                    <span class="callout right pd_0 color_gray box_shadow_none tiny_font"
+                          th:text="${#dates.format(item.createdDate, 'yyyy.M.d')}">북마크 등록일자</span>
 
+                    <div class="tiny_list_component">
                         <div class="tag_list small_font">
                             <span class="tag" th:text="${item.difficulty}"
                                   th:classappend="${item.difficulty == '쉬움' ? 'bg_light_gray'

@@ -234,6 +234,7 @@ public class ApiGroupController {
 
         int userNo = securityUser.getUser().getUserNo();
         Integer userGroupNo = securityUser.getUser().getGroupNo();
+        log.info("userGroupNo: {}", userGroupNo);
 
         // 이미 그룹에 가입되어 있는 경우
         if (userGroupNo != null) {
