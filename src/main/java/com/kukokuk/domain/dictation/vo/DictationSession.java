@@ -19,6 +19,7 @@ public class DictationSession {
   private int correctCount;       // 맞은 개수
   private int hintUsedCount;      // 사용한 힌트 수
   private Date createdDate;        // 생성일 (NOW())
+  private BigDecimal absoluteScore;
 
   // totalTimeSec 커스텀 Getter
   public Double getTotalTimeSec() {
@@ -28,5 +29,4 @@ public class DictationSession {
     long ts = Math.max(0L, endDate.getTime() - startDate.getTime()); // 음수 방지
     return ts / 1000.0; // 12345(ms) -> 12.345(s)
   }
-  private BigDecimal absoluteScore;
 }
