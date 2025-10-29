@@ -30,7 +30,7 @@ $(document).ready(function () {
         const $submitBtn = $this.find("button[type=submit]"); // 제출 버튼
         $submitBtn.addClass("disabled loading_spinner center"); // 로딩 표시 및 중복 클릭 방지
 
-        // 유효성 검사 통화 시 제출
+        // 유효성 검사 통과 시 제출
         try {
             const response = await apiPostGroups(this);
 
@@ -66,7 +66,7 @@ $(document).ready(function () {
         const $submitBtn = $this.find("button[type=submit]"); // 제출 버튼
         $submitBtn.addClass("disabled loading_spinner center"); // 로딩 표시 및 중복 클릭 방지
 
-        // 유효성 검사 통화 시 제출
+        // 유효성 검사 통과 시 제출
         try {
             const response = await apiPutGroups(this);
 
@@ -107,7 +107,7 @@ $(document).ready(function () {
         const $submitBtn = $this.find("button[type=submit]"); // 제출 버튼
         $submitBtn.addClass("disabled loading_spinner center"); // 로딩 표시 및 중복 클릭 방지
 
-        // 유효성 검사 통화 시 제출
+        // 유효성 검사 통과 시 제출
         try {
             const response = await apiDeleteGroups($this);
 
