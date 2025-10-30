@@ -34,6 +34,22 @@ public class TwentyService {
     private final ExpProcessingService expProcessingService;
 
     /**
+     * 교사가 "게임 종료" 버튼 누를 때,
+     * 1.roomNo로 게임방 상태를 COMPLETED로 변경
+     * 2.모든 유저의 상태 => LEFT로 변경
+     * @param roomNo
+     */
+    public void updateRoomAndUserLeft(int roomNo) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("roomNo", roomNo);
+        map.put("roomStatus", "COMPLETED");
+        twentyMapper.updateRoomStatus(map);
+
+        map.put("status", "LEFT");
+        twentyMapper.updateRoomUserStatus(map);
+    }
+
+    /**
      * roomNo를 가진 게임방 자체를 조회해온다.
      *
      * @param roomNo
@@ -139,17 +155,40 @@ public class TwentyService {
     }
 
     /**
-     * 교사가 응답하는 과정에서, 종료 시점이 되면 다음과 같이 스무고개의 결과를 저장한다.
-     * @param msg
+     * 게임방의 결과를 update
+     * - isSuccess, tryCnt, winnerNo(게임에 승리한 경우만)를 할당한다.
+     * 1. TwentyRoom 객체 결과 할당.
+     *  - 객체의 status에 COMPLETED로 변경
+     *  - roomNo로 log 테이블의 총 메세지 개수를 조회
+     *  - roomNo로 log 테이블의 최근 메세지를 조회 : logNo, isScuccess,roomNo, userNo
+     *  -> 결론: TwentyRoom 객체에 isSuccess, tryCnt, roomNo, status를할당
+     * 2. 게임의 승리여부 할당
+     *  - 최근 메세지의 isSuccess가 null이 아니고, Y인 경우 winnerNo를 할당. winnerNo가 null이거나,N인 경우 그냥 패스
+     * 3. TwentyRoom 객체를 이제 update 쿼리문에 요청
+     * 4. 사용자 상태도 모두 변경
+     * roomNo를 가진 게임방의 승리여부, 시도 횟수를 업데이트, 승리여부에 따라 winnerNo가 들어가게 된다.
      */
-    public void gameOver(SendStdMsg msg) {
+    public void gameOverTwenty(int roomNo) {
+        //최신 메세지 1개와, 총 시도 횟수를 조회.
+        SendStdMsg msg = twentyMapper.getRecentMsgByRoomNo(roomNo);
+        Integer tryCnt =  twentyMapper.getMsgCntByRoomNo(roomNo);
+
+        //TwentyRoom에 값 할당하기
         TwentyRoom room = new  TwentyRoom();
-        room.setTryCnt(msg.getCnt());
-        room.setRoomNo(msg.getRoomNo());
+        room.setTryCnt(tryCnt);
+        room.setRoomNo(roomNo);
         room.setStatus("COMPLETED");
         room.setIsSuccess(msg.getIsSuccess());
         room.setWinnerNo(msg.getUserNo());
+
+        // 게임방 변경
         twentyMapper.updateTwentyRoomResult(room);
+
+        // 1. 사용자의 상태를 모두 '나감'으로 변경
+        Map<String, Object> map = new HashMap<>();
+        map.put("roomNo", roomNo);
+        map.put("status", "LEFT");
+        twentyMapper.updateRoomUserStatus(map);
     }
 
     /**
@@ -209,6 +248,103 @@ public class TwentyService {
         return roomNo;
     }
 
+    /** 게임 종료 시, 승패에 따른 경험치 부여 로직.
+     * 1. 그룹 경험치 부여
+     * groupExpProcessing(ListExpProcessingDto listExpProcessingDto)
+     *
+     * 2. 단일 경험치 부여
+     * public void expProcessing(ExpProcessingDto expProcessingDto)
+     *
+     * 3.DTO
+     *  - ExpProcessingDto : userNo(사용자 식별자),contentType(콘텐츠 타입, TWENTY),contentNo(log 식별자),expGained(경험치)
+     *  - ListExpProcessingDto : contentType, expGained, List<ExpProcessingDto> expProcessingDtos; (userNo와 contentNo만 넣으면된다.)
+     *
+     * 4. 경험치 부여 로직
+     *  - 패배 시 전체에게 10EXP 부여
+     *  - 승리 시 승리자 제외 30EXP, 승리자 60EXP
+     *  - 우선 승리자에게는 단일의 경험치 60을 먼저 부여.
+     *  - 그 외의 경우에는 ListExpProcessingDto 이 객체를 만들어서 서비스를 호출
+     *     - List<ExpProcessingDto> 이 객체 우선 만들기 - 참여자 수 만큼의 리스트를 생성.
+     *     - contentType, expGained를 할당.
+     *
+     * @param roomNo
+     */
+    public void addExp(int roomNo){
+        //전체 참여자 리스트 조회, 게임방 결과 조회
+        List<RoomUser> roomUsers = twentyMapper.getTwentyPlayerList(roomNo);        // 참여자 리스트
+        TwentyResult result = twentyMapper.getTwentyRoomResult(roomNo);             // 게임방 결과
+        int teacherNo = result.getTeacherNo();
+        log.info("addExp : 참여자 리스트, 게임방 결과 정상 조회");
+
+        // 참여자 리스트에는 교사도 포함되어 있어, 교사를 제외한 학생들의 리스트를 생성.
+        List<RoomUser> students = new ArrayList<>();
+        for(RoomUser roomUser : roomUsers){
+            if(roomUser.getUserNo() != teacherNo){
+                students.add(roomUser);
+            }
+        }
+
+        //공통 파라미터
+        int contentNo  = roomNo;
+        String contentType = "TWENTY";
+        Integer winnerNo = result.getWinnerNo();
+        String isSuccess = result.getIsSuccess();
+
+        // 게임에서 이겼을 때
+        if("Y".equals(isSuccess)){
+            log.info("addExp : 승리시 경험치 로직 시작");
+            //정답 제출자에게 60EXP 부여
+            ExpProcessingDto winnerDto = ExpProcessingDto.builder()
+                                                    .userNo(winnerNo)
+                                                    .contentNo(contentNo)
+                                                    .contentType(contentType)
+                                                    .expGained(60)
+                                                    .build();
+            expProcessingService.expProcessing(winnerDto);
+            log.info("addExp : 승리 시, 정답 제출자 경험치 정상 등록");
+
+            //그 외 사람들에게 30Exp씩 부여
+            List<ExpProcessingDto> otherDto = new ArrayList<>();        // 남은 참여자에 대한 경험치 정보.
+            for(RoomUser  student : students){
+                if(student.getUserNo() != winnerNo){
+                    otherDto.add(
+                        ExpProcessingDto.builder()
+                                        .contentNo(contentNo)
+                                        .userNo(student.getUserNo())
+                                        .build()
+                    );
+                }
+            }
+
+            ListExpProcessingDto listExpProcessingDto = ListExpProcessingDto.builder()
+                                                                            .expGained(30)
+                                                                            .contentType(contentType)
+                                                                            .expProcessingDtos(otherDto)
+                                                                            .build();
+            expProcessingService.listExpProcessing(listExpProcessingDto);
+            log.info("addExp : 승리 시, 승리자 제외 다른 학생들 경험치 정상 부여");
+        } else {
+            log.info("addExp: 패배 시, 경험치 부여 로직 시작");
+            List<ExpProcessingDto> loserDto = new ArrayList<>();
+            for(RoomUser  student : students){
+                loserDto.add(
+                    ExpProcessingDto.builder()
+                                    .userNo(student.getUserNo())
+                                    .contentNo(contentNo)
+                                    .build()
+                );
+            }
+            ListExpProcessingDto listExpProcessingDto = ListExpProcessingDto.builder()
+                                                                            .expGained(10)
+                                                                            .contentType(contentType)
+                                                                            .expProcessingDtos(loserDto)
+                                                                            .build();
+            expProcessingService.listExpProcessing(listExpProcessingDto);
+            log.info("addExp: 패배 시, 전체 인원 경험치 정상 부여.");
+        }
+
+    }
+
     /**
      * 아무 조건 없이 roomNo로 이 게임방의 모든 정보를 조회
      * @param roomNo
@@ -224,69 +360,13 @@ public class TwentyService {
      * @param roomNo
      * @return
      */
-    public TwentyResult getTwentyResultInfo(int roomNo) {
+    public TwentyResult getTwentyResultInfo(int roomNo){
 
         TwentyResult result = twentyMapper.getTwentyRoomResult(roomNo);
         Integer participantCount = twentyMapper.getTwentyRoomUserTatal(roomNo);
         result.setParticipantCount(participantCount);
         log.info("getTwentyResultInfo - 게임방 결과 조회 실행완");
         return result;
-    }
-
-    /** 교사&학생 종료 버튼 클릭 시 처리
-     * - roomNo로 현재 게임방을 조회해서, 게임방 상태 값을 반환
-     * - COMPLETED인 경우에만 아래 경험치 부여 로직을 따른다.
-     * - COMPLETED가 아니라면 그대로 return 하여 종료 한다.
-     * - 로그인한 사용자 정보를 사용하여, 권한이 "ROLE_TEACHER"가 아니고,
-     *   스무고개 승리 시 -> 정답자 이면 60 EXP 부여
-     *                     정답자가 아니면 30EXP 부여
-     *   스무고개 패배 시 -> 여지 없이 10EXP 부여
-     * @param roomNo
-     * @param  user : 로그인한 사용자 정보
-     * @return
-     */
-    public TwentyRoom twentyEndProcess(int roomNo, User user) {
-        TwentyRoom room = twentyMapper.getAllTwentyRoom(roomNo); // 현재 게임방 조회
-        String roomStatus = room.getStatus();                    // 게임방 상태 조회
-        Integer winnerNo = room.getWinnerNo();                   // 승리자 식별자
-        String isSuccess = room.getIsSuccess();                  // 승리 여부
-        String contentType = "TWENTY";                           // 콘텐트 타입
-        ExpProcessingDto dto;                                    // 경험치 부여
-
-        log.info("twentyEndProcess() 실행, 방 상태 : {}", roomStatus);
-        log.info("twentyEndProcess() 실행, 유저 이름: {}", user.getNickname());
-
-        // 게임이 정상 종료 상태가 아니라면, 종료.
-        if(!"COMPLETED".equals(roomStatus)){
-            return room;
-        }
-        // 교사면 EXP 처리 없이 바로 종료
-        if (user.getRoleNames().contains("ROLE_TEACHER")) {
-            return room;
-        }
-
-        // 학생이면 결과에 따라 EXP 지급
-        if ("Y".equals(isSuccess)) {
-            int exp = (user.getUserNo() == winnerNo) ? 60 : 30;
-            dto = ExpProcessingDto.builder()
-                .userNo(user.getUserNo())
-                .contentNo(roomNo)
-                .contentType(contentType)
-                .expGained(exp)
-                .build();
-        } else {
-            dto = ExpProcessingDto.builder()
-                .userNo(user.getUserNo())
-                .contentNo(roomNo)
-                .contentType(contentType)
-                .expGained(10)
-                .build();
-        }
-
-        // EXP 처리
-        expProcessingService.expProcessing(dto);
-
-        return room;
     }
 
 

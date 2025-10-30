@@ -32,7 +32,7 @@ $(document).ready(function () {
     $userUpdateForm.submit(function (e) {
         e.preventDefault();
 
-        // 유효성 검사 통과 시 제출
+        // 유효성 검사 통화 시 제출
         if (validateProfileForm($(this))) {
             this.submit();
         }

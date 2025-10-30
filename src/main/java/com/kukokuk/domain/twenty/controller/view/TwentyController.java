@@ -92,7 +92,7 @@ public class TwentyController {
         List<RoomUser> list = twentyService.getTwentyPlayerList(roomNo);
         model.addAttribute("list", list);
 
-        model.addAttribute("nickName",user.getNickname());
+
         model.addAttribute("userNo", user.getUserNo());
         model.addAttribute("wsUrl",wsUrl);
         return "twenty/gameRoom";

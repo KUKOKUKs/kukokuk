@@ -2,7 +2,6 @@
 <html layout:decorate="~{layout/base}"
       th:with="title='우리반'
       , menu='group'
-      , user=${#authentication.principal.user}
       , isJoinedGroup=${myGroup != null}
       , isTeacher=${#authorization.expression('hasRole(''TEACHER'')')}">
 <div layout:fragment="content">
@@ -39,8 +38,7 @@
             <!--/* 그룹이 없는 사용자에게는 검색 컴포넌트만 제공 */-->
             <div id="group-search-component"
                  class="component small_list_component toggle_info_second"
-                 th:data-joined-group="${isJoinedGroup}"
-                 th:data-user-no="${user.userNo}">
+                 th:data-joined-group="${isJoinedGroup}">
                 <div class="search_form_wrap">
                     <form class="search_form" id="group-search-form">
                         <input type="text"
@@ -63,14 +61,13 @@
 
                 <form method="post"
                       th:action="@{/group/join}"
-                      id="group-join-form">
-                    <input type="hidden" name="groupNo" value="">
+                      id="group-join-form"
+                      class="full show_scroll">
                     <div id="group-search-list-component" class="grid_list_component column">
-                        <div class="group_serach_list grid_tiny_list ov_h"
-                             th:each="group : ${groups.items}">
+                        <div class="group_serach_list" th:each="group : ${groups.items}">
                             <div class="list_info">
                                 <div class="group_info group_title_info">
-                                    <iconify-icon th:if="${group.password != null && group.password != ''}"
+                                    <iconify-icon th:if="${group.password != null}"
                                                   class="icon base_font"
                                                   icon="streamline-color:padlock-square-1-flat"></iconify-icon>
                                     <p class="group_name text_ellipsis" th:text="${group.title}">그룹명</p>
@@ -94,11 +91,11 @@
                                 </div>
 
                                 <!--/* 그룹이 없는 사용자만 입반 버튼 노출 */-->
-                                <button th:if="${myGroup == null && user.userNo != group.teacher.userNo}"
-                                        type="button"
+                                <button th:if="${myGroup == null}"
+                                        type="submit"
                                         class="btn tiny small_font white group_join_btn"
-                                        th:data-is-secret="${group.password != null && group.password != ''}"
-                                        th:data-group-no="${group.groupNo}">입반 신청</button>
+                                        name="groupNo"
+                                        th:value="${group.groupNo}">입반 신청</button>
                             </div>
                         </div>
                     </div>
@@ -263,9 +260,6 @@
             </div>
         </div>
     </div>
-
-    <!--/* 그룹 가입 비밀번호 입력 모달창 */-->
-    <div th:replace="~{fragments/modal/modal-group-pwd :: modal-group-pwd-fragment}"></div>
 </div>
 
 <th:block layout:fragment="script">

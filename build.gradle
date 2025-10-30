@@ -84,9 +84,6 @@ dependencies {
 	// Redis 세션 저장소 (Spring Session)
 	/*implementation 'org.springframework.session:spring-session-data-redis'*/
 
-	// AOP 기능 활성화를 위한 의존성 (AspectJ 포함)
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
-
 }
 
 tasks.named('test') {

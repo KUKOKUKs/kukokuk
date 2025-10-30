@@ -9,6 +9,32 @@
 
 /* 그룹 검색 리스트 */
 .group_serach_list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tinyGap);
+    font-size: var(--subFontSize);
+    font-weight: normal;
+    padding: var(--tinyPadding);
+    border-radius: var(--bdrs);
+    border: 1px solid var(--subColor);
+    background-color: var(--subColor);
+    transition: border-color var(--trst);
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        border-color: var(--primaryColor);
+    }
+
+    .list_info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--tinyGap);
+        padding: var(--tinyPadding);
+        background-color: var(--baseBackground);
+        border-radius: var(--bdrs);
+    }
+
     .group_info {
         display: flex;
         align-items: center;
@@ -45,9 +71,8 @@
             }
         }
     }
-}
 
-/* 교사 페이지 학습 자료 관련 */
-.teacher_study_List {
-
+    .btn {
+        margin-left: auto;
+    }
 }
