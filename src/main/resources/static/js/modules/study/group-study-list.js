@@ -36,8 +36,8 @@ $(document).ready(async () => {
                 content += `
                     <div class="component base_list_component study_card">
                         <div class="study_info">
-                            <div class="component_title">우리반 학습</div>
-                            <div class="study_content">아직 등록된 우리반 학습이 없습니다.</div>
+                            <div class="component_title">우리반 학습 자료</div>
+                            <div class="study_content">아직 등록된 우리반 학습 자료가 없습니다.</div>
                         </div>
                     </div>
                 `;

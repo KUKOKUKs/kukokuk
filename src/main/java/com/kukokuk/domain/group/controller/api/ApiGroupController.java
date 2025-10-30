@@ -3,7 +3,6 @@ package com.kukokuk.domain.group.controller.api;
 import com.kukokuk.common.constant.PaginationEnum;
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.dto.Page;
-import com.kukokuk.common.exception.AppException;
 import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.group.dto.GroupFormDto;
 import com.kukokuk.domain.group.service.GroupService;
@@ -216,40 +215,6 @@ public class ApiGroupController {
 
         data.put("isSuccess", true);
         return ResponseEntityUtils.ok("삭제 처리 완료", data);
-    }
-
-    /**
-     * 사용자 그룹 가입 요청(비밀번호 설정된 그룹 가입 신청건만 유효)
-     * @param groupNo 그룹 번호
-     * @param password 사용자가 입력한 비밀번호
-     * @param securityUser 사용자 정보
-     * @return 성공 여부
-     */
-    @PostMapping("/join")
-    public ResponseEntity<ApiResponse<Boolean>> joinGroup(
-        @RequestParam("groupNo") int groupNo
-        , @RequestParam("password") String password
-        , @AuthenticationPrincipal SecurityUser securityUser) {
-        log.info("ApiGroupController joinGroup() 컨트롤러 실행 groupNo: {}, password: {}", groupNo, password);
-
-        int userNo = securityUser.getUser().getUserNo();
-        Integer userGroupNo = securityUser.getUser().getGroupNo();
-        log.info("userGroupNo: {}", userGroupNo);
-
-        // 이미 그룹에 가입되어 있는 경우
-        if (userGroupNo != null) {
-            throw new AppException("잘못된 요청입니다.");
-        }
-
-        // 비밀번호가 일치하지 않을 경우
-        Group group = groupService.getGroupByGroupNo(groupNo); // 그룹 번호로 그룹 조회
-        if (!password.equals(group.getPassword())) {
-           return ResponseEntityUtils.ok("비밀번호가 일치하지 않습니다", false);
-        }
-
-        groupService.insertGroupUser(userNo, groupNo); // 사용자 그룹 가입 요청
-
-        return ResponseEntityUtils.ok("가입이 완료되었습니다.", true);
     }
 
 }

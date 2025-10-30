@@ -8,6 +8,7 @@ import com.kukokuk.domain.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor // 초기화 되지않은 final 필드나, @NonNull 이 붙은 필드에 대해 생성자를 생성
 public class DailyQuestUserService {
 
+    private final ModelMapper modelMapper;
     private final DailyQuestUserMapper dailyQuestUserMapper;
 
     private final UserService userService;
@@ -26,7 +28,6 @@ public class DailyQuestUserService {
      * @param userNo 사용자 번호
      * @return 업데이트된 행의 수
      */
-    @Transactional
     public int updateDailyQuestUserBatch(List<Integer> dailyQuestUserNos, int userNo) {
         log.info("updateDailyQuestUserBatch() 서비스 실행");
 
@@ -49,6 +50,7 @@ public class DailyQuestUserService {
 
         return updatedCount;
     }
+
 
     /**
      * 사용자의 일일 도전과제 완료로 해당 일일 도전과제의 보상 획득 처리
@@ -79,7 +81,7 @@ public class DailyQuestUserService {
         dailyQuestUserMapper.updateDailyQuestUserObtained(savedDailyQuestUser);
 
         // 해당 완료된 일일 도전과제 보상 수령으로 사용자 힌트 개수 증가 처리
-        userService.plusUserHintCount(userNo);
+        userService.updateUserHintCountPlus(userNo);
 
         // 업데이트 후 힌트 개수 반환
         return userService.getCurrentUser().getHintCount();

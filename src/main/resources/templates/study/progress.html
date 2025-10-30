@@ -23,7 +23,7 @@
         <div th:if="${isCardProgress}" class="content_info h_100">
             <div class="content_title study_content_title" th:text="${studyCard.title}">학습 제목</div>
 
-            <div class="component tiny_list_component study_progress h_100 pd_0 show_scroll"
+            <div class="component tiny_list_component study_progress h_100 pd_0"
                  style="--cols: 14; --indexCols: 1;">
                 <th:block th:each="item : ${studyCard.studyCardContent}">
                     <div th:if="${item.isStringType()} and ${item.type} == 'paragraph'" class="component_info">

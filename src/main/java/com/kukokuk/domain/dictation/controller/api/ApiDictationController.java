@@ -2,8 +2,11 @@ package com.kukokuk.domain.dictation.controller.api;
 
 import com.kukokuk.common.dto.ApiResponse;
 import com.kukokuk.common.util.ResponseEntityUtils;
+import com.kukokuk.domain.dictation.dto.DictationQuestionLogDto;
+import com.kukokuk.domain.dictation.dto.DictationResultLogDto;
 import com.kukokuk.domain.dictation.service.DictationService;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
+import com.kukokuk.domain.dictation.vo.DictationQuestionLog;
 import com.kukokuk.domain.dictation.vo.DictationSession;
 import com.kukokuk.security.SecurityUser;
 import java.util.List;
@@ -12,9 +15,14 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Log4j2
 @RestController
@@ -109,7 +117,7 @@ public class ApiDictationController {
 //        log.info("[/use-hint] index: {}, usedHint: Y", questionIndex);
 //
 //        // 힌트 사용 시 유저 힌트 수 -1 차감
-//        // userService.minusUserHintCount(userNo);
+//        // userService.updateUserHintCountMinus(userNo);
 //
 //        return ResponseEntityUtils.ok("힌트 사용 완료");
 //    }

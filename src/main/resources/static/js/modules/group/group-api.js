@@ -2,29 +2,6 @@ import {apiErrorProcessByXhr} from "../../utils/api-error-util.js";
 import {consoleLogForm} from "../../utils/handler-util.js";
 
 /**
- * 그룹 가입 비동기 요청
- * @param groupNo 그룹 번호
- * @param password 비밀번호 설정된 그룹일 경우에만 값 입력
- * @returns 성공 여부
- */
-export async function apiPostJoinGroup(groupNo, password = null) {
-    console.log("apiPostJoinGroup() api 요청 실행 ", {groupNo, password});
-    try {
-        const response = await $.ajax({
-            method: "POST",
-            url: "/api/groups/join",
-            data: {groupNo, password},
-            dataType: "json",
-        });
-
-        console.log("apiPostJoinGroup() api 요청 response: ", response);
-        return response;
-    } catch (xhr) {
-        apiErrorProcessByXhr(xhr.responseJSON);
-    }
-}
-
-/**
  * 그룹 검색(페이지네이션) 비동기 요청
  * <p>
  * keyword 유무에 따라 랜덤리스트(기본값)/검색 리스트 전달
