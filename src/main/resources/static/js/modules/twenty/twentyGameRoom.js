@@ -14,6 +14,7 @@ let turnTimer = null;
 // 교사 버튼
 let $teacherObtn = $('#teacher-o-btn');
 let $teacherXbtn = $('#teacher-x-btn');
+let $teacherEndBtn = $("#teacher-end-btn");
 let $teacherStartBtn = $("#teacher-start-btn");
 
 // 학생 버튼
@@ -23,8 +24,6 @@ let $sendAnswerBtn = $("#send-answer");         // 정답 전송 버튼
 let $answerInput = $("#answer-input");          // 정답 입력폼
 let $raiseHandBtn = $("#raise-hand");           // 손들기 버튼
 
-let $remainingQuestions = $("#remaining-questions");  // 남은 질문횟수
-let $commonEndBtn = $("#common-end-btn");             // 종료 버튼
 let visualTimer = null;       // 화면 타이머 ID
 let systemMsgTimer = null;    // 시스템 메시지 자동 숨김 타이머
 
@@ -200,8 +199,6 @@ function connectWebSocket() {
          */
         stompClient.subscribe(`/topic/sendStdMsg/${currentRoomNo}`, function (result) {
             let data1 = JSON.parse(result.body);
-            let msgCnt = data1.msgCnt;
-            $remainingQuestions.text(20 - msgCnt);
             updateBtnByRoomStatus(data1);    // 버튼 변화
             appendBoardLine(data1);          // 메세지 UI 표현
             stopVisualTimer(); // 타이머 제거 메소드
@@ -212,14 +209,17 @@ function connectWebSocket() {
          * 2. 경고창을 띄우고, 그룹 페이지로 이동함.
          */
         stompClient.subscribe(`/topic/TeacherDisconnect`, function () {
-            const data = {
-                system : "스무고개가 중단되었습니다. 잠시 후에 이동합니다..."
-            };
-            appendBoardLine(data)
-            // 5초(5000ms) 대기 후 이동
-            setTimeout(() => {
-                window.location.href = '/group';
-            }, 5000);
+            alert("스무고개가 중단되었습니다.");
+            window.location.href = '/group';
+        });
+
+        /** 게임 종료 버튼을 눌렀을 때 or 게임방의 상태가 COMPLETE일 때
+         * 1. 교사가 게임 종료 버튼을 누르면 결과 페이지로 이동.
+         */
+        stompClient.subscribe(`/topic/gameComplete`, function (result) {
+            const data =  JSON.parse(result.body);
+            const roomNo = parseInt(data);
+            window.location.href = `/twenty/result/${roomNo}`;
         });
 
         /** 교사가 O,X 버튼 눌렀을 때 응답
@@ -227,7 +227,7 @@ function connectWebSocket() {
          * $teacherXbtn.on('click', function (e) {..}
          * - 위 코드로 실시간 서버에 학생의 메세지에 O,X에 대한 요청을 실시간 서버에 보냄. -> 로직 수행 -> 브로드 캐스팅
          * - 서버에서 내려받는 데이터
-         *  - var : 스무고개 종료되었다는 신호임.
+         *  - system : 게임이 끝났을 경우, 내려오는 시스템 메세지 "스무고개가 끝났습니다... 종료 버튼을 눌러주세여"
          *  - roomStatus : 방의 상태
          *  - msgList : 전체 메세지 리스트 -> 교사가 O,X 버튼을 누를 때마다 전체 메세지 리스트를 실시간으로 갱신하기 위함.
          *    => 왜냐하면, 학생A: "사람인가요?" -> 학생A : "사람인가요? :⭕" 이런 식으로 DB에 다시 저장해서 최신 리스트를 갱신해서
@@ -238,19 +238,10 @@ function connectWebSocket() {
         stompClient.subscribe(`/topic/TeacherResponce`, function (result) {
             const data = JSON.parse(result.body);
 
-            if (data.var != null) { // 게임이 끝난 경우
-                let message;
-                // 스무고개 승리 여부에 따른 안내 메세지를 구성해서 띄워주고,
-                if(data.teacherResponse == "Y" ) {
-                    message = {
-                        system : "승리하셨습니다! 종료를 눌러주세요"
-                    }
-                } else {
-                    message = {
-                        system : "패배 하셨습니다.. 종료를 눌러주세요"
-                    }
-                }
-                appendBoardLine(message);  // 이게 안내 메세지 띄워주는 메소드
+            if (data.system != null) { // 게임이 끝난 경우
+                appendBoardLine(data); // 시스템 메세지 띄워주고
+                $teacherEndBtn.prop('disabled', false); //교사 종료 버튼 활성화 해주고
+                toggleGlow($teacherEndBtn, true);
 
                 $teacherObtn.prop('disabled', true);   //O,X 버튼 비활성화 해주고
                 toggleGlow($teacherObtn, false);
@@ -289,33 +280,6 @@ $(function () {
     connectWebSocket();
     getMsgListByRoomNo()
 
-    // -- 교사&학생 공통 기능 : 종료 버튼에 대한 처리
-    /** 종료 버튼 일괄 처리
-     * roomNo를 비동기로 보내서, 현재 게임방의 상태를 반환.
-     * - 현재 게임방의 상태에 따라
-     *
-     */
-    $commonEndBtn.on('click', function () {
-        const sendData = { roomNo: currentRoomNo };
-        $.ajax({
-            url: '/api/twenty/endBtn',
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(sendData),
-            success: function (data) {
-                let currentRoom = data.data;
-                console.log(currentRoom);
-                // 정상 종료 상태에서 버튼을 누른거면 그룹 페이지로 이동.
-                if(currentRoom.status == "COMPLETED"){
-                    window.location.href = `/twenty/result/${currentRoomNo}`;
-                } else {
-                    window.location.href = '/group';     //그게 아니라면 그룹페이지로 이동.
-                }
-            }
-        });
-    });
-
 
     // --- 교사 기능 ---
     /**
@@ -341,7 +305,22 @@ $(function () {
         stompClient.send(`/app/gameStart/${currentRoomNo}`, {}, JSON.stringify({}));
     });
 
-
+    /**
+     * 교사가 게임 종료
+     */
+    $teacherEndBtn.on('click', function () {
+        const sendData = { roomNo: currentRoomNo };
+        $.ajax({
+            url: '/api/twenty/gameOver',
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(sendData),
+            success: function (data) {
+                window.location.href = `/twenty/result/${currentRoomNo}`;
+            }
+        });
+    });
 
     // --- 학생 기능 ---
     /**
@@ -467,7 +446,7 @@ function updateBtnByRoomStatus(data) {
 
     // 초기화
     [
-        $teacherObtn, $teacherXbtn, $teacherStartBtn,
+        $teacherObtn, $teacherXbtn, $teacherEndBtn, $teacherStartBtn,
         $sendQuestionBtn, $sendAnswerBtn, $raiseHandBtn
     ].forEach(btn => {
         btn.prop('disabled', true);
