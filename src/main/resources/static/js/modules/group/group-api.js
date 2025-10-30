@@ -2,6 +2,35 @@ import {apiErrorProcessByXhr} from "../../utils/api-error-util.js";
 import {consoleLogForm} from "../../utils/handler-util.js";
 
 /**
+ * 그룹 학습 자료 등록 및 AI 맞춤 학습 재구성 비동기 요청
+ * @param studyFileUploadFormElement 단계와 학습 자료 파일들이 담긴 폼 DOM 요소
+ * @returns {Object} Map<String, String> jobId, filename이 들어있는 객체
+ */
+export async function apiPostUploadGroupMaterials(studyFileUploadFormElement) {
+    console.log("apiPostUploadGroupMaterials() api 요청 실행");
+
+    // FormData 생성
+    const formData = new FormData(studyFileUploadFormElement);
+    consoleLogForm(formData); // 폼 데이타 값 로그
+
+    try {
+        const response = await $.ajax({
+            method: "POST",
+            url: `/api/teachers/groups/${formData.get("groupNo")}/materials/upload`,
+            data: formData,
+            processData: false,       // FormData를 문자열(직렬화)로 바꾸지 않음
+            contentType: false,       // 브라우저가 boundary 포함한 content-type을 설정하게 함
+            dataType: "json",
+        });
+
+        console.log("apiPostUploadGroupMaterials() api 요청 response: ", response);
+        return response.data;
+    } catch (xhr) {
+        apiErrorProcessByXhr(xhr.responseJSON);
+    }
+}
+
+/**
  * 그룹 가입 비동기 요청
  * @param groupNo 그룹 번호
  * @param password 비밀번호 설정된 그룹일 경우에만 값 입력

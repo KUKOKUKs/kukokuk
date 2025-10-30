@@ -12,7 +12,11 @@ import {
     middleSchool,
     setStudyDifficultyList
 } from '../../utils/handler-util.js';
-import {regExNickname, validateDate} from '../../utils/validation-util.js';
+import {
+    regExNickname,
+    validateDate,
+    validateImageFiles
+} from '../../utils/validation-util.js';
 
 $(document).ready(function () {
     // 프로필 설정 관련
@@ -39,26 +43,12 @@ $(document).ready(function () {
     });
     
     // 프로필 이미지 선택 핸들러
-    $userUpdateProfileImg.on("change", function (e) {
+    $userUpdateProfileImg.on("change", function () {
         const file = this.files[0];
         if (!file) return false;
 
-        const validateTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic']; // 선택 가능 확장자
-        const maxFileSize = 1024 * 1024; // 5MB 제한
-
-        // 파일 형식 유효성 검사
-        if (!validateTypes.includes(file.type)) {
-            alert("지원하지 않는 이미지 형식입니다.");
-            this.value = ""; // 선택 초기화
-            return false;
-        }
-
-        // 파일 크기 유효성 검사
-        if (file.size > maxFileSize) {
-            alert("이미지 크기는 5MB를 초과할 수 없습니다.");
-            this.value = ""; // 선택 초기화
-            return false;
-        }
+        // 유효성 검사
+        if (!validateImageFiles(this)) return false;
 
         const isConfirm = confirm("선택한 이미지로 등록하시겠습니까?");
         if (!isConfirm) {
