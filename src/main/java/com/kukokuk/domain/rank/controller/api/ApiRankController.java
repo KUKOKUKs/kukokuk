@@ -57,7 +57,6 @@ public class ApiRankController {
         // Enum으로 명확한 타입 정의
         List<ContentTypeEnum> contentTypes = Arrays.asList(
             ContentTypeEnum.SPEED // sppedQuizRanks에 사용
-            , ContentTypeEnum.LEVEL // levelQuizRanks에 사용
             , ContentTypeEnum.DICTATION // dictationQuizRanks에 사용
         );
 

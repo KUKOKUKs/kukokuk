@@ -116,6 +116,14 @@ input[type=radio] {
   margin-top: 3px;
 }
 
+input[type=file] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
 textarea {
   width: 100%;
   height: 100%;
@@ -1656,6 +1664,10 @@ table th {
   cursor: pointer;
 }
 
+.cursor_none {
+  cursor: auto;
+}
+
 .disabled {
   pointer-events: none;
   opacity: 0.5;
@@ -1682,8 +1694,16 @@ table th {
   flex-direction: row !important; /* 가로형 */
 }
 
+.row_r {
+  flex-direction: row-reverse !important; /* 가로형 역순 */
+}
+
 .column {
   flex-direction: column !important; /* 세로형 */
+}
+
+.column_r {
+  flex-direction: column-reverse !important; /* 세로형 역순 */
 }
 
 .justify_content_center {
@@ -1692,6 +1712,10 @@ table th {
 
 .justify_content_between {
   justify-content: space-between !important; /* 양끝 정렬 */
+}
+
+.justify_content_start {
+  justify-content: flex-start !important;
 }
 
 .justify_content_end {
@@ -1759,6 +1783,18 @@ table th {
   max-height: max-content !important;
 }
 
+.pd_tiny {
+  padding: var(--tinyPadding) !important;
+}
+
+.pd_small {
+  padding: var(--smallPadding) !important;
+}
+
+.pd_base {
+  padding: var(--basePadding) !important;
+}
+
 .pd_0 {
   padding: 0 !important;
 }
@@ -1789,10 +1825,6 @@ table th {
   padding-right: 0 !important;
 }
 
-.pd_tiny {
-  padding: var(--tinyPadding) !important;
-}
-
 .pt_tiny {
   padding-top: var(--tinyPadding) !important;
 }
@@ -1811,10 +1843,6 @@ table th {
   padding-right: var(--tinyPadding) !important;
 }
 
-.pd_small {
-  padding: var(--smallPadding) !important;
-}
-
 .ptb_small {
   padding-top: var(--smallPadding) !important;
   padding-bottom: var(--smallPadding) !important;
@@ -1823,10 +1851,6 @@ table th {
 .plr_small {
   padding-left: var(--smallPadding) !important;
   padding-right: var(--smallPadding) !important;
-}
-
-.pd_base {
-  padding: var(--basePadding) !important;
 }
 
 .pt_base {
@@ -2047,7 +2071,7 @@ table th {
 /*
     스피너
     사용 예시(진행률 표시가 필요없다면 style --percent 미설정)
-    <div class="loading_spinner">
+    <div class="loading_spinner" style="--size: var(--baseFontSize)">
         <p class="info" style="--percent: 70%;">AI 피드백 생성 중...</p>
     </div>
 */
@@ -2064,8 +2088,10 @@ table th {
 .loading_spinner::before {
   content: "";
   display: block;
-  width: var(--titleFontSize);
-  height: var(--titleFontSize);
+  width: var(--size, var(--titleFontSize));
+  min-width: var(--size, var(--titleFontSize));
+  height: var(--size, --titleFontSize);
+  min-height: var(--size, var(--titleFontSize));
   border: 2px solid var(--lightGrayColor);
   border-top-color: var(--blueColor);
   border-radius: 50%;
@@ -2566,53 +2592,6 @@ table th {
     transform: translateY(0);
   }
 }
-/* ===============================
-   북마크 퀴즈 리스트
-   bookmark.scss
-   =============================== */
-.bookmark_container {
-  max-width: var(--centerContentWidth);
-  margin: 0 auto;
-  padding: var(--containerPadding);
-}
-
-.bookmark_title {
-  font-size: var(--pageTitleFontSize);
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: var(--largePadding);
-  color: var(--darkGreenColor);
-}
-
-.bookmark_empty_msg {
-  text-align: center;
-  font-size: var(--largeFontSize);
-  color: var(--grayColor);
-  margin-top: var(--largePadding);
-}
-
-/* 카드 그리드 */
-.bookmark_grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--baseGap);
-}
-
-/* 메타 */
-.quiz_meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--smallGap);
-  font-size: var(--subFontSize);
-  color: var(--grayColor);
-}
-.quiz_meta span {
-  background-color: var(--lightGrayColor);
-  padding: var(--tinyPadding) var(--smallPadding);
-  border-radius: var(--bdrs);
-  font-weight: 500;
-}
-
 /* speech effecter */
 #dictation-speaking-component {
   padding: var(--basePadding) 0;
@@ -2721,6 +2700,15 @@ table th {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* 교사 페이지 */
+.uploading_list_container .upload_list {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--tinyGap);
 }
 
 /* 교사 페이지 학습 자료 관련 */

@@ -229,7 +229,7 @@
             </div>
 
             <!--/* 교사 권한 사용자 */-->
-            <a th:if="${isTeacher}" th:href="@{/group/teacher}" class="btn tiny blue w_100 small_font">나의 반 관리하러 가기</a>
+            <a th:if="${isTeacher}" th:href="@{/group/teacher}" class="btn small primary w_100">나의 반 관리하러 가기</a>
         </div>
 
         <!--/* 스피드, 단계별, 받아쓰기 그룹 랭킹 컴포넌트 */-->
@@ -242,18 +242,12 @@
             <div class="tab_content_list bg_base border_radius box_shadow ranks_component">
                 <div class="tab_btn_list">
                     <button type="button" class="tab_btn selected">스피드<span class="active"></span></button>
-                    <button type="button" class="tab_btn">단계별<span class="active"></span></button>
                     <button type="button" class="tab_btn">받아쓰기<span class="active"></span></button>
                 </div>
 
                 <!--/* 스피드퀴즈 그룹 랭크 */-->
                 <div id="speed-ranks-component" class="tab_content selected border_base bt_none pd_base">
                     <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${speedQuizRanks}, useTitle=false)}"></div>
-                </div>
-
-                <!--/* 단계별 퀴즈 그룹 랭크 */-->
-                <div id="level-ranks-component" class="tab_content border_base bt_none pd_base">
-                    <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${levelQuizRanks}, useTitle=false)}"></div>
                 </div>
 
                 <!--/* 받아쓰기 퀴즈 그룹 랭크 */-->

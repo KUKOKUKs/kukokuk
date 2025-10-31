@@ -1,13 +1,123 @@
-import {apiGetGroupsAndPagination, apiPostJoinGroup} from "./group-api.js";
+import {
+    apiGetGroupsAndPagination,
+    apiPostJoinGroup,
+    apiPostUploadGroupMaterials
+} from "./group-api.js";
 import {setGroupList} from "./group-handler.js";
-import {setPagination} from "../../utils/handler-util.js";
+import {
+    setPagination,
+    setStudyDifficultyList
+} from "../../utils/handler-util.js";
 import {validateJoinGroupForm} from "./group-form-validator.js";
 import {
     addInputErrorMessage,
     clearInputErrorMessage
 } from "../../utils/form-error-util.js";
+import {validateStudyFiles} from "../../utils/validation-util.js";
+import {pollTeacherStudyJobStatus} from "../study/study-poll.js";
 
 $(document).ready(function () {
+    // 교사 권한 페이지 관련
+    const $teacherStudyUploadContainer = $(".teacher_study_upload_container"); // 교사 학습 자료 생성 컨텐츠 컨테이너 요소
+    const $modalGroupStudyBtn = $teacherStudyUploadContainer.find("#modal-group-study-btn"); // 그룹 학습 자료 등록 모달창 열기 버튼
+    const $modalGroupStudyCreate = $("#modal-group-study-create"); // 그룹 학습 자료 등록 모달창
+    const $teacherStudyCreateForm = $modalGroupStudyCreate.find("#teacher-study-create-form"); // 그룹 학습 자료 등록 폼 요소
+    const $modalGroupStudyCreateDifficultyInfoElement = $teacherStudyCreateForm.find("#study-difficulty"); // 단계별 설명 리스트가 추가될 부모 요소
+    const $studyDifficultySelect = $teacherStudyCreateForm.find("select[name='difficulty']"); // 학습 단계 선택 요소
+    const $teacherStudyFile = $teacherStudyCreateForm.find("#teacher-study-file"); // AI 재구성할 파일 첨부 input
+    const $teacherStudyAddBtn = $teacherStudyCreateForm.find("#teacher-study-add-btn"); // 그룹 학습 자료 파일 선택 input 열기 버튼
+
+    // 그룹 학습 자료 파일 선택 버튼 이벤트 핸들러
+    $teacherStudyAddBtn.click(function () {
+        const studyDifficulty = $studyDifficultySelect.val(); // 학습 단계 선택 값
+
+        console.log("학습 자료 선택 열기 버튼 이벤트 실행 studyDifficulty: ", studyDifficulty);
+        
+        if (!studyDifficulty) { // 학습 단계 미선택 시
+            alert("학습 단계를 선택해 주세요!");
+            return false;
+        }
+
+        // 학습 단계 선택 완료 후 파일 선택 창 열기
+        $teacherStudyFile.click(); // 그룹 학습 자료 파일 선택 인풋 실행
+    });
+
+    // 파일 인풋 상태 변환 이벤트 핸들러
+    $teacherStudyFile.on("change", async function () {
+        console.log("학습 자료 선택");
+
+        const files = this.files;
+        if (!files.length) return false;
+
+        const maxFileCount = 3; // 최대 선택 가능 파일 수
+        if (files.length > maxFileCount) { // 최대 개수를 초과하였을 경우
+            alert(`최대 ${maxFileCount}개의 파일만 선택할 수 있습니다.`);
+            this.value = ""; // 입력 초기화
+            return false;
+        }
+
+        // 유효성 검사
+        if (!validateStudyFiles(this)) return false;
+
+        const isConfirm = confirm("선택한 학습 자료로 AI 맞춤 학습을 생성하시겠습니까?");
+        if (!isConfirm) {
+            this.value = ""; // 선택 초기화
+            return false;
+        }
+
+        $modalGroupStudyBtn.addClass("disabeld"); // 모달창 열기 버튼 비활성화
+
+        const groupNo = $teacherStudyCreateForm.find("input[name='groupNo']").val();
+
+        try {
+            // Map<String, String> {jobId, filename} 반환 받음
+            const jobIdList = await apiPostUploadGroupMaterials($teacherStudyCreateForm[0]);
+
+            // 업로드 진행 표시할 요소
+            let $uploadingListElement = $teacherStudyUploadContainer.find(".uploading_list_container");
+
+            if (!$uploadingListElement.length) {
+                // 업로드 진행 표시할 요소가 없을 경우 생성
+                $uploadingListElement = $("<div class='tiny_list_component uploading_list_container sub_font'>");
+                $teacherStudyUploadContainer.append($uploadingListElement);
+            } else {
+                // 업로드 진행 표시할 요소가 있을 경우 현재 표시되어 있는 상태가 PROCESSING가 아닌 상태 요소들 제거
+                $teacherStudyUploadContainer.find(".upload_list").not("[data-stats='PROCESSING']").remove();
+            }
+
+            Object.entries(jobIdList).forEach(([jobId, filename]) => {
+                console.log(`jobId: ${jobId}, filename: ${filename}`);
+
+                // 해당하는 파일의 로딩 요소 생성
+                const $uploadItem = $(`
+                    <div class="upload_list loading_spinner" style="--size: var(--subFontSize)" data-job-id="${jobId}" data-status="PROCESSING">
+                        <p class="file_name text_ellipsis info" style="--percent: 0%;">${filename}</p>
+                    </div>
+                `);
+
+                $uploadingListElement.append($uploadItem); // 추가
+
+                const pollUrl = `/api/teachers/groups/${groupNo}/materials/${jobId}`; // 폴링 경로 생성
+                pollTeacherStudyJobStatus(pollUrl, $uploadItem);
+            });
+        } catch (error) {
+            // 요청에 대한 에러처리(폴링에 대한 에러처리 아님)
+            console.error(error.messsage);
+            alert(error.messsage);
+            location.reload() // 새로고침
+        } finally {
+            // 모달 창 닫기
+            const $modalAll = $(".modal_wrap");
+            // 모달 내부 폼 요소 초기화
+            $modalAll.find("form").each(function () {
+                $(this).find("button[type='submit']").addClass("disabled");
+                this.reset();
+            });
+            // 모달창 닫기
+            $modalAll.hide().removeClass("open");
+        }
+    });
+
     // 그룹 검색 관련
     const $searchComponent = $("#group-search-component"); // 검색 컴포넌트
     const isJoinedGroup = $searchComponent.attr("data-joined-group") === "true"; // 사용자의 그룹 가입 여부
@@ -252,6 +362,22 @@ $(document).ready(function () {
             // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
             setTimeout(() => {
                 $modalGroupEdit.addClass("open");
+            }, 10);
+        }
+    });
+
+    // 단계 선택 및 파일 선택 모달창 열기
+    $modalGroupStudyBtn.click(async function () {
+        if ($modalGroupStudyCreate.length) {
+            // 해당 모달창 요소가 있을 경우 열기
+            $modalGroupStudyCreate.show();
+
+            // 모달창 단계별 설명 리스트 추가
+            await setStudyDifficultyList($modalGroupStudyCreateDifficultyInfoElement);
+
+            // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+            setTimeout(() => {
+                $modalGroupStudyCreate.addClass("open");
             }, 10);
         }
     });

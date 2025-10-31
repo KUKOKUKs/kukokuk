@@ -7,7 +7,7 @@
     <form th:action="@{/dictation/submit-answer}"
           method="post"
           id="main-content"
-          class="content_container"
+          class="content_container dictation_form"
           th:data-correct="${correct}"
           th:data-second-fail="${secondFail}">
         <div class="content_info">
@@ -97,7 +97,7 @@
         </div>
 
         <div class="btn_list">
-            <button type="submit" id="skip-btn" class="btn white">건너뛰기</button>
+            <button type="button" id="skip-btn" class="btn white">건너뛰기</button>
             <button type="submit" id="submitAnswer" class="btn primary">
                 정답 제출(<span th:text="|남은 기회: ${triesLeft}회|">남은 기회: n회</span>)
             </button>
