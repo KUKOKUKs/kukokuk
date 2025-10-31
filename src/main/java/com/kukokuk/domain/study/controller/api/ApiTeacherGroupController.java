@@ -9,6 +9,7 @@ import com.kukokuk.domain.study.service.GroupStudyService;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Log4j2
 @RestController
 @RequestMapping("/api/teachers/groups/{groupNo}")
 @RequiredArgsConstructor
@@ -37,6 +39,10 @@ public class ApiTeacherGroupController {
         @PathVariable("groupNo") int groupNo,
         @RequestParam("difficulty") int difficulty
     ) {
+
+        log.info("groupNo: {}",  groupNo);
+        log.info("difficulty: {}",  difficulty);
+        log.info("files: {}",  files);
 
         // 그룹의 학습자료 업로드 요청을 처리하는 서비스. jobStatus를 생성하고, Redis 큐에 작업 적재
         Map<String, String> jobIdList = groupStudyService.uploadGroupMaterials(files, groupNo, difficulty);
