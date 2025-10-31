@@ -1787,6 +1787,10 @@ table th {
   padding: var(--tinyPadding) !important;
 }
 
+.pd_small {
+  padding: var(--smallPadding) !important;
+}
+
 .pd_base {
   padding: var(--basePadding) !important;
 }
@@ -1837,10 +1841,6 @@ table th {
 .plr_tiny {
   padding-left: var(--tinyPadding) !important;
   padding-right: var(--tinyPadding) !important;
-}
-
-.pd_small {
-  padding: var(--smallPadding) !important;
 }
 
 .ptb_small {
