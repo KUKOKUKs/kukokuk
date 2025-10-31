@@ -120,7 +120,6 @@
                                 <iconify-icon class="tooltip" data-label="원본 다운로드" icon="streamline-flex-color:cloud-download-flat"></iconify-icon>
                                 <span th:text="${study.materialTitle}">원본 파일명</span>
                             </a>
-                            <div class="btn tiny white small_font group_study_delete_btn">삭제</div>
                         </div>
                     </div>
                 </div>
@@ -306,11 +305,6 @@
                 <!--/* 스피드퀴즈 그룹 랭크 */-->
                 <div id="speed-ranks-component" class="tab_content selected border_base bt_none pd_base">
                     <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${speedQuizRanks}, useTitle=false)}"></div>
-                </div>
-
-                <!--/* 단계별 퀴즈 그룹 랭크 */-->
-                <div id="level-ranks-component" class="tab_content border_base bt_none pd_base">
-                    <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${levelQuizRanks}, useTitle=false)}"></div>
                 </div>
 
                 <!--/* 받아쓰기 퀴즈 그룹 랭크 */-->
