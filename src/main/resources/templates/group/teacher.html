@@ -215,7 +215,6 @@
                     <div th:if="${currentGroup == null}"
                          class="d_flex justify_content_between align_center small_gap">
                         <p class="text_ellipsis">우리 반이 없습니다</p>
-                        <button type="button" class="modal_gruop_edit_btn btn tiny primary">만들기</button>
                     </div>
 
                     <!--/* 생성한 그룹이 있는 교사 권한 사용자 */-->
@@ -284,7 +283,7 @@
             </div>
 
             <div class="btn_list">
-                <button type="button" class="btn small w_100 modal_gruop_edit_btn">편집</button>
+                <button type="button" class="btn small w_100 modal_gruop_edit_btn" th:text="${currentGrouop != null ? '편집' : '만들기'}>편집</button>
                 <a th:href="@{/group}" class="btn small white w_100">우리 반으로 가기</a>
             </div>
         </div>
