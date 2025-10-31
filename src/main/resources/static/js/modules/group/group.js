@@ -1,11 +1,17 @@
-import {apiGetGroupsAndPagination} from "./group-api.js";
+import {apiGetGroupsAndPagination, apiPostJoinGroup} from "./group-api.js";
 import {setGroupList} from "./group-handler.js";
 import {setPagination} from "../../utils/handler-util.js";
+import {validateJoinGroupForm} from "./group-form-validator.js";
+import {
+    addInputErrorMessage,
+    clearInputErrorMessage
+} from "../../utils/form-error-util.js";
 
 $(document).ready(function () {
     // 그룹 검색 관련
     const $searchComponent = $("#group-search-component"); // 검색 컴포넌트
     const isJoinedGroup = $searchComponent.attr("data-joined-group") === "true"; // 사용자의 그룹 가입 여부
+    const userNo = Number($searchComponent.attr("data-user-no")); // 로그인 사용자 번호
     const $searchFormWrap = $searchComponent.find(".search_form_wrap"); // 검색 폼 부모 요소
     const $groupSearchForm = $("#group-search-form"); // 그룹 검색 폼
     const $groupSearchInput = $groupSearchForm.find(".search_input"); // 검색 인풋
@@ -53,7 +59,7 @@ $(document).ready(function () {
             history.replaceState(null, "", newUrl);
 
             // 그룹 리스트 세팅
-            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup);
+            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup, userNo);
             
             // 페이지네이션 세팅(페이지네이션 세팅 전 url 수정되어 있어야 함)
             // 랜덤 리스트 요청일 경우 페이지네이션 세팅 로직 내에 null 처리 됨으로 페이징 추가 안됨
@@ -84,8 +90,8 @@ $(document).ready(function () {
             history.replaceState(null, "", location.pathname);
 
             // 그룹 리스트 세팅
-            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup);
-            
+            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup, userNo);
+
             // 랜덤 그룹 목록은 한 페이지로 페지이네이션 정보가 없어 페지이네이션 요소 제거
             $searchComponent.find(".pagination").remove();
         } catch (error) {
@@ -120,13 +126,114 @@ $(document).ready(function () {
             history.replaceState(null, "", newUrl);
 
             // 그룹 리스트 세팅
-            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup);
+            setGroupList(groupsAndPagination.items, $groupSearchListComponent, isJoinedGroup, userNo);
 
             // 페이지네이션 세팅(페이지네이션 세팅 전 url 수정되어 있어야 함)
             setPagination(groupsAndPagination.pagination, $searchComponent);
         } catch (error) {
             console.error("그룹 검색 요청 실패: ", error.message);
             alert("그룹 검색 목록을 가져오는데 실패하였습니다.\n다시 시도해 주세요.");
+            location.reload(); // 새로 고침
+        }
+    });
+
+    // 그룹 탈퇴 폼 제출 이벤트 핸들러
+    const $groupOutForm = $("#group-out-form"); // 그룹 탈퇴 폼 요소
+    $groupOutForm.submit(function () {
+        const isConfirm = confirm('정말 우리반을 탈퇴하시겠습니까?');
+        // 취소 시 리턴
+        if (!isConfirm) return false;
+        this.submit(); // 폼 제출
+    });
+    
+    // 그룹 가입 신청 폼 제출 이벤트 핸들러
+    // 비밀번호 설정된 그룹일 경우 비밀번호 입력 모달창 열기
+    const $groupJoinForm = $("#group-join-form"); // 그룹 가입 신청 폼
+    const $modalGroupPwd = $("#modal-group-pwd"); // 모달창
+    const $modalGroupJoinForm = $modalGroupPwd.find("#modal-group-join-form"); // 비밀번호 설정된 그룹 가입 폼
+
+    $(document).on("click", ".group_join_btn", async function () {
+        const $this = $(this); // 클릭한 버튼 요소
+        const isSecret = $this.attr("data-is-secret") === "true"; // 비밀번호 그룹 여부
+        const groupNo = $this.attr("data-group-no"); // 선택된 그룹 번호
+        const $groupNoInput = $groupJoinForm.find("input:hidden[name='groupNo']"); // 그룹 번호 입력 인풋
+
+        // 비밀번호가 설정된 그룹일 경우
+        if (isSecret && $modalGroupPwd.length) {
+            // groupNo 인풋 입력/수정
+            const $modalPwdInput = $modalGroupPwd.find("#group-password"); // 비밀번호 입력 인풋
+            let $modalGroupNoInput = $modalGroupPwd.find("#modal-group-no"); // 비밀번호 그룹 번호 인풋
+            
+            // 비밀번호 그룹 번호 인풋이 없을 경우 생성
+            if (!$modalGroupNoInput.length) {
+                $modalGroupNoInput = $(`<input type="hidden" id="modal-group-no" name="groupNo" value="">`); // 생성
+                $modalGroupJoinForm.append($modalGroupNoInput); // 추가
+            }
+            $modalGroupNoInput.val(groupNo); // 값 입력
+
+            // 해당 모달창 요소가 있을 경우 열기
+            $modalGroupPwd.show();
+
+            // 제출 버튼 모두 활성화 실시간 비활성화 기능 사용하지 않음
+            $modalGroupPwd.find("button[type='submit']").removeClass("disabled");
+
+            // 약간의 딜레이를 주어 show 후 css transition 적용될 수 있도록 함
+            setTimeout(() => {
+                $modalGroupPwd.addClass("open");
+            }, 10);
+
+            $modalPwdInput.focus(); // 비밀번호 입력 인풋 포커스
+            return false;
+        }
+
+        // 비밀번호 설정된 그룹이 아닐 경우
+        $groupNoInput.val(groupNo);
+        $groupJoinForm.submit();
+    });
+    
+    // 그룹 비밀번호 입력 모달 창의 그룹 비밀번호 입력 이벤트 핸들러
+    // 정규표현식 적용하여 숫자만 입력 가능하고 최대 4자리까지 자름
+    $(document).on("input blur", "#group-password", function () {
+        const $this = $(this);
+        let value = $this.val();
+        clearInputErrorMessage($this); // 에러메세지 제거
+
+        // 입력 값 가공하여 대입
+        value = value.replace(/[^0-9]/g, "").substring(0, 4);
+        $this.val(value);
+
+        if (value.length < 4) {
+            addInputErrorMessage($this, "비밀번호를 입력해 주세요");
+        }
+    });
+
+    // 비밀번호 설정된 그룹 가입 폼 제출 이벤트 핸들러
+    $modalGroupJoinForm.submit(async function (e) {
+        e.preventDefault();
+        const $this = $(this);
+
+        // 유효성 검사 통과 시 그룹 가입 요청
+        if (!validateJoinGroupForm($this)) return false;
+
+        const groupNo = $this.find("input[name=groupNo]").val();
+        const $password = $this.find("input[name=password]");
+
+        try {
+            const response = await apiPostJoinGroup(groupNo, $password.val());
+
+            if (!response.data) {
+                // response.data가 false 경우 비밀번호 틀림
+                addInputErrorMessage($password, response.message); // 에러 메세지 추가
+                $password.val(""); // 비밀번호 초기화
+                $password.focus();
+            } else {
+                // response.data가 false 경우 가입 성공
+                alert(response.message); // 성공 메세지
+                location.reload(); // 새로고침
+            }
+        } catch (error) {
+            console.error("그룹 가입 요청 실패: ", error.message);
+            alert(error.message);
             location.reload(); // 새로 고침
         }
     });
@@ -138,7 +245,7 @@ $(document).ready(function () {
         if ($modalGroupEdit.length) {
             // 해당 모달창 요소가 있을 경우 열기
             $modalGroupEdit.show();
-            
+
             // 제출 버튼 모두 활성화 실시간 비활성화 기능 사용하지 않음
             $modalGroupEdit.find("button[type='submit']").removeClass("disabled");
 
@@ -147,15 +254,6 @@ $(document).ready(function () {
                 $modalGroupEdit.addClass("open");
             }, 10);
         }
-    });
-    
-    // 그룹 탈퇴 폼 제출 이벤트 핸들러
-    const $groupOutForm = $("#group-out-form"); // 그룹 탈퇴 폼 요소
-    $groupOutForm.submit(function () {
-        const isConfirm = confirm('정말 우리반을 탈퇴하시겠습니까?');
-        // 취소 시 리턴
-        if (!isConfirm) return false;
-        this.submit(); // 폼 제출
     });
 
 });

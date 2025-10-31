@@ -170,7 +170,7 @@ public class DictationController {
 //        log.info("[/use-hint] index: {}, usedHint: Y", questionIndex);
 //
 //        // 힌트 사용 시 유저 힌트 수 -1 차감
-//        // userService.updateUserHintCountMinus(userNo);
+//        // userService.minusUserHintCount(userNo);
 //
 //        return ResponseEntityUtils.ok("힌트 사용 완료");
 //    }
@@ -255,7 +255,7 @@ public class DictationController {
             log.info("[/use-hint] index: {}, usedHint: Y", questionIndex);
 
             // 힌트 사용 시 유저 힌트 수 -1 차감
-            // userService.updateUserHintCountMinus(userNo);
+            // userService.minusUserHintCount(userNo);
             return "redirect:/dictation/solve";
         }
 

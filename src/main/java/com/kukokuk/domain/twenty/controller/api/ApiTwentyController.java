@@ -6,11 +6,14 @@ import com.kukokuk.domain.twenty.dto.RoomUser;
 import com.kukokuk.domain.twenty.dto.SendStdMsg;
 import com.kukokuk.domain.twenty.service.TwentyService;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
+import com.kukokuk.domain.user.vo.User;
+import com.kukokuk.security.SecurityUser;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,27 +29,34 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiTwentyController {
 
     private final TwentyService twentyService;
-
-    /**
-     * 게임 종료 버튼 눌렀을 때, 게임 결과 저장 및 경험치 부여
-     * @param map roomNo만 담겨 있다.
-     * @return
+    /** 교사&학생 종료 버튼
+     * roomNo를 받아서, 서비스 로직 호출 -> 게임방의 상태를 반환
+     * 방의 상태값을 반환.
      */
-    @PostMapping("/gameOver")
-    public ResponseEntity<ApiResponse<Void>> gameOver(@RequestBody Map<String,Object> map) {
+    @PostMapping("/endBtn")
+    public ResponseEntity<ApiResponse<TwentyRoom>> endBtnProcess(@RequestBody Map<String,Object> map,
+                                                           @AuthenticationPrincipal SecurityUser securityUser) {
+        User user = securityUser.getUser();
         int roomNo = (int)map.get("roomNo");
-        // 게임방의 상태 변경 및 게임방의 결과 저장
-        twentyService.gameOverTwenty(roomNo);
-        log.info("service 메소드 : gameOverTwenty 정상 실행");
+        TwentyRoom room = twentyService.twentyEndProcess(roomNo,user);
 
-        //게임 승리 여부에 따른 그룹화된 유저 경험치 부여
-        twentyService.addExp(roomNo);
-        return ResponseEntityUtils.ok("게임 정상 종료");
+        return ResponseEntityUtils.ok(room);
     }
 
     /*
         여기 아래 부턴, kukokuk-WebSocket에서 REST API를 호출하는 메소드들
      */
+
+    /**
+     * 교사 응답 중, 종료 시점이 나오면 겡미 결과를 저장.
+     * @param msg
+     * @return
+     */
+    @PostMapping("/room/gameOver")
+    public ResponseEntity<ApiResponse<Void>> gameOver(@RequestBody SendStdMsg msg) {
+        twentyService.gameOver(msg);
+        return ResponseEntityUtils.ok("게임 결과 정상 종료");
+    }
 
     /**
      * 게임방 상태 변경
@@ -154,18 +164,6 @@ public class ApiTwentyController {
         return ResponseEntityUtils.ok(recentMsg);
     }
 
-    /**
-     * 게임방의 결과를 update
-     * roomNo를 가진 게임방의 승리여부, 시도 횟수를 업데이트, 승리여부에 따라 winnerNo가 들어가게 된다.
-     * @param room : roomNo,isSuccess, tryCnt,winnerno(승리여부에 따라)
-     * @return
-     */
-/*    @PostMapping("/room/{roomNo}/resultUpdate")
-    public ResponseEntity<ApiResponse<Void>> updateTwentyRoomResult(@RequestBody TwentyRoom room) {
-        twentyService.updateTwentyRoomResult(room);
-        log.info("게임 종료 버튼 : 게임 결과 게임방 테이블에 정상 적으로 저장");
-        return ResponseEntityUtils.ok("정상적으로 변경되었습니다.");
-    }*/
 
     /**
      * 메세지를 업데이트 하고, 가장 최신의 메세지 리스트를 반환
