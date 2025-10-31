@@ -4,13 +4,31 @@
       , menu='group'">
 <div layout:fragment="content">
     <div id="main-content" class="content_container">
-        <!--/* 그룹 학습 자료 관리 컨텐츠 */-->
-        <div class="content_info toggle_info_component">
+        <!--/* 교사가 생성한 그룹이 없을 경우 */-->
+        <div th:if="${currentGroup == null}" class="content_info toggle_info_component">
+            <div class="content_title">
+                <iconify-icon icon="twemoji:file-folder"></iconify-icon>
+                우리반 학습 자료 관리
+            </div>
+
+            <div class="component small_list_component toggle_info_second teacher_study_upload_container">
+                <div class="d_flex column small_gap">
+                    <div class="component_title align_start">
+                        우리반을 만들어 보세요!
+                    </div>
+                    <span class="component_sub_title">AI가 맞춤으로 재구성한 학습 자료를 우리반과 공유해 보세요!</span>
+                </div>
+            </div>
+        </div>
+
+        <!--/* 교사가 생성한 그룹이 있을 경우 */-->
+        <div th:if="${currentGroup != null}" class="content_info toggle_info_component"
+             th:classappend="${#lists.isEmpty(teacherStudies) ? 'second' : 'first'}">
             <div class="content_title">
                 <iconify-icon icon="twemoji:file-folder"></iconify-icon>
                 우리반 학습 자료 관리
 
-                <!--/* 교사가 등록한 학습 자료가 있을 경우 */-->
+                <!--/* 교사가 등록한 그룹이 있고 학습 자료가 있을 경우 */-->
                 <div th:if="${!#lists.isEmpty(teacherStudies)}"
                      id="group-study-switch-toggle-btn"
                      class="content_switcher switch_toggle_btn"
@@ -20,38 +38,41 @@
                 </div>
             </div>
 
-            <div class="component small_list_component">
-                <!--/* 교사가 등록한 학습 자료가 없을 경우 */-->
-                <div ">
-                    <div class="component_title">
+            <!--/* 그룹 학습 자료 등록 컴포넌트 */-->
+            <div class="component small_list_component toggle_info_second teacher_study_upload_container">
+                <div class="d_flex column small_gap">
+                    <div class="component_title align_start">
                         우리반 학습 자료 등록
-                        <button type="button" id="files-input-btn" class="btn tiny plr_small primary">파일 선택</button>
+                        <button type="button" id="modal-group-study-btn" class="btn tiny plr_small full_blue">등록하기</button>
                     </div>
-
                     <span class="component_sub_title">AI가 맞춤으로 재구성한 학습 자료를 우리반과 공유해 보세요!</span>
-
-                    <div class="d_flex column tiny_gap sub_font">
-                        <div class="component_info tag w_max_100">
-                            <div>
-                                <span>AI 맞춤 학습 생성 자료는</span>
-                                <span class="tag bg_light_red bold">.hwpx</span>
-                                <span>형식의 파일만 지원합니다.</span>
-                            </div>
-                        </div>
-
-                        <div class="component_info tag w_max_100">
-                            <span>한번에 최대 3개까지 첨부 가능합니다.</span>
-                        </div>
-                    </div>
-
-                    <!--/* 파일 첨부 폼 */-->
-                    <form action="">
-                        <input type="file" name="" id="" class="">
-                    </form>
                 </div>
 
+                <div class="component_info column">
+                    <div class="tiny_list_component sub_font w_100">
+                        <div>
+                            <span>AI 맞춤 학습 생성 자료는</span>
+                            <span class="tag bg_light_yellow bold pd_0">.hwpx</span>
+                            <span>형식의 파일만 지원합니다.</span>
+                        </div>
+                        <div>
+                            <span>한번에 최대</span>
+                            <span class="tag bg_light_yellow bold pd_0">3개</span>
+                            <span>의 파일을 첨부할 수 있습니다.</span>
+                        </div>
+                        <div>
+                            <span>각 파일의 크기는</span>
+                            <span class="tag bg_light_yellow bold pd_0">10MB</span>
+                            <span>를 초과할 수 없습니다.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--/* 교사가 등록한 학습 자료가 있을 경우 */-->
+            <div th:if="${!#lists.isEmpty(teacherStudies)}" class="component small_list_component toggle_info_first">
                 <!--/* 교사가 등록한 학습 자료가 있는 경우 */-->
-                <div th:if="${!#lists.isEmpty(teacherStudies)}" class="grid_list_component column">
+                <div class="grid_list_component column">
                     <div class="component grid_tiny_list pd_base pb_small small_gap teacher_study_List"
                          th:each="study : ${teacherStudies}"
                          th:with="studyCompleteRawPer=${(study.completedStudentCount * 100.0) / currentGroup.memberCount}
@@ -99,7 +120,6 @@
                                 <iconify-icon class="tooltip" data-label="원본 다운로드" icon="streamline-flex-color:cloud-download-flat"></iconify-icon>
                                 <span th:text="${study.materialTitle}">원본 파일명</span>
                             </a>
-                            <div class="btn tiny white small_font group_study_delete_btn">삭제</div>
                         </div>
                     </div>
                 </div>
@@ -157,20 +177,21 @@
                           class="form_wrap small_gap"
                           method="post"
                           th:action="@{/twenty/gameRoom}">
+                        <input type="hidden" name="groupNo" th:value="${currentGroup.groupNo}">
                         <div class="form_input_list">
                             <div class="input_info">
                                 <input type="text" name="title" id="title" placeholder=" "/>
                                 <label for="title" class="input_title">스무고개 방 이름</label>
                             </div>
-                                <!--/* 에러 메세지 표시 */-->
-                                <p th:if="${titleError}" th:text="${titleError}" class="error_text"></p>
+                            <!--/* 에러 메세지 표시 */-->
+                            <p th:if="${titleError}" th:text="${titleError}" class="error_text"></p>
+
                             <div class="input_info">
                                 <input type="text" name="correct" id="correct" placeholder=" "/>
                                 <label for="correct" class="input_title">스무고개 정답</label>
                             </div>
-                                <!--/* 에러 메세지 표시 */-->
-                                <p th:if="${correctError}" th:text="${correctError}" class="error_text"></p>
-                            <input type="hidden" name="groupNo" th:value="${currentGroup.groupNo}">
+                            <!--/* 에러 메세지 표시 */-->
+                            <p th:if="${correctError}" th:text="${correctError}" class="error_text"></p>
                         </div>
                         <button type="submit" class="btn primary">방 만들기</button>
                     </form>
@@ -194,12 +215,10 @@
                     <div th:if="${currentGroup == null}"
                          class="d_flex justify_content_between align_center small_gap">
                         <p class="text_ellipsis">우리 반이 없습니다</p>
-                        <button type="button" class="modal_gruop_edit_btn btn tiny primary">만들기</button>
                     </div>
 
                     <!--/* 생성한 그룹이 있는 교사 권한 사용자 */-->
-                    <div th:if="${currentGroup != null}"
-                         class="d_flex justify_content_between align_center small_gap">
+                    <th:block th:if="${currentGroup != null}">
                         <!--/* 생성한 그룹이 1개만 있는 교사 권한 사용자 */-->
                         <p th:if="${teacherGroups.size() == 0}"
                            class="text_ellipsis"
@@ -219,9 +238,7 @@
                                     th:value="${teacherGroup.groupNo}"
                                     th:text="${teacherGroup.title}">우리 반 리스트</option>
                         </select>
-
-                        <button type="button" class="modal_gruop_edit_btn btn tiny white">편집</button>
-                    </div>
+                    </th:block>
                 </div>
             </div>
 
@@ -265,7 +282,10 @@
                 </div>
             </div>
 
-            <a th:href="@{/group}" class="btn tiny blue w_100 small_font">우리 반으로 가기</a>
+            <div class="btn_list">
+                <button type="button" class="btn small w_100 modal_gruop_edit_btn" th:text="${currentGrouop != null ? '편집' : '만들기'}">편집</button>
+                <a th:href="@{/group}" class="btn small white w_100">우리 반으로 가기</a>
+            </div>
         </div>
 
         <!--/* 스피드, 단계별, 받아쓰기 그룹 랭킹 컴포넌트 */-->
@@ -277,18 +297,12 @@
             <div class="tab_content_list bg_base border_radius box_shadow ranks_component">
                 <div class="tab_btn_list">
                     <button type="button" class="tab_btn selected">스피드<span class="active"></span></button>
-                    <button type="button" class="tab_btn">단계별<span class="active"></span></button>
                     <button type="button" class="tab_btn">받아쓰기<span class="active"></span></button>
                 </div>
 
                 <!--/* 스피드퀴즈 그룹 랭크 */-->
                 <div id="speed-ranks-component" class="tab_content selected border_base bt_none pd_base">
                     <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${speedQuizRanks}, useTitle=false)}"></div>
-                </div>
-
-                <!--/* 단계별 퀴즈 그룹 랭크 */-->
-                <div id="level-ranks-component" class="tab_content border_base bt_none pd_base">
-                    <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${levelQuizRanks}, useTitle=false)}"></div>
                 </div>
 
                 <!--/* 받아쓰기 퀴즈 그룹 랭크 */-->
@@ -304,6 +318,11 @@
         currentGroup=${currentGroup}
         , teacherGroups=${teacherGroups}
     )}"></div>
+
+    <!--/* 그룹 학습 자료 등록 모달창(교사가 생성한 그룹이 있을 경우에만) */-->
+    <th:block th:if="${currentGroup != null}">
+        <div th:replace="~{fragments/modal/modal-group-study-create :: modal-group-study-create-fragment(groupNo=${currentGroup.groupNo})}"></div>
+    </th:block>
 </div>
 
 <th:block layout:fragment="script">

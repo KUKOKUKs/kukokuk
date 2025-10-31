@@ -7,7 +7,9 @@ import com.kukokuk.domain.study.dto.GroupParseMaterialResponse;
 import com.kukokuk.domain.study.dto.TeacherDailyStudyResponse;
 import com.kukokuk.domain.study.service.GroupStudyService;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Log4j2
 @RestController
 @RequestMapping("/api/teachers/groups/{groupNo}")
 @RequiredArgsConstructor
@@ -31,14 +34,18 @@ public class ApiTeacherGroupController {
      * @return
      */
     @PostMapping("/materials/upload")
-    public ResponseEntity<ApiResponse<List<String>>> uploadGroupMaterials(
+    public ResponseEntity<ApiResponse<Map<String, String>>> uploadGroupMaterials(
         @RequestParam("files") List<MultipartFile> files, // 일반적으로 파일은 RequestParam으로 받음
         @PathVariable("groupNo") int groupNo,
         @RequestParam("difficulty") int difficulty
     ) {
 
+        log.info("groupNo: {}",  groupNo);
+        log.info("difficulty: {}",  difficulty);
+        log.info("files: {}",  files);
+
         // 그룹의 학습자료 업로드 요청을 처리하는 서비스. jobStatus를 생성하고, Redis 큐에 작업 적재
-        List<String> jobIdList = groupStudyService.uploadGroupMaterials(files, groupNo, difficulty);
+        Map<String, String> jobIdList = groupStudyService.uploadGroupMaterials(files, groupNo, difficulty);
 
         return ResponseEntityUtils.ok("그룹 자료 업로드 성공",jobIdList);
     }

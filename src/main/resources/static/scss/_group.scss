@@ -47,7 +47,13 @@
     }
 }
 
-/* 교사 페이지 학습 자료 관련 */
-.teacher_study_List {
-
+/* 교사 페이지 */
+.uploading_list_container {
+    .upload_list {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: var(--tinyGap);
+    }
 }

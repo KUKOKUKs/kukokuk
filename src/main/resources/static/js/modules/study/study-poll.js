@@ -125,3 +125,76 @@ async function pollStudyJobStatus(job, index, pollUrl, $studyCard, isUseSpinner)
     // 재시도 로직 실행 시작
     await tryPoll();
 }
+
+export async function pollTeacherStudyJobStatus(pollUrl, $uploadElement) {
+    const jobId = $uploadElement.attr("data-job-id");
+    console.log(`pollTeacherStudyJobStatus() 실행 jobId: ${jobId}, pollUrl: ${pollUrl}`);
+
+    /**
+     * 내부 재시도용 헬퍼 함수
+     * @param {number} attempt 현재 시도 횟수
+     */
+    async function tryPoll(attempt = 1) {
+        try {
+            console.log(`pollTeacherStudyJobStatus() jobId(${jobId}) 시도 ${attempt}회차`);
+
+            // 실제 폴링 요청
+            // 폴링의 상태가 PROCESSING이 아닐 경우 반환 됨 (진행상태 표시하지 않음)
+            const pollJob = await pollJobStatus(pollUrl, null, false);
+
+            // 요소 업데이트
+            const isDone = pollJob.status === "DONE";
+            updateProcessing(isDone, pollJob.status, $uploadElement);
+
+            // 정상 종료 시(DONE) 학습 토글 버튼으로 학습 리스트 확인할 수 있도록 새로고침
+            // 현재 진행 중(data-stats='PROCESSING')인 jobID 적용 요소가 없을 경우 모든 병렬 폴링 작업이 끝났다고 판단
+            const $parentElement = $uploadElement.parent(".uploading_list_container"); // 부모요소
+            const isProcessing = $parentElement.find(".upload_list").is("[data-stats='PROCESSING']"); // 아직 진행 중
+            const isFaied = $parentElement.find(".upload_list").is("[data-stats='ERROR'], [data-stats='FAILED']"); // 실패한 요청이 있음
+
+            if (!isProcessing) { // 모든 병렬 폴링 호출이 종료가 되었을 경우
+                if (!isFaied) {
+                    // 모든 요청이 성공일 경우
+                    alert("처리가 완료 되었습니다.");
+                    location.reload(); // 새로고침
+                } else {
+                    // 실패한 요청이 한개라도 있을 경우
+                    alert("생성에 실패한 요청이 있습니다.\n파일을 확인하여 새로고침 후 다시 시도해 주세요.");
+                }
+            }
+            
+        } catch (error) {
+            console.warn(`pollStudyJobStatus() 오류 jobId(${jobId}) (${attempt}회차): ${error.message}`);
+
+            if (attempt < 4) {
+                // 재시도 가능 (최대 3회)
+                const retryDelay = 500 * attempt; // 시도 횟수별로 점진적 지연
+                console.log(`${retryDelay}ms 후 재시도 예정...`);
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+                return tryPoll(attempt + 1); // 재귀 재호출
+            } else {
+                // 3회 시도 실패 후 에러 표시
+                console.error(`${attempt}회 jobId(${jobId}) 재시도 실패. 폴링 요청 시도 중단`);
+                alert(`${$uploadElement.find(".info").text()}\n학습 자료 업로드에 실패하였습니다.\n나중에 다시 시도해 주세요.`);
+                updateProcessing(false, 'ERROR', $uploadElement)
+            }
+        }
+    }
+
+    // 재시도 로직 실행 시작
+    await tryPoll();
+}
+
+function updateProcessing(isDone, status, $uploadElement) {
+    $uploadElement.attr("data-status", status);
+    $uploadElement.css("--percent", isDone ? "100%" : "0%"); // 통신완료
+    $uploadElement.removeClass("loading_spinner"); // 로딩 제거
+    $uploadElement.addClass("sub_font"); // 사이즈 맞추기
+    if (!isDone) $uploadElement.addClass("color_gray"); // FAILED이거나 오류일 경우 텍스트 색상 변경
+
+    // 체크/엑스 로 변경
+    $uploadElement.prepend(`
+        <iconify-icon class="icon sub_font" 
+            icon="${isDone ? 'streamline-sharp-color:check-flat' : 'fxemoji:crossmark'}"></iconify-icon>
+    `);
+}

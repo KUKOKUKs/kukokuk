@@ -44,7 +44,6 @@ public class RankController {
         // 정확한 컨텐츠 타입을 입력 및 enum 메소드 활용하기 위해 ContentTypeEnum 사용
         List<ContentTypeEnum> contentTypes = Arrays.asList(
             ContentTypeEnum.SPEED // sppedQuizRanks에 사용
-            , ContentTypeEnum.LEVEL // levelQuizRanks에 사용
             , ContentTypeEnum.DICTATION // dictationQuizRanks에 사용
         );
 
