@@ -184,7 +184,7 @@
 
       #teacher-o-btn { background: var(--green); }
       #teacher-x-btn { background: var(--red); }
-      #teacher-end-btn { background: #9c27b0; }
+      /*#common-end-btn { background: #9c27b0; }*/
       #teacher-start-btn { background: var(--blue); }
 
       .big_button:disabled {
@@ -250,6 +250,12 @@
         cursor: pointer;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         transition: all 0.2s ease;
+      }
+      .raise_button:disabled {
+        background: var(--gray-300);
+        color: var(--gray-500);
+        cursor: not-allowed;
+        opacity: 0.7;
       }
 
       .participants_panel {
@@ -333,9 +339,9 @@
     <div class="page_header">
         <span>🎮 스무고개</span>
         <div class="user_info">
-            <span sec:authentication="principal.username"></span>
+            <span th:text="${nickName}"></span>
             (<span sec:authorize="hasRole('TEACHER')">교사</span>
-            <span sec:authorize="hasRole('STUDENT')">학생</span>)
+            <span sec:authorize="hasRole('USER')">학생</span>)
         </div>
     </div>
 
@@ -352,12 +358,17 @@
                 (<span id="timer-display">40</span>초 남음)
             </div>
 
+            <!-- ✅ 남은 질문 표시 -->
+            <div id="remaining-questions-panel">
+                남은 질문 수: <span id="remaining-questions">20</span>
+            </div>
+
             <!-- ✅ 교사용 컨트롤 -->
             <div class="teacher_controls" id="teacher-controls" sec:authorize="hasRole('TEACHER')">
                 <div class="button_row">
                     <button class="big_button" id="teacher-o-btn" disabled>O</button>
                     <button class="big_button" id="teacher-x-btn" disabled>X</button>
-                    <button class="big_button" id="teacher-end-btn" disabled>종료</button>
+                    <!--<button class="big_button" id="teacher-end-btn" >종료</button> --><!-- 상시 활성화-->
                     <button class="big_button" id="teacher-start-btn" disabled>시작</button>
                     <span id="teacher-answer-display" th:text="'정답: ' + ${correctAnswer}">정답: ???</span>
                 </div>
@@ -377,6 +388,10 @@
                 </div>
                 <button class="raise_button" id="raise-hand" disabled>✋ 손들기</button>
             </div>
+            <div class="footer_area" style="margin-top:auto; text-align:right;">
+                <button id="common-end-btn">종료</button>
+            </div>
+
         </div>
 
         <aside class="participants_panel">
@@ -397,7 +412,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-    <script src="/js/modules/twenty/twentyGameRoom.js"></script>
+    <script type="module" th:src="@{/js/modules/twenty/twentyGameRoom.js}"></script>
 </th:block>
 </body>
 </html>

@@ -62,7 +62,7 @@
         </div>
 
         <!--/* 랭크 목록에 사용자의 순위가 없을 경우 */-->
-        <div th:if="${!ranksDto.ranks.isEmpty() && !ranksDto.hasUserRank}"
+        <div th:if="${(title == null || title != '나의 반 관리') && (!ranksDto.ranks.isEmpty() && !ranksDto.hasUserRank)}"
              class="component_info tiny selected">
             <div class="list_info tac sub_font color_gray">
                 아직 내 순위가 없습니다.
