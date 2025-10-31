@@ -214,7 +214,7 @@
                     <!--/* 생성한 그룹이 없는 교사 권한 사용자 */-->
                     <div th:if="${currentGroup == null}"
                          class="d_flex justify_content_between align_center small_gap">
-                        <p class="text_ellipsis">우리 반이 없습니다</p>
+                        <p class="text_ellipsis">나의 반이 없습니다</p>
                     </div>
 
                     <!--/* 생성한 그룹이 있는 교사 권한 사용자 */-->
@@ -283,13 +283,28 @@
             </div>
 
             <div class="btn_list">
-                <button type="button" class="btn small w_100 modal_gruop_edit_btn" th:text="${currentGrouop != null ? '편집' : '만들기'}">편집</button>
+                <button type="button" class="btn small w_100 modal_gruop_edit_btn" th:text="${currentGroup != null ? '편집' : '만들기'}">편집</button>
                 <a th:href="@{/group}" class="btn small white w_100">우리 반으로 가기</a>
             </div>
         </div>
 
+        <!--/* 생성한 그룹이 없는 교사 권한 사용자 */-->
+        <div th:if="${currentGroup == null}" class="component small_list_component">
+            <div class="component_title">
+                <div class="title_info">우리반 순위</div>
+            </div>
+
+            <div class="component_info tiny">
+                <div class="list_info sub_font tac">
+                    나의 반에 입반한 사용자들의 순위를 확인해 보세요!
+                </div>
+            </div>
+        </div>
+
+        <!--/* 생성한 그룹이 있는 교사 권한 사용자 */-->
         <!--/* 스피드, 단계별, 받아쓰기 그룹 랭킹 컴포넌트 */-->
-        <div class="component small_list_component pd_0 bg_none border_none box_shadow_none">
+        <div th:if="${currentGroup != null}"
+             class="component small_list_component pd_0 bg_none border_none box_shadow_none">
             <div class="component_title pd_base pd_top_bottom_0 bg_none border_none">
                 <p class="title_info">우리반 순위</p>
             </div>
