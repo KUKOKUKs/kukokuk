@@ -1664,6 +1664,10 @@ table th {
   cursor: pointer;
 }
 
+.cursor_none {
+  cursor: auto;
+}
+
 .disabled {
   pointer-events: none;
   opacity: 0.5;
@@ -2704,7 +2708,7 @@ table th {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: var(--smallGap);
+  gap: var(--tinyGap);
 }
 
 .paging {
