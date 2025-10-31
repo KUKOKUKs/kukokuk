@@ -88,8 +88,10 @@
                 <div class="tab_content selected border_base bt_none">
                     <div class="tiny_list_component pd_base">
                         <div th:if="${#lists.isEmpty(speedHistory)}"
-                             class="list_info">
-                            제한 시간 내 문제를 풀고, 순위를 확인해 보세요!
+                             class="component_info tiny">
+                            <div class="list_info sub_font tac">
+                                제한 시간 내 문제를 풀고, 순위를 확인해 보세요!
+                            </div>
                         </div>
 
                         <a th:if="${!#lists.isEmpty(speedHistory)}"
@@ -120,8 +122,10 @@
                 <div class="tab_content border_base bt_none">
                     <div class="tiny_list_component pd_base">
                         <div th:if="${#lists.isEmpty(levelHistory)}"
-                             class="list_info">
-                            단계별 문제를 풀며 실력을 키워보세요!
+                             class="component_info tiny">
+                            <div class="list_info sub_font tac">
+                                단계별 문제를 풀며 실력을 키워보세요!
+                            </div>
                         </div>
 
                         <a th:if="${!#lists.isEmpty(levelHistory)}"
@@ -150,8 +154,10 @@
                 <div class="tab_content border_base bt_none">
                     <div class="tiny_list_component pd_base">
                         <div th:if="${#lists.isEmpty(dictationHistory)}"
-                             class="list_info">
-                            AI가 생성한 문장을 듣고 받아쓰기에 도전해 보세요!
+                             class="component_info tiny">
+                            <div class="list_info sub_font tac">
+                                AI가 생성한 문장을 듣고 받아쓰기에 도전해 보세요!
+                            </div>
                         </div>
 
                         <a th:if="${!#lists.isEmpty(dictationHistory)}"

@@ -44,7 +44,7 @@ $(document).ready(function () {
             }
 
             // 생성 성공 시 해당 그룹 페이지로 이동
-            location.href = `/group?groupNo=${response.groupNo}`;
+            location.href = `/group/teacher?groupNo=${response.groupNo}`;
         } catch (error) {
             alert(error.message);
             location.reload();
@@ -80,7 +80,7 @@ $(document).ready(function () {
             }
 
             // 생성 성공 시 해당 그룹 페이지로 이동
-            location.href = `/group?groupNo=${response.groupNo}`;
+            location.href = `/group/teacher?groupNo=${response.groupNo}`;
         } catch (error) {
             alert(error.message);
             location.reload();
@@ -118,7 +118,7 @@ $(document).ready(function () {
             }
 
             // 삭제 성공 시 그룹 페이지로 이동
-            location.href = "/group";
+            location.href = "/group/teacher";
         } catch (error) {
             alert(error.message);
             location.reload();
