@@ -26,7 +26,7 @@ $(document).ready(() => {
     const $hintsInfo = $dictationSpeakingComponent.find(".hints_info"); // 힌트 버튼 부모 요소
     const $userAnswer = $("#user-answer"); // 정답 입력 인풋 요소
     const $submitAnswer = $("#submitAnswer"); // 정답 제출 버튼 요소
-    const $mainContent = $("#main-content");  // 받아쓰기 진행화면
+    const $dictationForm = $("#dictation_form");  // 받아쓰기 진행화면
 
     $userAnswer.focus();
 
@@ -174,13 +174,15 @@ $(document).ready(() => {
     // });
 
     // 건너띄기 버튼 클릭시 isShowAnswer = true
-    $("#skip-btn").on("click", function () {
-        console.log("건너띄기 버튼 클릭됨")
+    $("#skip-btn").on("click", function (e) {
+        e.preventDefault();
+        console.log("건너뛰기 버튼 클릭됨")
         isShowAnswer = true;
+        $dictationForm.submit();
     })
 
     // 정답 보기 버튼 클릭 시 showAnswer hidden 추가
-    $mainContent.submit(function (e) {
+    $dictationForm.submit(function (e) {
         e.preventDefault();
         const $this = $(this);
 
@@ -249,11 +251,11 @@ $(document).ready(() => {
     $("#hintBtn1, #hintBtn2, #hintBtn3").on("click", function () {
         const hintnum = this.id === "hintBtn1" ? 1 : (this.id === "hintBtn2" ? 2 : 3);
 
-        $mainContent.append('<input type="hidden" name="hintNum" value="' + hintnum + '">');
-        $mainContent.append('<input type="hidden" name="showAnswer" value="0">');
+        $dictationForm.append('<input type="hidden" name="hintNum" value="' + hintnum + '">');
+        $dictationForm.append('<input type="hidden" name="showAnswer" value="0">');
 
         // $("#main-content") 부분 e.preventDefault()를 건너뛰고, 브라우저의 기본 폼 제출을 직접 실행시키기 위해 추가
-        $mainContent[0].submit();
+        $dictationForm[0].submit();
     });
 
     // 2. 문제 번호를 인자로 넘겨 getDictationQuestionApi 함수 실행
