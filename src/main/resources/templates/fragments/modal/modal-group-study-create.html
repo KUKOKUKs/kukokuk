@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<div th:fragment="modal-group-study-create-fragment(groupNo)"
+     id="modal-group-study-create"
+     class="modal_wrap">
+    <div id="modal_dimmed" class="dimmed modal_close"></div>
+    <div class="modal_container">
+        <div class="modal_top">
+            <p class="modal_title">학습 단계를 선택해 주세요</p>
+            <button type="button" class="modal_close_btn modal_close">
+                <iconify-icon icon="basil:cancel-outline"></iconify-icon>
+            </button>
+        </div>
+
+        <!--/* modal content */-->
+        <form id="teacher-study-create-form" class="modal_info form_wrap">
+            <input type="hidden" name="groupNo" th:value="${groupNo}">
+            <input type="file" name="files" id="teacher-study-file" multiple accept=".hwpx">
+
+            <div class="form_input_list">
+                <div class="input_info select_info one_input">
+                    <p class="select_title">단계</p>
+                    <select name="difficulty" class="form_select">
+                        <option value="" selected disabled>선택해 주세요</option>
+                        <option value="1">1단계</option>
+                        <option value="2">2단계</option>
+                        <option value="3">3단계</option>
+                        <option value="4">4단계</option>
+                        <option value="5">5단계</option>
+                        <option value="6">6단계</option>
+                    </select>
+                </div>
+
+                <div id="study-difficulty" class="modal_explanation_info pt_base"></div>
+            </div>
+
+            <div class="btn_list">
+                <button type="button" class="btn white modal_close">취소</button>
+                <button type="button" id="teacher-study-add-btn" class="btn primary">파일 선택</button>
+            </div>
+        </form>
+    </div>
+</div>
+</html>
