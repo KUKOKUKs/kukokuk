@@ -26,7 +26,7 @@ $(document).ready(() => {
     const $hintsInfo = $dictationSpeakingComponent.find(".hints_info"); // 힌트 버튼 부모 요소
     const $userAnswer = $("#user-answer"); // 정답 입력 인풋 요소
     const $submitAnswer = $("#submitAnswer"); // 정답 제출 버튼 요소
-    const $dictationForm = $("#dictation_form");  // 받아쓰기 진행화면
+    const $dictationForm = $(".dictation_form");  // 받아쓰기 진행화면
 
     $userAnswer.focus();
 
@@ -176,7 +176,7 @@ $(document).ready(() => {
     // 건너띄기 버튼 클릭시 isShowAnswer = true
     $("#skip-btn").on("click", function (e) {
         e.preventDefault();
-        console.log("건너뛰기 버튼 클릭됨")
+        console.log("건너뛰기 버튼 클릭됨");
         isShowAnswer = true;
         $dictationForm.submit();
     })
@@ -184,6 +184,7 @@ $(document).ready(() => {
     // 정답 보기 버튼 클릭 시 showAnswer hidden 추가
     $dictationForm.submit(function (e) {
         e.preventDefault();
+        console.log("받아쓰기 폼 제출 이벤트 실행");
         const $this = $(this);
 
         // showAnswer hidden 추가
