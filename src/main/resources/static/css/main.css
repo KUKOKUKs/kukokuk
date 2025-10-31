@@ -2711,6 +2711,7 @@ table th {
   gap: var(--tinyGap);
 }
 
+/* 교사 페이지 학습 자료 관련 */
 .paging {
   display: flex;
   justify-content: center;

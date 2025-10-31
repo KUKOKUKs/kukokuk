@@ -26,6 +26,7 @@ $(document).ready(() => {
     const $hintsInfo = $dictationSpeakingComponent.find(".hints_info"); // 힌트 버튼 부모 요소
     const $userAnswer = $("#user-answer"); // 정답 입력 인풋 요소
     const $submitAnswer = $("#submitAnswer"); // 정답 제출 버튼 요소
+    const $hintCount = $("#hint-count");
     const $dictationForm = $("#dictation_form");  // 받아쓰기 진행화면
 
     $userAnswer.focus();
@@ -142,7 +143,18 @@ $(document).ready(() => {
         }); // 힌트 버튼 부모 요소를 제거하여 완전 보이지 않도록 함
     }
 
+    function updateHintButton() {
+        if (!$hintsInfo.length) return;
+        const userHintCount = parseInt($hintCount.text());
 
+        if (userHintCount <= 0) {
+            $hintsInfo.addClass("disabled");
+        } else {
+            $hintsInfo.removeClass("disabled");
+        }
+    }
+
+    updateHintButton();
     // 1. 비동기 요청으로 읽어줄 문제와 힌트목록을 요청하는 함수
     // 코드 컨벤션이 맞지않으며 의미가 명확하도록 수정
     // $("#correctAnswer").on("click", async function () {
