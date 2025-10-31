@@ -26,7 +26,7 @@ $(document).ready(() => {
     const $hintsInfo = $dictationSpeakingComponent.find(".hints_info"); // 힌트 버튼 부모 요소
     const $userAnswer = $("#user-answer"); // 정답 입력 인풋 요소
     const $submitAnswer = $("#submitAnswer"); // 정답 제출 버튼 요소
-    const $dictationForm = $("#dictation_form");  // 받아쓰기 진행화면
+    const $dictationForm = $(".dictation_form");  // 받아쓰기 진행화면
     const $hintCount = $("#hint-count");
 
     $userAnswer.focus();
