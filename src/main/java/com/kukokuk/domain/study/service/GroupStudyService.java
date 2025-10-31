@@ -58,8 +58,8 @@ public class GroupStudyService {
      * @param groupNo
      * @param difficulty
      */
-    public List<String> uploadGroupMaterials(List<MultipartFile> files, int groupNo, int difficulty) {
-        List<String> jobIdList = new ArrayList<>();
+    public Map<String, String> uploadGroupMaterials(List<MultipartFile> files, int groupNo, int difficulty) {
+        Map<String, String> jobIdList = new HashMap<>();
 
         for (MultipartFile file : files) {
             try {
@@ -114,7 +114,7 @@ public class GroupStudyService {
 
                 stringRedisTemplate.opsForList().leftPush("queue:material:group", payloadJson);
 
-                jobIdList.add(jobId);
+                jobIdList.put(jobId, filename);
             } catch (IOException e) {
                 throw new AppException("첨부파일 저장 중 오류가 발생하였습니다");
             }

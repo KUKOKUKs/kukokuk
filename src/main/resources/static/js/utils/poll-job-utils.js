@@ -9,15 +9,12 @@
  * @param {jQuery} $statusElement - 폴링 진행 상태(진행률/메시지)를 추가/업데이트 할 요소
  * @param {boolean} isUseProcessUpdate - 폴링 진행 상태(진행률/메시지)를 추가/업데이트 사용 여부
  */
-export function pollJobStatus(
-    url
-    , $statusElement = null
-    , isUseProcessUpdate = true) {
-    console.log("pollJobStatus() api 요청 실행");
+export function pollJobStatus(url, $statusElement = null, isUseProcessUpdate = true) {
+    console.log("pollJobStatus() api 요청 실행 요청 URL: ", url);
 
     let reqCnt = 1;
     const interval = 1500; // 폴링 간격(ms)
-    const timeout = 30000; // 최대 대기 시간(ms)
+    const timeout = 50000; // 최대 대기 시간(ms)
 
     return new Promise((resolve, reject) => {
         const startTime = Date.now();
@@ -33,7 +30,7 @@ export function pollJobStatus(
                 // 폴링 요청 응답
                 const pollJob = statusResponse.data;
                 reqCnt++;
-                console.log(`poll() [${pollJob.jobId}]: ${reqCnt}번째 api 요청 실행`);
+                console.log(`poll() [${pollJob.jobId}]: ${reqCnt}번째 api 요청 실행: `, pollJob);
 
                 // 폴링 진행 상태(진행률/메시지) 추가/업데이트
                 // isUseProcessUpdate === true 이고, $statusElement가 유효할 경우에만 호출

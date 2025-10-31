@@ -116,6 +116,14 @@ input[type=radio] {
   margin-top: 3px;
 }
 
+input[type=file] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
 textarea {
   width: 100%;
   height: 100%;
@@ -200,7 +208,7 @@ table th, table td {
   padding: var(--tinyPadding);
   border-right: var(--baseBorder);
   vertical-align: middle;
-  text-align: left;
+  text-align: center;
 }
 table th:last-child, table td:last-child {
   border-right: none;
@@ -381,7 +389,7 @@ table th {
   box-shadow: var(--bxsh);
   position: relative;
 }
-.component:has(.callout) {
+.component:has(> .callout) {
   margin-top: var(--position, var(--basePadding));
 }
 
@@ -418,6 +426,9 @@ table th {
   width: 0;
   height: 0;
   top: 98%;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
 }
 .callout.center {
   left: 50%;
@@ -427,9 +438,6 @@ table th {
   border-top: 5px solid var(--callout-color, var(--primaryColor));
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
 }
 .callout.left {
   left: var(--position, var(--basePadding));
@@ -438,8 +446,6 @@ table th {
   border-top: 5px solid var(--callout-color, var(--primaryColor));
   border-left: 10px solid transparent;
   border-right: 0 solid var(--callout-color, var(--primaryColor));
-  position: absolute;
-  right: 0.3em;
 }
 .callout.right {
   right: var(--position, var(--basePadding));
@@ -448,8 +454,6 @@ table th {
   border-top: 5px solid var(--callout-color, var(--primaryColor));
   border-left: 0 solid var(--callout-color, var(--primaryColor));
   border-right: 10px solid transparent;
-  position: absolute;
-  left: 0.3em;
 }
 
 .callout_info {
@@ -472,6 +476,7 @@ table th {
   padding: var(--tinyPadding);
   background-color: #fff;
   font-size: var(--fixEtcTinyFontSize);
+  font-weight: normal;
   color: var(--blackColor);
   border-radius: var(--bdrs);
   box-shadow: var(--bxsh);
@@ -503,12 +508,10 @@ table th {
 .small_list_component.limit {
   max-height: 200px; /* 처음에 1.5개 정도 보이게 */
   transition: max-height var(--trst);
+  /* 세로 토글 버튼 */
 }
 .small_list_component.limit.open {
   max-height: 1000px; /* 충분히 큰 값으로 설정 */
-}
-.small_list_component.limit {
-  /* 세로 토글 버튼 */
 }
 .small_list_component.limit .vertical_toggle_btn .arrow {
   transition: transform var(--trst);
@@ -565,6 +568,34 @@ table th {
 }
 .grid_list_component > .grid_list:has(> input[type=radio]):has(> input[type=radio]:checked) .component_sub_title {
   color: var(--fontColor, #fff);
+}
+
+.grid_tiny_list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tinyGap);
+  font-size: var(--subFontSize);
+  font-weight: normal;
+  padding: var(--tinyPadding);
+  border-radius: var(--bdrs);
+  border: 1px solid var(--subColor);
+  background-color: var(--subColor);
+  transition: border-color var(--trst);
+  position: relative;
+}
+.grid_tiny_list:hover {
+  border-color: var(--primaryColor);
+}
+.grid_tiny_list .list_info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tinyGap);
+  padding: var(--tinyPadding);
+  background-color: var(--baseBackground);
+  border-radius: var(--bdrs);
+}
+.grid_tiny_list .btn {
+  margin-left: auto;
 }
 
 .component_title {
@@ -712,6 +743,24 @@ table th {
   transform: translateY(-50%);
 }
 
+.text_guage {
+  overflow: hidden;
+  position: relative;
+}
+.text_guage::before {
+  content: "";
+  width: var(--percent);
+  height: 100%;
+  background-color: var(--lightYellowColor);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+.text_guage .text_guage_info {
+  z-index: 1;
+}
+
 /* progress information */
 .progress_container {
   display: flex;
@@ -810,7 +859,9 @@ table th {
   align-items: center;
   gap: var(--tinyGap);
 }
-.tag_list .tag {
+
+.tag {
+  display: inline-block;
   width: max-content;
   padding: var(--tinyPadding) var(--smallPadding);
   border-radius: var(--tagBdrs);
@@ -1181,6 +1232,7 @@ table th {
 }
 .modal_wrap .modal_container .modal_top {
   width: 100%;
+  background-color: var(--subColor);
   border-bottom: var(--baseBorder);
   display: flex;
   align-items: center;
@@ -1612,6 +1664,10 @@ table th {
   cursor: pointer;
 }
 
+.cursor_none {
+  cursor: auto;
+}
+
 .disabled {
   pointer-events: none;
   opacity: 0.5;
@@ -1638,8 +1694,16 @@ table th {
   flex-direction: row !important; /* 가로형 */
 }
 
+.row_r {
+  flex-direction: row-reverse !important; /* 가로형 역순 */
+}
+
 .column {
   flex-direction: column !important; /* 세로형 */
+}
+
+.column_r {
+  flex-direction: column-reverse !important; /* 세로형 역순 */
 }
 
 .justify_content_center {
@@ -1648,6 +1712,10 @@ table th {
 
 .justify_content_between {
   justify-content: space-between !important; /* 양끝 정렬 */
+}
+
+.justify_content_start {
+  justify-content: flex-start !important;
 }
 
 .justify_content_end {
@@ -1706,13 +1774,13 @@ table th {
   max-width: max-content !important;
 }
 
+.w_max_100 {
+  max-width: 100% !important;
+}
+
 .h_max_content {
   min-height: max-content !important;
   max-height: max-content !important;
-}
-
-.pd_base {
-  padding: var(--basePadding) !important;
 }
 
 .pd_0 {
@@ -1721,6 +1789,28 @@ table th {
 
 .pl_0 {
   padding-left: 0 !important;
+}
+
+.pr_0 {
+  padding-right: 0 !important;
+}
+
+.pt_0 {
+  padding-top: 0 !important;
+}
+
+.pb_0 {
+  padding-bottom: 0 !important;
+}
+
+.pd_top_bottom_0 {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.pd_left_right_0 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .pd_tiny {
@@ -1735,13 +1825,32 @@ table th {
   padding-bottom: var(--tinyPadding) !important;
 }
 
-.pb_0 {
-  padding-bottom: 0 !important;
+.ptb_tiny {
+  padding-top: var(--tinyPadding) !important;
+  padding-bottom: var(--tinyPadding) !important;
 }
 
-.pd_top_bottom_0 {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+.plr_tiny {
+  padding-left: var(--tinyPadding) !important;
+  padding-right: var(--tinyPadding) !important;
+}
+
+.pd_small {
+  padding: var(--smallPadding) !important;
+}
+
+.ptb_small {
+  padding-top: var(--smallPadding) !important;
+  padding-bottom: var(--smallPadding) !important;
+}
+
+.plr_small {
+  padding-left: var(--smallPadding) !important;
+  padding-right: var(--smallPadding) !important;
+}
+
+.pd_base {
+  padding: var(--basePadding) !important;
 }
 
 .pt_base {
@@ -1752,8 +1861,18 @@ table th {
   padding-bottom: var(--basePadding) !important;
 }
 
-.pd_small {
-  padding: var(--smallPadding) !important;
+.ptb_base {
+  padding-top: var(--basePadding) !important;
+  padding-bottom: var(--basePadding) !important;
+}
+
+.plr_base {
+  padding-left: var(--basePadding) !important;
+  padding-right: var(--basePadding) !important;
+}
+
+.pb_small {
+  padding-bottom: var(--smallPadding) !important;
 }
 
 .ml_a {
@@ -1932,7 +2051,11 @@ table th {
 
 /* 위치 */
 .pos_r {
-  position: relative;
+  position: relative !important;
+}
+
+.pos_a {
+  position: absolute !important;
 }
 
 /* 호버 효과 */
@@ -1948,7 +2071,7 @@ table th {
 /*
     스피너
     사용 예시(진행률 표시가 필요없다면 style --percent 미설정)
-    <div class="loading_spinner">
+    <div class="loading_spinner" style="--size: var(--baseFontSize)">
         <p class="info" style="--percent: 70%;">AI 피드백 생성 중...</p>
     </div>
 */
@@ -1965,8 +2088,10 @@ table th {
 .loading_spinner::before {
   content: "";
   display: block;
-  width: var(--titleFontSize);
-  height: var(--titleFontSize);
+  width: var(--size, var(--titleFontSize));
+  min-width: var(--size, var(--titleFontSize));
+  height: var(--size, --titleFontSize);
+  min-height: var(--size, var(--titleFontSize));
   border: 2px solid var(--lightGrayColor);
   border-top-color: var(--blueColor);
   border-radius: 50%;
@@ -2467,53 +2592,6 @@ table th {
     transform: translateY(0);
   }
 }
-/* ===============================
-   북마크 퀴즈 리스트
-   bookmark.scss
-   =============================== */
-.bookmark_container {
-  max-width: var(--centerContentWidth);
-  margin: 0 auto;
-  padding: var(--containerPadding);
-}
-
-.bookmark_title {
-  font-size: var(--pageTitleFontSize);
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: var(--largePadding);
-  color: var(--darkGreenColor);
-}
-
-.bookmark_empty_msg {
-  text-align: center;
-  font-size: var(--largeFontSize);
-  color: var(--grayColor);
-  margin-top: var(--largePadding);
-}
-
-/* 카드 그리드 */
-.bookmark_grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--baseGap);
-}
-
-/* 메타 */
-.quiz_meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--smallGap);
-  font-size: var(--subFontSize);
-  color: var(--grayColor);
-}
-.quiz_meta span {
-  background-color: var(--lightGrayColor);
-  padding: var(--tinyPadding) var(--smallPadding);
-  border-radius: var(--bdrs);
-  font-weight: 500;
-}
-
 /* speech effecter */
 #dictation-speaking-component {
   padding: var(--basePadding) 0;
@@ -2592,31 +2670,6 @@ table th {
 }
 
 /* 그룹 검색 리스트 */
-.group_serach_list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tinyGap);
-  font-size: var(--subFontSize);
-  font-weight: normal;
-  padding: var(--tinyPadding);
-  border-radius: var(--bdrs);
-  border: 1px solid var(--subColor);
-  background-color: var(--subColor);
-  transition: border-color var(--trst);
-  position: relative;
-  overflow: hidden;
-}
-.group_serach_list:hover {
-  border-color: var(--primaryColor);
-}
-.group_serach_list .list_info {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tinyGap);
-  padding: var(--tinyPadding);
-  background-color: var(--baseBackground);
-  border-radius: var(--bdrs);
-}
 .group_serach_list .group_info {
   display: flex;
   align-items: center;
@@ -2648,8 +2701,14 @@ table th {
   height: 100%;
   object-fit: cover;
 }
-.group_serach_list .btn {
-  margin-left: auto;
+
+/* 교사 페이지 */
+.uploading_list_container .upload_list {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--tinyGap);
 }
 
 .paging {
@@ -2657,6 +2716,7 @@ table th {
   justify-content: center;
   align-items: center;
   gap: var(--tinyGap);
+  /* 버튼 이벤트로 다른 독립 클래스 사용 */
 }
 .paging .page_link {
   display: inline-block;
@@ -2673,9 +2733,6 @@ table th {
 .paging .page_link:hover:not(.current) {
   color: var(--blackColor);
   background-color: var(--lightGrayColor);
-}
-.paging {
-  /* 버튼 이벤트로 다른 독립 클래스 사용 */
 }
 .paging .current {
   display: inline-block;
@@ -2716,3 +2773,5 @@ table th {
 .ranks_component .component_info .rank_score {
   margin-left: auto;
 }
+
+/*# sourceMappingURL=main.css.map */

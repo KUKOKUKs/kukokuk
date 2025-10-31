@@ -2,6 +2,74 @@ export const regExEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z.]{2,5}$/; //
 export const regExPassword = /^(?=.*[a-zA-Z])(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,16}$/; // 비밀번호 정규표현식
 export const regExNickname = /^[a-zA-Z0-9가-힣_]{4,16}$/; // 닉네임 정규표현식
 
+export const validateImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic']; // 이미지 파일 첨부 가능 MIME
+export const validateStudyFileTypes = ['application/hancom.hwpx', 'application/vnd.hancom.hwpx', 'application/haansofthwpx']; // 학습 자료 파일 첨부 가능 MIME
+export const imageMaxFileSize = 1024 * 1024 * 5; // 5MB 이미지 파일 크기 제한
+export const studyMaxFileSize = 1024 * 1024 * 10; // 10MB 학습 자료 파일 크기 제한
+
+/**
+ * 파일 input 요소에서 선택한 학습 자료 파일 유효성 검사
+ * @param {HTMLInputElement} fileInputElement - DOM element를 직접 전달
+ * @returns {boolean} - 모든 파일 통과 시 true, 실패 시 false
+ */
+export function validateStudyFiles(fileInputElement) {
+    const files = fileInputElement.files;
+
+    if (!files || files.length === 0) return false; // 선택된 파일 없음(예외 상황 대비)
+
+    // 학습 자료 파일 형식 유효성 검사
+    for (const file of files) {
+        console.log("MIME: ", file.type);
+        console.log(`File Size: ${file.size} (${file.size / 1024 / 1024}MB)`);
+
+        // 파일 형식 및 MIME 검사
+        if (!file.name.toLowerCase().endsWith(".hwpx") || !validateStudyFileTypes.includes(file.type)) {
+            alert(`${file.name} 파일의 형식은 지원하지 않습니다.`);
+            fileInputElement.value = ""; // 선택 초기화
+            return false;
+        }
+
+        // 파일 크기 검사
+        if (file.size > studyMaxFileSize) {
+            alert(`${file.name} 파일의 크기가 최대 크기를 초과하였습니다.\n파일당 최대 ${studyMaxFileSize / 1024 / 1024}MB까지 첨부 가능합니다.`);
+            fileInputElement.value = ""; // 선택 초기화
+            return false;
+        }
+    }
+
+    return true; // 모두 통과
+}
+
+/**
+ * 파일 input 요소에서 선택한 이미지 파일 유효성 검사
+ * @param {HTMLInputElement} fileInputElement - DOM element를 직접 전달
+ * @returns {boolean} - 모든 파일 통과 시 true, 실패 시 false
+ */
+export function validateImageFiles(fileInputElement) {
+    const files = fileInputElement.files;
+
+    if (!files || files.length === 0) return false; // 선택된 파일 없음(예외 상황 대비)
+
+    // 이미지 파일 형식 유효성 검사
+    for (const file of files) {
+        // // MIME 검사
+        if (!validateImageTypes.includes(file.type)) {
+            alert(`${file.name} 파일의 형식은 지원하지 않습니다.`);
+            fileInputElement.value = ""; // 선택 초기화
+            return false;
+        }
+
+        // 파일 크기 검사
+        if (file.size > imageMaxFileSize) {
+            alert(`${file.name} 파일의 크기가 최대 크기를 초과하였습니다.\n파일당 최대 ${imageMaxFileSize / 1024 / 1024}MB까지 첨부 가능합니다.`);
+            fileInputElement.value = ""; // 선택 초기화
+            return false;
+        }
+    }
+
+    return true; // 모두 통과
+}
+
 /**
  * 연, 월, 일 값을 전달받아 유효한 날짜인지 확인
  * @param y 연도
