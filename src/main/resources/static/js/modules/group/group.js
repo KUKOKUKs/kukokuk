@@ -65,6 +65,8 @@ $(document).ready(function () {
             return false;
         }
 
+        $modalGroupStudyBtn.addClass("disabeld"); // 모달창 열기 버튼 비활성화
+
         const groupNo = $teacherStudyCreateForm.find("input[name='groupNo']").val();
 
         try {
