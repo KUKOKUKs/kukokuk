@@ -28,11 +28,6 @@
                 <th:block th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${speedQuizRanks}, useTitle=true)}"></th:block>
             </div>
 
-            <!--/* 단계별 퀴즈 랭크 */-->
-            <div id="level-ranks-component" class="component tiny_list_component ranks_component">
-                <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${levelQuizRanks}, useTitle=true)}"></div>
-            </div>
-
             <!--/* 받아쓰기 퀴즈 랭크 */-->
             <div id="dictation-ranks-component" class="component tiny_list_component ranks_component">
                 <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${dictationQuizRanks}, useTitle=true)}"></div>

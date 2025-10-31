@@ -1679,6 +1679,18 @@
     max-height: max-content !important;
 }
 
+.pd_tiny {
+    padding: var(--tinyPadding) !important;
+}
+
+.pd_small {
+    padding: var(--smallPadding) !important;
+}
+
+.pd_base {
+    padding: var(--basePadding) !important;
+}
+
 .pd_0 {
     padding: 0 !important;
 }
@@ -1709,10 +1721,6 @@
     padding-right: 0 !important;
 }
 
-.pd_tiny {
-    padding: var(--tinyPadding) !important;
-}
-
 .pt_tiny {
     padding-top: var(--tinyPadding) !important;
 }
@@ -1731,10 +1739,6 @@
     padding-right: var(--tinyPadding) !important;
 }
 
-.pd_small {
-    padding: var(--smallPadding) !important;
-}
-
 .ptb_small {
     padding-top: var(--smallPadding) !important;
     padding-bottom: var(--smallPadding) !important;
@@ -1743,10 +1747,6 @@
 .plr_small {
     padding-left: var(--smallPadding) !important;
     padding-right: var(--smallPadding) !important;
-}
-
-.pd_base {
-    padding: var(--basePadding) !important;
 }
 
 .pt_base {

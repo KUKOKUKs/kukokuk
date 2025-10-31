@@ -251,11 +251,6 @@
                     <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${speedQuizRanks}, useTitle=false)}"></div>
                 </div>
 
-                <!--/* 단계별 퀴즈 그룹 랭크 */-->
-                <div id="level-ranks-component" class="tab_content border_base bt_none pd_base">
-                    <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${levelQuizRanks}, useTitle=false)}"></div>
-                </div>
-
                 <!--/* 받아쓰기 퀴즈 그룹 랭크 */-->
                 <div id="dictation-ranks-component" class="tab_content border_base bt_none pd_base">
                     <div th:replace="~{fragments/rank/rank-component :: rank-component-fragment(ranksDto=${dictationQuizRanks}, useTitle=false)}"></div>

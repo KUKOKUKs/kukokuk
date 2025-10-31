@@ -18,11 +18,11 @@
             <div class="form_input_list tab_content_list">
                 <!--/* 교사가 생성할 수 있는 최대 그룹수 5개 */-->
                 <div class="tab_btn_list">
-                    <button th:if="${teacherGroupSize < 5}"
-                            type="button"
-                            class="tab_btn selected">만들기<span class="active"></span></button>
-
                     <th:block th:if="${currentGroup != null}">
+                        <button th:if="${teacherGroupSize < 5}"
+                                type="button"
+                                class="tab_btn selected">만들기<span class="active"></span></button>
+
                         <button type="button"
                                 class="tab_btn"
                                 th:classappend="${teacherGroupSize >= 5 ? 'selected' : ''}">수정<span class="active"></span></button>
@@ -34,7 +34,7 @@
                 <!--/* 만들기 */-->
                 <form th:if="${teacherGroupSize < 5}"
                       id="create-group-form"
-                      class="tab_content selected">
+                      th:classappend="${currentGroup != null ? 'tab_content selected' : ''}">
                     <div>
                         <div class="input_info">
                             <input type="text" id="create-group-title" name="title" maxlength="20" placeholder=" ">
