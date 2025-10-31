@@ -6,7 +6,19 @@
     <div id="main-content" class="content_container">
         <!--/* 교사가 생성한 그룹이 없을 경우 */-->
         <div th:if="${currentGroup == null}" class="content_info toggle_info_component">
+            <div class="content_title">
+                <iconify-icon icon="twemoji:file-folder"></iconify-icon>
+                우리반 학습 자료 관리
+            </div>
 
+            <div class="component small_list_component toggle_info_second teacher_study_upload_container">
+                <div class="d_flex column small_gap">
+                    <div class="component_title align_start">
+                        우리반을 만들어 보세요!
+                    </div>
+                    <span class="component_sub_title">AI가 맞춤으로 재구성한 학습 자료를 우리반과 공유해 보세요!</span>
+                </div>
+            </div>
         </div>
 
         <!--/* 교사가 생성한 그룹이 있을 경우 */-->
@@ -38,18 +50,21 @@
 
                 <div class="component_info column">
                     <div class="tiny_list_component sub_font w_100">
-                        <div class="list_option cursor_none">
-                            <div class="marker">
-                                
-                            </div>
-                            <div>
-                                <span>AI 맞춤 학습 생성 자료는</span>
-                                <span class="tag bg_light_red bold pd_0">.hwpx</span>
-                                <span>형식의 파일만 지원합니다.</span>
-                            </div>
+                        <div>
+                            <span>AI 맞춤 학습 생성 자료는</span>
+                            <span class="tag bg_light_yellow bold pd_0">.hwpx</span>
+                            <span>형식의 파일만 지원합니다.</span>
                         </div>
-                        <p>한번에 최대 3개의 파일을 첨부할 수 있습니다.</p>
-                        <p>각 파일의 크기는 10MB를 초과할 수 없습니다.</p>
+                        <div>
+                            <span>한번에 최대</span>
+                            <span class="tag bg_light_yellow bold pd_0">3개</span>
+                            <span>의 파일을 첨부할 수 있습니다.</span>
+                        </div>
+                        <div>
+                            <span>각 파일의 크기는</span>
+                            <span class="tag bg_light_yellow bold pd_0">10MB</span>
+                            <span>를 초과할 수 없습니다.</span>
+                        </div>
                     </div>
                 </div>
             </div>
