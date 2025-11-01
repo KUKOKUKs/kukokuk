@@ -41,6 +41,7 @@ public class User implements Serializable {
     private Date createdDate;
     private Date updatedDate;
 
+    private Integer minExp;                     // 레벨의 시작 경험치
     private Integer maxExp;                     // 레벨업에 필요한 누적 경험치
     private List<String> roleNames;             // 사용자 권한 정보 목록
     private Integer groupNo;                    // 사용자가 속한 그룹 번호(그룹에 속하지 않았으면 Null)
@@ -48,6 +49,19 @@ public class User implements Serializable {
     // 프로필 이미지 경로 생성
     public String getProfileFileUrl() {
         return FilePathUtil.getProfileImagePath(userNo, profileFilename);
+    }
+
+    // 사용자 현재 레벨의 경험치 진행률 계산
+    public int getExpPercent() {
+        // 분모는 (maxExp + 1) - minExp
+        double percent = ((double) (experiencePoints - minExp) / (maxExp - minExp)) * 100;
+        // 반올림해서 정수로 변환
+        return (int) Math.round(percent);
+    }
+
+    // 사용자 현재 레벨의 경험치 퍼센트 문자열
+    public String getExpPercentString() {
+        return getExpPercent() + "%";
     }
 
 }
