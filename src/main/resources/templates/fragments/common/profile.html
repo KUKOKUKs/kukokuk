@@ -31,11 +31,7 @@
             </form>
         </div>
 
-        <div class="level_info"
-             th:with="rawPercent=${(user.experiencePoints * 100.0) / user.maxExp},
-                        percent=${rawPercent % 1 == 0} ?
-                            ${#numbers.formatDecimal(rawPercent, 0, 0)} + '%' :
-                            ${#numbers.formatDecimal(rawPercent, 1, 1)} + '%'">
+        <div class="level_info">
             <div class="level_top_info">
                 <div class="level_icon_info">
                     <div class="level_icon highlight">
@@ -48,12 +44,12 @@
                 </div>
                 <div class="percent_info">
                     <span class="experience_points_info" th:text="|(${user.experiencePoints}/${user.maxExp})|">(0/101)</span>
-                    <span class="percent" th:text="${percent}">0%</span>
+                    <span class="percent" th:text="${user.expPercentString}">0%</span>
                 </div>
             </div>
 
             <div class="bar_gauge">
-                <div class="gauge" th:style="|width: ${percent};|"></div>
+                <div class="gauge" th:style="|width: ${user.expPercentString};|"></div>
             </div>
         </div>
 

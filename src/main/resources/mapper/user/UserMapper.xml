@@ -138,6 +138,7 @@
         <result column="IS_DELETED" property="isDeleted"/>
         <result column="CREATED_DATE" property="createdDate"/>
         <result column="UPDATED_DATE" property="updatedDate"/>
+        <result column="MIN_EXP" property="minExp"/>
         <result column="NEXT_LEVEL_EXP" property="maxExp"/>
         <result column="GROUP_NO" property="groupNo"/>
         <collection column="USER_NO" property="roleNames"
@@ -168,6 +169,7 @@
              , U.IS_DELETED
              , U.CREATED_DATE
              , U.UPDATED_DATE
+             , L.MIN_EXP
              , (L.MAX_EXP + 1) AS NEXT_LEVEL_EXP
              , GU.GROUP_NO
         FROM KUKOKUK_USERS U
@@ -201,7 +203,7 @@
              , U.IS_DELETED
              , U.CREATED_DATE
              , U.UPDATED_DATE
-             , L.MAX_EXP
+             , L.MIN_EXP
              , (L.MAX_EXP + 1) AS NEXT_LEVEL_EXP
              , GU.GROUP_NO
         FROM KUKOKUK_USERS U

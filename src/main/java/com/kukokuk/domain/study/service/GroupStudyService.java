@@ -68,6 +68,7 @@ public class GroupStudyService {
 
                 // 2. DB에 파일 정보 저장 (dailyStudyMaterials테이블)
                 String filename =  file.getOriginalFilename();
+                log.info("filename: {}", filename);
 
                 DailyStudyMaterial material = new DailyStudyMaterial();
                 material.setSourceFilename(filename);
