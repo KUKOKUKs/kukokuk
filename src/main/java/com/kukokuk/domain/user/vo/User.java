@@ -32,7 +32,7 @@ public class User implements Serializable {
     private String profileFilename;             // 프로필 이미지 파일명
     private String authProvider;                // 제 3자 로그인 시 소셜 종류
     private Integer level;                      // 레벨
-    private Integer experiencePoints;           // 누적 경험치
+    private Integer experiencePoints;               // 누적 경험치
     private Integer studyDifficulty;            // 학습 단계
     private String currentSchool;               // 학교 ENUM("초등","중등")
     private Integer currentGrade;               // 학년
@@ -51,10 +51,18 @@ public class User implements Serializable {
         return FilePathUtil.getProfileImagePath(userNo, profileFilename);
     }
 
+    // null 방지
+    public int getExperiencePoints() {
+        if (experiencePoints == null) return 0;
+        return this.experiencePoints;
+    }
+
     // 사용자 현재 레벨의 경험치 진행률 계산
     public int getExpPercent() {
+        // 매퍼에서 매핑 시 불필요한 컬럼을 제외할 경우 null이 입력되어 방지 분기처리
+        if (minExp == null || maxExp == null || getExperiencePoints() == 0) return 0;
         // 분모는 (maxExp + 1) - minExp
-        double percent = ((double) (experiencePoints - minExp) / (maxExp - minExp)) * 100;
+        double percent = ((double) (getExperiencePoints() - minExp) / (maxExp - minExp)) * 100;
         // 반올림해서 정수로 변환
         return (int) Math.round(percent);
     }
