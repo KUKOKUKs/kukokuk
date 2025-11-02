@@ -40,4 +40,4 @@ COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
 
 # 11️⃣ 컨테이너 실행 시 jar 파일을 실행하는 명령어
-ENTRYPOINT ["java","-jar","/app/app.jar","--spring.profiles.active=dev"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
