@@ -13,7 +13,8 @@
             S.STUDY_DIFFICULTY AS difficulty,
             S.CREATED_DATE AS createdDate,
             M.MATERIAL_TITLE AS materialTitle,
-            M.SOURCE_FILENAME AS sourceFileUrl
+            M.SOURCE_FILENAME AS sourceFilename,
+            M.FILE_PATH AS sourceFileUrl
         FROM KUKOKUK_DAILY_STUDIES S
                  JOIN KUKOKUK_DAILY_STUDY_MATERIALS M
                       ON M.DAILY_STUDY_MATERIAL_NO = S.DAILY_STUDY_MATERIAL_NO

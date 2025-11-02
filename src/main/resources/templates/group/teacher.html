@@ -85,7 +85,7 @@
                             ${#numbers.formatDecimal(essayCompleteRawPer, 1, 1)} + '%'">
                         <span class="callout left color_black tiny_font"
                               style="--callout-color: var(--lightBlueColor);"
-                              th:text="|난이도 ${study.difficulty}단계|">난이도 n단계</span>
+                              th:text="|${study.difficulty}단계|">n단계</span>
 
                         <span class="callout right color_black tiny_font"
                               style="--callout-color: var(--lightGrayColor);"
@@ -141,17 +141,20 @@
                         <!--/* 생성한 그룹이 없는 교사 권한 사용자 */-->
                         <span th:if="${currentGroup == null}"
                               class="component_sub_title">우리 반을 만들어 스무고개를 함께 즐겨보세요</span>
+                        <!--/* 생성한 그룹에 가입한 멤버가 없을 경우 */-->
+                        <span th:if="${currentGroup != null && currentGroup.memberCount == 0}"
+                              class="component_sub_title">아직 우리반 인원이 없습니다</span>
                         <!--/* 현재 진행중인 스무고개 방이 있을 경우 */-->
                         <span th:if="${currentGroup != null && currentGroupActiveRoomNo != null}"
                               class="component_sub_title">지금 우리 반과 함께 스무고개를 하고 있어요</span>
                         <!--/* 현재 진행중인 스무고개 방이 없을 경우 */-->
-                        <span th:if="${currentGroup != null && currentGroupActiveRoomNo == null}"
+                        <span th:if="${currentGroup != null && currentGroup.memberCount > 0 && currentGroupActiveRoomNo == null}"
                               class="component_sub_title">스무고개 방을 만들어 우리 반과 함께 즐겨보세요</span>
                     </div>
                 </div>
 
                 <!--/* 생성한 그룹이 있는 교사 권한 사용자 */-->
-                <th:block th:if="${currentGroup != null}">
+                <th:block th:if="${currentGroup != null && currentGroup.memberCount > 0}">
                     <!--/* 스무고개 방 당일 최근 이력 3건 */-->
                     <div th:if="${!#lists.isEmpty(currentGroupTwentyRooms)}" class="tiny_list_component">
                         <div th:each="room : ${currentGroupTwentyRooms}" class="component_info small with_icon">
@@ -214,7 +217,7 @@
                     <!--/* 생성한 그룹이 없는 교사 권한 사용자 */-->
                     <div th:if="${currentGroup == null}"
                          class="d_flex justify_content_between align_center small_gap">
-                        <p class="text_ellipsis">우리 반이 없습니다</p>
+                        <p class="text_ellipsis">나의 반이 없습니다</p>
                     </div>
 
                     <!--/* 생성한 그룹이 있는 교사 권한 사용자 */-->
@@ -283,13 +286,28 @@
             </div>
 
             <div class="btn_list">
-                <button type="button" class="btn small w_100 modal_gruop_edit_btn" th:text="${currentGrouop != null ? '편집' : '만들기'}">편집</button>
+                <button type="button" class="btn small w_100 modal_gruop_edit_btn" th:text="${currentGroup != null ? '편집' : '만들기'}">편집</button>
                 <a th:href="@{/group}" class="btn small white w_100">우리 반으로 가기</a>
             </div>
         </div>
 
+        <!--/* 생성한 그룹이 없는 교사 권한 사용자 */-->
+        <div th:if="${currentGroup == null}" class="component small_list_component">
+            <div class="component_title">
+                <div class="title_info">우리반 순위</div>
+            </div>
+
+            <div class="component_info tiny">
+                <div class="list_info sub_font tac">
+                    나의 반에 입반한 사용자들의 순위를 확인해 보세요!
+                </div>
+            </div>
+        </div>
+
+        <!--/* 생성한 그룹이 있는 교사 권한 사용자 */-->
         <!--/* 스피드, 단계별, 받아쓰기 그룹 랭킹 컴포넌트 */-->
-        <div class="component small_list_component pd_0 bg_none border_none box_shadow_none">
+        <div th:if="${currentGroup != null}"
+             class="component small_list_component pd_0 bg_none border_none box_shadow_none">
             <div class="component_title pd_base pd_top_bottom_0 bg_none border_none">
                 <p class="title_info">우리반 순위</p>
             </div>

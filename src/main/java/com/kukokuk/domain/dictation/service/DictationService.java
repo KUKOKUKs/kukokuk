@@ -538,7 +538,7 @@ public class DictationService {
     }
 
     /**
-     * 정답 보기 사용시 오답 처리, 시도횟수 : 2회, 제출문장: <정답 보기 사용>
+     * 건너띄기 사용시 오답 처리, 시도횟수 : 2회, 제출문장: <건너뜨기 사용>
      * @param dictationQuestionLogDto 세션에 저장된 이력 dto
      */
     @Transactional
@@ -546,7 +546,7 @@ public class DictationService {
         log.info("insertShowAnswerAndSkip 실행");
         dictationQuestionLogDto.setIsSuccess("N");
         dictationQuestionLogDto.setTryCount(2);
-        dictationQuestionLogDto.setUserAnswer("<정답 보기 사용>");
+        dictationQuestionLogDto.setUserAnswer("<건너띄기 사용>");
     }
 
     /**
