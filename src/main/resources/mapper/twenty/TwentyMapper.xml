@@ -8,9 +8,25 @@
     -->
     <select id="getTwentyPlayerList" resultType="RoomUser">
         SELECT
-            RU.USER_NO                        AS userNo
-             ,RU.STATUS                       AS status
-             ,U.NICKNAME                      AS nickName
+            RU.USER_NO                       AS userNo
+            ,RU.STATUS                       AS status
+            ,U.NICKNAME                      AS nickName
+            ,U.USERNAME                      AS username
+            ,U.PASSWORD                      AS password
+            ,U.NAME                          AS name
+            ,U.BIRTH_DATE                    AS birthDate
+            ,U.GENDER                        AS gender
+            ,U.PROFILE_FILENAME              AS profileFilename
+            ,U.AUTH_PROVIDER                 AS authProvider
+            ,U.LEVEL                         AS level
+            ,U.EXPERIENCE_POINTS             AS experiencePoints
+            ,U.STUDY_DIFFICULTY              AS studyDifficulty
+            ,U.CURRENT_SCHOOL                AS currentSchool
+            ,U.CURRENT_GRADE                 AS currentGrade
+            ,U.HINT_COUNT                    AS hintCount
+            ,U.IS_DELETED                    AS isDeleted
+            ,U.CREATED_DATE                  AS createdDate
+            ,U.UPDATED_DATE                  AS updatedDate
         FROM
             KUKOKUK_TWENTY_ROOM_USERS RU
                 JOIN KUKOKUK_USERS U ON RU.USER_NO = U.USER_NO
