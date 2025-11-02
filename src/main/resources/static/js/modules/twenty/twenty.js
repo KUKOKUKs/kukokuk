@@ -82,7 +82,7 @@ function connectWebSocket() {
          *     -> map 객체에 list,roomStatus를 이름으로 데이터를 할당. -> `/topic/participants/${currentRoomNo}` 이 주소로 map 객체를 브로드캐스팅.
          *                                                           (쉽게 말해, 서버로 부터 데이터를 전달 받는 것이라고 보면 된다.)
          *
-         * 3. list : 참여자 리스트를 의미. / 리스트의 각 객체마다. userNo, nickName, status가 담겨 있음.
+         * 3. list : 참여자 리스트를 의미. / RoomUser 필드의 리스트가 내려와짐.
          *           ++ status는 사용자의 상태를 의미./ LEFT 인지 JOIN 인지./ 방 상태가 아님
          *
          * 4. roomStatus : 방의 상태를 의미. / 이 상태값을 가지고 버튼의 활성화 여부를 설정함.
@@ -96,6 +96,7 @@ function connectWebSocket() {
          */
         stompClient.subscribe(`/topic/participants/${currentRoomNo}`, function (result) {
             const data = JSON.parse(result.body);       // 서버에서 전달 받은 값을 꺼내고
+            console.log ("참여자 리스트",data.list)
             updateParticipantList(data.list);           // list의
             updateBtnByRoomStatus(data);
         });
@@ -201,6 +202,8 @@ function connectWebSocket() {
         stompClient.subscribe(`/topic/sendStdMsg/${currentRoomNo}`, function (result) {
             let data1 = JSON.parse(result.body);
             let msgCnt = data1.msgCnt;
+            console.log("data",data1);
+
             $remainingQuestions.text(20 - msgCnt);
             updateBtnByRoomStatus(data1);    // 버튼 변화
             appendBoardLine(data1);          // 메세지 UI 표현
@@ -439,7 +442,6 @@ function appendBoardLine(data) {
     switch ((data.type || '').toUpperCase()) {
         case 'Q': bubbleClass = 'question-bubble'; break;
         case 'A': bubbleClass = 'answer-bubble'; break;
-        default:  bubbleClass = 'normal-bubble'; break;
     }
 
 
