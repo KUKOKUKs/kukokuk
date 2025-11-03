@@ -113,7 +113,7 @@
         public TwentyRoom getTwentyRoomByRoomNo(int roomNo);
     -->
     <select id="getTwentyRoomByRoomNo" resultMap="TwentyRoomResultMap">
-        SELECT R.TWENTY_ROOM_NO   AS ROOM_NO
+        SELECT R.TWENTY_ROOM_NO
              , R.CORRECT_ANSWER
              , R.STATUS
              , R.WINNER_NO

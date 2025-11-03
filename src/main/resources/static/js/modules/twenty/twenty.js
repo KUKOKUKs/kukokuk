@@ -250,9 +250,9 @@ $(document).ready(function () {
         chats.forEach((chat) => {
             // 내 메시지 / 상대 메시지 구분
             if (chat.userNo === currentUserNo) {
-                lineClass = 'my-message';
+                lineClass = 'my_message';
             } else {
-                lineClass = 'other-message';
+                lineClass = 'other_message';
                 senderHtml = `<div class="sender">${chat.nickName || ''}</div>`;
             }
 
@@ -263,16 +263,16 @@ $(document).ready(function () {
             //     default:  bubbleClass = 'normal-bubble'; break;
             // }
 
-            const bubbleClass = chat.type === "Q" ? "question_bubble" : "answer_bubble";
+            const bubbleClass = chat.type === "Q" ? "question" : "answer";
 
             // <pre> 태그 또는 css로 적용이 가능함 부수적인 자바스크립트 코드 필요 없음
             // const contentHtml = data.content ? data.content.replace(/\n/g, '<br>') : '';
 
             // 채팅 리스트 추가
             chatListHtml += `
-                <div class="message-line ${lineClass}" data-user-no="${chat.userNo}" data-log-no="${chat.logNo}">
+                <div class="message_line ${lineClass}" data-user-no="${chat.userNo}" data-log-no="${chat.logNo}">
                     ${senderHtml}
-                    <div class="message-bubble chat_bubble ${bubbleClass}">
+                    <div class="message_bubble ${bubbleClass}">
                         ${chat.content}
                     </div>
                 </div>
@@ -388,15 +388,15 @@ $(document).ready(function () {
         switch (roomStatus) {
             case 'WAITING': // 기본 방 상태, 학생 입장 시 아직 교사가 시작 버튼을 누르지 않았을 때
                 // 교사 관련
-                $teacherStartBtn.removeClass("disabled").show(); // 교사 시작 버튼 활성화
+                $teacherStartBtn.show().removeClass("disabled"); // 교사 시작 버튼 활성화
                 $teacherControls.hide(); // 교사 OX 버튼 부모요소 숨김
                 // 학생 관련
-                $waitingButton.show(); // 학생 대기 표기
+                $waitingButton.show().removeClass("disabled"); // 학생 대기 표기
                 $studentControls.hide(); // 학생 질문/정답 제출 버튼 부모요소 숨김
                 break;
             case 'IN_PROGRESS':
                 // 학생 관련
-                $raiseHandBtn.removeClass('disabled').show(); // 손들기 버튼 활성화
+                $raiseHandBtn.show().removeClass('disabled'); // 손들기 버튼 활성화
                 break;
             case 'AWAITING_INPUT':
                 if (currentUserNo === winnerNo) { // 자바스크립트에서 == 는 완벽한 비교가 아님으로 === 사용

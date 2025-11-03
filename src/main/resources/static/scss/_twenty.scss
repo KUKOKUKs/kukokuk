@@ -38,7 +38,12 @@
     overflow: hidden;
     min-height: 0;
 
-    .chat_bubble {
+    .message_line {
+        width: max-content;
+        max-width: 75%;
+    }
+
+    .message_bubble {
         white-space: pre-line;
     }
 }
