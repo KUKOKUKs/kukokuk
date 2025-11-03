@@ -256,11 +256,12 @@
      -->
     <select id="getTwentyLogList" resultType="SendStdMsg">
         SELECT
-            L.TWENTY_LOG_NO         AS logNo
+            L.TWENTY_LOG_NO          AS logNo
              ,L.USER_NO              AS userNo
              ,L.TYPE                 AS type
              ,L.MESSAGE              AS content
              ,U.NICKNAME             AS nickName
+             ,U.PROFILE_FILENAME     AS profileFilename
         FROM
             KUKOKUK_TWENTY_LOGS L
                 JOIN KUKOKUK_USERS U ON L.USER_NO = U.USER_NO
