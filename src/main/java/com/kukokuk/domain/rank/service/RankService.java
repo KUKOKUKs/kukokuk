@@ -190,6 +190,7 @@ public class RankService {
 
         // DB에서 RANK() 적용하여 사용자를 포함한 레벨 랭크 목록 조회
         List<Rank> fetchRanks = rankMapper.getLevelRanksIncludeUser(rankRequestDto);
+        log.info("fetchRanks: {}", fetchRanks);
 
         // LevelRankDto로 변환하여 반환
         return LevelRankDto.builder()
