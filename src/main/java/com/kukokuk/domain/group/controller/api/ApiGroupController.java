@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -190,6 +191,7 @@ public class ApiGroupController {
      */
     @DeleteMapping("/{groupNo}")
     @PreAuthorize("hasRole('TEACHER')") // TEACHER 권한 없으면 403
+    @Transactional
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteGroup(
         @PathVariable("groupNo") int groupNo
         , @RequestParam(defaultValue = "false") boolean isDeleteCheck
@@ -213,6 +215,9 @@ public class ApiGroupController {
 
         // 삭제 요청
         groupService.deleteGroup(savedGruop);
+
+        // 그룹 삭제로 가입자 일괄 탈퇴 처리
+        groupService.deleteGroupUsers(savedGruop.getGroupNo());
 
         data.put("isSuccess", true);
         return ResponseEntityUtils.ok("삭제 처리 완료", data);
