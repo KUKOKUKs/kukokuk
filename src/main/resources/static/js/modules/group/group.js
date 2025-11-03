@@ -86,6 +86,7 @@ $(document).ready(function () {
             }
 
             // 모달 창 닫기
+            console.log("모달창 닫기");
             const $modalAll = $(".modal_wrap");
             // 모달 내부 폼 요소 초기화
             $modalAll.find("form").each(function () {
@@ -111,10 +112,12 @@ $(document).ready(function () {
                 $uploadingListElement.append($uploadItem); // 추가
                 const pollUrl = `/api/teachers/groups/${groupNo}/materials/${jobId}`; // 폴링 경로 생성
                 pollSetDataList.set(jobId, {pollUrl, $uploadItem}); // 맵 추가
+                console.log("jobId 순환 처리: ", jobId);
             });
             
             // 생성된 폴링 요청 경로와 로딩요소를 전달하여 폴링 시작(각각 병렬로 실행)
             pollSetDataList.forEach(({pollUrl, $uploadItem}, jobId) => {
+                console.log("폴링 요청 시작: ", pollUrl);
                 pollTeacherStudyJobStatus(pollUrl, $uploadItem);
             });
         } catch (error) {

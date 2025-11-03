@@ -537,6 +537,8 @@ $(document).ready(function () {
                     showSystemMessage(data.system);
 
                     // disabled 스타일 통일을 위해 class로 제어
+                    $studentControls.removeClass("d_none"); // 학생 질문/정답 제출 버튼 부모요소 노출
+                    $raiseHandBtn.addClass("d_none"); // 손들기 버튼 숨김
                     $twentyUserAnswerForm.removeClass("disabled");
                     $sendAnswerBtn.removeClass("disabled");
                     return;
