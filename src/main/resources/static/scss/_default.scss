@@ -255,6 +255,7 @@
 */
 .tooltip {
     position: relative;
+    z-index: 1;
 
     &::after {
         content: attr(data-label);
