@@ -20,7 +20,7 @@ public class TwentyRoom {
     private Date createdDate;       // 생성일
     private Date updatedDate;       // 수정일
     private int groupNo;            // 그룹 번호
-    private int winnerNo;           // 손들기 or 게임승리자 번호
+    private Integer winnerNo;           // 손들기 or 게임승리자 번호
     private int tryCnt;             // 진행 라운드 횟수
     private String title;           // 방 제목
 
