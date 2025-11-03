@@ -69,7 +69,7 @@ function hideSystemMessage() {
  */
 function connectWebSocket() {
     console.log("ws: ", wsUrl);
-    const socket = new SockJS('http://localhost:8081/ws?token=' + ACCESS_TOKEN);
+    const socket = new SockJS('http://kukokuk-websocket-service/ws?token=' + ACCESS_TOKEN);
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
