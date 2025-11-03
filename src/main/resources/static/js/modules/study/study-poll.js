@@ -158,6 +158,7 @@ export async function pollTeacherStudyJobStatus(pollUrl, $uploadElement) {
             if (!isProcessing) { // 모든 병렬 폴링 호출이 종료가 되었을 경우
                 if (!isFailed) {
                     // 모든 요청이 성공일 경우
+                    await new Promise(resolve => setTimeout(resolve, 3000)); // 지연 대기
                     alert("처리가 완료 되었습니다.");
                     location.reload(); // 새로고침
                 } else {
