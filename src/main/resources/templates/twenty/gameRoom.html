@@ -133,7 +133,7 @@
                     <div class="participant_list">
                         <div class="callout right small_font" style="--position: var(--tinyPadding);">쌤</div>
 
-                        <div class="profile_info small">
+                        <div class="profile_info small" th:data-teacher-no="${roomDto.teacher.userNo}">
                             <div class="thumbnail">
                                 <img th:src="${roomDto.teacher.profileFileUrl}" alt="profile thumbnail">
                             </div>
@@ -144,7 +144,8 @@
                     <!--/* 학생 정보 */-->
                     <div id="participants-list" class="participant_list h_100">
                         <div class="profile_info small"
-                             th:each="player : ${playerList}">
+                             th:each="player : ${playerList}"
+                             th:data-participant-user-no="${player.userNo}">
                             <div class="thumbnail">
                                 <img th:src="${player.profileFileUrl}" alt="profile thumbnail">
                             </div>

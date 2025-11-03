@@ -17,7 +17,7 @@ public class RoomUser {
 
     private int userNo;
     private String status;
-    private String nickName;
+    private String nickname;
     private String username;                    // 이메일
     private String password;                    // 비밀번호
     private String name;                        // 이름

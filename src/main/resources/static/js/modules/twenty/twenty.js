@@ -341,7 +341,7 @@ $(document).ready(function () {
             // injectHtml += `<div class="${statusClass}" data-user-no="${user.userNo}">${user.nickName}</div>`;
 
             injectHtml += `
-                <div class="profile_info small ${statusClass}">
+                <div class="profile_info small ${statusClass}" data-participant-user-no="${player.userNo}">
                     <div class="thumbnail">
                         <img src="${player.profileFileUrl}" alt="profile thumbnail">
                     </div>
