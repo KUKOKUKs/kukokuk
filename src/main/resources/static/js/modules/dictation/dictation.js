@@ -118,9 +118,10 @@ $(document).ready(() => {
         완벽한 통일이 아니더라도 기획안과의 어느정도 일치성을 보여야 함
      */
     async function fetchQuestion(dictationQuestionNo) {
+        const usedHint = false;
         // 번호만 서버로 보내서 정답 받아오기 (DOM에 정답 노출 안 함)
         const res = await $.getJSON("/api/dictation/question",
-            {dictationQuestionNo});
+            {dictationQuestionNo, usedHint});
         return res?.data || {};
     }
 
@@ -143,18 +144,18 @@ $(document).ready(() => {
         }); // 힌트 버튼 부모 요소를 제거하여 완전 보이지 않도록 함
     }
 
-    function updateHintButton() {
-        if (!$hintsInfo.length) return;
-        const userHintCount = parseInt($hintCount.text());
-
-        if (userHintCount <= 0) {
-            $hintsInfo.addClass("disabled");
-        } else {
-            $hintsInfo.removeClass("disabled");
-        }
-    }
-
-    updateHintButton();
+    // function updateHintButton() {
+    //     if (!$hintsInfo.length) return;
+    //     const userHintCount = parseInt($hintCount.text());
+    //
+    //     if (userHintCount <= 0) {
+    //         $hintsInfo.addClass("disabled");
+    //     } else {
+    //         $hintsInfo.removeClass("disabled");
+    //     }
+    // }
+    //
+    // updateHintButton();
     // 1. 비동기 요청으로 읽어줄 문제와 힌트목록을 요청하는 함수
     // 코드 컨벤션이 맞지않으며 의미가 명확하도록 수정
     // $("#correctAnswer").on("click", async function () {
@@ -214,7 +215,8 @@ $(document).ready(() => {
 
         if (!questionInformation.hint1) {
             // const questionNo = $hint1Btn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
-            const response = await getDictationQuestionApi(dictationQuestionNo);
+            const response = await getDictationQuestionApi(dictationQuestionNo, true);
+            stayUsedHintNum($(this));
             showAnswerInSquares(response.hint1);
         } else {
             showAnswerInSquares(questionInformation.hint1);
@@ -232,7 +234,8 @@ $(document).ready(() => {
 
         if (!questionInformation.hint2) {
             // const questionNo = $hint2Btn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
-            const response = await getDictationQuestionApi(dictationQuestionNo);
+            const response = await getDictationQuestionApi(dictationQuestionNo, true);
+            stayUsedHintNum($(this));
             showAnswerInSquares(response.hint2);
         } else {
             showAnswerInSquares(questionInformation.hint2);
@@ -250,7 +253,8 @@ $(document).ready(() => {
 
         if (!questionInformation.hint3) {
             // const questionNo = $hint3Btn.attr("data-question-no"); // dictationQuestionNo 변수 선언으로 필요없음
-            const response = await getDictationQuestionApi(dictationQuestionNo);
+            const response = await getDictationQuestionApi(dictationQuestionNo, true);
+            stayUsedHintNum($(this));
             showAnswerInSquares(response.hint3);
         } else {
             showAnswerInSquares(questionInformation.hint3);
@@ -260,29 +264,38 @@ $(document).ready(() => {
     });
 
     // 힌트 사용 시 새로 고침해도 같은 hintNum으로 힌트유지
-    $("#hintBtn1, #hintBtn2, #hintBtn3").on("click", function () {
-        const hintnum = this.id === "hintBtn1" ? 1 : (this.id === "hintBtn2" ? 2 : 3);
+    function stayUsedHintNum($hintElement) {
+        const hintnum = $hintElement.attr("id") === "hintBtn1" ? 1 : (this.id === "hintBtn2" ? 2 : 3);
 
         $dictationForm.append('<input type="hidden" name="hintNum" value="' + hintnum + '">');
         $dictationForm.append('<input type="hidden" name="showAnswer" value="0">');
 
-        // $("#main-content") 부분 e.preventDefault()를 건너뛰고, 브라우저의 기본 폼 제출을 직접 실행시키기 위해 추가
-        $dictationForm[0].submit();
-    });
+        $dictationForm.submit();
+    }
+
+    // $("#hintBtn1, #hintBtn2, #hintBtn3").on("click", async function () {
+    //     const hintnum = this.id === "hintBtn1" ? 1 : (this.id === "hintBtn2" ? 2 : 3);
+    //
+    //     $dictationForm.append('<input type="hidden" name="hintNum" value="' + hintnum + '">');
+    //     $dictationForm.append('<input type="hidden" name="showAnswer" value="0">');
+    //
+    //     // $("#main-content") 부분 e.preventDefault()를 건너뛰고, 브라우저의 기본 폼 제출을 직접 실행시키기 위해 추가
+    //     $dictationForm[0].submit();
+    // });
 
     // 2. 문제 번호를 인자로 넘겨 getDictationQuestionApi 함수 실행
     /*
         들여쓰기 확인하다보면 괄호가 잘못된걸 파악할 수 있었을 텐데
         이 부분의 오작성으로 코드 파악어려워짐
      */
-    async function getDictationQuestionApi(dictationQuestionNo) {
+    // 힌트 사용시 호출 함수
+    async function getDictationQuestionApi(dictationQuestionNo, usedHint) {
         console.log("요청 시작: /api/dictation/question", dictationQuestionNo);
-
         try {
             const response = await $.ajax({
                 url: '/api/dictation/question',
                 method: 'GET',
-                data: {dictationQuestionNo},
+                data: {dictationQuestionNo, usedHint},
                 dataType: 'json'
             });
             questionInformation = response.data;
