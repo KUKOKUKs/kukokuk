@@ -21,6 +21,7 @@
         <result property="profileFilename" column="PROFILE_FILENAME"/>
         <result property="experiencePoints" column="EXPERIENCE_POINTS"/>
         <result property="maxExp" column="MAX_EXP"/>
+        <result property="minExp" column="MIN_EXP"/>
     </resultMap>
 
     <!--
@@ -165,6 +166,7 @@
                    , U.LEVEL
                    , U.PROFILE_FILENAME
                    , U.EXPERIENCE_POINTS
+                   , L.MIN_EXP
                    , (L.MAX_EXP + 1) AS MAX_EXP
                    , RANK() OVER (ORDER BY U.LEVEL DESC, U.EXPERIENCE_POINTS DESC, U.USER_NO) AS USER_RANK
               FROM KUKOKUK_USERS U
