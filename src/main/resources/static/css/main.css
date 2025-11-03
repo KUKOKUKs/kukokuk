@@ -508,6 +508,7 @@ table th {
 */
 .tooltip {
   position: relative;
+  z-index: 1;
 }
 .tooltip::after {
   content: attr(data-label);

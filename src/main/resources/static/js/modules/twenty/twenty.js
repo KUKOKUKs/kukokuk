@@ -253,7 +253,7 @@ $(document).ready(function () {
                 lineClass = 'my_message';
             } else {
                 lineClass = 'other_message';
-                senderHtml = `<div class="sender">${chat.nickName || ''}</div>`;
+                senderHtml = `<div class="sender">${chat.nickname || ''}</div>`;
             }
 
             // 메시지 타입에 따라 스타일 지정
