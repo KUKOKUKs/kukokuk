@@ -10,7 +10,7 @@
         SELECT
             RU.USER_NO                       AS userNo
             ,RU.STATUS                       AS status
-            ,U.NICKNAME                      AS nickName
+            ,U.NICKNAME                      AS nickname
             ,U.USERNAME                      AS username
             ,U.PASSWORD                      AS password
             ,U.NAME                          AS name
