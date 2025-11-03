@@ -94,7 +94,7 @@
                         <div class="component_title">
                             <div class="title_info column tiny_gap base_font">
                                 <p th:text="${study.dailyStudyTitle}">학습 자료 제목</p>
-                                <p class="small_font normal" th:text="${study.explanation}">설명</p>
+                                <p class="text_ellipsis_multiline small_font normal" th:utext="${study.explanation}">설명</p>
                             </div>
                         </div>
 
