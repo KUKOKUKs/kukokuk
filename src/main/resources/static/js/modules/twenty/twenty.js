@@ -430,7 +430,7 @@ $(document).ready(function () {
     function connectWebSocket() {
         console.log("connectWebSocket() ws: ", wsUrl);
 
-        const socket = new SockJS('http://kukokuk-websocket-service/ws?token=' + ACCESS_TOKEN);
+        const socket = new SockJS('http://103.218.158.164:30081/ws?token=' + ACCESS_TOKEN);
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function (frame) {
