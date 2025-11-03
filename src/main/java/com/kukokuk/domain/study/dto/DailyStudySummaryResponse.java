@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 사용자 맞춤 학습자료 목록 조회 요청의 응답으로 전달하는 response Dto
@@ -12,6 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class DailyStudySummaryResponse {
@@ -27,4 +29,6 @@ public class DailyStudySummaryResponse {
     private Integer grade;                  // 학년
     private int sequence;               // 학년 내 자료 순서
     private boolean essayQuizCompleted; // 사용자의 서술형 퀴즈 완료 여부
+    private String sourceFilename;      // 원본 파일명
+    private String filePath;            // 원본 자료가 있다면 원본 다운로드 경로
 }

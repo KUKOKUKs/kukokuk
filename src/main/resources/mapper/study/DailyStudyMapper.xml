@@ -57,6 +57,8 @@
         <!-- 중첩 객체: DailyStudyMaterial -->
         <association property="dailyStudyMaterial" javaType="DailyStudyMaterial">
             <result column="DAILY_STUDY_MATERIAL_NO" property="dailyStudyMaterialNo"/>
+            <result column="SOURCE_FILENAME" property="sourceFilename"/>
+            <result column="FILE_PATH" property="filePath"/>
             <result column="SCHOOL" property="school"/>
             <result column="GRADE" property="grade"/>
             <result column="SEQUENCE" property="sequence"/>
@@ -230,6 +232,8 @@
             L.USER_NO,
 
             M.DAILY_STUDY_MATERIAL_NO,
+            M.SOURCE_FILENAME,
+            M.FILE_PATH,
             M.SCHOOL,
             M.GRADE,
             M.SEQUENCE,

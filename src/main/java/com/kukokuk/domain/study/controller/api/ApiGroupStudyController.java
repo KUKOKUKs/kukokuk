@@ -36,6 +36,7 @@ public class ApiGroupStudyController {
         log.info("그룹 학습자료 목록 조회 컨트롤러 실행 groupNo={}, rows={}", securityUser.getUser().getGroupNo(), rows);
 
         List<DailyStudySummaryResponse> studies = groupStudyService.getGroupDailyStudies(securityUser.getUser(), rows);
+        log.info("그룹 학습 자료: {}", studies);
 
         return ResponseEntityUtils.ok("그룹 학습자료 목록 조회 성공",studies);
     }

@@ -268,8 +268,10 @@ public class StudyService {
             .progressRate(progressRate)
             .school(school)
             .grade(grade)
-            .sequence(material.getSequence())
             .essayQuizCompleted(essayQuizCompleted)
+            .sequence(material != null ? material.getSequence() : 1)
+            .sourceFilename(material != null ? material.getSourceFilename() : null)
+            .filePath(material != null ? material.getFilePath() : null)
             .build();
     }
 
