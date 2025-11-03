@@ -2,7 +2,6 @@ package com.kukokuk.domain.twenty.dto;
 
 import com.kukokuk.common.util.FilePathUtil;
 import java.util.Date;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,10 +34,6 @@ public class RoomUser {
     private String isDeleted;                   // ENUM("N", "Y")
     private Date createdDate;
     private Date updatedDate;
-
-    private Integer maxExp;                     // 레벨업에 필요한 누적 경험치
-    private List<String> roleNames;             // 사용자 권한 정보 목록
-    private Integer groupNo;                    // 사용자가 속한 그룹 번호(그룹에 속하지 않았으면 Null)
 
     // 프로필 이미지 경로 생성
     public String getProfileFileUrl() {

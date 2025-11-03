@@ -13,9 +13,11 @@
     </div>
 
     <div th:if="${#lists.isEmpty(dailyStudyLogs)}" class="tiny_list_component">
-        <p class="list_info">
-            AI가 맞춤형 학습을 도와줄 준비가 되어 있어요.
-        </p>
+        <div class="component_info tiny">
+            <p class="list_info sub_font tac">
+                AI가 맞춤형 학습을 도와줄 준비가 되어 있어요.
+            </p>
+        </div>
     </div>
 
     <div th:if="${!#lists.isEmpty(dailyStudyLogs)}"
