@@ -320,7 +320,7 @@ $(document).ready(function () {
         // 미리 함수 내에서 단일 데이터든 리스트 데이터든 일괄 처리 가능하도록 구현해 놓았음
         // DOM 조작은 호출부에서 실행
         const chatListHtml = getChatListHtml(messageList);
-        $chatsBoard.append(chatListHtml);
+        $chatsBoard.html(chatListHtml);
 
         // 스크롤 맨 아래로
         // 기존 코드에서는 이 수행문이 함수 내에서도 호출한 함수내에도 수행됨
