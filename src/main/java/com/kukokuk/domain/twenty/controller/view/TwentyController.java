@@ -88,7 +88,7 @@ public class TwentyController {
 //        model.addAttribute("nickName",user.getNickname());
 //        model.addAttribute("userNo", user.getUserNo());
         model.addAttribute("wsUrl",wsUrl);
-        return "twenty/gameRoom1";
+        return "twenty/gameRoom";
 
     }
 
