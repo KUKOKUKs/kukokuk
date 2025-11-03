@@ -89,7 +89,7 @@
 
                 <!--/* 교사일 경우 */-->
                 <th:block th:if="${isTeacher}">
-                    <div id="teacher-controls" class="btn_list title_font bold">
+                    <div id="teacher-controls" class="btn_list title_font bold d_none">
                         <button id="teacher-o-btn"
                                 class="square_btn bg_blue color_white disabled"
                                 style="--square_size: 50%;">O</button>
@@ -105,7 +105,7 @@
 
                 <!--/* 학생일 경우 */-->
                 <th:block th:if="${!isTeacher}">
-                    <div id="student-controls" class="btn_list title_font bold">
+                    <div id="student-controls" class="btn_list title_font bold d_none">
                         <button id="send-question"
                                 class="square_btn bg_yellow color_black disabled"
                                 style="--square_size: 50%;">질문</button>
@@ -115,7 +115,7 @@
                     </div>
 
                     <button id="raise-button"
-                            class="square_btn bg_primary color_white title_font disabled"
+                            class="square_btn bg_primary color_white title_font d_none"
                             style="--square_size: 100%; --aspect_ratio: 4 / 1">✋ 손들기</button>
 
                     <div id="waiting-button"

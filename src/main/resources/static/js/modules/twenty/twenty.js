@@ -378,19 +378,19 @@ $(document).ready(function () {
         // 초기화
         [
             $teacherObtn, $teacherXbtn, $teacherStartBtn,
-            $sendQuestionBtn, $sendAnswerBtn, $raiseHandBtn,
+            $sendQuestionBtn, $sendAnswerBtn,
             $twentyUserAnswerForm
         ].forEach(disabledElement => {
             disabledElement.addClass('disabled');
         });
 
         // 교사 관련
-        $teacherControls.show(); // 교사 OX 버튼 부모 요소 노출(WAITING 상태 외 노출)
-        $teacherStartBtn.hide(); // 교사 시작 버튼 부모요소 숨김(WAITING 상태 외 숨김)
+        $teacherControls.removeClass("d_none"); // 교사 OX 버튼 부모 요소 노출(WAITING 상태 외 노출)
+        $teacherStartBtn.addClass("d_none"); // 교사 시작 버튼 부모요소 숨김(WAITING 상태 외 숨김)
         // 학생 관련
-        $waitingButton.hide(); // 학생 대기 표시 숨김(WAITING 상태 외 숨김)
-        $studentControls.show(); // 학생 질문/정답 제출 버튼 부모요소 노출(WAITING 상태 외 노출)
-        $raiseHandBtn.hide(); // 손들기 버튼 숨김(IN_PROGRESS 상태 외 숨김)
+        $waitingButton.addClass("d_none"); // 학생 대기 표시 숨김(WAITING 상태 외 숨김)
+        $studentControls.removeClass("d_none"); // 학생 질문/정답 제출 버튼 부모요소 노출(WAITING 상태 외 노출)
+        $raiseHandBtn.addClass("d_none"); // 손들기 버튼 숨김(IN_PROGRESS 상태 외 숨김)
 
         // 위 배열에 아래 요소들 추가해도 됨
         // $questionInput.addClass('disabled');
@@ -400,15 +400,16 @@ $(document).ready(function () {
         switch (roomStatus) {
             case 'WAITING': // 기본 방 상태, 학생 입장 시 아직 교사가 시작 버튼을 누르지 않았을 때
                 // 교사 관련
-                $teacherStartBtn.show().removeClass("disabled"); // 교사 시작 버튼 활성화
-                $teacherControls.hide(); // 교사 OX 버튼 부모요소 숨김
+                $teacherStartBtn.removeClass("disabled d_none"); // 교사 시작 버튼 활성화
+                $teacherControls.addClass("d_none"); // 교사 OX 버튼 부모요소 숨김
                 // 학생 관련
-                $waitingButton.show().removeClass("disabled"); // 학생 대기 표기
-                $studentControls.hide(); // 학생 질문/정답 제출 버튼 부모요소 숨김
+                $waitingButton.removeClass("d_none"); // 학생 대기 표기
+                $studentControls.addClass("d_none"); // 학생 질문/정답 제출 버튼 부모요소 숨김
                 break;
             case 'IN_PROGRESS':
                 // 학생 관련
-                $raiseHandBtn.show().removeClass('disabled'); // 손들기 버튼 활성화
+                $studentControls.addClass("d_none"); // 학생 질문/정답 제출 버튼 부모요소 숨김
+                $raiseHandBtn.removeClass("d_none"); // 손들기 버튼 활성화
                 break;
             case 'AWAITING_INPUT':
                 if (currentUserNo === winnerNo) { // 자바스크립트에서 == 는 완벽한 비교가 아님으로 === 사용
@@ -416,6 +417,7 @@ $(document).ready(function () {
                     $sendAnswerBtn.removeClass('disabled');
                     $twentyUserAnswerForm.removeClass('disabled');
                 }
+                $raiseHandBtn.addClass("d_none");
                 break;
             case 'AWAITING_RESPONSE':
                 $teacherObtn.removeClass('disabled');
