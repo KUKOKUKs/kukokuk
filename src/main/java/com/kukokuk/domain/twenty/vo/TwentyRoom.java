@@ -1,7 +1,6 @@
 package com.kukokuk.domain.twenty.vo;
 
 import com.kukokuk.domain.user.vo.User;
-import java.security.PrivateKey;
 import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,16 +13,16 @@ import org.apache.ibatis.type.Alias;
 @NoArgsConstructor
 public class TwentyRoom {
 
-    private int roomNo;
-    private String correctAnswer;
-    private String isSuccess;
-    private String status;
-    private Date createdDate;
-    private Date updatedDate;
-    private int groupNo;
-    private int winnerNo;
-    private int tryCnt;
-    private String title;
+    private int roomNo;             // 방 번호
+    private String correctAnswer;   // 정답
+    private String isSuccess;       // 정답 여부
+    private String status;          // 방 상태
+    private Date createdDate;       // 생성일
+    private Date updatedDate;       // 수정일
+    private int groupNo;            // 그룹 번호
+    private int winnerNo;           // 손들기 or 게임승리자 번호
+    private int tryCnt;             // 진행 라운드 횟수
+    private String title;           // 방 제목
 
-    private User user;
+    private User teacher;           // 교사 정보
 }

@@ -185,16 +185,14 @@
                             <div class="input_info">
                                 <input type="text" name="title" id="title" placeholder=" "/>
                                 <label for="title" class="input_title">스무고개 방 이름</label>
+                                <span class="input_error" th:if="${titleError}" th:errors="*{titleError}"></span>
                             </div>
-                            <!--/* 에러 메세지 표시 */-->
-                            <p th:if="${titleError}" th:text="${titleError}" class="error_text"></p>
 
                             <div class="input_info">
                                 <input type="text" name="correct" id="correct" placeholder=" "/>
                                 <label for="correct" class="input_title">스무고개 정답</label>
+                                <span class="input_error" th:if="${correctError}" th:errors="*{correctError}"></span>
                             </div>
-                            <!--/* 에러 메세지 표시 */-->
-                            <p th:if="${correctError}" th:text="${correctError}" class="error_text"></p>
                         </div>
                         <button type="submit" class="btn primary">방 만들기</button>
                     </form>
