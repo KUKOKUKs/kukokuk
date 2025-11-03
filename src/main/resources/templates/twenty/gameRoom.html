@@ -118,9 +118,11 @@
             </div>
 
             <div class="component full">
-                <div class="component_info tiny tiny_gap full">
+                <div class="component_info tiny column tiny_gap full">
                     <!--/* 교사 정보 */-->
                     <div class="participant_list">
+                        <div class="callout right small_font" style="--position: var(--tinyPadding);">쌤</div>
+
                         <div class="profile_info small">
                             <div class="thumbnail">
                                 <img th:src="${roomDto.teacher.profileFileUrl}" alt="profile thumbnail">
@@ -136,7 +138,7 @@
                             <div class="thumbnail">
                                 <img th:src="${player.profileFileUrl}" alt="profile thumbnail">
                             </div>
-                            <p class="name" th:text="${player.nickname}">사용자 닉네임</p>
+                            <p class="name" th:text="${player.nickName}">사용자 닉네임</p>
                         </div>
                     </div>
                 </div>
