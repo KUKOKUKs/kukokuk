@@ -52,8 +52,13 @@
                         <div class="chats_component">
                             <div id="board-area">
                                 <div class="message_line my_message" data-user-no="1" data-log-no="2">
-                                    <div class="sender">text111</div>
-                                    <div class="message_bubble question">rksweoifj  woejfoijwefwefji  owjefj jiowef?</div>
+                                    <div class="thumbnail">
+                                        <img src="" alt="profile thumbnail">
+                                    </div>
+                                    <div class="chat_info">
+                                        <div class="sender">text111</div>
+                                        <div class="message_bubble question">rksweoifj  woejfoijwefwefji  owjefj jiowef?</div>
+                                    </div>
                                 </div>
 
                                 <div class="message_line other_message" data-user-no="2" data-log-no="2">
@@ -149,7 +154,7 @@
                             <div class="thumbnail">
                                 <img th:src="${player.profileFileUrl}" alt="profile thumbnail">
                             </div>
-                            <p class="name" th:text="${player.nickName}">사용자 닉네임</p>
+                            <p class="name" th:text="${player.nickname}">사용자 닉네임</p>
                         </div>
                     </div>
                 </div>

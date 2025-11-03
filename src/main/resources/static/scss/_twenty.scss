@@ -37,16 +37,65 @@
     display: flex;
     overflow: hidden;
     min-height: 0;
+}
 
-    .message_line {
-        width: max-content;
-        max-width: 75%;
+.message_line {
+    width: max-content;
+    max-width: 75%;
+    display: flex;
+    gap: var(--tinyGap);
+    align-items: flex-start;
+
+    .thumbnail {
+        width: var(--baseIcon);
+        min-width: var(--baseIcon);
+        height: var(--baseIcon);
+        border: 1px solid var(--borderColor);
+        overflow: hidden;
+        border-radius: 50%;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     }
 
-    .message_bubble {
-        white-space: pre-line;
+    .chat_info {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--tinyGap);
+
+        .sender {
+            font-size: var(--fixEtcTinyFontSize);
+        }
+
+        .message_bubble {
+            width: max-content;
+            max-width: 100%;
+            padding: var(--tinyPadding);
+            border-radius: var(--bdrs);
+            box-shadow: var(--bxsh);
+            background-color: var(--baseBackground);
+            white-space: pre-line;
+        }
+    }
+
+    &.my_message {
+        margin-left: auto;
+
+        .chat_info {
+            align-items: flex-end;
+        }
+    }
+
+    &.other_message {
+        margin-right: auto;
     }
 }
+
 
 #board-area {
     flex: 1;
