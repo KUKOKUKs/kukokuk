@@ -80,7 +80,7 @@ $(document).ready(function () {
         console.log("스무고개 시작하기 실행");
         stompClient.send(`/app/gameStart/${currentRoomNo}`, {}, JSON.stringify({}));
         $(this).hide(); // 시작 후 버튼 숨김
-        $teacherControls.show(); // OX 버튼 노출
+        $teacherControls.removeClass("disabled") // OX 버튼 노출
     });
 
     // 교사의 O 버튼 이벤트 핸들러
