@@ -141,6 +141,7 @@ export async function pollTeacherStudyJobStatus(pollUrl, $uploadElement) {
             // 실제 폴링 요청
             // 폴링의 상태가 PROCESSING이 아닐 경우 반환 됨 (진행상태 표시하지 않음)
             const pollJob = await pollJobStatus(pollUrl, null, false);
+            console.log("pollJobStatus() pollJob: ", pollJob);
 
             // 요소 업데이트
             const isDone = pollJob.status === "DONE";
@@ -151,6 +152,8 @@ export async function pollTeacherStudyJobStatus(pollUrl, $uploadElement) {
             const $parentElement = $(".uploading_list_container"); // 부모요소
             const isProcessing = $parentElement.children(".upload_list").is("[data-status='PROCESSING']"); // 아직 진행 중
             const isFaied = $parentElement.children(".upload_list").is("[data-status='ERROR'], [data-status='FAILED']"); // 실패한 요청이 있음
+            console.log("isProcessing element check: ", $parentElement.children(".upload_list"));
+            console.log("isProcessing element check: ", $parentElement.children(".upload_list"));
 
             if (!isProcessing) { // 모든 병렬 폴링 호출이 종료가 되었을 경우
                 if (!isFaied) {
