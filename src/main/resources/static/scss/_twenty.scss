@@ -155,7 +155,6 @@
     }
 }
 
-
 #board-area {
     flex: 1;
     min-height: 0;
@@ -165,12 +164,6 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0 var(--basePadding);
-}
-
-#teacher-controls,
-#student-controls,
-#raise-button {
-    display: none;
 }
 
 /* 참여자 리스트 */
