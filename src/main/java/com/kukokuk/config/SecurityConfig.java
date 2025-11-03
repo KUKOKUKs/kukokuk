@@ -91,7 +91,7 @@ public class SecurityConfig {
             : "default";
 
         http
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/login", "/api/worker/**" )) // 제거 예정
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/login", "/api/worker/**", "/ws/**")) // 제거 예정
             .authorizeHttpRequests(auth -> {
                 auth
                     .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE).permitAll()
@@ -110,6 +110,7 @@ public class SecurityConfig {
                         , "/images/**"                  // 정적 이미지 경로
                         ,"/api/worker/**"
                         , "/api/twenty/**"              // 웹소켓 REST API 요청 일단 허용(보통은 ws로 사용됨/크리덴셜 방법 필요)
+                        ,"/ws/**"
                     ).permitAll();
 
                 // DevTools, 브라우저 프록시 확장기능 요청 시 허용(개발환경만 적용)
