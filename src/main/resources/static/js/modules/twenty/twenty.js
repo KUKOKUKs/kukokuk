@@ -76,8 +76,9 @@ $(document).ready(function () {
     });
 
     // 교사의 시작 버튼 이벤트 핸들러
-    $teacherStartBtn.on('click', function () {
+    $teacherStartBtn.on('click', function (e) {
         console.log("스무고개 시작하기 실행");
+        e.preventDefault();
         stompClient.send(`/app/gameStart/${currentRoomNo}`, {}, JSON.stringify({}));
         $(this).hide(); // 시작 후 버튼 숨김
         $teacherControls.removeClass("disabled") // OX 버튼 노출
@@ -152,7 +153,8 @@ $(document).ready(function () {
     // 인풋을 감싸는 요소를 form 태그로 하지않으면 제출 자체가 되지 않지만
     // 설명을 위해 form으로 감싸서 제출이벤트 발생 시 알리도록 구현 함
     // 실질적으로는 인풋을 감싸는 요소를 DIV로 하고 아래 핸들러는 없어도 됨
-    $twentyUserAnswerForm.submit(function () {
+    $twentyUserAnswerForm.submit(function (e) {
+        e.preventDefault();
         alert("질문 또는 정답 버튼을 눌러주세요!!!");
         return false;
     });
