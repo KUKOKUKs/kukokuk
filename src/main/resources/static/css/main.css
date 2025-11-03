@@ -2838,7 +2838,11 @@ table th {
   overflow: hidden;
   min-height: 0;
 }
-.chats_component .chat_bubble {
+.chats_component .message_line {
+  width: max-content;
+  max-width: 75%;
+}
+.chats_component .message_bubble {
   white-space: pre-line;
 }
 
