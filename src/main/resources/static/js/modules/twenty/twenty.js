@@ -38,6 +38,7 @@ function showSystemMessage(text, variant = 'warning', duration = 3000) {
     // 이전 타이머 정리
     if (systemMsgTimer) {
         clearTimeout(systemMsgTimer);
+
         systemMsgTimer = null;
     }
 

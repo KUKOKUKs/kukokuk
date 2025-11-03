@@ -9,20 +9,13 @@ import com.kukokuk.domain.twenty.vo.TwentyRoom;
 import com.kukokuk.domain.user.vo.User;
 import com.kukokuk.security.SecurityUser;
 import jakarta.validation.Valid;
-import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +25,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Log4j2
@@ -87,15 +79,16 @@ public class TwentyController {
             model.addAttribute("error", "존재하지 않는 게임방입니다.");
             return "group/main";
         }
-        model.addAttribute("correctAnswer", room.getCorrectAnswer());
-        model.addAttribute("roomNo", roomNo);
-        List<RoomUser> list = twentyService.getTwentyPlayerList(roomNo);
-        model.addAttribute("list", list);
 
-        model.addAttribute("nickName",user.getNickname());
-        model.addAttribute("userNo", user.getUserNo());
+        model.addAttribute("roomDto", room);
+        List<RoomUser> list = twentyService.getTwentyPlayerList(roomNo);
+        model.addAttribute("playerList", list);
+
+        // 타임리프에서 직접 꺼낼 수 있으므로 필요없음
+//        model.addAttribute("nickName",user.getNickname());
+//        model.addAttribute("userNo", user.getUserNo());
         model.addAttribute("wsUrl",wsUrl);
-        return "twenty/gameRoom";
+        return "twenty/gameRoom1";
 
     }
 
@@ -124,7 +117,7 @@ public class TwentyController {
         }
 
         //게임방 생성 및, 게임 참여자 DB에 할당
-        Integer roomNo = twentyService.insertTwentyRoom(room.getGroupNo(), room.getTitle(),room.getCorrect());
+        int roomNo = twentyService.insertTwentyRoom(room.getGroupNo(), room.getTitle(),room.getCorrect());
         return "redirect:/twenty/gameRoom/" + roomNo;
     }
 

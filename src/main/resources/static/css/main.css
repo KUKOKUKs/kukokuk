@@ -318,6 +318,47 @@ table th {
   cursor: pointer;
 }
 
+.profile_info {
+  display: flex;
+  gap: var(--smallGap);
+  align-items: center;
+}
+.profile_info .thumbnail {
+  width: var(--largeIcon);
+  min-width: var(--largeIcon);
+  height: var(--largeIcon);
+}
+.profile_info .thumbnail:has(img) {
+  border: 1px solid var(--borderColor);
+  overflow: hidden;
+  border-radius: 50%;
+}
+.profile_info .thumbnail:has(img) img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.profile_info .name {
+  width: 100%;
+  font-size: var(--largeFontSize);
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile_info.small {
+  gap: var(--tinyGap);
+}
+.profile_info.small .thumbnail {
+  width: var(--baseIcon);
+  min-width: var(--baseIcon);
+  height: var(--baseIcon);
+}
+.profile_info.small .name {
+  font-size: var(--subFontSize);
+  font-weight: normal;
+}
+
 .main {
   display: flex;
   min-height: 100vh;
@@ -1607,6 +1648,26 @@ table th {
   opacity: 1;
 }
 
+.square_btn {
+  width: var(--square_size, 100%);
+  min-width: max-content;
+  aspect-ratio: var(--aspect_ratio, 2/1);
+  padding: var(--tinyPadding);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--bdrs);
+  border: var(--baseBorder);
+  background-color: var(--subColor);
+  box-shadow: var(--insetBxsh);
+  transition: border-color var(--trst), color var(--trst), background-color var(--trst);
+}
+.square_btn:hover {
+  border-color: var(--primaryColor);
+  color: var(--primaryColor);
+  background-color: #fff;
+}
+
 /* 힌트 */
 .hints_info {
   display: flex;
@@ -1767,6 +1828,7 @@ table th {
 .full {
   width: 100% !important;
   height: 100% !important;
+  min-height: 0;
 }
 
 .w_max_content {
@@ -2289,35 +2351,6 @@ table th {
   background-color: var(--subColor);
 }
 
-.profile_info {
-  display: flex;
-  gap: var(--smallGap);
-  align-items: center;
-}
-.profile_info .thumbnail {
-  width: var(--largeIcon);
-  min-width: var(--largeIcon);
-  height: var(--largeIcon);
-}
-.profile_info .thumbnail:has(img) {
-  border: 1px solid var(--borderColor);
-  overflow: hidden;
-  border-radius: 50%;
-}
-.profile_info .thumbnail:has(img) img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.profile_info .name {
-  width: 100%;
-  font-size: var(--largeFontSize);
-  font-weight: bold;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .level_info {
   display: flex;
   flex-direction: column;
@@ -2348,13 +2381,6 @@ table th {
 .level_info .percent_info .experience_points_info {
   font-size: var(--fixEtcTinyFontSize);
   color: var(--grayColor);
-}
-.level_info.study_progress {
-  margin: 32px 0;
-  width: 100%;
-}
-.level_info.study_progress .after_quiz {
-  background-color: var(--redColor);
 }
 
 /* 프로필 페이지 */
@@ -2772,6 +2798,74 @@ table th {
 }
 .ranks_component .component_info .rank_score {
   margin-left: auto;
+}
+
+/* 스무고개 진행 방 */
+.system_message {
+  display: none;
+  padding: var(--smallPadding);
+  border-radius: var(--bdrs);
+  font-size: var(--subFontSize);
+  background-color: var(--lightYellowColor);
+  border: var(--baseBorder);
+  box-shadow: var(--bxsh);
+  position: absolute;
+  top: var(--basePadding);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+.system_message .system_user_name {
+  color: var(--blueColor);
+}
+.system_message #timer-display {
+  color: var(--redColor);
+}
+
+/* 채팅창 */
+.chats_container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tinyGap);
+  padding: var(--basePadding) 0;
+}
+
+.chats_component {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+.chats_component .chat_bubble {
+  white-space: pre-line;
+}
+
+#board-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tinyGap);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 var(--basePadding);
+}
+
+#teacher-controls,
+#student-controls,
+#raise-button {
+  display: none;
+}
+
+/* 참여자 리스트 */
+.participant_list {
+  padding: var(--tinyPadding);
+  background-color: var(--baseBackground);
+  display: flex;
+  flex-direction: column;
+  gap: var(--tinyGap);
 }
 
 /*# sourceMappingURL=main.css.map */

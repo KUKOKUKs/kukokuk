@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/custom-nav-base}"
+      th:with="title='스무고개'
+      , user=${#authentication.principal.user}
+      , isTeacher=${#authorization.expression('hasRole(''TEACHER'')')}">
+<div layout:fragment="content">
+    <div id="main-content"
+         class="content_container twenty_container"
+         th:data-user-no="${user.userNo}"
+         th:data-room-no="${roomDto.roomNo}"
+         th:data-ws-url="${wsUrl}"
+         th:data-access-token="${token}">
+        <div class="content_info full">
+            <div class="content_title">
+                <iconify-icon icon="streamline-flex-color:help-chat-1-flat"></iconify-icon>
+                <span th:text="${roomDto.title}">스무고개 방 이름</span>
+            </div>
+
+            <div class="component small_list_component full">
+                <div class="component pd_0 box_shadow_none bg_sub full">
+                    <!--/* 라운드 표시 */-->
+                    <div class="callout left sub_font">
+                        질문: <span id="remaining-questions" class="bold">1</span> / 20
+                    </div>
+
+                    <!--/* 교사일 경우 정답 표시 */-->
+                    <div th:if="${isTeacher}"
+                         class="callout right sub_font color_black" style="--callout-color: var(--yellowColor)">
+                        정답: <span class="bold" th:text="${roomDto.correctAnswer}">???</span>
+                    </div>
+
+                    <!--/* 알림 메세지 창 */-->
+                    <div class="system_message" id="system-alarm"></div>
+
+                    <!--/* 타이머 창 */-->
+                    <div class="system_message" id="turn-info-panel">
+                        <div class="d_flex column tiny_gap justify_content_center">
+                            <p class="system_user_name bold">
+                                <span id="turn-holder-name">---</span>님의 차례입니다.
+                            </p>
+
+                            <div class="d_flex justify_content_center align_center tiny_gap">
+                                <iconify-icon class="icon title_font" icon="fluent-color:clock-alarm-20"></iconify-icon>
+                                <span id="timer-display" class="title_font">40</span>
+                                초
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--/* 채팅 영역 */-->
+                    <div class="chats_container">
+                        <div class="chats_component">
+                            <div id="board-area"></div>
+                        </div>
+
+                        <!--/* 학생일 경우 */-->
+                        <form th:if="${!isTeacher}"
+                              id="twenty-user-answer-form"
+                              class="form_input_list plr_base disabled">
+                            <div class="input_info one_input">
+                                <input type="text" name="userAnswer" id="user-answer" placeholder=" ">
+                                <label for="user-answer" class="input_title">입력 후 질문 또는 정답 버튼을 눌러주세요!</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!--/* 교사일 경우 */-->
+                <th:block th:if="${isTeacher}">
+                    <div id="teacher-controls" class="btn_list title_font bold">
+                        <button id="teacher-o-btn"
+                                class="square_btn bg_blue color_white disabled"
+                                style="--square_size: 50%;">O</button>
+                        <button id="teacher-x-btn"
+                                class="square_btn bg_red color_white disabled"
+                                style="--square_size: 50%;">X</button>
+                    </div>
+
+                    <button id="teacher-start-btn"
+                            class="square_btn bg_primary color_white title_font disabled"
+                            style="--square_size: 100%; --aspect_ratio: 4 / 1">시작</button>
+                </th:block>
+
+                <!--/* 학생일 경우 */-->
+                <th:block th:if="${!isTeacher}">
+                    <div id="student-controls" class="btn_list title_font bold">
+                        <button id="send-question"
+                                class="square_btn bg_yellow color_black disabled"
+                                style="--square_size: 50%;">질문</button>
+                        <button id="send-answer"
+                                class="square_btn bg_primary color_white disabled"
+                                style="--square_size: 50%;">정답</button>
+                    </div>
+
+                    <button id="raise-button"
+                            class="square_btn bg_primary color_white title_font disabled"
+                            style="--square_size: 100%; --aspect_ratio: 4 / 1">✋ 손들기</button>
+
+                    <div id="waiting_button"
+                            class="square_btn bg_sub title_font disabled"
+                            style="--square_size: 100%; --aspect_ratio: 4 / 1">
+                        대기 중
+                    </div>
+                </th:block>
+            </div>
+        </div>
+    </div>
+
+    <div id="sub-content" class="content_container">
+        <!--/* 참여자 리스트 */-->
+        <div class="content_info full">
+            <div class="content_title">
+                <iconify-icon icon="fluent-color:people-48"></iconify-icon>
+                <span>참여자</span>
+                <div id="twenty-room-out-btn" class="ml_a small_font">
+                    <button type="button" class="btn tiny modal_twenty_btn">종료하기</button>
+                </div>
+            </div>
+
+            <div class="component full">
+                <div class="component_info tiny tiny_gap full">
+                    <!--/* 교사 정보 */-->
+                    <div class="participant_list">
+                        <div class="profile_info small">
+                            <div class="thumbnail">
+                                <img th:src="${roomDto.teacher.profileFileUrl}" alt="profile thumbnail">
+                            </div>
+                            <p class="name" th:text="${roomDto.teacher.nickname}">쌤 닉네임</p>
+                        </div>
+                    </div>
+
+                    <!--/* 학생 정보 */-->
+                    <div id="participants-list" class="participant_list h_100">
+                        <div class="profile_info small"
+                             th:each="player : ${playerList}">
+                            <div class="thumbnail">
+                                <img th:src="${player.profileFileUrl}" alt="profile thumbnail">
+                            </div>
+                            <p class="name" th:text="${player.nickname}">사용자 닉네임</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--/* 게임 종료 안내 모달창 */-->
+    <div th:replace="~{fragments/modal/modal-twenty-exit :: modal-twenty-exit-fragment}"></div>
+</div>
+
+<th:block layout:fragment="script">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script type="module" th:src="@{/js/modules/twenty/twenty1.js}"></script>
+</th:block>
+</html>

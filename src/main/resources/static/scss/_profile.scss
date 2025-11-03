@@ -12,39 +12,6 @@
     background-color: var(--subColor);
 }
 
-.profile_info {
-    display: flex;
-    gap: var(--smallGap);
-    align-items: center;
-
-    .thumbnail {
-        width: var(--largeIcon);
-        min-width: var(--largeIcon);
-        height: var(--largeIcon);
-
-        &:has(img) {
-            border: 1px solid var(--borderColor);
-            overflow: hidden;
-            border-radius: 50%;
-
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-        }
-    }
-
-    .name {
-        width: 100%;
-        font-size: var(--largeFontSize);
-        font-weight: bold;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-}
-
 .level_info {
     display: flex;
     flex-direction: column;
@@ -80,17 +47,7 @@
             color: var(--grayColor);
         }
     }
-
-    &.study_progress {
-        margin: 32px 0;
-        width: 100%;
-
-        .after_quiz {
-            background-color: var(--redColor);
-        }
-    }
 }
-
 
 /* 프로필 페이지 */
 .profile_img_container {
