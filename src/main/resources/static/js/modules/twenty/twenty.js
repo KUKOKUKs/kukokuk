@@ -269,11 +269,23 @@ $(document).ready(function () {
             // const contentHtml = data.content ? data.content.replace(/\n/g, '<br>') : '';
 
             // 채팅 리스트 추가
+            // chatListHtml += `
+            //     <div class="message_line ${lineClass}" data-user-no="${chat.userNo}" data-log-no="${chat.logNo}">
+            //         ${senderHtml}
+            //         <div class="message_bubble ${bubbleClass}">
+            //             ${chat.content}
+            //         </div>
+            //     </div>
+            // `;
+
             chatListHtml += `
                 <div class="message_line ${lineClass}" data-user-no="${chat.userNo}" data-log-no="${chat.logNo}">
-                    ${senderHtml}
-                    <div class="message_bubble ${bubbleClass}">
-                        ${chat.content}
+                    <div class="thumbnail">
+                        <img src="${chat.profileFileUrl}" alt="profile thumbnail">
+                    </div>
+                    <div class="chat_info">
+                        <div class="sender">${senderHtml}</div>
+                        <div class="message_bubble ${bubbleClass}">${chat.content}</div>
                     </div>
                 </div>
             `;
@@ -418,7 +430,7 @@ $(document).ready(function () {
     function connectWebSocket() {
         console.log("connectWebSocket() ws: ", wsUrl);
 
-        const socket = new SockJS('http://localhost:8081/ws?token=' + ACCESS_TOKEN);
+        const socket = new SockJS('http://kukokuk-websocket-service/ws?token=' + ACCESS_TOKEN);
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function (frame) {
