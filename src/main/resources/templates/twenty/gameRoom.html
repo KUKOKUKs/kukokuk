@@ -90,15 +90,18 @@
                 <!--/* 교사일 경우 */-->
                 <th:block th:if="${isTeacher}">
                     <div id="teacher-controls" class="btn_list title_font bold d_none">
-                        <button id="teacher-o-btn"
+                        <button type="button"
+                                id="teacher-o-btn"
                                 class="square_btn bg_blue color_white disabled"
                                 style="--square_size: 50%;">O</button>
-                        <button id="teacher-x-btn"
+                        <button type="button"
+                                id="teacher-x-btn"
                                 class="square_btn bg_red color_white disabled"
                                 style="--square_size: 50%;">X</button>
                     </div>
 
-                    <button id="teacher-start-btn"
+                    <button type="button"
+                            id="teacher-start-btn"
                             class="square_btn bg_primary color_white title_font disabled"
                             style="--square_size: 100%; --aspect_ratio: 4 / 1">시작</button>
                 </th:block>
@@ -106,15 +109,18 @@
                 <!--/* 학생일 경우 */-->
                 <th:block th:if="${!isTeacher}">
                     <div id="student-controls" class="btn_list title_font bold d_none">
-                        <button id="send-question"
+                        <button type="button"
+                                id="send-question"
                                 class="square_btn bg_yellow color_black disabled"
                                 style="--square_size: 50%;">질문</button>
-                        <button id="send-answer"
+                        <button type="button"
+                                id="send-answer"
                                 class="square_btn bg_primary color_white disabled"
                                 style="--square_size: 50%;">정답</button>
                     </div>
 
-                    <button id="raise-button"
+                    <button type="button"
+                            id="raise-button"
                             class="square_btn bg_primary color_white title_font d_none"
                             style="--square_size: 100%; --aspect_ratio: 4 / 1">✋ 손들기</button>
 
