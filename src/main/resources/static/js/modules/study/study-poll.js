@@ -150,13 +150,13 @@ export async function pollTeacherStudyJobStatus(pollUrl, $uploadElement) {
             // 정상 종료 시(DONE) 학습 토글 버튼으로 학습 리스트 확인할 수 있도록 새로고침
             // 현재 진행 중(data-stats='PROCESSING')인 jobID 적용 요소가 없을 경우 모든 병렬 폴링 작업이 끝났다고 판단
             const $parentElement = $(".uploading_list_container"); // 부모요소
-            const isProcessing = $parentElement.children(".upload_list").is("[data-status='PROCESSING']"); // 아직 진행 중
-            const isFaied = $parentElement.children(".upload_list").is("[data-status='ERROR'], [data-status='FAILED']"); // 실패한 요청이 있음
-            console.log("isProcessing element check: ", $parentElement.children(".upload_list"));
-            console.log("isProcessing element check: ", $parentElement.children(".upload_list"));
+            const isProcessing = $parentElement.find(".upload_list").is("[data-status='PROCESSING']"); // 아직 진행 중
+            const isFailed = $parentElement.find(".upload_list").is("[data-status='ERROR'], [data-status='FAILED']"); // 실패한 요청이 있음
+            console.log("isProcessing element check: ", $parentElement.find(".upload_list"));
+            console.log("isProcessing element check: ", $parentElement.find(".upload_list"));
 
             if (!isProcessing) { // 모든 병렬 폴링 호출이 종료가 되었을 경우
-                if (!isFaied) {
+                if (!isFailed) {
                     // 모든 요청이 성공일 경우
                     alert("처리가 완료 되었습니다.");
                     location.reload(); // 새로고침
