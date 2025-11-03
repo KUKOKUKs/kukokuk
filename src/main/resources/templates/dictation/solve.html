@@ -54,7 +54,7 @@
             <div th:if="${currentQuestion.usedHintNum == null}"
                  class="callout right pd_0 box_shadow_none"
                  style="--callout-color: transparent;">
-                <div class="hints_info">
+                <div class="hints_info" th:classappend="${user.hintCount > 0 ? '' : 'disabled'}">
                     <button type="button"
                             id="hintBtn1"
                             class="icon base callout_hint_btn tooltip"

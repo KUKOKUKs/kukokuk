@@ -9,7 +9,6 @@ import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationSession;
 import com.kukokuk.domain.exp.dto.ExpProcessingDto;
 import com.kukokuk.domain.exp.service.ExpProcessingService;
-import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.security.SecurityUser;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,7 +37,7 @@ public class DictationController {
 
     private final DictationService dictationService;
     private final ExpProcessingService expProcessingService;
-    private final UserService userService;
+//    private final UserService userService;
 
     final @ModelAttribute("dictationQuestions")
     public List<DictationQuestion> initQuestions() {
@@ -257,7 +256,7 @@ public class DictationController {
             log.info("[/use-hint] index: {}, usedHint: Y", questionIndex);
 
             // 힌트 사용 시 유저 힌트 수 -1 차감
-            userService.minusUserHintCount(userNo);
+//            userService.minusUserHintCount(userNo);
             return "redirect:/dictation/solve";
         }
 
