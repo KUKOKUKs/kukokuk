@@ -2838,12 +2838,54 @@ table th {
   overflow: hidden;
   min-height: 0;
 }
-.chats_component .message_line {
+
+.message_line {
   width: max-content;
   max-width: 75%;
+  display: flex;
+  gap: var(--tinyGap);
+  align-items: flex-start;
 }
-.chats_component .message_bubble {
+.message_line .thumbnail {
+  width: var(--baseIcon);
+  min-width: var(--baseIcon);
+  height: var(--baseIcon);
+  border: 1px solid var(--borderColor);
+  overflow: hidden;
+  border-radius: 50%;
+}
+.message_line .thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.message_line .chat_info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--tinyGap);
+}
+.message_line .chat_info .sender {
+  font-size: var(--fixEtcTinyFontSize);
+}
+.message_line .chat_info .message_bubble {
+  width: max-content;
+  max-width: 100%;
+  padding: var(--tinyPadding);
+  border-radius: var(--bdrs);
+  box-shadow: var(--bxsh);
+  background-color: var(--baseBackground);
   white-space: pre-line;
+}
+.message_line.my_message {
+  margin-left: auto;
+}
+.message_line.my_message .chat_info {
+  align-items: flex-end;
+}
+.message_line.other_message {
+  margin-right: auto;
 }
 
 #board-area {
