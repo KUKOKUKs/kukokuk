@@ -72,7 +72,7 @@
             <!--/* 교사가 등록한 학습 자료가 있을 경우 */-->
             <div th:if="${!#lists.isEmpty(teacherStudies)}" class="component small_list_component toggle_info_first">
                 <!--/* 교사가 등록한 학습 자료가 있는 경우 */-->
-                <div class="grid_list_component column">
+                <div class="tiny_list_component">
                     <div class="component grid_tiny_list pd_base pb_small small_gap teacher_study_List"
                          th:each="study : ${teacherStudies}"
                          th:with="studyCompleteRawPer=${(study.completedStudentCount * 100.0) / currentGroup.memberCount}
@@ -115,12 +115,12 @@
                             </div>
                         </div>
 
-                        <div class="d_flex align_center justify_content_between">
-                            <a th:href="@{study.sourceFileUrl}" class="w_max_content d_flex tiny_gap align_center">
-                                <iconify-icon class="tooltip" data-label="원본 다운로드" icon="streamline-flex-color:cloud-download-flat"></iconify-icon>
-                                <span th:text="${study.sourceFilename}">원본 파일명</span>
-                            </a>
-                        </div>
+                        <a th:href="@{study.sourceFileUrl}" class="d_flex tiny_gap align_center">
+                            <iconify-icon class="tooltip w_max_content"
+                                          data-label="원본 다운로드"
+                                          icon="streamline-flex-color:cloud-download-flat"></iconify-icon>
+                            <span class="small_font text_ellipsis" th:text="${study.sourceFilename}">원본 파일명</span>
+                        </a>
                     </div>
                 </div>
             </div>
