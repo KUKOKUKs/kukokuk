@@ -2946,12 +2946,6 @@ table th {
   padding: 0 var(--basePadding);
 }
 
-#teacher-controls,
-#student-controls,
-#raise-button {
-  display: none;
-}
-
 /* 참여자 리스트 */
 .participant_list {
   width: 100%;
