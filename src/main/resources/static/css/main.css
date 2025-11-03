@@ -2837,19 +2837,21 @@ table th {
   display: flex;
   overflow: hidden;
   min-height: 0;
+  margin-top: var(--smallPadding);
 }
 
 .message_line {
   width: max-content;
-  max-width: 75%;
+  max-width: 80%;
   display: flex;
-  gap: var(--tinyGap);
+  gap: var(--smallGap);
   align-items: flex-start;
 }
 .message_line .thumbnail {
   width: var(--baseIcon);
   min-width: var(--baseIcon);
   height: var(--baseIcon);
+  margin-top: var(--tinyPadding);
   border: 1px solid var(--borderColor);
   overflow: hidden;
   border-radius: 50%;
@@ -2867,25 +2869,69 @@ table th {
   gap: var(--tinyGap);
 }
 .message_line .chat_info .sender {
-  font-size: var(--fixEtcTinyFontSize);
+  font-size: var(--smallFontSize);
 }
 .message_line .chat_info .message_bubble {
-  width: max-content;
   max-width: 100%;
-  padding: var(--tinyPadding);
-  border-radius: var(--bdrs);
+  padding: var(--smallPadding);
   box-shadow: var(--bxsh);
-  background-color: var(--baseBackground);
+  background-color: #fff;
   white-space: pre-line;
+  word-break: break-all;
+  position: relative;
+}
+.message_line .chat_info .message_bubble::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: 0;
 }
 .message_line.my_message {
   margin-left: auto;
 }
+.message_line.my_message .thumbnail {
+  display: none;
+}
 .message_line.my_message .chat_info {
   align-items: flex-end;
 }
+.message_line.my_message .chat_info .sender {
+  display: none;
+}
+.message_line.my_message .chat_info .message_bubble {
+  border-radius: var(--bdrs) 0 var(--bdrs) var(--bdrs);
+}
+.message_line.my_message .chat_info .message_bubble::before {
+  right: -4px;
+  border-top: 10px solid #fff;
+  border-left: 0 solid #fff;
+  border-right: 10px solid transparent;
+}
+.message_line.my_message .chat_info .message_bubble.question {
+  border-left: var(--tinyGap) solid var(--yellowColor);
+}
+.message_line.my_message .chat_info .message_bubble.answer {
+  border-left: var(--tinyGap) solid var(--primaryColor);
+}
 .message_line.other_message {
   margin-right: auto;
+}
+.message_line.other_message .chat_info .message_bubble {
+  border-radius: 0 var(--bdrs) var(--bdrs) var(--bdrs);
+}
+.message_line.other_message .chat_info .message_bubble::before {
+  left: -4px;
+  border-right: 10px solid #fff;
+  border-bottom: 10px solid transparent;
+  border-left: 0 solid #fff;
+}
+.message_line.other_message .chat_info .message_bubble.question {
+  border-right: var(--tinyGap) solid var(--yellowColor);
+}
+.message_line.other_message .chat_info .message_bubble.answer {
+  border-right: var(--tinyGap) solid var(--primaryColor);
 }
 
 #board-area {
@@ -2893,7 +2939,7 @@ table th {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--tinyGap);
+  gap: var(--smallGap);
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 var(--basePadding);
