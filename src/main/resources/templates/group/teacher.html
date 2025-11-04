@@ -69,17 +69,15 @@
                 </div>
             </div>
 
-            <!--/* 교사가 등록한 학습 자료가 있을 경우 */-->
-            <div th:if="${!#lists.isEmpty(teacherStudies)}" class="component small_list_component toggle_info_first">
-                <!--/* 교사가 등록한 학습 자료가 있는 경우 */-->
-                <div class="tiny_list_component">
-                    <div class="component grid_tiny_list pd_base pb_small small_gap teacher_study_List"
-                         th:each="study : ${teacherStudies}"
-                         th:with="studyCompleteRawPer=${(study.completedStudentCount * 100.0) / currentGroup.memberCount}
+            <!--/* 교사가 등록한 학습 자료가 있는 경우 */-->
+            <div class="tiny_list_component">
+                <div class="component grid_tiny_list pd_base pb_small small_gap teacher_study_List"
+                     th:each="study : ${teacherStudies}"
+                     th:with="studyCompleteRawPer=${((study.completedStudentCount ?: 0) * 100.0) / (currentGroup.memberCoun ?: 1) }
                          , studyPercent=${studyCompleteRawPer % 1 == 0} ?
                             ${#numbers.formatDecimal(studyCompleteRawPer, 0, 0)} + '%' :
                             ${#numbers.formatDecimal(studyCompleteRawPer, 1, 1)} + '%'
-                         , essayCompleteRawPer=${(study.essayCompletedStudentCount * 100.0) / currentGroup.memberCount}
+                         , essayCompleteRawPer=${((study.essayCompletedStudentCount ?: 0) * 100.0) / (currentGroup.memberCoun ?: 1) }
                          , essayPercent=${essayCompleteRawPer % 1 == 0} ?
                             ${#numbers.formatDecimal(essayCompleteRawPer, 0, 0)} + '%' :
                             ${#numbers.formatDecimal(essayCompleteRawPer, 1, 1)} + '%'">
