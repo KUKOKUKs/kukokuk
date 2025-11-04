@@ -161,8 +161,8 @@
                             <div class="d_flex align_center tiny_gap text_ellipsis">
                                 <th:block th:switch="${room.status}">
                                     <span th:case="'WAITING'" class="color_blue">대기중</span>
-                                    <span th:case="'STOPPED'">종료</span>
-                                    <span th:case="'COMPLETED'">종료</span>
+                                    <span th:case="'STOPPED'" class="color_gray">종료</span>
+                                    <span th:case="'COMPLETED'" class="color_gray">종료</span>
                                     <span th:case="*" class="color_red">진행중</span>
                                 </th:block>
                                 <p class="text_ellipsis" th:text="${room.title}">스무고개방 이름</p>
