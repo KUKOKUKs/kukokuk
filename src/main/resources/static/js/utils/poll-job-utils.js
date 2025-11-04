@@ -40,7 +40,7 @@ export function pollJobStatus(url, $statusElement = null, isUseProcessUpdate = t
 
                 // DONE/FAILED일 경우 처리완료로 반환
                 // FAILED일 경우엔 클라이언트에서 조치
-                if (pollJob.status !== "PROCESSING") {
+                if (pollJob.status !== "PROCESSING" && pollJob.status !== "PENDING" && pollJob.status !== "IN_PROGRESS") {
                     console.log(`poll() [${pollJob.jobId}]: ${reqCnt}번째 api 요청 실행되었음 소요시간: ${Date.now() - startTime}ms`);
                     resolve(pollJob); // 최종적으로 여기서 Promise 해결
                     return;
