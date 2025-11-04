@@ -114,7 +114,7 @@ $(document).ready(function () {
                 pollSetDataList.set(jobId, {pollUrl, $uploadItem}); // 맵 추가
                 console.log("jobId 순환 처리: ", jobId);
             });
-            
+            console.log("로딩 요소 추가 확인: ", $uploadingListElement.children());
             // 생성된 폴링 요청 경로와 로딩요소를 전달하여 폴링 시작(각각 병렬로 실행)
             pollSetDataList.forEach(({pollUrl, $uploadItem}, jobId) => {
                 console.log("폴링 요청 시작: ", pollUrl);
