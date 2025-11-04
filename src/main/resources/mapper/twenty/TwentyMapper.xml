@@ -8,9 +8,25 @@
     -->
     <select id="getTwentyPlayerList" resultType="RoomUser">
         SELECT
-            RU.USER_NO                        AS userNo
-             ,RU.STATUS                       AS status
-             ,U.NICKNAME                      AS nickName
+            RU.USER_NO                       AS userNo
+            ,RU.STATUS                       AS status
+            ,U.NICKNAME                      AS nickname
+            ,U.USERNAME                      AS username
+            ,U.PASSWORD                      AS password
+            ,U.NAME                          AS name
+            ,U.BIRTH_DATE                    AS birthDate
+            ,U.GENDER                        AS gender
+            ,U.PROFILE_FILENAME              AS profileFilename
+            ,U.AUTH_PROVIDER                 AS authProvider
+            ,U.LEVEL                         AS level
+            ,U.EXPERIENCE_POINTS             AS experiencePoints
+            ,U.STUDY_DIFFICULTY              AS studyDifficulty
+            ,U.CURRENT_SCHOOL                AS currentSchool
+            ,U.CURRENT_GRADE                 AS currentGrade
+            ,U.HINT_COUNT                    AS hintCount
+            ,U.IS_DELETED                    AS isDeleted
+            ,U.CREATED_DATE                  AS createdDate
+            ,U.UPDATED_DATE                  AS updatedDate
         FROM
             KUKOKUK_TWENTY_ROOM_USERS RU
                 JOIN KUKOKUK_USERS U ON RU.USER_NO = U.USER_NO
@@ -51,7 +67,7 @@
         roomNo로 게임방 1개를 반환
         public TwentyRoom getTwentyRoomByRoomNo(int roomNo);
     -->
-    <select id="getTwentyRoomByRoomNo" resultType="TwentyRoom">
+    <!--<select id="getTwentyRoomByRoomNo" resultType="TwentyRoom">
         SELECT
             TWENTY_ROOM_NO               AS roomNo
              ,CORRECT_ANSWER             AS correctAnswer
@@ -66,6 +82,61 @@
         WHERE
             TWENTY_ROOM_NO = #{roomNo}
           AND STATUS NOT IN('COMPLETED', 'STOPPED')
+    </select>-->
+
+    <resultMap id="TwentyRoomResultMap" type="TwentyRoom">
+        <id property="roomNo" column="TWENTY_ROOM_NO"/>
+        <result property="correctAnswer" column="CORRECT_ANSWER"/>
+        <result property="status" column="STATUS"/>
+        <result property="winnerNo" column="WINNER_NO"/>
+        <result property="groupNo" column="GROUP_NO"/>
+        <result property="isSuccess" column="IS_SUCCESS"/>
+        <result property="tryCnt" column="TRY_COUNT"/>
+        <result property="title" column="TITLE"/>
+        <result property="createdDate" column="CREATED_DATE"/>
+        <result property="updatedDate" column="UPDATED_DATE"/>
+
+        <!-- teacher(User 객체) 매핑 -->
+        <association property="teacher" javaType="User">
+            <id property="userNo" column="TEACHER_USER_NO"/>
+            <result property="username" column="TEACHER_USERNAME"/>
+            <result property="nickname" column="TEACHER_NICKNAME"/>
+            <result property="gender" column="TEACHER_GENDER"/>
+            <result property="birthDate" column="TEACHER_BIRTH_DATE"/>
+            <result property="profileFilename" column="TEACHER_PROFILE_FILENAME"/>
+            <result property="level" column="TEACHER_LEVEL"/>
+        </association>
+    </resultMap>
+
+    <!--
+        roomNo로 게임방 1개를 반환
+        public TwentyRoom getTwentyRoomByRoomNo(int roomNo);
+    -->
+    <select id="getTwentyRoomByRoomNo" resultMap="TwentyRoomResultMap">
+        SELECT R.TWENTY_ROOM_NO
+             , R.CORRECT_ANSWER
+             , R.STATUS
+             , R.WINNER_NO
+             , R.GROUP_NO
+             , R.IS_SUCCESS
+             , R.TRY_COUNT
+             , R.TITLE
+             , R.CREATED_DATE
+             , R.UPDATED_DATE
+
+             -- 교사 정보
+             , U.USER_NO          AS TEACHER_USER_NO
+             , U.USERNAME         AS TEACHER_USERNAME
+             , U.NICKNAME         AS TEACHER_NICKNAME
+             , U.GENDER           AS TEACHER_GENDER
+             , U.BIRTH_DATE       AS TEACHER_BIRTH_DATE
+             , U.PROFILE_FILENAME AS TEACHER_PROFILE_FILENAME
+             , U.LEVEL            AS TEACHER_LEVEL
+        FROM KUKOKUK_TWENTY_ROOMS R
+                 INNER JOIN KUKOKUK_GROUPS G ON R.GROUP_NO = G.GROUP_NO
+                 INNER JOIN KUKOKUK_USERS U ON G.USER_NO = U.USER_NO
+        WHERE R.TWENTY_ROOM_NO = #{roomNo}
+          AND R.STATUS NOT IN ('COMPLETED', 'STOPPED')
     </select>
 
     <!--
@@ -185,11 +256,12 @@
      -->
     <select id="getTwentyLogList" resultType="SendStdMsg">
         SELECT
-            L.TWENTY_LOG_NO         AS logNo
+            L.TWENTY_LOG_NO          AS logNo
              ,L.USER_NO              AS userNo
              ,L.TYPE                 AS type
              ,L.MESSAGE              AS content
              ,U.NICKNAME             AS nickName
+             ,U.PROFILE_FILENAME     AS profileFilename
         FROM
             KUKOKUK_TWENTY_LOGS L
                 JOIN KUKOKUK_USERS U ON L.USER_NO = U.USER_NO

@@ -227,6 +227,7 @@ public class GroupStudyService {
 
         // DTO 변환
         return groupStudies.stream()
+            .filter(dto -> dto.getDailyStudy() != null)
             .map(studyService::mapToDailyStudySummaryResponse)
             .collect(Collectors.toList());
     }

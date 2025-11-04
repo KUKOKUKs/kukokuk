@@ -1,8 +1,8 @@
 package com.kukokuk.domain.twenty.service;
 
 /*import com.kukokuk.domain.twenty.util.RedisLockManager;*/
+
 import com.kukokuk.domain.exp.dto.ExpProcessingDto;
-import com.kukokuk.domain.exp.dto.ListExpProcessingDto;
 import com.kukokuk.domain.exp.service.ExpProcessingService;
 import com.kukokuk.domain.group.dto.GruopUsersDto;
 import com.kukokuk.domain.group.service.GroupService;
@@ -11,9 +11,7 @@ import com.kukokuk.domain.twenty.dto.SendStdMsg;
 import com.kukokuk.domain.twenty.dto.TwentyResult;
 import com.kukokuk.domain.twenty.mapper.TwentyMapper;
 import com.kukokuk.domain.twenty.vo.TwentyRoom;
-import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.domain.user.vo.User;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -181,9 +179,13 @@ public class TwentyService {
      * @param correct
      * @return
      */
-    public Integer insertTwentyRoom (int groupNo, String title, String correct) {
+    public int insertTwentyRoom (int groupNo, String title, String correct) {
+        // 여기선 Integer가 반환되면 안됨 null이거나 값이 없을 경우 에러가 나는 위치가 확실해야 함
+        // 여기서 에러가 발생하지 않도록 Integer로 할 경우 컨트롤러에서 404가 발생함
+        // 현재위치에서 에러가 발생해야지 반환값에 대한 에러가 발생함
+        // 반환타입 수정, roomNo 변수반환하지 않고 인서트되어 반환된 primary key를 반환함
         Map<String,Object> map = new HashMap<>();
-        Integer roomNo = null;
+//        Integer roomNo = null;
 
         //게임방 생성
         TwentyRoom room = new TwentyRoom();
@@ -193,7 +195,7 @@ public class TwentyService {
         room.setStatus("WAITING");
         twentyMapper.insertTwentyRoom(room);
 
-        roomNo = room.getRoomNo();
+//        roomNo = room.getRoomNo();
 
         //groupNo에 있는 참여자들 조회 -> 참여자 테이블에 insert
         GruopUsersDto dto = groupService.getGruopUsersByGruopNo(groupNo);
@@ -201,13 +203,16 @@ public class TwentyService {
         List<Integer> userNos = dto.getGroupUsers().stream()
                                                     .map(User::getUserNo)
                                                     .collect(Collectors.toList());
-        map.put("roomNo", roomNo);
+//        map.put("roomNo", roomNo);
+        map.put("roomNo", room.getRoomNo());
         map.put("status", "LEFT");
         map.put("userNos", userNos);
         twentyMapper.insertTwentyRoomUser(map);
 
-        return roomNo;
+//        return roomNo;
+        return room.getRoomNo();
     }
+
 
     /**
      * 아무 조건 없이 roomNo로 이 게임방의 모든 정보를 조회

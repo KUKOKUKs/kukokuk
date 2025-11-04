@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<div th:fragment="modal-twenty-exit-fragment"
+     id="modal-twenty-exit"
+     class="modal_wrap">
+    <div id="modal_dimmed" class="dimmed modal_close"></div>
+    <div class="modal_container">
+        <div class="modal_top">
+            <p class="modal_title">종료하기</p>
+            <button type="button" class="modal_close_btn modal_close">
+                <iconify-icon icon="basil:cancel-outline"></iconify-icon>
+            </button>
+        </div>
+
+        <!--/* modal content */-->
+        <div class="modal_info small form_wrap">
+            <div class="center_info">
+                <p>종료하시겠습니까?</p>
+            </div>
+            <div class="btn_list">
+                <button type="button" id="common-end-btn" class="btn">종료하기</button>
+                <button type="button" class="btn primary modal_close">돌아가기</button>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

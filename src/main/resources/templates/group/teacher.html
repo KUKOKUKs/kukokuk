@@ -72,7 +72,7 @@
             <!--/* 교사가 등록한 학습 자료가 있을 경우 */-->
             <div th:if="${!#lists.isEmpty(teacherStudies)}" class="component small_list_component toggle_info_first">
                 <!--/* 교사가 등록한 학습 자료가 있는 경우 */-->
-                <div class="grid_list_component column">
+                <div class="tiny_list_component">
                     <div class="component grid_tiny_list pd_base pb_small small_gap teacher_study_List"
                          th:each="study : ${teacherStudies}"
                          th:with="studyCompleteRawPer=${(study.completedStudentCount * 100.0) / currentGroup.memberCount}
@@ -94,7 +94,7 @@
                         <div class="component_title">
                             <div class="title_info column tiny_gap base_font">
                                 <p th:text="${study.dailyStudyTitle}">학습 자료 제목</p>
-                                <p class="small_font normal" th:text="${study.explanation}">설명</p>
+                                <p class="text_ellipsis_multiline small_font normal" th:utext="${study.explanation}">설명</p>
                             </div>
                         </div>
 
@@ -110,17 +110,17 @@
                                 <div class="d_flex align_center tiny_gap text_guage_info">
                                     논순형 문제 풀이 완료 인원
                                     <span th:text="|${study.getCountFormatted(study.essayCompletedStudentCount)}명|">인원수</span>
-                                    <span class="ml_a" th:text="${essayPercent}">논순형 문제 풀이 완료 인원 퍼센트</span>
+                                    <span class="ml_a" th:text="${essayPercent}">논술형 문제 풀이 완료 인원 퍼센트</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="d_flex align_center justify_content_between">
-                            <a th:href="@{study.sourceFileUrl}" class="w_max_content d_flex tiny_gap align_center">
-                                <iconify-icon class="tooltip" data-label="원본 다운로드" icon="streamline-flex-color:cloud-download-flat"></iconify-icon>
-                                <span th:text="${study.materialTitle}">원본 파일명</span>
-                            </a>
-                        </div>
+                        <a th:href="${study.sourceFileUrl}" class="d_flex tiny_gap align_center">
+                            <iconify-icon class="tooltip w_max_content"
+                                          data-label="원본 다운로드"
+                                          icon="streamline-flex-color:cloud-download-flat"></iconify-icon>
+                            <span class="small_font text_ellipsis" th:text="${study.sourceFilename}">원본 파일명</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -161,8 +161,8 @@
                             <div class="d_flex align_center tiny_gap text_ellipsis">
                                 <th:block th:switch="${room.status}">
                                     <span th:case="'WAITING'" class="color_blue">대기중</span>
-                                    <span th:case="'STOPPED'">종료</span>
-                                    <span th:case="'COMPLETED'">종료</span>
+                                    <span th:case="'STOPPED'" class="color_gray">종료</span>
+                                    <span th:case="'COMPLETED'" class="color_gray">종료</span>
                                     <span th:case="*" class="color_red">진행중</span>
                                 </th:block>
                                 <p class="text_ellipsis" th:text="${room.title}">스무고개방 이름</p>
@@ -185,16 +185,14 @@
                             <div class="input_info">
                                 <input type="text" name="title" id="title" placeholder=" "/>
                                 <label for="title" class="input_title">스무고개 방 이름</label>
+                                <span class="input_error" th:if="${titleError}" th:errors="*{titleError}"></span>
                             </div>
-                            <!--/* 에러 메세지 표시 */-->
-                            <p th:if="${titleError}" th:text="${titleError}" class="error_text"></p>
 
                             <div class="input_info">
                                 <input type="text" name="correct" id="correct" placeholder=" "/>
                                 <label for="correct" class="input_title">스무고개 정답</label>
+                                <span class="input_error" th:if="${correctError}" th:errors="*{correctError}"></span>
                             </div>
-                            <!--/* 에러 메세지 표시 */-->
-                            <p th:if="${correctError}" th:text="${correctError}" class="error_text"></p>
                         </div>
                         <button type="submit" class="btn primary">방 만들기</button>
                     </form>

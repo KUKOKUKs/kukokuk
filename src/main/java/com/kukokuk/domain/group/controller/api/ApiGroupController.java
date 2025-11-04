@@ -211,7 +211,7 @@ public class ApiGroupController {
             throw new AccessDeniedException("찾을 수 없는 반이거나 삭제 권한이 없는 반입니다.");
         }
 
-        // 삭제 요청
+        // 삭제 요청(그룹원 일괄 탈퇴처리)
         groupService.deleteGroup(savedGruop);
 
         data.put("isSuccess", true);

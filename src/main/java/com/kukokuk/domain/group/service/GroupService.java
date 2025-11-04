@@ -11,6 +11,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -39,12 +40,24 @@ public class GroupService {
     }
 
     /**
+     * 그룹 삭제 처리 시 컬럼값 변경으로 처리
+     * 그룹 가입자들은 실제로 삭제이기때문에 일괄처리를 위한 매퍼
+     * @param groupNo 일괄 탈퇴할 그룹 번호
+     */
+    public void deleteGroupUsers(int groupNo) {
+        log.info("GroupService deleteGroupUsers() 서비스 실행");
+        groupMapper.deleteGroupUsers(groupNo);
+    }
+
+    /**
      * 그룹 정보를 전달받아 그룹 삭제
      * @param group 삭제할 그룹 정보
      */
+    @Transactional
     public void deleteGroup(Group group) {
         log.info("GroupService deleteGroup() 서비스 실행");
         groupMapper.deleteGroup(group);
+        groupMapper.deleteGroupUsers(group.getGroupNo());
     }
 
     /**

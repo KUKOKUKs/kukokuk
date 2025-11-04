@@ -74,6 +74,14 @@ export function renderStudyCardContent(study) {
                     AI 피드백 기반 논술형 문제 풀기
                 </a>
             </div>
+            ${!study.filePath ? "" : `
+                 <a href="${study.filePath}" class="d_flex tiny_gap align_center">
+                    <iconify-icon class="tooltip w_max_content"
+                                  data-label="원본 다운로드"
+                                  icon="streamline-flex-color:cloud-download-flat"></iconify-icon>
+                    <span class="small_font text_ellipsis">${study.sourceFilename}</span>
+                </a>
+            `}
         </div>
     `;
 }

@@ -5,6 +5,7 @@ import com.kukokuk.common.util.ResponseEntityUtils;
 import com.kukokuk.domain.dictation.service.DictationService;
 import com.kukokuk.domain.dictation.vo.DictationQuestion;
 import com.kukokuk.domain.dictation.vo.DictationSession;
+import com.kukokuk.domain.user.service.UserService;
 import com.kukokuk.security.SecurityUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiDictationController {
 
     private final DictationService dictationService;
+    private final UserService userService;
 
     /**
      * 받아쓰기 문제와 힌트들 ajax로 가져오기
@@ -30,9 +32,15 @@ public class ApiDictationController {
      * @return 받아쓰기 문제, 힌트1, 힌트2, 힌트3
      */
     @GetMapping("/question")
-    public ResponseEntity<ApiResponse<DictationQuestion>> questionApi(@RequestParam Integer dictationQuestionNo) {
+    public ResponseEntity<ApiResponse<DictationQuestion>> questionApi(
+        @RequestParam Integer dictationQuestionNo
+        , @RequestParam(defaultValue = "false") boolean usedHint
+        , @AuthenticationPrincipal SecurityUser securityUser) {
         log.info("questionApi() 컨트롤러 실행");
         DictationQuestion dictationQuestion = dictationService.getDictationQuestionByQuestionNo(dictationQuestionNo);
+        if (usedHint) {
+            userService.minusUserHintCount(securityUser.getUser().getUserNo());
+        }
         return ResponseEntityUtils.ok(dictationQuestion);
     }
 

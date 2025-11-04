@@ -1,0 +1,180 @@
+/* 스무고개 진행 방 */
+.system_message {
+    display: none;
+    padding: var(--smallPadding);
+    border-radius: var(--bdrs);
+    font-size: var(--subFontSize);
+    background-color: var(--lightYellowColor);
+    border: var(--baseBorder);
+    box-shadow: var(--bxsh);
+    position: absolute;
+    top: var(--basePadding);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+
+    .system_user_name {
+        color: var(--blueColor);
+    }
+
+    #timer-display {
+        color: var(--redColor);
+    }
+}
+
+/* 채팅창 */
+.chats_container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--tinyGap);
+    padding: var(--basePadding) 0;
+}
+
+.chats_component {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    min-height: 0;
+    margin-top: var(--smallPadding);
+}
+
+.message_line {
+    width: max-content;
+    max-width: 80%;
+    display: flex;
+    gap: var(--smallGap);
+    align-items: flex-start;
+
+    .thumbnail {
+        width: var(--baseIcon);
+        min-width: var(--baseIcon);
+        height: var(--baseIcon);
+        margin-top: var(--tinyPadding);
+        border: 1px solid var(--borderColor);
+        overflow: hidden;
+        border-radius: 50%;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .chat_info {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--tinyGap);
+
+        .sender {
+            font-size: var(--smallFontSize);
+        }
+
+        .message_bubble {
+            max-width: 100%;
+            padding: var(--smallPadding);
+            box-shadow: var(--bxsh);
+            background-color: #fff;
+            white-space: pre-line;
+            word-break: break-all;
+            position: relative;
+
+            &::before {
+                content: "";
+                display: inline-block;
+                width: 0;
+                height: 0;
+                position: absolute;
+                top: 0;
+            }
+        }
+    }
+
+    &.my_message {
+        margin-left: auto;
+
+        .thumbnail {
+            display: none;
+        }
+
+        .chat_info {
+            align-items: flex-end;
+
+            .sender {
+                display: none;
+            }
+
+            .message_bubble {
+                border-radius: var(--bdrs) 0 var(--bdrs) var(--bdrs);
+
+                &::before {
+                    right: -4px;
+                    border-top: 10px solid #fff;
+                    border-left: 0 solid #fff;
+                    border-right: 10px solid transparent;
+                }
+
+                &.question {
+                    border-left: var(--tinyGap) solid var(--yellowColor);
+                }
+
+                &.answer {
+                    border-left: var(--tinyGap) solid var(--primaryColor);
+                }
+            }
+        }
+    }
+
+    &.other_message {
+        margin-right: auto;
+
+        .chat_info {
+            .message_bubble {
+                border-radius: 0 var(--bdrs) var(--bdrs) var(--bdrs);
+
+                &::before {
+                    left: -4px;
+                    border-right: 10px solid #fff;
+                    border-bottom: 10px solid transparent;
+                    border-left: 0 solid #fff;
+                }
+
+                &.question {
+                    border-right: var(--tinyGap) solid var(--yellowColor);
+                }
+
+                &.answer {
+                    border-right: var(--tinyGap) solid var(--primaryColor);
+                }
+            }
+        }
+    }
+}
+
+#board-area {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--smallGap);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 var(--basePadding);
+}
+
+/* 참여자 리스트 */
+.participant_list {
+    width: 100%;
+    padding: var(--tinyPadding);
+    background-color: var(--baseBackground);
+    border-radius: var(--bdrs);
+    box-shadow: var(--bxsh);
+    display: flex;
+    flex-direction: column;
+    gap: var(--smallGap);
+    position: relative;
+}

@@ -18,6 +18,8 @@ public class UserUpdateAspect {
 
     @AfterReturning(
         pointcut = "execution(* com.kukokuk.domain.user.service.UserService.update*(..))"
+            + "|| execution(* com.kukokuk.domain.user.service.UserService.minus*(..))"
+            + "|| execution(* com.kukokuk.domain.user.service.UserService.plus*(..))"
             + "|| execution(* com.kukokuk.domain.user.service.UserService.delete*(..))"
             + "|| execution(* com.kukokuk.domain.group.service.GroupService.insertGroupUser(..))"
             + "|| execution(* com.kukokuk.domain.group.service.GroupService.deleteGroupUser(..))"

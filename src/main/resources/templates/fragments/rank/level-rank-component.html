@@ -9,11 +9,7 @@
     <div class="tiny_list_component">
         <div th:each="rank : ${ranksDto.ranks}"
              class="component_info tiny column tiny_gap"
-             th:with="isMyRank=${rank.userNo == ranksDto.userNo},
-                    rawPercent=${(rank.experiencePoints * 100.0) / rank.maxExp},
-                    percent=${rawPercent % 1 == 0} ?
-                        ${#numbers.formatDecimal(rawPercent, 0, 0)} + '%' :
-                        ${#numbers.formatDecimal(rawPercent, 1, 1)} + '%'"
+             th:with="isMyRank=${rank.userNo == ranksDto.userNo}"
              th:classappend="${isMyRank ? 'selected' : ''}">
             <div class="index_list w_100" style="--cols: 12; --indexCols: 1;">
                 <div class="rank"
@@ -48,7 +44,7 @@
             </div>
 
             <div class="bar_gauge">
-                <div class="gauge" th:style="|width: ${percent};|"></div>
+                <div class="gauge" th:style="|width: ${rank.expPercentString};|"></div>
                 <span class="gauge_info" th:text="|${rank.experiencePoints} / ${rank.maxExp}|">0 / 1</span>
             </div>
         </div>
