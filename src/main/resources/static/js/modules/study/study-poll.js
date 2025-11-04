@@ -139,7 +139,8 @@ export async function pollTeacherStudyJobStatus(pollUrl, $uploadElement) {
             console.log(`pollTeacherStudyJobStatus() jobId(${jobId}) 시도 ${attempt}회차`);
 
             // 실제 폴링 요청
-            // 폴링의 상태가 PROCESSING이 아닐 경우 반환 됨 (진행상태 표시하지 않음)
+            // 폴링의 상태가 PENDING, IN_PROGRESS이 아닐 경우 반환 됨 (진행상태 표시하지 않음)
+            // PENDING, IN_PROCESSING가 아닐 경우 DONE으로 작업 완료 상태
             const pollJob = await pollJobStatus(pollUrl, null, false);
             console.log("pollJobStatus() pollJob: ", pollJob);
 
@@ -148,25 +149,21 @@ export async function pollTeacherStudyJobStatus(pollUrl, $uploadElement) {
             updateProcessing(isDone, pollJob.status, $uploadElement);
 
             // 정상 종료 시(DONE) 학습 토글 버튼으로 학습 리스트 확인할 수 있도록 새로고침
-            // 현재 진행 중(data-stats='PROCESSING')인 jobID 적용 요소가 없을 경우 모든 병렬 폴링 작업이 끝났다고 판단
+            // 현재 진행 중(data-status='PENDING 또는 IN_PROGRESS')인 jobID 적용 요소가 없을 경우 모든 병렬 폴링 작업이 끝났다고 판단
             const $parentElement = $(".uploading_list_container"); // 부모요소
-            const isProcessing = $parentElement.find(".upload_list").is("[data-status='PROCESSING']"); // 아직 진행 중
-            const isFailed = $parentElement.find(".upload_list").is("[data-status='ERROR'], [data-status='FAILED']"); // 실패한 요청이 있음
-            console.log("isProcessing element check: ", $parentElement.find(".upload_list"));
-            console.log("isProcessing element check: ", $parentElement.find(".upload_list"));
+            const isProcessing = $parentElement.find(".upload_list").is("[data-status='PENDING'], data-status='IN_PROGRESS']"); // 아직 요청 및 진행 중
+
+            // const isFailed = $parentElement.find(".upload_list").is("[data-status='ERROR'], [data-status='FAILED']"); // 실패한 요청이 있음
+
+            console.log("isProcessing element check: ", isProcessing, $parentElement.find(".upload_list"));
 
             if (!isProcessing) { // 모든 병렬 폴링 호출이 종료가 되었을 경우
-                if (!isFailed) {
-                    // 모든 요청이 성공일 경우
-                    await new Promise(resolve => setTimeout(resolve, 3000)); // 지연 대기
-                    alert("처리가 완료 되었습니다.");
-                    location.reload(); // 새로고침
-                } else {
-                    // 실패한 요청이 한개라도 있을 경우
-                    alert("생성에 실패한 요청이 있습니다.\n파일을 확인하여 새로고침 후 다시 시도해 주세요.");
-                }
+                // 모든 요청이 성공일 경우
+                // new Promise(resolve => setTimeout(resolve, 3000)); // 지연 대기
+                alert("처리가 완료 되었습니다.");
+                location.reload(); // 새로고침
             }
-            
+
         } catch (error) {
             console.warn(`pollStudyJobStatus() 오류 jobId(${jobId}) (${attempt}회차): ${error.message}`);
 
@@ -192,13 +189,22 @@ export async function pollTeacherStudyJobStatus(pollUrl, $uploadElement) {
 function updateProcessing(isDone, status, $uploadElement) {
     $uploadElement.attr("data-status", status);
     $uploadElement.css("--percent", isDone ? "100%" : "0%"); // 통신완료
-    $uploadElement.removeClass("loading_spinner"); // 로딩 제거
+
+    if (isDone) {
+        $uploadElement.removeClass("loading_spinner"); // 로딩 제거
+        $uploadElement.prepend(`
+           <iconify-icon class="icon sub_font" 
+                  icon="streamline-sharp-color:check-flat"></iconify-icon>
+       `);
+    }
+
     $uploadElement.addClass("sub_font"); // 사이즈 맞추기
-    if (!isDone) $uploadElement.addClass("color_gray"); // FAILED이거나 오류일 경우 텍스트 색상 변경
+
+    // if (!isDone) $uploadElement.addClass("color_gray"); // FAILED이거나 오류일 경우 텍스트 색상 변경
 
     // 체크/엑스 로 변경
-    $uploadElement.prepend(`
-        <iconify-icon class="icon sub_font" 
-            icon="${isDone ? 'streamline-sharp-color:check-flat' : 'fxemoji:crossmark'}"></iconify-icon>
-    `);
+    //$uploadElement.prepend(`
+    //   <iconify-icon class="icon sub_font"
+    //     icon="${isDone ? 'streamline-sharp-color:check-flat' : 'fxemoji:crossmark'}"></iconify-icon>
+    //`);
 }
