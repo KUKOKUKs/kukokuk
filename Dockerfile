@@ -1,7 +1,6 @@
-
 # 이미지를 만들 때 실행
 # Java 17이 포함된 경량 이미지 사용 (빌드와 실행 모두 가능)
-FROM openjdk:17-jdk-alpine AS build
+FROM eclipse-temurin:17-jdk-alpine AS build
 
 # 2️⃣ 컨테이너 내부 작업 디렉토리 설정
 WORKDIR /app
@@ -28,7 +27,7 @@ RUN ./gradlew clean bootJar --no-daemon -x test
 
 # 이미지를 부팅할 때 실행
 # 7️⃣ 실행 전용 이미지(Stage 분리: build와 run을 분리해서 용량 줄이기)
-FROM openjdk:17-jdk-alpine
+FROM eclipse-temurin:17-jdk-alpine
 
 # 8️⃣ 컨테이너 내부 실행 경로 지정
 WORKDIR /app
